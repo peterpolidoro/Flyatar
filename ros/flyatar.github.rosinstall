@@ -1,0 +1,3 @@
+- git:
+    uri: http://github.com/peterpolidoro/xyfly-ros-pkg.git
+    local-name: xyfly

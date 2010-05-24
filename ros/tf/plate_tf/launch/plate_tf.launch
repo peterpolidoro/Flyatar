@@ -1,0 +1,10 @@
+<launch>
+  <param name="camera_plate_rvec_0" type="double" value="-3.137"/>
+  <param name="camera_plate_rvec_1" type="double" value="0"/>
+  <param name="camera_plate_rvec_2" type="double" value="-0.013"/>
+  <param name="camera_plate_tvec_0" type="double" value="2"/>
+  <param name="camera_plate_tvec_1" type="double" value="45.8"/>
+  <param name="camera_plate_tvec_2" type="double" value="340.8"/>
+  <node name="plate_camera_transforms" pkg="plate_tf" type="PlateCameraTransforms.py"/>
+  <node name="plate_tf_broadcaster" pkg="plate_tf" type="plate_tf_broadcaster.py"/>
+</launch>

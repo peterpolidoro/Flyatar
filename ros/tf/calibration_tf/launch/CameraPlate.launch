@@ -1,0 +1,6 @@
+<launch>
+  <include file="$(find camera_firewire)/launch/camera_firewire.launch" />
+  <node name="camera_plate_calibration" pkg="calibration_tf" type="CameraPlate.py">
+  </node>
+  <include file="$(find joystick_commands)/launch/joystick_commands.launch" />
+</launch>

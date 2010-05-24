@@ -1,0 +1,21 @@
+<package>
+  <description brief="track_image_points">
+
+     track_image_points
+
+  </description>
+  <author>Peter Polidoro</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend package="sensor_msgs"/>
+  <depend package="opencv2"/>
+  <depend package="cv_bridge"/>
+  <depend package="rospy"/>
+  <depend package="std_msgs"/>
+  <depend package="camera_firewire"/>
+  <depend package="plate_tf"/>
+
+</package>
+
+

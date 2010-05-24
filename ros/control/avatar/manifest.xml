@@ -1,0 +1,19 @@
+<package>
+  <description brief="avatar">
+
+     avatar
+
+  </description>
+  <author>XYFly</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/avatar</url>
+  <depend package="rospy"/>
+  <depend package="tf"/>
+  <depend package="joystick_commands"/>
+  <depend package="image_gui"/>
+  <depend package="stage_tf"/>
+
+</package>
+
+

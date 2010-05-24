@@ -1,0 +1,18 @@
+<package>
+  <description brief="image_gui">
+
+     image_gui
+
+  </description>
+  <author>XYFly</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/image_gui</url>
+  <depend package="rospy"/>
+  <depend package="track_image_contours"/>
+  <depend package="stage"/>
+  <depend package="plate_tf"/>
+
+</package>
+
+

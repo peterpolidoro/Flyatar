@@ -1,0 +1,15 @@
+<package>
+  <description brief="stage">
+
+     stage
+
+  </description>
+  <author>XYFly</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/stage</url>
+  <depend package="rospy"/>
+
+</package>
+
+

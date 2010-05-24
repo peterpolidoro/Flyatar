@@ -1,0 +1,43 @@
+<!-- starts the camera used for localization -->
+<launch>
+  <param name="display" type="int" value="0"/>
+  <param name="framerate" type="double" value="30"/>
+
+  <!-- various camera parameters -->
+  <!--   <param name="cameraguid" value="b09d01006c5a5a"/> -->
+  <param name="mode" value="MODE_640x480_MONO"/>
+  <param name="KK_fx_original" type="double" value="683.209"/>
+  <param name="KK_fy_original" type="double" value="679.022"/>
+  <param name="KK_cx_original" type="double" value="317.727"/>
+  <param name="KK_cy_original" type="double" value="149.219"/>
+  <param name="kc_k1_original" type="double" value="-0.344945"/>
+  <param name="kc_k2_original" type="double" value="0.155169"/>
+  <param name="kc_p1_original" type="double" value="0.002984"/>
+  <param name="kc_p2_original" type="double" value="0.000444"/>
+  <param name="KK_fx_undistorted" type="double" value="684.652"/>
+  <param name="KK_fy_undistorted" type="double" value="681.048"/>
+  <param name="KK_cx_undistorted" type="double" value="314.009"/>
+  <param name="KK_cy_undistorted" type="double" value="148.431"/>
+  <param name="kc_k1_undistorted" type="double" value="0.032"/>
+  <param name="kc_k2_undistorted" type="double" value="-0.114"/>
+  <param name="kc_p1_undistorted" type="double" value="0.003"/>
+  <param name="kc_p2_undistorted" type="double" value="0.001"/>
+
+  <!-- tf broadcasters -->
+  <node pkg="tf" type="static_transform_publisher" name="original_image_broadcaster" args="-317.727 -149.219 0 0 0 0 Camera OriginalImage 10" />
+  <node pkg="tf" type="static_transform_publisher" name="undistorted_image_broadcaster" args="-314.009 -148.431 0 0 0 0 Camera UndistortedImage 10" />
+
+
+  <!-- <param name="roi_undistorted_x_offset" type="double" value="80"/> -->
+  <!-- <param name="roi_undistorted_y_offset" type="double" value="0"/> -->
+  <!-- <param name="roi_undistorted_height" type="double" value="480"/> -->
+  <!-- <param name="roi_undistorted_width" type="double" value="480"/> -->
+  <!-- <param name="brightness" type="double" value="1"/> -->
+  <!-- <param name="gain" type="double" value="200"/> -->
+  <!-- <param name="exposure" type="double" value="400"/> -->
+  <!-- <param name="contrast" type="double" value="1463"/> -->
+  <param name="compression" type="str" value="none"/>
+  <!--   <param name="colorfilter" type="str" value="COLOR_FILTER_BGGR"/> -->
+
+  <node name="CameraFirewire" pkg="camera_firewire" type="camera_firewire" respawn="true"/>
+</launch>

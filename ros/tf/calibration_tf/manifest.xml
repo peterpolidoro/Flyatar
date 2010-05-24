@@ -1,0 +1,21 @@
+<package>
+  <description brief="calibration_tf">
+
+     calibration_tf
+
+  </description>
+  <author>Peter Polidoro</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend package="rospy"/>
+  <depend package="joystick_commands"/>
+  <depend package="camera_firewire"/>
+  <depend package="pythonmodules"/>
+  <depend package="track_image_contours"/>
+  <depend package="stage_tf"/>
+  <depend package="plate_tf"/>
+
+</package>
+
+
