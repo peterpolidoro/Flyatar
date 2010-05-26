@@ -183,7 +183,7 @@ dcam::getModel(size_t i)
       if (!camera)
         {
           char msg[256];
-          snprintf(msg, 256, "Could not acquire camera %d %s", i, __FUNCTION__);
+          snprintf(msg, 256, "Could not acquire camera %d %s", int(i), __FUNCTION__);
           throw DcamException(msg);
         }
 
