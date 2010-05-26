@@ -96,6 +96,7 @@ typedef enum {
   SIZE_640x480 = 0,
   SIZE_320x240,
   SIZE_1280x960,
+  SIZE_1280x1024,
   SIZE_512x384,
   SIZE_1024x768
 } size_coding_t;
