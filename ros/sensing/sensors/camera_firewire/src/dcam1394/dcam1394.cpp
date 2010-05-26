@@ -224,7 +224,7 @@ dcam::getVendor(size_t i)
 }
 
 
-static const char *modestrings[DC1394_VIDEO_MODE_NUM] =
+static const char *modestrings[DC1394_VIDEO_MODE_NUM+1] =
   {
     "DC1394_VIDEO_MODE_160x120_YUV444",
     "DC1394_VIDEO_MODE_320x240_YUV422",
