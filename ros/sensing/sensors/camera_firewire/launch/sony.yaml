@@ -1,0 +1,21 @@
+# Example camera parameters (Sony XCD-SX90CR)
+
+guid: 0800461000821fa2
+video_mode: 1280x960_mono
+encoding: bayer_gbrg8
+fps: 7.5
+#frame_id: sony
+camera_name: sony
+
+# setting Bayer pattern in the driver
+#bayer_pattern: GBRG
+#bayer_method: Bilinear
+
+# these all default to automatic settings:
+#brightness: 511
+#exposure: 256
+#gain: 150
+shutter: 5120
+#whitebalance: "2000 2000"
+
+camera_info_url: file:///home/joq/svn/camera_drivers/camera1394/launch/sony_calibration.yaml

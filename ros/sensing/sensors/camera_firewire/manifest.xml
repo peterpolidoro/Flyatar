@@ -1,35 +1,22 @@
 <package>
-  <description brief="DC1394 Calibrated Camera Driver">
-    Customizable camera streaming using dc1394 ROS driver. Parameters it uses:
+  <description brief="IEEE 1394 Digital Camera driver">
 
-    display - shows the image on the local computer
-    cameraguid - hex string, if specified will only open a camera with this guid
-    cameraindex - index of the camera to start if cameraguid is not present
-    mode - any one of opencv modes to set, for example: "MODE_640x480_YUV422"
-    framerate - number of frames a second to publish
-    KK_fx,KK_fy,KK_cx,KK_cy - intrinsic parameters such that KK = [fx 0 cx; 0 fy cy; 0 0 1]
-    kc_k1,kc_k2,kc_p1,kc_2 - radial distortion coefficients to undistort the image
-    colorfilter - color conversion for debayering, can be
-               "COLOR_FILTER_RGGB", "COLOR_FILTER_GBRG", "COLOR_FILTER_GRBG", "COLOR_FILTER_BGGR"
-    brightness
-    contrast
-    whitebalance_blueu
-    whitebalance_redv
-    exposure
-    compression - how to compress the data before sending, can be "none", "png", "jpg", "jpeg"
-    gain - the gain on the camera values
+    This is a ROS port of the Player camera1394 driver for devices
+    supporting the IEEE 1394 Digital Camera protocol. It is designed
+    to work with the ROS image_pipeline with minimal dependencies,
+    using libdc1394 for device access.
+
   </description>
-  <author>Rosen Diankov (rdiankov@cs.cmu.edu) with Jeremy Liebs, Kurt Konolige for dcam1394 files</author>
-  <license>Apache License 2.0</license>
-  <depend package="roscpp"/>
-  <depend package="opencv2"/>
-  <depend package="cv_bridge"/>
+  <author>Patrick Beeson, Nate Koenig, Andrew Howard,
+    Damien Douxchamps, Dan Dennedy, Jack O'Quin</author>
+  <license>GPL</license>
+  <review status="experimental" notes=""/>
+  <url>http://ros.org/wiki/camera1394</url>
   <depend package="image_transport"/>
-  <depend package="sensor_msgs"/>
-  <depend package="libdc1394v2"/>
-  <depend package="std_msgs" />
-  <depend package="tf" />
-  <export>
-    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -ldcam1394" />
-  </export>
+  <depend package="tf"/>
+  <depend package="camera_info_manager"/>
+  <depend package="dynamic_reconfigure" />
+  <depend package="driver_base" />
+  <rosdep name="libdc1394-dev"/>
+
 </package>
