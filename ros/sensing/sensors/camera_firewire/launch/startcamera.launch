@@ -1,0 +1,19 @@
+<!-- -*- mode: XML -*- -->
+
+<!-- Start the driver for a specific IEEE1394 digital camera.
+
+     DEPRECATED version
+
+     environment: $CAMERA = base file name of camera YAML parameters
+                  (default: unibrain)
+-->
+
+<launch>
+
+  <!-- name node (and topic) after parameter file -->
+  <node pkg="camera1394" type="old_camera1394"
+        name="$(optenv CAMERA unibrain)" >
+    <rosparam
+       file="$(find camera1394)/launch/$(optenv CAMERA unibrain).yaml" /> 
+  </node>
+</launch>
