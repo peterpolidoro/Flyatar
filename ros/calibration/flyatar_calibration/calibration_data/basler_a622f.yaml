@@ -3,5 +3,5 @@
 # guid: 08144361026320a0          # (defaults to first camera found)
 camera_name: basler_a622f
 video_mode: format7_0
-camera_info_url: file:///home/peter/git/Flyatar/ros/sensing/sensors/camera1394/launch/basler_a622f_calibration.yaml
+camera_info_url: file:///home/peter/git/Flyatar/ros/calibration/calibration_data/basler_a622f_calibration.yaml
 
