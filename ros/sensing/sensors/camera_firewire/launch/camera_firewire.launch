@@ -4,6 +4,9 @@
   <param name="framerate" type="double" value="25"/>
   <param name="mode" value="MODE_FORMAT7_0"/>
   <param name="compression" type="str" value="none"/>
+  <param name="brightness" type="double" value="168"/>
+  <param name="shutter" type="double" value="631"/>
+  <param name="gain" type="double" value="140"/>
 
 
   <!-- various camera parameters -->
