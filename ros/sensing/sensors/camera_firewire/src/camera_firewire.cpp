@@ -270,6 +270,7 @@ public:
     }
     if( mode == DC1394_VIDEO_MODE_FORMAT7_0 ) {
       ROS_INFO("MODE_FORMAT7_0 Detected!!!");
+      fprintf(stderr, "FORMAT7 == mode!!!\n");
     }
     else{
       cam->setFormat(mode,fps,DC1394_ISO_SPEED_400);
