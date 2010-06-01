@@ -268,7 +268,12 @@ public:
       else
         mode = DC1394_VIDEO_MODE_640x480_MONO8;
     }
-    cam->setFormat(mode,fps,DC1394_ISO_SPEED_400);
+    if( mode == DC1394_VIDEO_MODE_FORMAT7_0 ) {
+      ROS_INFO("MODE_FORMAT7_0 Detected!!!");
+    }
+    else{
+      cam->setFormat(mode,fps,DC1394_ISO_SPEED_400);
+    }
 
     const dc1394feature_mode_t fmode[] = {DC1394_FEATURE_MODE_AUTO, DC1394_FEATURE_MODE_MANUAL};
     cam->setFeatureMode(DC1394_FEATURE_BRIGHTNESS, fmode[brightness >= 0]);
