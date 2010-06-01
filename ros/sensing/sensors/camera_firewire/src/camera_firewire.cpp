@@ -272,7 +272,6 @@ public:
     }
     cam->setFormat(mode,fps,DC1394_ISO_SPEED_400);
     if( (mode == DC1394_VIDEO_MODE_FORMAT7_0) && square_roi ) {
-      fprintf(stderr, "FORMAT7 == mode && square_roi!!!\n");
       cam->setSquareROI(mode);
     }
 
