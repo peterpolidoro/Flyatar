@@ -72,6 +72,7 @@ public:
   string windowname, compression;
   int display;
   double framerate;
+  double square_roi;
   double exposure, brightness, contrast, gain, shutter; // if positive, set the values
   double wb_blueu, wb_redv;
   int delay_us;
@@ -163,6 +164,7 @@ public:
       mode = (dc1394video_mode_t)0;
 
     _node.param("framerate",framerate,15.0);
+    _node.param("square_roi",square_roi,0.0);
 
     // For ieee1394 cameras:
     _node.param("brightness",brightness,-1.0);
@@ -268,12 +270,9 @@ public:
       else
         mode = DC1394_VIDEO_MODE_640x480_MONO8;
     }
-    if( mode == DC1394_VIDEO_MODE_FORMAT7_0 ) {
-      ROS_INFO("MODE_FORMAT7_0 Detected!!!");
-      fprintf(stderr, "FORMAT7 == mode!!!\n");
-    }
-    else{
-      cam->setFormat(mode,fps,DC1394_ISO_SPEED_400);
+    cam->setFormat(mode,fps,DC1394_ISO_SPEED_400);
+    if( (mode == DC1394_VIDEO_MODE_FORMAT7_0) && square_roi ) {
+      fprintf(stderr, "FORMAT7 == mode && square_roi!!!\n");
     }
 
     const dc1394feature_mode_t fmode[] = {DC1394_FEATURE_MODE_AUTO, DC1394_FEATURE_MODE_MANUAL};
