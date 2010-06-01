@@ -211,6 +211,11 @@ namespace dcam
     virtual void setExposure(int val, bool isauto);
     virtual void setGain(int val, bool isauto);
     virtual void setBrightness(int val, bool isauto);
+
+    // Format7 functions
+    uint32_t hsize, vsize;
+    virtual void setSquareROI(dc1394video_mode_t video);
+
     // feature boundaries
     uint32_t expMax, expMin;
     uint32_t gainMax, gainMin;

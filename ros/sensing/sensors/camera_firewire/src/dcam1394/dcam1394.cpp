@@ -531,6 +531,19 @@ dcam::Dcam::setFormat(dc1394video_mode_t video,
   setRawType();
 }
 
+// Format7 functions
+
+void
+dcam::Dcam::setSquareROI(dc1394video_mode_t video)
+{
+  CHECK_READY();
+
+  CHECK_ERR_CLEAN( dc1394_format7_get_max_image_size(dcCam, video, &hsize, &vsize),
+                   "Could not find format7 max image size");
+
+  fprintf(stderr, "hsize = %d\n",hsize);
+}
+
 
 // Start and stop streaming
 
