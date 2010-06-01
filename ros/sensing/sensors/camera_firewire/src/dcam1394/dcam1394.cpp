@@ -544,8 +544,11 @@ dcam::Dcam::setSquareROI(dc1394video_mode_t video)
                    "Could not set format7 image size");
   CHECK_ERR_CLEAN( dc1394_format7_set_image_position(dcCam, video, (hsize-vsize)/2, (vsize-vsize)),
                    "Could not set format7 image position");
+  CHECK_ERR_CLEAN( dc1394_format7_get_byte_per_packet(dcCam, video, &packet_bytes),
+                   "Could not get format7 byte per packet");
 
   // fprintf(stderr, "hsize = %d vsize = %d\n",hsize,vsize);
+  fprintf(stderr, "packet_bytes = %d\n",packet_bytes);
 }
 
 

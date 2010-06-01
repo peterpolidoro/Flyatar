@@ -213,7 +213,7 @@ namespace dcam
     virtual void setBrightness(int val, bool isauto);
 
     // Format7 functions
-    uint32_t hsize, vsize;
+    uint32_t hsize, vsize, packet_bytes;
     virtual void setSquareROI(dc1394video_mode_t video);
 
     // feature boundaries
