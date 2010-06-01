@@ -540,6 +540,8 @@ dcam::Dcam::setSquareROI(dc1394video_mode_t video)
 
   CHECK_ERR_CLEAN( dc1394_format7_get_max_image_size(dcCam, video, &hsize, &vsize),
                    "Could not find format7 max image size");
+  CHECK_ERR_CLEAN( dc1394_format7_set_image_size(dcCam, video, vsize, vsize),
+                   "Could not set format7 image size");
 
   fprintf(stderr, "hsize = %d vsize = %d\n",hsize,vsize);
 }
