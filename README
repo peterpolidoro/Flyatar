@@ -1,0 +1,18 @@
+ROS Installation (Ubuntu):
+sudo apt-get install build-essential python-yaml cmake subversion wget git-core git-gui git-doc
+
+git clone git://github.com/peterpolidoro/Flyatar.git ~/git/Flyatar
+cp ~/git/Flyatar/ros/rosinstall ~/bin/
+
+rosinstall ~/ros/latest_wg_all http://ros.org/rosinstalls/latest_wg_all.rosinstall
+echo "source ~/ros/latest_wg_all/setup.sh" >> ~/.bashrc
+. ~/.bashrc
+rosinstall -o ~/ros/ros_latest_tutorial http://ros.org/rosinstalls/ros_latest_tutorial.rosinstall
+echo "source ~/ros/ros_latest_tutorial/setup.sh" >> ~/.bashrc
+. ~/.bashrc
+rosinstall -o ~/ros/wg_latest_devel http://ros.org/rosinstalls/wg_latest_devel.rosinstall
+echo "source ~/ros/wg_latest_devel/setup.sh" >> ~/.bashrc
+. ~/.bashrc
+rosinstall -o ~/ros/Flyatar ~/git/Flyatar/ros/flyatar.local.rosinstall
+echo "source ~/ros/Flyatar/setup.sh" >> ~/.bashrc
+. ~/.bashrc
