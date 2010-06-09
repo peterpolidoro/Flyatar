@@ -16,10 +16,15 @@
   <param name="KK_fy_original" type="double" value="1936.2"/>
   <param name="KK_cx_original" type="double" value="511.236"/>
   <param name="KK_cy_original" type="double" value="549.75"/>
-  <param name="kc_k1_original" type="double" value="-0.1019"/>
-  <param name="kc_k2_original" type="double" value="0.4406"/>
-  <param name="kc_p1_original" type="double" value="0.0045"/>
-  <param name="kc_p2_original" type="double" value="-0.0042"/>
+  <param name="kc_k1_original" type="double" value="0.0"/>
+  <param name="kc_k2_original" type="double" value="0.0"/>
+  <param name="kc_p1_original" type="double" value="0.0"/>
+  <param name="kc_p2_original" type="double" value="0.0"/>
+  <!-- <param name="kc_k1_original" type="double" value="-0.1019"/> -->
+  <!-- <param name="kc_k2_original" type="double" value="0.4406"/> -->
+  <!-- <param name="kc_p1_original" type="double" value="0.0045"/> -->
+  <!-- <param name="kc_p2_original" type="double" value="-0.0042"/> -->
+
   <!-- <param name="KK_fx_undistorted" type="double" value="684.652"/> -->
   <!-- <param name="KK_fy_undistorted" type="double" value="681.048"/> -->
   <!-- <param name="KK_cx_undistorted" type="double" value="314.009"/> -->
