@@ -12,15 +12,14 @@
 
   <!-- various camera parameters -->
   <!--   <param name="cameraguid" value="b09d01006c5a5a"/> -->
-  <!-- <param name="mode" value="MODE_640x480_MONO"/> -->
-  <!-- <param name="KK_fx_original" type="double" value="683.209"/> -->
-  <!-- <param name="KK_fy_original" type="double" value="679.022"/> -->
-  <!-- <param name="KK_cx_original" type="double" value="317.727"/> -->
-  <!-- <param name="KK_cy_original" type="double" value="149.219"/> -->
-  <!-- <param name="kc_k1_original" type="double" value="-0.344945"/> -->
-  <!-- <param name="kc_k2_original" type="double" value="0.155169"/> -->
-  <!-- <param name="kc_p1_original" type="double" value="0.002984"/> -->
-  <!-- <param name="kc_p2_original" type="double" value="0.000444"/> -->
+  <param name="KK_fx_original" type="double" value="1939.49"/>
+  <param name="KK_fy_original" type="double" value="1936.2"/>
+  <param name="KK_cx_original" type="double" value="511.236"/>
+  <param name="KK_cy_original" type="double" value="549.75"/>
+  <param name="kc_k1_original" type="double" value="-0.1019"/>
+  <param name="kc_k2_original" type="double" value="0.4406"/>
+  <param name="kc_p1_original" type="double" value="0.0045"/>
+  <param name="kc_p2_original" type="double" value="-0.0042"/>
   <!-- <param name="KK_fx_undistorted" type="double" value="684.652"/> -->
   <!-- <param name="KK_fy_undistorted" type="double" value="681.048"/> -->
   <!-- <param name="KK_cx_undistorted" type="double" value="314.009"/> -->
