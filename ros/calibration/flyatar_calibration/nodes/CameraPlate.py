@@ -168,12 +168,13 @@ class Calibration:
       H = numpy.linalg.inv(Hinv)
       self.Hinv = Hinv
       self.H = H
-      self.tf_broadcaster.sendTransform(self.tvec_array,
-                                        tf.transformations.quaternion_about_axis(rvec_angle, self.rvec_array),
-                                        rospy.Time.now(),
-                                        "Checkerboard",
-                                        "Image")
-
+#########
+      # self.tf_broadcaster.sendTransform(self.tvec_array,
+      #                                   tf.transformations.quaternion_about_axis(rvec_angle, self.rvec_array),
+      #                                   rospy.Time.now(),
+      #                                   "Checkerboard",
+      #                                   "Image")
+#########
       # rospy.logwarn("H = \n%s", str(H))
 
       # rvec_array = cvNumpy.mat_to_array(self.rvec)
@@ -293,11 +294,13 @@ class Calibration:
     # rospy.logwarn("plate_points = %s", str(plate_points))
     checkerboard_plate_vector = plate_points[:,0]
     checkerboard_plate_vector[2] = 0
-    self.tf_broadcaster.sendTransform(checkerboard_plate_vector,
-                                      tf.transformations.quaternion_from_euler(0, 0, rot_angle),
-                                      rospy.Time.now(),
-                                      "Plate",
-                                      "Checkerboard")
+#########
+    # self.tf_broadcaster.sendTransform(checkerboard_plate_vector,
+    #                                   tf.transformations.quaternion_from_euler(0, 0, rot_angle),
+    #                                   rospy.Time.now(),
+    #                                   "Plate",
+    #                                   "Checkerboard")
+#########
     try:
       # self.image_plate_origin = self.tf_listener.transformPoint("Image",self.plate_origin)
       (trans,rot_quat) = self.tf_listener.lookupTransform('Image', 'Plate', rospy.Time(0))
