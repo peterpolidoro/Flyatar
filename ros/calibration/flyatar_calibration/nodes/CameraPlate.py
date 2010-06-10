@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division
 import roslib
-roslib.load_manifest('calibration_tf')
+roslib.load_manifest('flyatar_calibration')
 import sys
 import rospy
 import cv
