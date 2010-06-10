@@ -447,7 +447,7 @@ class Calibration:
   #   return Xdst,Ydst
 
 def main(args):
-  rospy.init_node('camera_plate_calibration', anonymous=True)
+  rospy.init_node('camera_plate_calibration')
   cal = Calibration()
   try:
     rospy.spin()
