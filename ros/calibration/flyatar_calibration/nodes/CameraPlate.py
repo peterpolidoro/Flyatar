@@ -17,6 +17,8 @@ from cv_bridge import CvBridge, CvBridgeError
 class Calibration:
 
   def __init__(self):
+    self.initialized = False
+    self.images_initialized = False
     cv.NamedWindow("Camera Plate Calibration", 1)
     self.tf_listener = tf.TransformListener()
     self.tf_broadcaster = tf.TransformBroadcaster()
@@ -32,7 +34,6 @@ class Calibration:
     self.camera_origin.header.frame_id = "Camera"
     self.camera_origin.point.x = 0
     self.camera_origin.point.y = 0
-    self.images_initialized = False
     # self.image_plate_origin_found = False
     # self.plate_origin = PointStamped()
     # self.plate_origin.header.frame_id = "Plate"
@@ -65,6 +66,7 @@ class Calibration:
 
     self.origin_points = cv.CreateMat(4,3,cv.CV_32FC1)
     self.origin_points_projected = cv.CreateMat(4,2,cv.CV_32FC1)
+    self.initialized = True
 
   def initialize_images(self,cv_image):
     self.im_size = cv.GetSize(cv_image)
@@ -191,41 +193,42 @@ class Calibration:
       self.remap_extrinsics()
 
   def image_callback(self,data):
-    try:
-      cv_image = cv.GetImage(self.bridge.imgmsg_to_cv(data, "passthrough"))
-    except CvBridgeError, e:
-      print e
+    if self.initialized:
+      try:
+        cv_image = cv.GetImage(self.bridge.imgmsg_to_cv(data, "passthrough"))
+      except CvBridgeError, e:
+        print e
 
-    if not self.images_initialized:
-      self.initialize_images(cv_image)
+      if not self.images_initialized:
+        self.initialize_images(cv_image)
 
-    self.im = cv.CloneImage(cv_image)
-    cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
+      self.im = cv.CloneImage(cv_image)
+      cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
 
-    # display_text = "camera_plate.point.x = " + str(int(self.camera_plate.point.x))
-    display_text = "camera_plate_origin = [%0.0f, %0.0f]" % (self.camera_plate.point.x, self.camera_plate.point.y)
-    cv.PutText(self.im_display,display_text,(25,25),self.font,self.font_color)
-    # display_text = "camera_plate.point.y = " + str(int(self.camera_plate.point.y))
-    # cv.PutText(self.im_display,display_text,(25,45),self.font,self.font_color)
+      # display_text = "camera_plate.point.x = " + str(int(self.camera_plate.point.x))
+      display_text = "camera_plate_origin = [%0.0f, %0.0f]" % (self.camera_plate.point.x, self.camera_plate.point.y)
+      cv.PutText(self.im_display,display_text,(25,25),self.font,self.font_color)
+      # display_text = "camera_plate.point.y = " + str(int(self.camera_plate.point.y))
+      # cv.PutText(self.im_display,display_text,(25,45),self.font,self.font_color)
 
-    try:
-      self.undistorted_camera = self.tf_listener.transformPoint("UndistortedImage",self.camera_origin)
-      cv.Circle(self.im_display, (int(self.undistorted_camera.point.x),int(self.undistorted_camera.point.y)), 3, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
-      self.undistorted_plate = self.tf_listener.transformPoint("UndistortedImage",self.camera_plate)
-      cv.Circle(self.im_display, (int(self.undistorted_plate.point.x),int(self.undistorted_plate.point.y)), 3, cv.CV_RGB(0,self.color_max,0), cv.CV_FILLED)
-      cv.Circle(self.im_display, (int(self.undistorted_plate.point.x),int(self.undistorted_plate.point.y)), int(self.mask_radius), cv.CV_RGB(0,self.color_max,0))
-      display_text = "mask radius = " + str(int(self.mask_radius))
-      cv.PutText(self.im_display,display_text,(25,45),self.font,self.font_color)
+      try:
+        self.undistorted_camera = self.tf_listener.transformPoint("UndistortedImage",self.camera_origin)
+        cv.Circle(self.im_display, (int(self.undistorted_camera.point.x),int(self.undistorted_camera.point.y)), 3, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
+        self.undistorted_plate = self.tf_listener.transformPoint("UndistortedImage",self.camera_plate)
+        cv.Circle(self.im_display, (int(self.undistorted_plate.point.x),int(self.undistorted_plate.point.y)), 3, cv.CV_RGB(0,self.color_max,0), cv.CV_FILLED)
+        cv.Circle(self.im_display, (int(self.undistorted_plate.point.x),int(self.undistorted_plate.point.y)), int(self.mask_radius), cv.CV_RGB(0,self.color_max,0))
+        display_text = "mask radius = " + str(int(self.mask_radius))
+        cv.PutText(self.im_display,display_text,(25,45),self.font,self.font_color)
 
-      self.find_extrinsics()
-    except (tf.LookupException, tf.ConnectivityException):
-      pass
+        self.find_extrinsics()
+      except (tf.LookupException, tf.ConnectivityException):
+        pass
 
-    cv.ShowImage("Camera Plate Calibration", self.im_display)
-    cv.WaitKey(3)
+      cv.ShowImage("Camera Plate Calibration", self.im_display)
+      cv.WaitKey(3)
 
   def joy_callback(self,data):
-    if self.images_initialized:
+    if self.initialized and self.images_initialized:
       self.camera_plate.point.x += data.x_velocity
       self.camera_plate.point.y += -data.y_velocity
       self.mask_radius += data.radius_velocity

@@ -39,8 +39,8 @@
   <param name="kc_p2_undistorted" type="double" value="0.0029"/>
 
   <!-- tf broadcasters -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="original_image_broadcaster" args="-547.5 -504 0 0 0 0 Camera OriginalImage 10" /> -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="undistorted_image_broadcaster" args="-547.7 -529 0 0 0 0 Camera UndistortedImage 10" /> -->
+  <node pkg="tf" type="static_transform_publisher" name="original_image_broadcaster" args="-547.5 -504 0 0 0 0 Camera OriginalImage 10" />
+  <node pkg="tf" type="static_transform_publisher" name="undistorted_image_broadcaster" args="-547.7 -529 0 0 0 0 Camera UndistortedImage 10" />
 
   <!-- <param name="roi_undistorted_x_offset" type="double" value="80"/> -->
   <!-- <param name="roi_undistorted_y_offset" type="double" value="0"/> -->

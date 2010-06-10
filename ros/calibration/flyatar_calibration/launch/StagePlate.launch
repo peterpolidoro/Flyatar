@@ -3,5 +3,5 @@
   <include file="$(find plate_tf)/launch/plate_tf.launch" />
   <include file="$(find joystick_commands)/launch/joystick_commands.launch" />
   <include file="$(find stage_tf)/launch/stage_tf.launch" />
-  <node pkg="calibration_tf" type="StagePlate.py" name="StagePlate" />
+  <node pkg="flyatar_calibration" type="StagePlate.py" name="StagePlate" />
 </launch>
