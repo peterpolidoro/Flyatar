@@ -22,7 +22,7 @@ class Calibration:
     print "Initialized00"
     cv.NamedWindow("Camera Plate Calibration", 1)
     print "Initialized01"
-    # self.tf_listener = tf.TransformListener()
+    self.tf_listener = tf.TransformListener()
     # print "Initialized02"
     # self.tf_broadcaster = tf.TransformBroadcaster()
     # print "Initialized03"
