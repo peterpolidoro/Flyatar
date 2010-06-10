@@ -19,49 +19,50 @@ class Calibration:
   def __init__(self):
     self.initialized = False
     self.images_initialized = False
-    cv.NamedWindow("Camera Plate Calibration", 1)
-    self.tf_listener = tf.TransformListener()
-    self.tf_broadcaster = tf.TransformBroadcaster()
-    self.bridge = CvBridge()
-    self.image_sub = rospy.Subscriber("UndistortedImage", Image, self.image_callback)
-    self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joy_callback)
-    self.color_max = 255
-    self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
-    self.font_color = cv.CV_RGB(self.color_max,0,0)
-    self.camera_plate = PointStamped()
-    self.camera_plate.header.frame_id = "Camera"
-    self.camera_origin = PointStamped()
-    self.camera_origin.header.frame_id = "Camera"
-    self.camera_origin.point.x = 0
-    self.camera_origin.point.y = 0
+    print "Initialized!!!"
+    # cv.NamedWindow("Camera Plate Calibration", 1)
+    # self.tf_listener = tf.TransformListener()
+    # self.tf_broadcaster = tf.TransformBroadcaster()
+    # self.bridge = CvBridge()
+    # self.image_sub = rospy.Subscriber("UndistortedImage", Image, self.image_callback)
+    # self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joy_callback)
+    # self.color_max = 255
+    # self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
+    # self.font_color = cv.CV_RGB(self.color_max,0,0)
+    # self.camera_plate = PointStamped()
+    # self.camera_plate.header.frame_id = "Camera"
+    # self.camera_origin = PointStamped()
+    # self.camera_origin.header.frame_id = "Camera"
+    # self.camera_origin.point.x = 0
+    # self.camera_origin.point.y = 0
 
-    (self.intrinsic_matrix,self.distortion_coeffs) = CameraParameters.intrinsic("undistorted")
-    self.KK_cx = self.intrinsic_matrix[0,2]
-    self.KK_cy = self.intrinsic_matrix[1,2]
+    # (self.intrinsic_matrix,self.distortion_coeffs) = CameraParameters.intrinsic("undistorted")
+    # self.KK_cx = self.intrinsic_matrix[0,2]
+    # self.KK_cy = self.intrinsic_matrix[1,2]
 
-    self.M = cvNumpy.mat_to_array(self.intrinsic_matrix)
-    # Makes with respect to Camera coordinate system instead of Undistorted
-    self.M[:-1,-1] = 0
+    # self.M = cvNumpy.mat_to_array(self.intrinsic_matrix)
+    # # Makes with respect to Camera coordinate system instead of Undistorted
+    # self.M[:-1,-1] = 0
 
-    # Pattern info
-    self.pattern_size = (8,6)
-    self.col_corner_number = self.pattern_size[0]
-    self.row_corner_number = self.pattern_size[1]
-    self.board_corner_number = self.col_corner_number * self.row_corner_number
-    self.checker_size = 15
-    self.win = (4,4)
-    self.zero_zone = (2,2)
-    self.criteria = (cv.CV_TERMCRIT_ITER+cv.CV_TERMCRIT_EPS,100,.01)
+    # # Pattern info
+    # self.pattern_size = (8,6)
+    # self.col_corner_number = self.pattern_size[0]
+    # self.row_corner_number = self.pattern_size[1]
+    # self.board_corner_number = self.col_corner_number * self.row_corner_number
+    # self.checker_size = 15
+    # self.win = (4,4)
+    # self.zero_zone = (2,2)
+    # self.criteria = (cv.CV_TERMCRIT_ITER+cv.CV_TERMCRIT_EPS,100,.01)
 
-    self.image_points = cv.CreateMat(self.board_corner_number,2,cv.CV_32FC1)
-    self.plate_points = cv.CreateMat(self.board_corner_number,3,cv.CV_32FC1)
-    self.point_counts = cv.CreateMat(1,1,cv.CV_32SC1)
-    self.rvec = cv.CreateMat(1,3,cv.CV_32FC1)
-    self.tvec = cv.CreateMat(1,3,cv.CV_32FC1)
+    # self.image_points = cv.CreateMat(self.board_corner_number,2,cv.CV_32FC1)
+    # self.plate_points = cv.CreateMat(self.board_corner_number,3,cv.CV_32FC1)
+    # self.point_counts = cv.CreateMat(1,1,cv.CV_32SC1)
+    # self.rvec = cv.CreateMat(1,3,cv.CV_32FC1)
+    # self.tvec = cv.CreateMat(1,3,cv.CV_32FC1)
 
-    self.origin_points = cv.CreateMat(4,3,cv.CV_32FC1)
-    self.origin_points_projected = cv.CreateMat(4,2,cv.CV_32FC1)
-    self.initialized = True
+    # self.origin_points = cv.CreateMat(4,3,cv.CV_32FC1)
+    # self.origin_points_projected = cv.CreateMat(4,2,cv.CV_32FC1)
+    # self.initialized = True
 
   # def initialize_images(self,cv_image):
   #   self.im_size = cv.GetSize(cv_image)
