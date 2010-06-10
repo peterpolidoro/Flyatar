@@ -22,34 +22,34 @@ class Calibration:
     print "Initialized00"
     cv.NamedWindow("Camera Plate Calibration", 1)
     print "Initialized01"
-    self.tf_listener = tf.TransformListener()
-    print "Initialized02"
-    self.tf_broadcaster = tf.TransformBroadcaster()
-    print "Initialized03"
-    self.bridge = CvBridge()
-    print "Initialized04"
-    self.image_sub = rospy.Subscriber("UndistortedImage", Image, self.image_callback)
-    print "Initialized05"
-    self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joy_callback)
-    print "Initialized06"
-    self.color_max = 255
-    print "Initialized07"
-    self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
-    print "Initialized08"
-    self.font_color = cv.CV_RGB(self.color_max,0,0)
-    print "Initialized09"
-    self.camera_plate = PointStamped()
-    print "Initialized10"
-    self.camera_plate.header.frame_id = "Camera"
-    print "Initialized11"
-    self.camera_origin = PointStamped()
-    print "Initialized12"
-    self.camera_origin.header.frame_id = "Camera"
-    print "Initialized13"
-    self.camera_origin.point.x = 0
-    print "Initialized14"
-    self.camera_origin.point.y = 0
-    print "Initialized15"
+    # self.tf_listener = tf.TransformListener()
+    # print "Initialized02"
+    # self.tf_broadcaster = tf.TransformBroadcaster()
+    # print "Initialized03"
+    # self.bridge = CvBridge()
+    # print "Initialized04"
+    # self.image_sub = rospy.Subscriber("UndistortedImage", Image, self.image_callback)
+    # print "Initialized05"
+    # self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joy_callback)
+    # print "Initialized06"
+    # self.color_max = 255
+    # print "Initialized07"
+    # self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
+    # print "Initialized08"
+    # self.font_color = cv.CV_RGB(self.color_max,0,0)
+    # print "Initialized09"
+    # self.camera_plate = PointStamped()
+    # print "Initialized10"
+    # self.camera_plate.header.frame_id = "Camera"
+    # print "Initialized11"
+    # self.camera_origin = PointStamped()
+    # print "Initialized12"
+    # self.camera_origin.header.frame_id = "Camera"
+    # print "Initialized13"
+    # self.camera_origin.point.x = 0
+    # print "Initialized14"
+    # self.camera_origin.point.y = 0
+    # print "Initialized15"
 
     # (self.intrinsic_matrix,self.distortion_coeffs) = CameraParameters.intrinsic("undistorted")
     # self.KK_cx = self.intrinsic_matrix[0,2]
