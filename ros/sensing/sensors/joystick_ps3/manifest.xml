@@ -10,7 +10,7 @@
   <url></url>
   <depend package="rospy"/>
   <depend package="roscpp"/>
-  <depend package="ps3joy"/>
+  <!-- <depend package="ps3joy"/> -->
   <depend package="joy"/>
 
 </package>
