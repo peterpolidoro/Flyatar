@@ -20,21 +20,21 @@ class Calibration:
     self.initialized = False
     self.images_initialized = False
     print "Initialized!!!"
-    # cv.NamedWindow("Camera Plate Calibration", 1)
-    # self.tf_listener = tf.TransformListener()
-    # self.tf_broadcaster = tf.TransformBroadcaster()
-    # self.bridge = CvBridge()
-    # self.image_sub = rospy.Subscriber("UndistortedImage", Image, self.image_callback)
-    # self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joy_callback)
-    # self.color_max = 255
-    # self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
-    # self.font_color = cv.CV_RGB(self.color_max,0,0)
-    # self.camera_plate = PointStamped()
-    # self.camera_plate.header.frame_id = "Camera"
-    # self.camera_origin = PointStamped()
-    # self.camera_origin.header.frame_id = "Camera"
-    # self.camera_origin.point.x = 0
-    # self.camera_origin.point.y = 0
+    cv.NamedWindow("Camera Plate Calibration", 1)
+    self.tf_listener = tf.TransformListener()
+    self.tf_broadcaster = tf.TransformBroadcaster()
+    self.bridge = CvBridge()
+    self.image_sub = rospy.Subscriber("UndistortedImage", Image, self.image_callback)
+    self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joy_callback)
+    self.color_max = 255
+    self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
+    self.font_color = cv.CV_RGB(self.color_max,0,0)
+    self.camera_plate = PointStamped()
+    self.camera_plate.header.frame_id = "Camera"
+    self.camera_origin = PointStamped()
+    self.camera_origin.header.frame_id = "Camera"
+    self.camera_origin.point.x = 0
+    self.camera_origin.point.y = 0
 
     # (self.intrinsic_matrix,self.distortion_coeffs) = CameraParameters.intrinsic("undistorted")
     # self.KK_cx = self.intrinsic_matrix[0,2]
