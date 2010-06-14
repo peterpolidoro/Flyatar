@@ -10,3 +10,10 @@ source ~/ros/cturtle_wg_all/setup.sh
 rosinstall -o ~/ros/Flyatar ~/git/Flyatar/ros/flyatar.local.rosinstall
 echo "source ~/ros/Flyatar/setup.sh" >> ~/.bashrc
 . ~/.bashrc
+
+Setting Groups and Permissions:
+sudo adduser $USER disk
+sudo groupadd usb
+sudo adduser $USER usb
+sudo cp ~/git/Flyatar/ros/actuation/stage/usb_device/admin/99*.rules /etc/udev/rules.d/
+(restart computer)
