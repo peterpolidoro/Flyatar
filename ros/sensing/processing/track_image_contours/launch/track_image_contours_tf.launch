@@ -6,7 +6,7 @@
   <param name="mask_radius" type="double" value="486"/>
   <param name="diff_threshold" type="double" value="65"/>
   <param name="contour_count_max" type="double" value="2"/>
-  <param name="image_processor_display_images" type="boolean" value="false"/>
+  <param name="image_processor_display_images" type="boolean" value="true"/>
 
   <!-- Coordinate Systems -->
   <node pkg="tf" type="static_transform_publisher" name="PlateImage_broadcaster" args="-41 -16 0 0 0 0 Camera PlateImage 10" />
