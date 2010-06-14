@@ -32,7 +32,7 @@ Author: William Dickson
 
 ------------------------------------------------------------------------
 """
-import pylibusb as usb
+from pythonmodules import pylibusb as usb
 import ctypes
 import sys
 import time
