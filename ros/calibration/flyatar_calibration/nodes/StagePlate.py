@@ -318,15 +318,17 @@ class Calibration():
     contour_count = min(len(x_list),len(y_list),len(theta_list),len(area_list),len(ecc_list))
 
     if contour_count == 1:
-      if not self.pose_initialized:
-        self.pose_initialized = True
-      self.robot_image_pose_camera.header = data.header
-      self.robot_image_pose_camera.pose.position.x = x_list[0]
-      self.robot_image_pose_camera.pose.position.y = y_list[0]
-      self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
-      self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
+      display_text = "Error! More one object detected!"
+      cv.PutText(self.im_display,display_text,(25,185),self.font,self.font_color)
+      # if not self.pose_initialized:
+      #   self.pose_initialized = True
+      # self.robot_image_pose_camera.header = data.header
+      # self.robot_image_pose_camera.pose.position.x = x_list[0]
+      # self.robot_image_pose_camera.pose.position.y = y_list[0]
+      # self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
+      # self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
     else:
-      display_text = "Error!  More than one object detected!"
+      display_text = "Error! More than one object detected!"
       cv.PutText(self.im_display,display_text,(25,185),self.font,self.font_color)
 
     # for contour in range(contour_count):
