@@ -321,20 +321,18 @@ class Calibration():
     area_list = data.area
     ecc_list = data.ecc
     contour_count = min(len(x_list),len(y_list),len(theta_list),len(area_list),len(ecc_list))
-    # rospy.logwarn("contour_count = \n%s",str(contour_count))
 
     if contour_count == 1:
-      # rospy.logwarn("No Error! One object detected!")
-      self.error_text = "No Error! One object detected!"
-      # if not self.pose_initialized:
-      #   self.pose_initialized = True
-      # self.robot_image_pose_camera.header = data.header
-      # self.robot_image_pose_camera.pose.position.x = x_list[0]
-      # self.robot_image_pose_camera.pose.position.y = y_list[0]
-      # self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
-      # self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
+      self.error_text = ""
+      if not self.pose_initialized:
+        self.pose_initialized = True
+      self.robot_image_pose_camera.header = data.header
+      self.robot_image_pose_camera.pose.position.x = x_list[0]
+      self.robot_image_pose_camera.pose.position.y = y_list[0]
+      self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
+      self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
     else:
-      # rospy.logwarn("Error! More than one object detected!")
+      rospy.logwarn("Error! More than one object detected!")
       self.error_text = "Error! More than one object detected!"
 
     # for contour in range(contour_count):
