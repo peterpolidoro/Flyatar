@@ -12,7 +12,7 @@ from joystick_commands.msg import JoystickCommands
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import PoseStamped
 from plate_tf.srv import *
-
+from track_image_contours.msg import ContourInfo
 
 class Calibration():
   def __init__(self):
