@@ -48,8 +48,10 @@ class Calibration():
     self.dist_min = 25
 
     self.error_text = ""
-    # self.robot_ecc_list = []
-    # self.robot_area_list = []
+    self.robot_ecc = 0
+    self.robot_area = 0
+    self.robot_ecc_array = numpy.array([])
+    self.robot_area_array = numpy.array([])
     self.robot_min_ecc = 1000000000
     self.robot_max_ecc = 0
     self.robot_min_area = 1000000000
@@ -271,6 +273,8 @@ class Calibration():
               # rospy.logwarn("plate_point_array = \n%s", str(self.plate_point_array))
               self.stage_point_array = numpy.append(self.stage_point_array,stage_point_new,axis=1)
               # rospy.logwarn("stage_point_array = \n%s", str(self.stage_point_array))
+              self.robot_ecc_array = numpy.append(self.robot_ecc_array,self.robot_ecc)
+              self.robot_area_array = numpy.append(self.robot_area_array,self.robot_area)
         else:
           self.image_point_array = image_point_new
           self.plate_point_array = plate_point_new
@@ -296,10 +300,26 @@ class Calibration():
           # display_text = "Translation Vector = [%0.2f, %0.2f, %0.2f]" % (self.tvec[0],
           # cv.PutText(self.im_display,display_text,(25,65),self.font,self.font_color)
           # rospy.logwarn("euler = \n%s",str(euler))
+
+          ecc_mean = numpy.mean(self.robot_ecc_array)
+          ecc_std = numpy.std(self.robot_ecc_array)
+          rospy.logwarn("ecc_mean = %s, ecc_std = %s\n" % (ecc_mean, ecc_std))
+          self.robot_min_ecc = ecc_mean - ecc_std*3
+          if self.robot_min_ecc < 0:
+            self.robot_min_ecc = 0
+          self.robot_max_ecc = ecc_mean + ecc_std*3
+          area_mean = numpy.mean(self.robot_area_array)
+          area_std = numpy.std(self.robot_area_array)
+          rospy.logwarn("area_mean = %s, area_std = %s\n" % (area_mean, area_std))
+          self.robot_min_area = area_mean - area_std*3
+          if self.robot_min_area < 0:
+            self.robot_min_area = 0
+          self.robot_max_area = area_mean + area_std*3
           display_text = "robot_min_ecc = %0.3f, robot_max_ecc = %0.3f" % (self.robot_min_ecc, self.robot_max_ecc)
           cv.PutText(self.im_display,display_text,(25,105),self.font,self.font_color)
           display_text = "robot_min_area = %0.3f, robot_max_area = %0.3f" % (self.robot_min_area, self.robot_max_area)
           cv.PutText(self.im_display,display_text,(25,125),self.font,self.font_color)
+
           self.rotate_grid = True
           self.draw_grid(self.im_display)
 
@@ -341,16 +361,8 @@ class Calibration():
       self.robot_image_pose_camera.pose.position.y = y_list[0]
       self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
       self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
-      area = area_list[0]
-      ecc = ecc_list[0]
-      if ecc < self.robot_min_ecc:
-        self.robot_min_ecc = ecc
-      if self.robot_max_ecc < ecc:
-        self.robot_max_ecc = ecc
-      if area < self.robot_min_area:
-        self.robot_min_area = area
-      if self.robot_max_area < area:
-        self.robot_max_area = area
+      self.robot_area = area_list[0]
+      self.robot_ecc = ecc_list[0]
     else:
       rospy.logwarn("Error! More than one object detected!")
       self.error_text = "Error! More than one object detected!"
