@@ -47,6 +47,8 @@ class Calibration():
     self.point_count_min = 10
     self.dist_min = 25
 
+    self.error_text = ""
+
     # self.plate_point_array = numpy.zeros((1,3))
     # self.stage_point_array = numpy.zeros((1,3))
     (self.intrinsic_matrix,self.distortion_coeffs) = CameraParameters.intrinsic("undistorted")
@@ -296,6 +298,9 @@ class Calibration():
       except (tf.LookupException, tf.ConnectivityException):
         pass
 
+
+    cv.PutText(self.im_display,self.error_text,(25,185),self.font,self.font_color)
+
     cv.ShowImage("Stage Plate Calibration", self.im_display)
     cv.WaitKey(3)
 
@@ -316,12 +321,11 @@ class Calibration():
     area_list = data.area
     ecc_list = data.ecc
     contour_count = min(len(x_list),len(y_list),len(theta_list),len(area_list),len(ecc_list))
-    rospy.logwarn("contour_count = \n%s",str(contour_count))
+    # rospy.logwarn("contour_count = \n%s",str(contour_count))
 
     if contour_count == 1:
-      rospy.logwarn("No Error! One object detected!")
-      display_text = "No Error! One object detected!"
-      cv.PutText(self.im_display,display_text,(25,185),self.font,self.font_color)
+      # rospy.logwarn("No Error! One object detected!")
+      self.error_text = "No Error! One object detected!"
       # if not self.pose_initialized:
       #   self.pose_initialized = True
       # self.robot_image_pose_camera.header = data.header
@@ -330,9 +334,8 @@ class Calibration():
       # self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
       # self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
     else:
-      rospy.logwarn("Error! More than one object detected!")
-      display_text = "Error! More than one object detected!"
-      cv.PutText(self.im_display,display_text,(25,185),self.font,self.font_color)
+      # rospy.logwarn("Error! More than one object detected!")
+      self.error_text = "Error! More than one object detected!"
 
     # for contour in range(contour_count):
     #   x = x_list[contour]
