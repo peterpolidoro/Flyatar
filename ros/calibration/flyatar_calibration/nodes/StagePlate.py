@@ -269,10 +269,10 @@ class Calibration():
           self.arrays_initialized = True
 
         if self.point_count_min < self.plate_point_array.shape[1]:
-          # self.T_plate_stage = tf.transformations.superimposition_matrix(self.plate_point_array, self.stage_point_array)
-          # self.T_stage_plate = tf.transformations.inverse_matrix(self.T_plate_stage)
-          self.T_stage_plate = tf.transformations.superimposition_matrix(self.plate_point_array, self.stage_point_array)
-          self.T_plate_stage = tf.transformations.inverse_matrix(self.T_stage_plate)
+          self.T_plate_stage = tf.transformations.superimposition_matrix(self.plate_point_array, self.stage_point_array)
+          self.T_stage_plate = tf.transformations.inverse_matrix(self.T_plate_stage)
+          # self.T_stage_plate = tf.transformations.superimposition_matrix(self.plate_point_array, self.stage_point_array)
+          # self.T_plate_stage = tf.transformations.inverse_matrix(self.T_stage_plate)
           tvector = tf.transformations.translation_from_matrix(self.T_plate_stage)
           display_text = "Translation Vector = [%0.3f, %0.3f, %0.3f]" % (tvector[0],tvector[1],tvector[2])
           cv.PutText(self.im_display,display_text,(25,65),self.font,self.font_color)
