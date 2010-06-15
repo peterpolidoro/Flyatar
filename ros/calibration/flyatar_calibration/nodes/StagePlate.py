@@ -48,6 +48,12 @@ class Calibration():
     self.dist_min = 25
 
     self.error_text = ""
+    # self.robot_ecc_list = []
+    # self.robot_area_list = []
+    self.robot_min_ecc = 1000000000
+    self.robot_max_ecc = 0
+    self.robot_min_area = 1000000000
+    self.robot_max_area = 0
 
     # self.plate_point_array = numpy.zeros((1,3))
     # self.stage_point_array = numpy.zeros((1,3))
@@ -290,6 +296,10 @@ class Calibration():
           # display_text = "Translation Vector = [%0.2f, %0.2f, %0.2f]" % (self.tvec[0],
           # cv.PutText(self.im_display,display_text,(25,65),self.font,self.font_color)
           # rospy.logwarn("euler = \n%s",str(euler))
+          display_text = "robot_min_ecc = %0.3f, robot_max_ecc = %0.3f" % (self.robot_min_ecc, self.robot_max_ecc)
+          cv.PutText(self.im_display,display_text,(25,105),self.font,self.font_color)
+          display_text = "robot_min_area = %0.3f, robot_max_area = %0.3f" % (self.robot_min_area, self.robot_max_area)
+          cv.PutText(self.im_display,display_text,(25,125),self.font,self.font_color)
           self.rotate_grid = True
           self.draw_grid(self.im_display)
 
@@ -331,6 +341,16 @@ class Calibration():
       self.robot_image_pose_camera.pose.position.y = y_list[0]
       self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
       self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
+      area = area_list[0]
+      ecc = ecc_list[0]
+      if ecc < self.robot_min_ecc:
+        self.robot_min_ecc = ecc
+      if self.robot_max_ecc < ecc:
+        self.robot_max_ecc = ecc
+      if area < self.robot_min_area:
+        self.robot_min_area = area
+      if self.robot_max_area < area:
+        self.robot_max_area = area
     else:
       rospy.logwarn("Error! More than one object detected!")
       self.error_text = "Error! More than one object detected!"
