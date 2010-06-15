@@ -30,7 +30,7 @@ class Calibration():
     cv.NamedWindow("Stage Plate Calibration", 1)
 
     self.vel_stage = Velocity()
-    self.vel_scale_factor = 100     # mm/s
+    self.vel_scale_factor = 20     # mm/s
 
     self.robot_image_pose_camera = PoseStamped()
     self.robot_image_pose_undistorted = PoseStamped()
