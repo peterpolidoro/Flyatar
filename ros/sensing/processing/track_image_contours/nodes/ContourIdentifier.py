@@ -23,10 +23,10 @@ class ContourIdentifier:
     self.fly_image_pose = PoseStamped()
 
     # Robot Info
-    self.robot_min_ecc = 1
-    self.robot_max_ecc = 2
-    self.robot_min_area = 2000
-    self.robot_max_area = 6000
+    self.robot_min_ecc = rospy.get_param("robot_min_ecc","0.5")
+    self.robot_max_ecc = rospy.get_param("robot_max_ecc","3")
+    self.robot_min_area = rospy.get_param("robot_min_area","1000")
+    self.robot_max_area = rospy.get_param("robot_max_area","10000")
 
   def contour_callback(self,data):
     header = data.header

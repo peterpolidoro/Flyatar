@@ -25,12 +25,13 @@ class Calibration():
     self.vel_pub = rospy.Publisher("stage/command_velocity",Velocity)
 
     self.image_sub = rospy.Subscriber("UndistortedImage", Image, self.image_callback)
-    self.pose_sub = rospy.Subscriber("RobotImagePose", PoseStamped, self.pose_callback)
+    self.contour_info_sub = rospy.Subscriber("ContourInfo",ContourInfo,self.contour_callback)
+    # self.pose_sub = rospy.Subscriber("RobotImagePose", PoseStamped, self.pose_callback)
 
     cv.NamedWindow("Stage Plate Calibration", 1)
 
     self.vel_stage = Velocity()
-    self.vel_scale_factor = 20     # mm/s
+    self.vel_scale_factor = 40     # mm/s
 
     self.robot_image_pose_camera = PoseStamped()
     self.robot_image_pose_undistorted = PoseStamped()
@@ -298,14 +299,53 @@ class Calibration():
     cv.ShowImage("Stage Plate Calibration", self.im_display)
     cv.WaitKey(3)
 
-  def pose_callback(self,data):
-    if not self.pose_initialized:
-      self.pose_initialized = True
-    self.robot_image_pose_camera.header = data.header
-    self.robot_image_pose_camera.pose.position.x = data.pose.position.x
-    self.robot_image_pose_camera.pose.position.y = data.pose.position.y
-    self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
-    self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
+  # def pose_callback(self,data):
+  #   if not self.pose_initialized:
+  #     self.pose_initialized = True
+  #   self.robot_image_pose_camera.header = data.header
+  #   self.robot_image_pose_camera.pose.position.x = data.pose.position.x
+  #   self.robot_image_pose_camera.pose.position.y = data.pose.position.y
+  #   self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
+  #   self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
+
+  def contour_callback(self,data):
+    header = data.header
+    x_list = data.x
+    y_list = data.y
+    theta_list = data.theta
+    area_list = data.area
+    ecc_list = data.ecc
+    contour_count = min(len(x_list),len(y_list),len(theta_list),len(area_list),len(ecc_list))
+
+    if contour_count == 1:
+      if not self.pose_initialized:
+        self.pose_initialized = True
+      self.robot_image_pose_camera.header = data.header
+      self.robot_image_pose_camera.pose.position.x = x_list[0]
+      self.robot_image_pose_camera.pose.position.y = y_list[0]
+      self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
+      self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
+    else:
+      display_text = "Error!  More than one object detected!"
+      cv.PutText(self.im_display,display_text,(25,185),self.font,self.font_color)
+
+    # for contour in range(contour_count):
+    #   x = x_list[contour]
+    #   y = y_list[contour]
+    #   theta = theta_list[contour]
+    #   area = area_list[contour]
+    #   ecc = ecc_list[contour]
+    #   # Identify robot
+    #   if ((self.robot_min_area < area) and (area < self.robot_max_area)) and ((self.robot_min_ecc < ecc) and (ecc < self.robot_max_ecc)):
+    #     self.robot_image_pose.header = header
+    #     self.robot_image_pose.pose.position.x = x
+    #     self.robot_image_pose.pose.position.y = y
+    #     self.robot_image_pose_pub.publish(self.robot_image_pose)
+    #   elif contour_count == 2:
+    #     self.fly_image_pose.header = header
+    #     self.fly_image_pose.pose.position.x = x
+    #     self.fly_image_pose.pose.position.y = y
+    #     self.fly_image_pose_pub.publish(self.fly_image_pose)
 
   def camera_to_undistorted_pose(self,input_pose):
     output_pose = PoseStamped()
