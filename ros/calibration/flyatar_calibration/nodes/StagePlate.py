@@ -316,9 +316,11 @@ class Calibration():
     area_list = data.area
     ecc_list = data.ecc
     contour_count = min(len(x_list),len(y_list),len(theta_list),len(area_list),len(ecc_list))
+    rospy.logwarn("contour_count = \n%s",str(contour_count))
 
     if contour_count == 1:
-      display_text = "Error! More one object detected!"
+      rospy.logwarn("No Error! One object detected!")
+      display_text = "No Error! One object detected!"
       cv.PutText(self.im_display,display_text,(25,185),self.font,self.font_color)
       # if not self.pose_initialized:
       #   self.pose_initialized = True
@@ -328,6 +330,7 @@ class Calibration():
       # self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
       # self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
     else:
+      rospy.logwarn("Error! More than one object detected!")
       display_text = "Error! More than one object detected!"
       cv.PutText(self.im_display,display_text,(25,185),self.font,self.font_color)
 
