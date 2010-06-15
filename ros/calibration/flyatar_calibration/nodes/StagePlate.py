@@ -303,21 +303,21 @@ class Calibration():
 
           ecc_mean = numpy.mean(self.robot_ecc_array)
           ecc_std = numpy.std(self.robot_ecc_array)
-          rospy.logwarn("ecc_mean = %s, ecc_std = %s\n" % (ecc_mean, ecc_std))
+          # rospy.logwarn("ecc_mean = %s, ecc_std = %s\n" % (ecc_mean, ecc_std))
           self.robot_min_ecc = ecc_mean - ecc_std*3
           if self.robot_min_ecc < 0:
             self.robot_min_ecc = 0
           self.robot_max_ecc = ecc_mean + ecc_std*3
           area_mean = numpy.mean(self.robot_area_array)
           area_std = numpy.std(self.robot_area_array)
-          rospy.logwarn("area_mean = %s, area_std = %s\n" % (area_mean, area_std))
+          # rospy.logwarn("area_mean = %s, area_std = %s\n" % (area_mean, area_std))
           self.robot_min_area = area_mean - area_std*3
           if self.robot_min_area < 0:
             self.robot_min_area = 0
           self.robot_max_area = area_mean + area_std*3
           display_text = "robot_min_ecc = %0.3f, robot_max_ecc = %0.3f" % (self.robot_min_ecc, self.robot_max_ecc)
           cv.PutText(self.im_display,display_text,(25,105),self.font,self.font_color)
-          display_text = "robot_min_area = %0.3f, robot_max_area = %0.3f" % (self.robot_min_area, self.robot_max_area)
+          display_text = "robot_min_area = %0.0f, robot_max_area = %0.0f" % (self.robot_min_area, self.robot_max_area)
           cv.PutText(self.im_display,display_text,(25,125),self.font,self.font_color)
 
           self.rotate_grid = True
