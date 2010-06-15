@@ -5,8 +5,8 @@
 
   <param name="Stage_Update_dt" type="double" value="0.010"/>
 
-  <!-- Coordinate Systems parameters -->
-  <node pkg="tf" type="static_transform_publisher" name="stage_broadcaster" args="116 -117 0 0 0 0.707 0.707 Plate Stage 10" />
+  <include file="$(find flyatar_calibration)/calibration_data/stage_plate_calibration_data.launch" />
+
   <node pkg="stage_tf" type="StageUpdate.py" name="StageUpdate"/>
   <!-- <node pkg="stage_tf" type="MagnetCommunicator.py" name="MagnetCommunicator"/> -->
 </launch>
