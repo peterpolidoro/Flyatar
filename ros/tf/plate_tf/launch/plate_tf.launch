@@ -1,10 +1,5 @@
 <launch>
-  <param name="camera_plate_rvec_0" type="double" value="-3.092"/>
-  <param name="camera_plate_rvec_1" type="double" value="0.006"/>
-  <param name="camera_plate_rvec_2" type="double" value="-0.009"/>
-  <param name="camera_plate_tvec_0" type="double" value="-9.607"/>
-  <param name="camera_plate_tvec_1" type="double" value="-4.28"/>
-  <param name="camera_plate_tvec_2" type="double" value="437.9"/>
+  <include file="$(find flyatar_calibration)/calibration_data/camera_plate_calibration_data.launch" />
   <node name="plate_camera_transforms" pkg="plate_tf" type="PlateCameraTransforms.py"/>
   <node name="plate_tf_broadcaster" pkg="plate_tf" type="plate_tf_broadcaster.py"/>
 </launch>

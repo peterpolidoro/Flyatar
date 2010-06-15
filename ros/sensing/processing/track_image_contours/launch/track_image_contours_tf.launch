@@ -3,24 +3,14 @@
   <include file="$(find camera_firewire)/launch/camera_firewire.launch" />
 
   <!-- various image parameters -->
-  <param name="mask_radius" type="double" value="486"/>
   <param name="diff_threshold" type="double" value="65"/>
   <param name="contour_count_max" type="double" value="2"/>
-  <param name="image_processor_display_images" type="boolean" value="true"/>
-
-  <!-- Coordinate Systems -->
-  <node pkg="tf" type="static_transform_publisher" name="PlateImage_broadcaster" args="-41 -16 0 0 0 0 Camera PlateImage 10" />
+  <param name="image_processor_display_images" type="boolean" value="false"/>
 
   <!-- Coordinate Systems parameters -->
   <param name="ImageProcessor_OutputCoordinates" type="string" value="Camera"/>
 
-  <!-- ROI Coordinate Systems -->
-  <node pkg="tf" type="static_transform_publisher" name="ROIPlateImage_broadcaster" args="0 0 0 0 0 0 UndistortedImage ROIPlateImage 10" />
-
-  <!-- ROI parameters -->
-  <!-- <param name="ROIPlateImage_width" type="double" value="480"/> -->
-  <param name="ROIPlateImage_width" type="double" value="1024"/>
-  <param name="ROIPlateImage_height" type="double" value="1024"/>
+  <include file="$(find flyatar_calibration)/calibration_data/camera_plateimage_calibration_data.launch" />
 
   <node pkg="track_image_contours" type="ImageProcessor.py" name="ImageProcessor" />
   <node pkg="track_image_contours" type="ContourIdentifierTF.py" name="ContourIdentifierTF" />

@@ -1,0 +1,34 @@
+<launch>
+  <!-- various camera parameters -->
+  <!--   <param name="cameraguid" value="b09d01006c5a5a"/> -->
+  <param name="KK_fx_original" type="double" value="1902"/>
+  <param name="KK_fy_original" type="double" value="1896"/>
+  <param name="KK_cx_original" type="double" value="547.5"/>
+  <param name="KK_cy_original" type="double" value="504.0"/>
+  <!-- <param name="kc_k1_original" type="double" value="0.0"/> -->
+  <!-- <param name="kc_k2_original" type="double" value="0.0"/> -->
+  <!-- <param name="kc_p1_original" type="double" value="0.0"/> -->
+  <!-- <param name="kc_p2_original" type="double" value="0.0"/> -->
+  <param name="kc_k1_original" type="double" value="-0.18"/>
+  <param name="kc_k2_original" type="double" value="1.0"/>
+  <param name="kc_p1_original" type="double" value="-0.0002"/>
+  <param name="kc_p2_original" type="double" value="0.001"/>
+
+  <param name="KK_fx_undistorted" type="double" value="1881"/>
+  <param name="KK_fy_undistorted" type="double" value="1874"/>
+  <param name="KK_cx_undistorted" type="double" value="547.7"/>
+  <param name="KK_cy_undistorted" type="double" value="529"/>
+  <!-- <param name="kc_k1_undistorted" type="double" value="0.0"/> -->
+  <!-- <param name="kc_k2_undistorted" type="double" value="0.0"/> -->
+  <!-- <param name="kc_p1_undistorted" type="double" value="0.0"/> -->
+  <!-- <param name="kc_p2_undistorted" type="double" value="0.0"/> -->
+  <param name="kc_k1_undistorted" type="double" value="-0.024"/>
+  <param name="kc_k2_undistorted" type="double" value="-0.096"/>
+  <param name="kc_p1_undistorted" type="double" value="-0.001"/>
+  <param name="kc_p2_undistorted" type="double" value="0.0029"/>
+
+  <!-- tf broadcasters -->
+  <node pkg="tf" type="static_transform_publisher" name="original_image_broadcaster" args="-547.5 -504 0 0 0 0 Camera OriginalImage 10" />
+  <node pkg="tf" type="static_transform_publisher" name="undistorted_image_broadcaster" args="-547.7 -529 0 0 0 0 Camera UndistortedImage 10" />
+
+</launch>
