@@ -11,6 +11,7 @@
   <param name="ImageProcessor_OutputCoordinates" type="string" value="Camera"/>
 
   <include file="$(find flyatar_calibration)/calibration_data/camera_plateimage_calibration_data.launch" />
+  <include file="$(find flyatar_calibration)/calibration_data/robotimage_calibration_data.launch" />
 
   <node pkg="track_image_contours" type="ImageProcessor.py" name="ImageProcessor" />
   <node pkg="track_image_contours" type="ContourIdentifierTF.py" name="ContourIdentifierTF" />
