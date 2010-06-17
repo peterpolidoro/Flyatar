@@ -71,7 +71,7 @@ class ContourIdentifier:
         self.magnet_origin_camera.point.x = response.Xdst[0]
         self.magnet_origin_camera.point.y = response.Ydst[0]
         self.magnet_origin_undistorted = self.tf_listener.transformPoint(header.frame_id,self.magnet_origin_camera)
-        # rospy.logwarn("x = %s\ty = %s" % (self.magnet_origin_undistorted.point.x,self.magnet_origin_undistorted.point.y))
+        rospy.logwarn("x = %s\ty = %s" % (self.magnet_origin_undistorted.point.x,self.magnet_origin_undistorted.point.y))
         x = self.magnet_origin_undistorted.point.x
         y = self.magnet_origin_undistorted.point.y
         for contour in range(contour_count):
@@ -102,8 +102,8 @@ class ContourIdentifier:
         #   self.fly_image_pose.pose.position.y = y
         #   self.fly_image_pose_pub.publish(self.fly_image_pose)
 
-      # rospy.logwarn("robot_list = %s" % str(robot_list))
-      # rospy.logwarn("dist_list = %s" % str(dist_list))
+      rospy.logwarn("robot_list = %s" % str(robot_list))
+      rospy.logwarn("dist_list = %s" % str(dist_list))
       if (0 < len(robot_list)) and (len(robot_list) <= len(dist_list)):
         robot_dist_list = [dist_list[robot] for robot in robot_list]
         # rospy.logwarn("robot_dist_list = %s" % str(robot_dist_list))
