@@ -37,10 +37,14 @@ class ContourIdentifier:
     self.magnet_origin_camera.point.y = 0
 
     # Robot Info
-    self.robot_min_ecc = rospy.get_param("robot_min_ecc","0.5")
-    self.robot_max_ecc = rospy.get_param("robot_max_ecc","3")
-    self.robot_min_area = rospy.get_param("robot_min_area","1000")
-    self.robot_max_area = rospy.get_param("robot_max_area","10000")
+    # self.robot_min_ecc = rospy.get_param("robot_min_ecc","0.5")
+    # self.robot_max_ecc = rospy.get_param("robot_max_ecc","3")
+    # self.robot_min_area = rospy.get_param("robot_min_area","1000")
+    # self.robot_max_area = rospy.get_param("robot_max_area","10000")
+    self.robot_min_ecc = 0.5
+    self.robot_max_ecc = 3
+    self.robot_min_area = 1000
+    self.robot_max_area = 10000
 
     rospy.wait_for_service('plate_to_camera')
     try:
