@@ -37,14 +37,14 @@ class ContourIdentifier:
     self.magnet_origin_camera.point.y = 0
 
     # Robot Info
-    # self.robot_min_ecc = rospy.get_param("robot_min_ecc","0.5")
-    # self.robot_max_ecc = rospy.get_param("robot_max_ecc","3")
-    # self.robot_min_area = rospy.get_param("robot_min_area","1000")
-    # self.robot_max_area = rospy.get_param("robot_max_area","10000")
-    self.robot_min_ecc = 0.5
-    self.robot_max_ecc = 3
-    self.robot_min_area = 1000
-    self.robot_max_area = 10000
+    self.robot_min_ecc = rospy.get_param("robot_min_ecc","0.5")
+    self.robot_max_ecc = rospy.get_param("robot_max_ecc","3")
+    self.robot_min_area = rospy.get_param("robot_min_area","1000")
+    self.robot_max_area = rospy.get_param("robot_max_area","10000")
+    # self.robot_min_ecc = 0.5
+    # self.robot_max_ecc = 3
+    # self.robot_min_area = 1000
+    # self.robot_max_area = 10000
 
     rospy.wait_for_service('plate_to_camera')
     try:
@@ -75,7 +75,7 @@ class ContourIdentifier:
         self.magnet_origin_camera.point.x = response.Xdst[0]
         self.magnet_origin_camera.point.y = response.Ydst[0]
         self.magnet_origin_undistorted = self.tf_listener.transformPoint(header.frame_id,self.magnet_origin_camera)
-        rospy.logwarn("x = %s\ty = %s" % (self.magnet_origin_undistorted.point.x,self.magnet_origin_undistorted.point.y))
+        # rospy.logwarn("x = %s\ty = %s" % (self.magnet_origin_undistorted.point.x,self.magnet_origin_undistorted.point.y))
         x = self.magnet_origin_undistorted.point.x
         y = self.magnet_origin_undistorted.point.y
         for contour in range(contour_count):
@@ -96,6 +96,10 @@ class ContourIdentifier:
         # Identify potential robots
         if ((self.robot_min_area < area) and (area < self.robot_max_area)) and ((self.robot_min_ecc < ecc) and (ecc < self.robot_max_ecc)):
           robot_list.append(contour)
+        else:
+          rospy.logwarn("min_area = %s, max_area = %s, area = %s" % (str(self.robot_min_area),str(self.robot_max_area),str(area)))
+          rospy.logwarn("min_ecc = %s, max_ecc = %s, ecc = %s" % (str(self.robot_min_ecc),str(self.robot_max_ecc),str(ecc)))
+          rospy.logwarn("type(self.robot_min_area) = %s" % str(type(self.robot_min_area)))
           # self.robot_image_pose.header = header
           # self.robot_image_pose.pose.position.x = x_list[contour]
           # self.robot_image_pose.pose.position.y = y_list[contour]
