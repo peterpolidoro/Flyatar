@@ -96,9 +96,9 @@ class ContourIdentifier:
         # Identify potential robots
         if ((self.robot_min_area < area) and (area < self.robot_max_area)) and ((self.robot_min_ecc < ecc) and (ecc < self.robot_max_ecc)):
           robot_list.append(contour)
-        rospy.logwarn("min_area = %s, max_area = %s, area = %s" % (str(self.robot_min_area),str(self.robot_max_area),str(area)))
-        rospy.logwarn("min_ecc = %s, max_ecc = %s, ecc = %s" % (str(self.robot_min_ecc),str(self.robot_max_ecc),str(ecc)))
-        rospy.logwarn("type(self.robot_min_area) = %s" % str(type(self.robot_min_area)))
+        # rospy.logwarn("min_area = %s, max_area = %s, area = %s" % (str(self.robot_min_area),str(self.robot_max_area),str(area)))
+        # rospy.logwarn("min_ecc = %s, max_ecc = %s, ecc = %s" % (str(self.robot_min_ecc),str(self.robot_max_ecc),str(ecc)))
+        # rospy.logwarn("type(self.robot_min_area) = %s" % str(type(self.robot_min_area)))
           # self.robot_image_pose.header = header
           # self.robot_image_pose.pose.position.x = x_list[contour]
           # self.robot_image_pose.pose.position.y = y_list[contour]
@@ -109,8 +109,8 @@ class ContourIdentifier:
         #   self.fly_image_pose.pose.position.y = y
         #   self.fly_image_pose_pub.publish(self.fly_image_pose)
 
-      rospy.logwarn("robot_list = %s" % str(robot_list))
-      rospy.logwarn("dist_list = %s" % str(dist_list))
+      # rospy.logwarn("robot_list = %s" % str(robot_list))
+      # rospy.logwarn("dist_list = %s" % str(dist_list))
       if (0 < len(robot_list)) and (len(robot_list) <= len(dist_list)):
         robot_dist_list = [dist_list[robot] for robot in robot_list]
         # rospy.logwarn("robot_dist_list = %s" % str(robot_dist_list))
