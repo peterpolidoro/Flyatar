@@ -540,10 +540,15 @@ dcam::Dcam::setSquareROI(dc1394video_mode_t video)
 
   CHECK_ERR_CLEAN( dc1394_format7_get_max_image_size(dcCam, video, &hsize, &vsize),
                    "Could not find format7 max image size");
-  CHECK_ERR_CLEAN( dc1394_format7_set_image_size(dcCam, video, vsize, vsize),
-                   "Could not set format7 image size");
-  CHECK_ERR_CLEAN( dc1394_format7_set_image_position(dcCam, video, (hsize-vsize)/2, (vsize-vsize)),
-                   "Could not set format7 image position");
+
+  CHECK_ERR_CLEAN( dc1394_format7_set_roi(dcCam, video, rawType, DC1394_USE_MAX_AVAIL, (hsize-vsize)/2, (vsize-vsize), vsize, vsize),
+                   "Could not set format7 image roi");
+
+  // CHECK_ERR_CLEAN( dc1394_format7_set_image_size(dcCam, video, vsize, vsize),
+  //                  "Could not set format7 image size");
+  // CHECK_ERR_CLEAN( dc1394_format7_set_image_position(dcCam, video, (hsize-vsize)/2, (vsize-vsize)),
+  //                  "Could not set format7 image position");
+
   // CHECK_ERR_CLEAN( dc1394_format7_get_packet_size(dcCam, video, &packet_size),
   //                  "Could not get format7 packet size");
 
