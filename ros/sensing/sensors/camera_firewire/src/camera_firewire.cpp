@@ -355,11 +355,21 @@ public:
 
       // create image
       pair<int,int> coding = mapcv[pframe->color_coding];
-      if( bEnableBayer )
-        frame = cvCreateImage( cvSize(pframe->size[0], pframe->size[1]), coding.first, 3);
-      else
-        frame = cvCreateImage( cvSize(pframe->size[0], pframe->size[1]), coding.first, coding.second);
-      frame_undist = cvCloneImage(frame);
+      if (square_roi) {
+        if( bEnableBayer )
+          frame = cvCreateImage( cvSize(pframe->size[1], pframe->size[1]), coding.first, 3);
+        else
+          frame = cvCreateImage( cvSize(pframe->size[1], pframe->size[1]), coding.first, coding.second);
+        frame_undist = cvCloneImage(frame);
+      }
+      else {
+        if( bEnableBayer )
+          frame = cvCreateImage( cvSize(pframe->size[0], pframe->size[1]), coding.first, 3);
+        else
+          frame = cvCreateImage( cvSize(pframe->size[0], pframe->size[1]), coding.first, coding.second);
+        frame_undist = cvCloneImage(frame);
+      }
+
 
       if( display ) {
         stringstream ss;
