@@ -358,7 +358,6 @@ public:
       if( bEnableBayer )
         frame = cvCreateImage( cvSize(pframe->size[0], pframe->size[1]), coding.first, 3);
       else
-        if squareROI
         frame = cvCreateImage( cvSize(pframe->size[0], pframe->size[1]), coding.first, coding.second);
       frame_undist = cvCloneImage(frame);
 
