@@ -40,7 +40,7 @@ class ImageProcessor:
     self.ecc_list = []
     self.contour_count = 0
     self.contour_count_max = int(rospy.get_param("contour_count_max","2"))
-    self.min_ecc = 1.5
+    self.min_ecc = 1.75
     self.image_sum_min = 100
 
     # Image Windows
@@ -231,7 +231,10 @@ class ImageProcessor:
     moments = cv.Moments(self.im_contour)
     (ROIPlateImage_x0,ROIPlateImage_y0,area,slope,ecc) = self.moments_to_parameters(moments)
     if not math.isnan(slope):
-      theta = math.atan2(-slope,1)
+      if self.min_ecc < ecc:
+        theta = math.atan2(-slope,1)
+      else:
+        theta = 0
     else:
       theta = 0
 
