@@ -30,8 +30,8 @@ class PoseTFConversion:
         rospy.logwarn("points_camera = \n%s", str(points_camera))
         points_camera_rotated = numpy.dot(R,points_camera)
         rospy.logwarn("points_camera_rotated = \n%s", str(points_camera_rotated))
-        Xsrc = list(points_rotated[0,:])
-        Ysrc = list(points_rotated[1,:])
+        Xsrc = list(points_camera_rotated[0,:])
+        Ysrc = list(points_camera_rotated[1,:])
         try:
             response = self.camera_to_plate(Xsrc,Ysrc)
             points_plate_x = response.Xdst[0]
