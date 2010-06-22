@@ -25,7 +25,7 @@ class PoseTFConversion:
         points_camera = numpy.array(\
             [[0,  1, -1,  0,  0,  1, -1],
              [0,  0,  0,  1, -1,  1, -1],
-             [0,  0,  0,  0,  0,  0,  0].
+             [0,  0,  0,  0,  0,  0,  0],
              [1,  1,  1,  1,  1,  1,  1]])
         rospy.logwarn("points_camera = \n%s", str(points_camera))
         points_camera_rotated = numpy.dot(R,points)
