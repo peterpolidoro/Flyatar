@@ -49,6 +49,28 @@ class ImageDisplay:
         self.setpoint_camera.header.frame_id = "Camera"
         self.setpoint_frame = PointStamped()
 
+        self.axis_length = 15
+        self.axis_line_width = 3
+        self.axes_center = PointStamped()
+        self.axes_center.point.x = 0
+        self.axes_center.point.y = 0
+        self.axes_center.point.z = 0
+        self.axes_x = PointStamped()
+        self.axes_x.point.x = self.axis_length
+        self.axes_x.point.y = 0
+        self.axes_x.point.z = 0
+        self.axes_y = PointStamped()
+        self.axes_y.point.x = 0
+        self.axes_y.point.y = self.axis_length
+        self.axes_y.point.z = 0
+
+        self.axes_center_camera = PointStamped()
+        self.axes_center_camera.header.frame_id = "Camera"
+        self.axes_x_camera = PointStamped()
+        self.axes_x_camera.header.frame_id = "Camera"
+        self.axes_y_camera = PointStamped()
+        self.axes_y_camera.header.frame_id = "Camera"
+
         self.setpoint = Setpoint()
 
         rospy.wait_for_service('plate_to_camera')
@@ -69,6 +91,36 @@ class ImageDisplay:
         self.setpoint.header.frame_id = data.header.frame_id
         self.setpoint.radius = data.radius
         self.setpoint.theta = data.theta
+
+    def draw_axes(self,frame_id):
+        self.axes_center.header.frame_id = frame_id
+        self.axes_x.header.frame_id = frame_id
+        self.axes_y.header.frame_id = frame_id
+
+        axes_center_plate = self.tf_listener.transformPoint("Plate",self.axes_center)
+        axes_x_plate = self.tf_listener.transformPoint("Plate",self.axes_x)
+        axes_y_plate = self.tf_listener.transformPoint("Plate",self.axes_y)
+
+        Xsrc = [axes_center_plate.point.x,axes_x_plate.point.x,axes_y_plate.point.x]
+        Ysrc = [axes_center_plate.point.y,axes_x_plate.point.y,axes_y_plate.point.y]
+        response = self.plate_to_camera(Xsrc,Ysrc)
+        self.axes_center_camera.point.x = response.Xdst[0]
+        self.axes_center_camera.point.y = response.Ydst[0]
+        self.axes_x_camera.point.x = response.Xdst[1]
+        self.axes_x_camera.point.y = response.Ydst[1]
+        self.axes_y_camera.point.x = response.Xdst[2]
+        self.axes_y_camera.point.y = response.Ydst[2]
+        axes_center_image = self.tf_listener.transformPoint(self.image_frame,self.axes_center_camera)
+        axes_x_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_camera)
+        axes_y_image = self.tf_listener.transformPoint(self.image_frame,self.axes_y_camera)
+        cv.Line(self.im_display,
+                (int(axes_center_image.point.x),int(axes_center_image.point.y)),
+                (int(axes_x_image.point.x),int(axes_x_image.point.y)),
+                cv.CV_RGB(self.color_max,0,0), self.axis_line_width)
+        cv.Line(self.im_display,
+                (int(axes_center_image.point.x),int(axes_center_image.point.y)),
+                (int(axes_y_image.point.x),int(axes_y_image.point.y)),
+                cv.CV_RGB(0,self.color_max,0), self.axis_line_width)
 
     def draw_setpoint(self):
         self.setpoint_frame.header.frame_id = self.setpoint.header.frame_id
@@ -120,16 +172,17 @@ class ImageDisplay:
         cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
 
         try:
-            plate_origin = self.tf_listener.transformPoint(self.image_frame,self.plate_image_origin)
-            fly_origin = self.tf_listener.transformPoint(self.image_frame,self.fly_image_origin)
-            robot_origin = self.tf_listener.transformPoint(self.image_frame,self.robot_image_origin)
+            plate_image_o = self.tf_listener.transformPoint(self.image_frame,self.plate_image_origin)
+            fly_image_o = self.tf_listener.transformPoint(self.image_frame,self.fly_image_origin)
+            robot_image_o = self.tf_listener.transformPoint(self.image_frame,self.robot_image_origin)
 
             if self.setpoint.header.frame_id in "Plate":
-                self.setpoint_image_origin = plate_origin
+                self.setpoint_image_origin = plate_image_o
             else:
-                self.setpoint_image_origin = fly_origin
+                self.setpoint_image_origin = fly_image_o
 
             self.draw_setpoint()
+            self.draw_axes("Plate")
 
         except (tf.LookupException, tf.ConnectivityException):
             pass
