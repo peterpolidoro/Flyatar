@@ -93,64 +93,74 @@ class ImageDisplay:
         self.setpoint.theta = data.theta
 
     def draw_axes(self,frame_id):
-        self.axes_center.header.frame_id = frame_id
-        self.axes_x.header.frame_id = frame_id
-        self.axes_y.header.frame_id = frame_id
+        try:
+            self.axes_center.header.frame_id = frame_id
+            self.axes_x.header.frame_id = frame_id
+            self.axes_y.header.frame_id = frame_id
 
-        axes_center_plate = self.tf_listener.transformPoint("Plate",self.axes_center)
-        axes_x_plate = self.tf_listener.transformPoint("Plate",self.axes_x)
-        axes_y_plate = self.tf_listener.transformPoint("Plate",self.axes_y)
+            axes_center_plate = self.tf_listener.transformPoint("Plate",self.axes_center)
+            axes_x_plate = self.tf_listener.transformPoint("Plate",self.axes_x)
+            axes_y_plate = self.tf_listener.transformPoint("Plate",self.axes_y)
 
-        Xsrc = [axes_center_plate.point.x,axes_x_plate.point.x,axes_y_plate.point.x]
-        Ysrc = [axes_center_plate.point.y,axes_x_plate.point.y,axes_y_plate.point.y]
-        response = self.plate_to_camera(Xsrc,Ysrc)
-        self.axes_center_camera.point.x = response.Xdst[0]
-        self.axes_center_camera.point.y = response.Ydst[0]
-        self.axes_x_camera.point.x = response.Xdst[1]
-        self.axes_x_camera.point.y = response.Ydst[1]
-        self.axes_y_camera.point.x = response.Xdst[2]
-        self.axes_y_camera.point.y = response.Ydst[2]
-        axes_center_image = self.tf_listener.transformPoint(self.image_frame,self.axes_center_camera)
-        axes_x_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_camera)
-        axes_y_image = self.tf_listener.transformPoint(self.image_frame,self.axes_y_camera)
-        cv.Line(self.im_display,
-                (int(axes_center_image.point.x),int(axes_center_image.point.y)),
-                (int(axes_x_image.point.x),int(axes_x_image.point.y)),
-                cv.CV_RGB(self.color_max,0,0), self.axis_line_width)
-        cv.Line(self.im_display,
-                (int(axes_center_image.point.x),int(axes_center_image.point.y)),
-                (int(axes_y_image.point.x),int(axes_y_image.point.y)),
-                cv.CV_RGB(0,self.color_max,0), self.axis_line_width)
+            Xsrc = [axes_center_plate.point.x,axes_x_plate.point.x,axes_y_plate.point.x]
+            Ysrc = [axes_center_plate.point.y,axes_x_plate.point.y,axes_y_plate.point.y]
+            response = self.plate_to_camera(Xsrc,Ysrc)
+            self.axes_center_camera.point.x = response.Xdst[0]
+            self.axes_center_camera.point.y = response.Ydst[0]
+            self.axes_x_camera.point.x = response.Xdst[1]
+            self.axes_x_camera.point.y = response.Ydst[1]
+            self.axes_y_camera.point.x = response.Xdst[2]
+            self.axes_y_camera.point.y = response.Ydst[2]
+            axes_center_image = self.tf_listener.transformPoint(self.image_frame,self.axes_center_camera)
+            axes_x_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_camera)
+            axes_y_image = self.tf_listener.transformPoint(self.image_frame,self.axes_y_camera)
+
+            cv.Line(self.im_display,
+                    (int(axes_center_image.point.x),int(axes_center_image.point.y)),
+                    (int(axes_x_image.point.x),int(axes_x_image.point.y)),
+                    cv.CV_RGB(self.color_max,0,0), self.axis_line_width)
+            cv.Line(self.im_display,
+                    (int(axes_center_image.point.x),int(axes_center_image.point.y)),
+                    (int(axes_y_image.point.x),int(axes_y_image.point.y)),
+                    cv.CV_RGB(0,self.color_max,0), self.axis_line_width)
+
+        except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
+            pass
 
     def draw_setpoint(self):
-        self.setpoint_frame.header.frame_id = self.setpoint.header.frame_id
-        self.setpoint_frame.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
-        self.setpoint_frame.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
-        setpoint_plate = self.tf_listener.transformPoint("Plate",self.setpoint_frame)
-        # rospy.logwarn("setpoint_plate.point.x = \n%s", str(setpoint_plate.point.x))
-        # rospy.logwarn("setpoint_plate.point.y = \n%s", str(setpoint_plate.point.y))
-        Xsrc = [setpoint_plate.point.x]
-        Ysrc = [setpoint_plate.point.y]
-        response = self.plate_to_camera(Xsrc,Ysrc)
-        self.setpoint_camera.point.x = response.Xdst[0]
-        self.setpoint_camera.point.y = response.Ydst[0]
-        setpoint_image = self.tf_listener.transformPoint(self.image_frame,self.setpoint_camera)
-        setpoint_image_radius = math.sqrt((setpoint_image.point.x - self.setpoint_image_origin.point.x)**2 +
-                                          (setpoint_image.point.y - self.setpoint_image_origin.point.y)**2 )
-        cv.Line(self.im_display,
-                (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
-                (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                cv.CV_RGB(self.color_max,0,0), 1)
-        cv.Circle(self.im_display,
-                  (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
-                  int(setpoint_image_radius), cv.CV_RGB(self.color_max,0,0),1)
-        cv.Circle(self.im_display,
-                  (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
-                  3, cv.CV_RGB(self.color_max,0,0), cv.CV_FILLED)
-        cv.Circle(self.im_display,
-                  (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                  3, cv.CV_RGB(self.color_max,0,0), cv.CV_FILLED)
+        try:
+            self.setpoint_frame.header.frame_id = self.setpoint.header.frame_id
+            self.setpoint_frame.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
+            self.setpoint_frame.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
 
+            setpoint_plate = self.tf_listener.transformPoint("Plate",self.setpoint_frame)
+            # rospy.logwarn("setpoint_plate.point.x = \n%s", str(setpoint_plate.point.x))
+            # rospy.logwarn("setpoint_plate.point.y = \n%s", str(setpoint_plate.point.y))
+            Xsrc = [setpoint_plate.point.x]
+            Ysrc = [setpoint_plate.point.y]
+            response = self.plate_to_camera(Xsrc,Ysrc)
+            self.setpoint_camera.point.x = response.Xdst[0]
+            self.setpoint_camera.point.y = response.Ydst[0]
+            setpoint_image = self.tf_listener.transformPoint(self.image_frame,self.setpoint_camera)
+            setpoint_image_radius = math.sqrt((setpoint_image.point.x - self.setpoint_image_origin.point.x)**2 +
+                                              (setpoint_image.point.y - self.setpoint_image_origin.point.y)**2 )
+
+            cv.Line(self.im_display,
+                    (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
+                    (int(setpoint_image.point.x),int(setpoint_image.point.y)),
+                    cv.CV_RGB(self.color_max,0,0), 1)
+            cv.Circle(self.im_display,
+                      (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
+                      int(setpoint_image_radius), cv.CV_RGB(self.color_max,0,0),1)
+            cv.Circle(self.im_display,
+                      (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
+                      3, cv.CV_RGB(self.color_max,0,0), cv.CV_FILLED)
+            cv.Circle(self.im_display,
+                      (int(setpoint_image.point.x),int(setpoint_image.point.y)),
+                      3, cv.CV_RGB(self.color_max,0,0), cv.CV_FILLED)
+
+        except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
+            pass
 
         # display_text = "setpoint_camera.x = " + str(setpoint_camera.point.x)
         # cv.PutText(self.im_display,display_text,(25,65),self.font,cv.CV_RGB(self.color_max,0,0))
