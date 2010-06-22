@@ -120,6 +120,8 @@ class ContourIdentifier:
         self.robot_image_pose.header = header
         self.robot_image_pose.pose.position.x = x_list[robot]
         self.robot_image_pose.pose.position.y = y_list[robot]
+        q = quaternion_about_axis(theta_list[robot], (0, 0, 1))
+        rospy.logwarn("q_robot = %s" % str(q))
         self.robot_image_pose_pub.publish(self.robot_image_pose)
         if 1 < contour_count:
           fly = min(list(set(range(contour_count)).difference([robot])))
@@ -127,6 +129,8 @@ class ContourIdentifier:
           self.fly_image_pose.header = header
           self.fly_image_pose.pose.position.x = x_list[fly]
           self.fly_image_pose.pose.position.y = y_list[fly]
+          q = quaternion_about_axis(theta_list[fly], (0, 0, 1))
+          rospy.logwarn("q_fly = %s" % str(q))
           self.fly_image_pose_pub.publish(self.fly_image_pose)
 
 def main(args):
