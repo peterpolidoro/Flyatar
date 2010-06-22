@@ -38,7 +38,7 @@ class PoseTFConversion:
                                   rospy.Time.now(),
                                   "Robot",
                                   "Plate")
-        except (tf.LookupException, tf.ConnectivityException):
+        except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
 
     def handle_fly_image_pose(self,msg):
@@ -46,7 +46,7 @@ class PoseTFConversion:
             Xsrc = [msg.pose.position.x]
             Ysrc = [msg.pose.position.y]
             self.tf_broadcaster.sendTransform((msg.pose.position.x, msg.pose.position.y, 0),
-                                  tf.transformations.quaternion_from_euler(0, 0, 0),
+                                  (msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w),
                                   rospy.Time.now(),
                                   "FlyImage",
                                   "Camera")
@@ -55,11 +55,11 @@ class PoseTFConversion:
             fly_plate_x = response.Xdst[0]
             fly_plate_y = response.Ydst[0]
             self.tf_broadcaster.sendTransform((fly_plate_x, fly_plate_y, 0),
-                                  tf.transformations.quaternion_from_euler(0, 0, 0),
+                                  tf.transformations.quaternion_from_euler(0, 0, 1),
                                   rospy.Time.now(),
                                   "Fly",
                                   "Plate")
-        except (tf.LookupException, tf.ConnectivityException):
+        except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
 
 if __name__ == '__main__':
