@@ -194,6 +194,7 @@ class ImageDisplay:
             self.draw_setpoint()
             self.draw_axes("Plate")
             self.draw_axes("Fly")
+            self.draw_axes("Robot")
 
         except (tf.LookupException, tf.ConnectivityException):
             pass
