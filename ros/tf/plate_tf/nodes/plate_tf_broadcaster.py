@@ -40,6 +40,7 @@ class PoseTFConversion:
             z = [0]*len(points_plate_x)
             w = [1]*len(points_plate_y)
             points_plate = numpy.array([points_plate_x,points_plate_y,z,w])
+            numpy.append(points_plate,[[0,0],[0,0],[1,-1],[1,1]],axis=1)
             rospy.logwarn("points_plate = \n%s", str(points_plate))
 
             Xsrc = list(points_camera_rotated[0,:])
@@ -48,6 +49,7 @@ class PoseTFConversion:
             points_plate_rotated_x = list(response.Xdst)
             points_plate_rotated_y = list(response.Ydst)
             points_plate_rotated = numpy.array([points_plate_rotated_x,points_plate_rotated_y,z,w])
+            numpy.append(points_plate_rotated,[[0,0],[0,0],[1,-1],[1,1]],axis=1)
             rospy.logwarn("points_plate_rotated = \n%s", str(points_plate_rotated))
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
