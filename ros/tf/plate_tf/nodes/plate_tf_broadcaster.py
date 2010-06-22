@@ -41,7 +41,7 @@ class PoseTFConversion:
             w = [1]*len(points_plate_y)
             points_plate = numpy.array([points_plate_x,points_plate_y,z,w])
             points_plate = numpy.append(points_plate,[[0,0],[0,0],[1,-1],[1,1]],axis=1)
-            # rospy.logwarn("points_plate = \n%s", str(points_plate))
+            rospy.logwarn("points_plate = \n%s", str(points_plate))
 
             Xsrc = list(points_camera_rotated[0,:])
             Ysrc = list(points_camera_rotated[1,:])
@@ -50,7 +50,7 @@ class PoseTFConversion:
             points_plate_rotated_y = list(response.Ydst)
             points_plate_rotated = numpy.array([points_plate_rotated_x,points_plate_rotated_y,z,w])
             points_plate_rotated = numpy.append(points_plate_rotated,[[0,0],[0,0],[1,-1],[1,1]],axis=1)
-            # rospy.logwarn("points_plate_rotated = \n%s", str(points_plate_rotated))
+            rospy.logwarn("points_plate_rotated = \n%s", str(points_plate_rotated))
             T = tf.transformations.superimposition_matrix(points_plate,points_plate_rotated)
             rospy.logwarn("T = \n%s", str(T))
             al, be, ga = tf.transformations.euler_from_matrix(T, 'rxyz')
