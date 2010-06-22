@@ -23,12 +23,13 @@ class PoseTFConversion:
     def quaternion_camera_to_plate(self,quat):
         # Must be cleverer way to calculate this using quaternion math...
         R = tf.transformations.quaternion_matrix(quat)
+        scale_factor = 100
         points_camera = numpy.array(\
             [[0,  1, -1,  0,  0,  1, -1],
              [0,  0,  0,  1, -1,  1, -1],
              [0,  0,  0,  0,  0,  0,  0],
              [1,  1,  1,  1,  1,  1,  1]])
-        points_camera = points_camera*100
+        points_camera = points_camera*scale_factor
         # rospy.logwarn("points_camera = \n%s", str(points_camera))
         points_camera_rotated = numpy.dot(R,points_camera)
         # rospy.logwarn("points_camera_rotated = \n%s", str(points_camera_rotated))
@@ -41,7 +42,7 @@ class PoseTFConversion:
             z = [0]*len(points_plate_x)
             w = [1]*len(points_plate_y)
             points_plate = numpy.array([points_plate_x,points_plate_y,z,w])
-            points_plate = numpy.append(points_plate,[[0,0],[0,0],[1,-1],[1,1]],axis=1)
+            points_plate = numpy.append(points_plate,[[0,0],[0,0],[scale_factor,-scale_factor],[1,1]],axis=1)
             rospy.logwarn("points_plate = \n%s", str(points_plate))
 
             Xsrc = list(points_camera_rotated[0,:])
@@ -50,12 +51,12 @@ class PoseTFConversion:
             points_plate_rotated_x = list(response.Xdst)
             points_plate_rotated_y = list(response.Ydst)
             points_plate_rotated = numpy.array([points_plate_rotated_x,points_plate_rotated_y,z,w])
-            points_plate_rotated = numpy.append(points_plate_rotated,[[0,0],[0,0],[1,-1],[1,1]],axis=1)
+            points_plate_rotated = numpy.append(points_plate_rotated,[[0,0],[0,0],[scale_factor,-scale_factor],[1,1]],axis=1)
             rospy.logwarn("points_plate_rotated = \n%s", str(points_plate_rotated))
             T = tf.transformations.superimposition_matrix(points_plate,points_plate_rotated)
             rospy.logwarn("T = \n%s", str(T))
             al, be, ga = tf.transformations.euler_from_matrix(T, 'rxyz')
-            rospy.logwarn("al = %s, be = %s, ga = %s" % (str(al),str(be),str(ga)))
+            rospy.logwarn("ga = %s" % str(ga*180/numpy.pi))
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
 
