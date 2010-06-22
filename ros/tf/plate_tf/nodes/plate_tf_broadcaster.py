@@ -77,7 +77,7 @@ class PoseTFConversion:
             robot_plate_y = response.Ydst[0]
 
             quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
-            if quat_converted:
+            if quat_converted is not None:
                 self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
                                       quat_converted,
                                       rospy.Time.now(),
@@ -101,7 +101,7 @@ class PoseTFConversion:
             fly_plate_y = response.Ydst[0]
 
             quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
-            if quat_converted:
+            if quat_converted is not None:
                 self.tf_broadcaster.sendTransform((fly_plate_x, fly_plate_y, 0),
                                       quat_converted,
                                       rospy.Time.now(),
