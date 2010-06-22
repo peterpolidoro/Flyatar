@@ -57,7 +57,7 @@ class PoseTFConversion:
             # rospy.logwarn("T = \n%s", str(T))
             # al, be, ga = tf.transformations.euler_from_matrix(T, 'rxyz')
             # rospy.logwarn("ga = %s" % str(ga*180/numpy.pi))
-            quat_converted = tf.quaternion_from_matrix(T)
+            quat_converted = tf.transformations.quaternion_from_matrix(T)
             return quat_converted
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             return None
