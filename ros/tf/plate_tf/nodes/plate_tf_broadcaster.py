@@ -52,6 +52,7 @@ class PoseTFConversion:
             points_plate_rotated = numpy.append(points_plate_rotated,[[0,0],[0,0],[1,-1],[1,1]],axis=1)
             # rospy.logwarn("points_plate_rotated = \n%s", str(points_plate_rotated))
             T = tf.transformations.superimposition_matrix(points_plate,points_plate_rotated)
+            rospy.logwarn("T = \n%s", str(T))
             al, be, ga = tf.transformations.euler_from_matrix(T, 'rxyz')
             rospy.logwarn("al = %s, be = %s, ga = %s" % (str(al),str(be),str(ga)))
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
