@@ -36,7 +36,8 @@ class PoseTFConversion:
             response = self.camera_to_plate(Xsrc,Ysrc)
             points_plate_x = response.Xdst[0]
             points_plate_y = response.Ydst[0]
-            rospy.logwarn("setpoint_plate.point.x = \n%s", str(setpoint_plate.point.x))
+            rospy.logwarn("points_plate_x = \n%s", str(points_plate_x))
+            rospy.logwarn("points_plate_y = \n%s", str(points_plate_y))
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
 
