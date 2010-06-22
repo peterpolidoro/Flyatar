@@ -21,6 +21,7 @@ class PoseTFConversion:
             print "Service call failed: %s"%e
 
     def quaternion_camera_to_plate(self,quat):
+        # Must be cleverer way to calculate this using quaternion math...
         R = tf.transformations.quaternion_matrix(quat)
         points_camera = numpy.array(\
             [[0,  1, -1,  0,  0,  1, -1],
@@ -30,14 +31,24 @@ class PoseTFConversion:
         rospy.logwarn("points_camera = \n%s", str(points_camera))
         points_camera_rotated = numpy.dot(R,points_camera)
         rospy.logwarn("points_camera_rotated = \n%s", str(points_camera_rotated))
-        Xsrc = list(points_camera_rotated[0,:])
-        Ysrc = list(points_camera_rotated[1,:])
         try:
+            Xsrc = list(points_camera[0,:])
+            Ysrc = list(points_camera[1,:])
             response = self.camera_to_plate(Xsrc,Ysrc)
-            points_plate_x = response.Xdst
-            points_plate_y = response.Ydst
-            rospy.logwarn("points_plate_x = \n%s", str(points_plate_x))
-            rospy.logwarn("points_plate_y = \n%s", str(points_plate_y))
+            points_plate_x = list(response.Xdst)
+            points_plate_y = list(response.Ydst)
+            z = [0]*len(points_plate_x)
+            w = [1]*len(points_plate_y)
+            points_plate = numpy.array([points_plate_x,points_plate_y,z,w])
+            rospy.logwarn("points_plate = \n%s", str(points_plate))
+
+            Xsrc = list(points_camera_rotated[0,:])
+            Ysrc = list(points_camera_rotated[1,:])
+            response = self.camera_to_plate(Xsrc,Ysrc)
+            points_plate_rotated_x = list(response.Xdst)
+            points_plate_rotated_y = list(response.Ydst)
+            points_plate_rotated = numpy.array([points_plate_rotated_x,points_plate_rotated_y,z,w])
+            rospy.logwarn("points_plate_rotated = \n%s", str(points_plate_rotated))
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
 
