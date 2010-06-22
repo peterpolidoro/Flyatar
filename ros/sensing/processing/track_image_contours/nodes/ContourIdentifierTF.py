@@ -121,7 +121,10 @@ class ContourIdentifier:
         self.robot_image_pose.pose.position.x = x_list[robot]
         self.robot_image_pose.pose.position.y = y_list[robot]
         q = tf.transformations.quaternion_about_axis(theta_list[robot], (0, 0, 1))
-        self.robot_image_pose.pose.orientation = PoseStamped.pose.orientation(tuple(q))
+        self.robot_image_pose.pose.orientation.x = q[0]
+        self.robot_image_pose.pose.orientation.y = q[1]
+        self.robot_image_pose.pose.orientation.z = q[2]
+        self.robot_image_pose.pose.orientation.w = q[3]
         rospy.logwarn("q_robot = %s" % str(q))
         self.robot_image_pose_pub.publish(self.robot_image_pose)
         if 1 < contour_count:
@@ -131,7 +134,10 @@ class ContourIdentifier:
           self.fly_image_pose.pose.position.x = x_list[fly]
           self.fly_image_pose.pose.position.y = y_list[fly]
           q = tf.transformations.quaternion_about_axis(theta_list[fly], (0, 0, 1))
-          self.fly_image_pose.pose.orientation = PoseStamped.pose.orientation(tuple(q))
+          self.fly_image_pose.pose.orientation.x = q[0]
+          self.fly_image_pose.pose.orientation.y = q[1]
+          self.fly_image_pose.pose.orientation.z = q[2]
+          self.fly_image_pose.pose.orientation.w = q[3]
           rospy.logwarn("q_fly = %s" % str(q))
           self.fly_image_pose_pub.publish(self.fly_image_pose)
 
