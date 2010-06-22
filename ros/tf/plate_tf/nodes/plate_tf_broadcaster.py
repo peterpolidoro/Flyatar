@@ -55,10 +55,12 @@ class PoseTFConversion:
             # rospy.logwarn("points_plate_rotated = \n%s", str(points_plate_rotated))
             T = tf.transformations.superimposition_matrix(points_plate_rotated,points_plate)
             # rospy.logwarn("T = \n%s", str(T))
-            al, be, ga = tf.transformations.euler_from_matrix(T, 'rxyz')
-            rospy.logwarn("ga = %s" % str(ga*180/numpy.pi))
+            # al, be, ga = tf.transformations.euler_from_matrix(T, 'rxyz')
+            # rospy.logwarn("ga = %s" % str(ga*180/numpy.pi))
+            quat_converted = tf.quaternion_from_matrix(T)
+            return quat_converted
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
-            pass
+            return None
 
     def handle_robot_image_pose(self,msg):
         try:
@@ -73,11 +75,14 @@ class PoseTFConversion:
             response = self.camera_to_plate(Xsrc,Ysrc)
             robot_plate_x = response.Xdst[0]
             robot_plate_y = response.Ydst[0]
-            self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
-                                  tf.transformations.quaternion_from_euler(0, 0, 0),
-                                  rospy.Time.now(),
-                                  "Robot",
-                                  "Plate")
+
+            quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
+            if quat_converted:
+                self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
+                                      quat_converted,
+                                      rospy.Time.now(),
+                                      "Robot",
+                                      "Plate")
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
 
@@ -91,16 +96,17 @@ class PoseTFConversion:
                                   "FlyImage",
                                   "Camera")
 
-            self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
-
             response = self.camera_to_plate(Xsrc,Ysrc)
             fly_plate_x = response.Xdst[0]
             fly_plate_y = response.Ydst[0]
-            self.tf_broadcaster.sendTransform((fly_plate_x, fly_plate_y, 0),
-                                  tf.transformations.quaternion_from_euler(0, 0, 1),
-                                  rospy.Time.now(),
-                                  "Fly",
-                                  "Plate")
+
+            quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
+            if quat_converted:
+                self.tf_broadcaster.sendTransform((fly_plate_x, fly_plate_y, 0),
+                                      quat_converted,
+                                      rospy.Time.now(),
+                                      "Fly",
+                                      "Plate")
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
 
