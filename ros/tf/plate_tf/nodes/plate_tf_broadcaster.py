@@ -28,6 +28,7 @@ class PoseTFConversion:
              [0,  0,  0,  1, -1,  1, -1],
              [0,  0,  0,  0,  0,  0,  0],
              [1,  1,  1,  1,  1,  1,  1]])
+        points_camera = points_camera*100
         # rospy.logwarn("points_camera = \n%s", str(points_camera))
         points_camera_rotated = numpy.dot(R,points_camera)
         # rospy.logwarn("points_camera_rotated = \n%s", str(points_camera_rotated))
