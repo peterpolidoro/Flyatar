@@ -65,7 +65,7 @@ class PoseTFConversion:
             # rospy.logwarn("ga = %s" % str(ga*180/numpy.pi))
             quat_converted = tf.transformations.quaternion_from_matrix(T)
             return quat_converted
-        except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
+        except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError, ValueError):
             return None
 
     def handle_robot_image_pose(self,msg):
