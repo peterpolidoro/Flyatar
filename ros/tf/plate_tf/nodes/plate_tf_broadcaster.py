@@ -34,8 +34,8 @@ class PoseTFConversion:
         Ysrc = list(points_camera_rotated[1,:])
         try:
             response = self.camera_to_plate(Xsrc,Ysrc)
-            points_plate_x = response.Xdst[0]
-            points_plate_y = response.Ydst[0]
+            points_plate_x = response.Xdst
+            points_plate_y = response.Ydst
             rospy.logwarn("points_plate_x = \n%s", str(points_plate_x))
             rospy.logwarn("points_plate_y = \n%s", str(points_plate_y))
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
