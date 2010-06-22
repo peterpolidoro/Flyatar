@@ -3,7 +3,7 @@ import roslib
 roslib.load_manifest('plate_tf')
 import rospy
 
-import tf
+import tf, numpy
 from geometry_msgs.msg import PoseStamped
 from plate_tf.srv import *
 
@@ -19,6 +19,26 @@ class PoseTFConversion:
             self.camera_to_plate = rospy.ServiceProxy('camera_to_plate', PlateCameraConversion)
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
+
+    def quaternion_camera_to_plate(self,quat):
+        R = tf.transformations.quaternion_matrix(quat)
+        points_camera = numpy.array(\
+            [[0,  1, -1,  0,  0,  1, -1],
+             [0,  0,  0,  1, -1,  1, -1],
+             [0,  0,  0,  0,  0,  0,  0].
+             [1,  1,  1,  1,  1,  1,  1]])
+        rospy.logwarn("points_camera = \n%s", str(points_camera))
+        points_camera_rotated = numpy.dot(R,points)
+        rospy.logwarn("points_camera_rotated = \n%s", str(points_camera_rotated))
+        Xsrc = list(points_rotated[0,:])
+        Ysrc = list(points_rotated[1,:])
+        try:
+            response = self.camera_to_plate(Xsrc,Ysrc)
+            points_plate_x = response.Xdst[0]
+            points_plate_y = response.Ydst[0]
+            rospy.logwarn("setpoint_plate.point.x = \n%s", str(setpoint_plate.point.x))
+        except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
+            pass
 
     def handle_robot_image_pose(self,msg):
         try:
@@ -50,6 +70,8 @@ class PoseTFConversion:
                                   rospy.Time.now(),
                                   "FlyImage",
                                   "Camera")
+
+            self.quaternion_camera_to_plate(msg.pose.orientation)
 
             response = self.camera_to_plate(Xsrc,Ysrc)
             fly_plate_x = response.Xdst[0]
