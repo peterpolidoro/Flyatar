@@ -71,7 +71,7 @@ class PoseTFConversion:
                                   "FlyImage",
                                   "Camera")
 
-            self.quaternion_camera_to_plate(msg.pose.orientation)
+            self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
 
             response = self.camera_to_plate(Xsrc,Ysrc)
             fly_plate_x = response.Xdst[0]
