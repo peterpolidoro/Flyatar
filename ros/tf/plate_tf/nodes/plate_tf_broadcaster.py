@@ -38,7 +38,7 @@ class PoseTFConversion:
                                   rospy.Time.now(),
                                   "Robot",
                                   "Plate")
-        except:
+        except (tf.LookupException, tf.ConnectivityException):
             pass
 
     def handle_fly_image_pose(self,msg):
@@ -59,7 +59,7 @@ class PoseTFConversion:
                                   rospy.Time.now(),
                                   "Fly",
                                   "Plate")
-        except:
+        except (tf.LookupException, tf.ConnectivityException):
             pass
 
 if __name__ == '__main__':
