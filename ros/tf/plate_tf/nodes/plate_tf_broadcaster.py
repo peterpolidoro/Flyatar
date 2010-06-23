@@ -89,7 +89,7 @@ class PoseTFConversion:
             t = msg.header.stamp.to_sec()
             (x,y,vx,vy) = self.kf_robot.update((robot_plate_x,robot_plate_y),t)
             if x is not None:
-                rospy.logwarn("robot: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
+                # rospy.logwarn("robot: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
                 robot_plate_x = x
                 robot_plate_y = y
 
