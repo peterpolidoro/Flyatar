@@ -109,7 +109,7 @@ class PoseTFConversion:
             fly_plate_x = response.Xdst[0]
             fly_plate_y = response.Ydst[0]
 
-            t = msg.header.stamp.to_seconds()
+            t = msg.header.stamp.to_sec()
             self.kf_fly.update((fly_plate_x,fly_plate_y),t)
 
             quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
