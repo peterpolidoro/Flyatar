@@ -120,7 +120,7 @@ class PoseTFConversion:
             t = msg.header.stamp.to_sec()
             (x,y,vx,vy) = self.kf_fly.update((fly_plate_x,fly_plate_y),t)
             if x is not None:
-                rospy.logwarn("fly: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
+                # rospy.logwarn("fly: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
                 fly_plate_x = x
                 fly_plate_y = y
 
