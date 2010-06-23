@@ -6,6 +6,7 @@ import rospy
 import tf, numpy
 from geometry_msgs.msg import PoseStamped
 from plate_tf.srv import *
+import kalman_filter as kf
 
 class PoseTFConversion:
     def __init__(self):
@@ -13,6 +14,8 @@ class PoseTFConversion:
         self.tf_broadcaster = tf.TransformBroadcaster()
         self.robot_image_pose_sub = rospy.Subscriber('RobotImagePose',PoseStamped,self.handle_robot_image_pose)
         self.fly_image_pose_sub = rospy.Subscriber('FlyImagePose',PoseStamped,self.handle_fly_image_pose)
+
+        self.kf_fly = kf.KalmanFilter()
 
         rospy.wait_for_service('camera_to_plate')
         try:
@@ -105,6 +108,9 @@ class PoseTFConversion:
             response = self.camera_to_plate(Xsrc,Ysrc)
             fly_plate_x = response.Xdst[0]
             fly_plate_y = response.Ydst[0]
+
+            t = msg.header.stamp.to_seconds()
+            self.kf_fly.update((fly_plate_x,fly_plate_y),t)
 
             quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
             if quat_converted is not None:
