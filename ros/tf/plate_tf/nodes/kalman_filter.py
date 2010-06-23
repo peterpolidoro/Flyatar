@@ -16,7 +16,7 @@ class KalmanFilter:
         cv.SetIdentity(self.kal.measurement_noise_cov, 0.00001)
         self.measurement = cv.CreateMat(2,1,cv.GetElemType(self.kal.state_pre))
         self.t_previous = None
-        self.dt_scale = 0.1
+        self.dt_scale = 10
 
     def update(self,z,t):
         self.t_current = t
