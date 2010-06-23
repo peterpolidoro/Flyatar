@@ -20,7 +20,7 @@ class KalmanFilter:
         x = y = vx = vy = None
         if self.update_dt():
             cv.KalmanPredict(self.kal)
-            rospy.logwarn("Q = %s, R = %s" % (str(self.kal.process_noise_cov[0,0]),str(self.kal.measurement_noise_cov[0,0]))))
+            rospy.logwarn("Q = %s, R = %s" % (str(self.kal.process_noise_cov[0,0]),str(self.kal.measurement_noise_cov[0,0])))
             self.measurement[0,0] = z[0]
             self.measurement[1,0] = z[1]
             state_post = cv.KalmanCorrect(self.kal,self.measurement)
