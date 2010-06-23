@@ -12,8 +12,8 @@ class KalmanFilter:
         self.kal = cv.CreateKalman(4,2,0)
         cv.SetIdentity(self.kal.transition_matrix)
         cv.SetIdentity(self.kal.measurement_matrix)
-        cv.SetIdentity(self.kal.process_noise_cov, 1)
-        cv.SetIdentity(self.kal.measurement_noise_cov, 0.001)
+        cv.SetIdentity(self.kal.process_noise_cov, 10)
+        cv.SetIdentity(self.kal.measurement_noise_cov, 0.0001)
         self.measurement = cv.CreateMat(2,1,cv.GetElemType(self.kal.state_pre))
         self.t_previous = None
 
@@ -22,9 +22,9 @@ class KalmanFilter:
         x = y = vx = vy = None
         if self.update_dt():
             cv.KalmanPredict(self.kal)
-            Q = self.kal.process_noise_cov[0,0]
-            R = self.kal.measurement_noise_cov[0,0]
-            rospy.logwarn("Q = %s, R = %s" % (str(Q),str(R)))
+            # Q = self.kal.process_noise_cov[0,0]
+            # R = self.kal.measurement_noise_cov[0,0]
+            # rospy.logwarn("Q = %s, R = %s" % (str(Q),str(R)))
             self.measurement[0,0] = z[0]
             self.measurement[1,0] = z[1]
             state_post = cv.KalmanCorrect(self.kal,self.measurement)
