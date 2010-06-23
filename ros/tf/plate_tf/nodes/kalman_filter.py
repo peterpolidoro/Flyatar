@@ -12,8 +12,8 @@ class KalmanFilter:
         self.kal = cv.CreateKalman(4,2,0)
         cv.SetIdentity(self.kal.transition_matrix)
         cv.SetIdentity(self.kal.measurement_matrix)
-        cv.SetIdentity(self.kal.process_noise_cov, 1)
-        cv.SetIdentity(self.kal.measurement_noise_cov, 0.001)
+        cv.SetIdentity(self.kal.process_noise_cov, 0.001)
+        cv.SetIdentity(self.kal.measurement_noise_cov, 1)
         self.measurement = cv.CreateMat(2,1,cv.GetElemType(self.kal.state_pre))
         self.t_previous = None
 
