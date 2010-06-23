@@ -17,6 +17,7 @@ class KalmanFilter:
 
     def update(self,z,t):
         self.t_current = t
+        x = y = vx = vy = None
         if self.update_dt():
             cv.KalmanPredict(self.kal)
             self.measurement[0,0] = z[0]
@@ -26,7 +27,7 @@ class KalmanFilter:
             y = state_post[1,0]
             vx = state_post[2,0]
             vy = state_post[3,0]
-            rospy.logwarn("x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
+        return (x,y,vx,vy)
 
     def update_dt(self):
         status = False

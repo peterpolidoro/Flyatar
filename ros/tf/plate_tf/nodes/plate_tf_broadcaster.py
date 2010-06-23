@@ -16,6 +16,7 @@ class PoseTFConversion:
         self.fly_image_pose_sub = rospy.Subscriber('FlyImagePose',PoseStamped,self.handle_fly_image_pose)
 
         self.kf_fly = kf.KalmanFilter()
+        self.kf_robot = kf.KalmanFilter()
 
         rospy.wait_for_service('camera_to_plate')
         try:
@@ -85,6 +86,13 @@ class PoseTFConversion:
             robot_plate_x = response.Xdst[0]
             robot_plate_y = response.Ydst[0]
 
+            t = msg.header.stamp.to_sec()
+            (x,y,vx,vy) = self.kf_robot.update((robot_plate_x,robot_plate_y),t)
+            if x is not None:
+                rospy.logwarn("robot: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
+                robot_plate_x = x
+                robot_plate_y = y
+
             quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
             if quat_converted is not None:
                 self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
@@ -110,7 +118,11 @@ class PoseTFConversion:
             fly_plate_y = response.Ydst[0]
 
             t = msg.header.stamp.to_sec()
-            self.kf_fly.update((fly_plate_x,fly_plate_y),t)
+            (x,y,vx,vy) = self.kf_fly.update((fly_plate_x,fly_plate_y),t)
+            if x is not None:
+                rospy.logwarn("fly: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
+                fly_plate_x = x
+                fly_plate_y = y
 
             quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
             if quat_converted is not None:
