@@ -37,7 +37,7 @@ class KalmanFilter:
             if self.x_previous is not None:
                 self.measurement[2,0] = (z[0] - self.x_previous)/self.dt
                 self.measurement[3,0] = (z[1] - self.y_previous)/self.dt
-                rospy.logwarn("x_velocity = %s, y_velocity = %s" % (str(self.measurement[2,0]),str(self.measurement[3,0])))
+                # rospy.logwarn("x_velocity = %s, y_velocity = %s" % (str(self.measurement[2,0]),str(self.measurement[3,0])))
 
             # rospy.logwarn("measurement[0,0] = %s" % str(self.measurement[0,0]))
             # rospy.logwarn("measurement[1,0] = %s" % str(self.measurement[1,0]))
