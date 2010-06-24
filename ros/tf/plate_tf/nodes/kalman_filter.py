@@ -12,11 +12,11 @@ class KalmanFilter:
         self.kal = cv.CreateKalman(4,2,0)
         cv.SetIdentity(self.kal.transition_matrix)
         cv.SetIdentity(self.kal.measurement_matrix)
-        cv.SetIdentity(self.kal.process_noise_cov, 100000000000)
-        cv.SetIdentity(self.kal.measurement_noise_cov, 0.00000000001)
+        cv.SetIdentity(self.kal.process_noise_cov, 100)
+        cv.SetIdentity(self.kal.measurement_noise_cov, 0.001)
         self.measurement = cv.CreateMat(2,1,cv.GetElemType(self.kal.state_pre))
         self.t_previous = None
-        self.dt_scale = 1
+        self.dt_scale = 0.5
 
     def update(self,z,t):
         self.t_current = t
@@ -39,8 +39,10 @@ class KalmanFilter:
         status = False
         if self.t_previous is not None:
             self.dt = self.t_current - self.t_previous
-            self.kal.transition_matrix[0,2] = self.dt_scale*self.dt
-            self.kal.transition_matrix[1,3] = self.dt_scale*self.dt
+            self.kal.transition_matrix[0,2] = self.dt
+            self.kal.transition_matrix[1,3] = self.dt
+            self.kal.transition_matrix[2,2] = self.dt_scale
+            self.kal.transition_matrix[3,3] = self.dt_scale
             status = True
         self.t_previous = self.t_current
         return status
