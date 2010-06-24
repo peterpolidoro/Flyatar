@@ -20,6 +20,8 @@ class StopWalk:
             state = self.states['walking']
         elif (self.state == self.states['walking']) and (self.vel_threshold_high < vmag):
             state = self.states['stopped']
+        else:
+            state = None
 
         # Must be in same state for at least two frames
         if state == self.state_prev:
