@@ -104,8 +104,11 @@ class PoseTFConversion:
                 rospy.logwarn("robot: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
                 if (vx is not None) and (vy is not None):
                     vmag,vang = self.mag_angle_from_x_y(vx,vy)
+                    rospy.logwarn("vmag = %s" % (vmag))
                     robot_stopped = sw.classify(vmag)
                     rospy.logwarn("robot_stopped = %s" % (robot_stopped))
+                else:
+                    rospy.logwarn("wtf???")
 
                 if (x is not None) and (y is not None):
                     robot_plate_x = x
