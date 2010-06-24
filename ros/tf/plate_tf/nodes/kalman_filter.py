@@ -13,7 +13,7 @@ class KalmanFilter:
         self.kal = cv.CreateKalman(4,4,0)
         cv.SetIdentity(self.kal.transition_matrix)
         cv.SetIdentity(self.kal.measurement_matrix)
-        cv.SetIdentity(self.kal.process_noise_cov, 1)
+        cv.SetIdentity(self.kal.process_noise_cov, 10)
         cv.SetIdentity(self.kal.measurement_noise_cov, 0.001)
         self.kal.measurement_noise_cov[2,2] = 40
         self.kal.measurement_noise_cov[3,3] = 40
