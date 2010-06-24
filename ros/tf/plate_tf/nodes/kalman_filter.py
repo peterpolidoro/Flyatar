@@ -27,6 +27,8 @@ class KalmanFilter:
             # rospy.logwarn("Q = %s, R = %s" % (str(Q),str(R)))
             self.measurement[0,0] = z[0]
             self.measurement[1,0] = z[1]
+            rospy.logwarn("measurement[0,0] = %s" % str(self.measurement[0,0])
+            rospy.logwarn("measurement[1,0] = %s" % str(self.measurement[1,0])
             state_post = cv.KalmanCorrect(self.kal,self.measurement)
             x = state_post[0,0]
             y = state_post[1,0]
