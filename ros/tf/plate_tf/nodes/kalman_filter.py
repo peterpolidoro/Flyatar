@@ -38,8 +38,8 @@ class KalmanFilter:
             vy = state_post[3,0]
 
             if self.x_previous is not None:
-                x_velocity = x - self.x_previous)/self.dt
-                y_velocity = y - self.y_previous)/self.dt
+                x_velocity = (x - self.x_previous)/self.dt
+                y_velocity = (y - self.y_previous)/self.dt
                 rospy.logwarn("x_velocity = %s, y_velocity = %s" % (str(x_velocity),str(y_velocity)))
             self.x_previous = x
             self.y_previous = y
