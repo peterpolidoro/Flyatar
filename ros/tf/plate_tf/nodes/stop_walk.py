@@ -27,4 +27,5 @@ class StopWalk:
 
         self.state_prev = state
 
+        rospy.logwarn("self.state = %s" % (self.state))
         return self.state
