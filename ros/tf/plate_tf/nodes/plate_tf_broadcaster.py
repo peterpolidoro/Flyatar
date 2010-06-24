@@ -3,7 +3,7 @@ import roslib
 roslib.load_manifest('plate_tf')
 import rospy
 
-import tf, numpy
+import tf, numpy, math
 from geometry_msgs.msg import PoseStamped
 from plate_tf.srv import *
 import kalman_filter as kf
@@ -24,6 +24,11 @@ class PoseTFConversion:
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
+    def mag_angle_from_x_y(self,x,y):
+        mag = math.sqrt(x**2 + y**2)
+        angle = math.atan2(y,x)
+        return (mag,angle)
+    
     def quaternion_camera_to_plate(self,quat):
         # Must be cleverer way to calculate this using quaternion math...
         R = tf.transformations.quaternion_matrix(quat)

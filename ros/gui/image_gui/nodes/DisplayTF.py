@@ -115,6 +115,12 @@ class ImageDisplay:
             axes_x_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_camera)
             axes_y_image = self.tf_listener.transformPoint(self.image_frame,self.axes_y_camera)
 
+            rospy.logwarn("axes_center_image.point.x = %s" % (str(axes_center_image.point.x)))
+            rospy.logwarn("axes_center_image.point.y = %s" % (str(axes_center_image.point.y)))
+            rospy.logwarn("axes_x_image.point.x = %s" % (str(axes_x_image.point.x)))
+            rospy.logwarn("axes_x_image.point.y = %s" % (str(axes_x_image.point.y)))
+            rospy.logwarn("axes_y_image.point.x = %s" % (str(axes_y_image.point.x)))
+            rospy.logwarn("axes_y_image.point.y = %s" % (str(axes_y_image.point.y)))
             cv.Line(self.im_display,
                     (int(axes_center_image.point.x),int(axes_center_image.point.y)),
                     (int(axes_x_image.point.x),int(axes_x_image.point.y)),
