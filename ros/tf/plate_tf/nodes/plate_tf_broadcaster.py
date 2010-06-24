@@ -80,7 +80,8 @@ class PoseTFConversion:
             # rospy.logwarn("ga = %s" % str(ga*180/numpy.pi))
             quat_converted = tf.transformations.quaternion_from_matrix(T)
             return quat_converted
-        except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError, ValueError):
+        except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
+        # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError, ValueError):
             return None
 
     def handle_robot_image_pose(self,msg):
@@ -101,14 +102,11 @@ class PoseTFConversion:
                 t = msg.header.stamp.to_sec()
                 (x,y,vx,vy) = self.kf_robot.update((robot_plate_x,robot_plate_y),t)
 
-                rospy.logwarn("robot: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
+                # rospy.logwarn("robot: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
                 if (vx is not None) and (vy is not None):
                     vmag,vang = self.mag_angle_from_x_y(vx,vy)
-                    rospy.logwarn("vmag = %s" % (vmag))
-                    robot_stopped = sw.classify(vmag)
+                    robot_stopped = sw_robot.classify(vmag)
                     rospy.logwarn("robot_stopped = %s" % (robot_stopped))
-                else:
-                    rospy.logwarn("wtf???")
 
                 if (x is not None) and (y is not None):
                     robot_plate_x = x
@@ -155,7 +153,8 @@ class PoseTFConversion:
                                           rospy.Time.now(),
                                           "Fly",
                                           "Plate")
-            except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
+            except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
+            # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
                 pass
 
 if __name__ == '__main__':
