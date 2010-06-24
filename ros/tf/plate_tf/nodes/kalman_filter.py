@@ -14,7 +14,9 @@ class KalmanFilter:
         cv.SetIdentity(self.kal.transition_matrix)
         cv.SetIdentity(self.kal.measurement_matrix)
         cv.SetIdentity(self.kal.process_noise_cov, 1)
-        cv.SetIdentity(self.kal.measurement_noise_cov, 1)
+        cv.SetIdentity(self.kal.measurement_noise_cov, 0.001)
+        self.kal.measurement_noise_cov[2,2] = 100
+        self.kal.measurement_noise_cov[3,3] = 100
         # self.measurement = cv.CreateMat(2,1,cv.GetElemType(self.kal.state_pre))
         self.measurement = cv.CreateMat(4,1,cv.GetElemType(self.kal.state_pre))
         self.t_previous = None
@@ -35,7 +37,7 @@ class KalmanFilter:
             if self.x_previous is not None:
                 self.measurement[2,0] = (z[0] - self.x_previous)/self.dt
                 self.measurement[3,0] = (z[1] - self.y_previous)/self.dt
-            #     rospy.logwarn("x_velocity = %s, y_velocity = %s" % (str(x_velocity),str(y_velocity)))
+                rospy.logwarn("x_velocity = %s, y_velocity = %s" % (str(self.measurement[2,0]),str(self.measurement[3,0])))
 
             # rospy.logwarn("measurement[0,0] = %s" % str(self.measurement[0,0]))
             # rospy.logwarn("measurement[1,0] = %s" % str(self.measurement[1,0]))
