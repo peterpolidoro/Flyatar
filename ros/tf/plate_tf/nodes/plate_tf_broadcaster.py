@@ -121,7 +121,9 @@ class PoseTFConversion:
                                           rospy.Time.now(),
                                           "Robot",
                                           "Plate")
-            except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
+
+            except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
+            # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
                 pass
 
     def handle_fly_image_pose(self,msg):
