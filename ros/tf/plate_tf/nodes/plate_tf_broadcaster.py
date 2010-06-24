@@ -101,11 +101,12 @@ class PoseTFConversion:
                 t = msg.header.stamp.to_sec()
                 (x,y,vx,vy) = self.kf_robot.update((robot_plate_x,robot_plate_y),t)
 
-                vmag,vang = self.mag_angle_from_x_y(vx,vy)
-                robot_stopped = sw.classify(vmag)
-                rospy.logwarn("robot_stopped = %s" % (robot_stopped))
+                if (vx is not None) and (vy is not None):
+                    vmag,vang = self.mag_angle_from_x_y(vx,vy)
+                    robot_stopped = sw.classify(vmag)
+                    rospy.logwarn("robot_stopped = %s" % (robot_stopped))
 
-                if x is not None:
+                if (x is not None) and (y is not None):
                     # rospy.logwarn("robot: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
                     robot_plate_x = x
                     robot_plate_y = y
