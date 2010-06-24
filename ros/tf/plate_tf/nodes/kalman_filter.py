@@ -16,6 +16,8 @@ class KalmanFilter:
         cv.SetIdentity(self.kal.measurement_noise_cov, 0.0001)
         self.measurement = cv.CreateMat(2,1,cv.GetElemType(self.kal.state_pre))
         self.t_previous = None
+        self.x_previous = None
+        self.y_previous = None
 
     def update(self,z,t):
         self.t_current = t
@@ -34,6 +36,14 @@ class KalmanFilter:
             y = state_post[1,0]
             vx = state_post[2,0]
             vy = state_post[3,0]
+
+            if self.x_previous is not None:
+                x_velocity = x - self.x_previous)/self.dt
+                y_velocity = y - self.y_previous)/self.dt
+                rospy.logwarn("x_velocity = %s, y_velocity = %s" % (str(x_velocity),str(y_velocity)))
+            self.x_previous = x
+            self.y_previous = y
+
         return (x,y,vx,vy)
 
     def update_dt(self):
