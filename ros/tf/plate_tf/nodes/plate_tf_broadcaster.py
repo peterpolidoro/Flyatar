@@ -125,7 +125,7 @@ class PoseTFConversion:
                     else:
                         quat_chosen = None
 
-                    if quat_chose is not None:
+                    if quat_chosen is not None:
                         self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
                                               quat_chosen,
                                               rospy.Time.now(),
