@@ -141,8 +141,14 @@ class PoseTFConversion:
 
                 t = msg.header.stamp.to_sec()
                 (x,y,vx,vy) = self.kf_fly.update((fly_plate_x,fly_plate_y),t)
-                if x is not None:
-                    # rospy.logwarn("fly: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
+
+                # rospy.logwarn("fly: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
+                if (vx is not None) and (vy is not None):
+                    vmag,vang = self.mag_angle_from_x_y(vx,vy)
+                    fly_stopped = self.sw_fly.classify(vmag)
+                    rospy.logwarn("fly_stopped = %s" % (fly_stopped))
+
+                if (x is not None) and (y is not None):
                     fly_plate_x = x
                     fly_plate_y = y
 
