@@ -166,6 +166,8 @@ class PoseTFConversion:
                     vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
                     fly_stopped = self.sw_fly.classify(vel_mag)
                     # rospy.logwarn("fly_stopped = %s" % (fly_stopped))
+                else:
+                    vel_mag = vel_ang = fly_stopped = None
 
                 if (x is not None) and (y is not None):
                     fly_plate_x = x
