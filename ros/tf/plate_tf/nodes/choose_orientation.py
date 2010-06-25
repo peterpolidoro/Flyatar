@@ -40,7 +40,11 @@ class ChooseOrientation:
         orient_ang = self.angle_from_quaternion(quat)
         orient_ang_flipped = orient_ang + math.pi
         diff_ang = abs(orient_ang - ref_ang)
+        if math.pi < diff_ang:
+            diff_ang = 2*math.pi - diff_ang
         diff_ang_flipped = abs(orient_ang_flipped - ref_ang)
+        if math.pi < diff_ang_flipped:
+            diff_ang_flipped = 2*math.pi - diff_ang_flipped
         rospy.logwarn("ref_ang = %s, orient_ang = %s, orient_ang_flipped = %s, diff_ang = %s, diff_ang_flipped = %s" % (str(ref_ang),str(orient_ang*180/math.pi),str(orient_ang_flipped*180/math.pi),str(diff_ang*180/math.pi),str(diff_ang_flipped*180/math.pi)))
         if diff_ang < diff_ang_flipped:
             self.orient_ang_previous = orient_ang
