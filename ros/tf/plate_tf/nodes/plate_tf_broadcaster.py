@@ -116,6 +116,8 @@ class PoseTFConversion:
                     vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
                     robot_stopped = self.sw_robot.classify(vel_mag)
                     # rospy.logwarn("robot_stopped = %s" % (robot_stopped))
+                else:
+                    vel_mag = vel_ang = robot_stopped = None
 
                 if (x is not None) and (y is not None):
                     robot_plate_x = x
@@ -124,7 +126,8 @@ class PoseTFConversion:
                 quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
                 if quat_converted is not None:
                     orient_ang = self.angle_from_quaternion(quat_converted)
-                    quat_chosen = self.co_robot.choose_orientation(orient_ang,vel_ang,robot_stopped)
+                    if vel_mag is not None:
+                        quat_chosen = self.co_robot.choose_orientation(orient_ang,vel_ang,robot_stopped)
 
                     self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
                                           quat_converted,
