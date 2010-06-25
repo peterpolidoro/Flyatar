@@ -39,7 +39,7 @@ class PoseTFConversion:
         vel_ang = math.atan2(vy,vx)
         return (vel_mag,vel_ang)
 
-    def ang_from_quaternion(self,quat):
+    def angle_from_quaternion(self,quat):
         # Find and return angle of rotation about z-axis
         euler_angles = tf.transformations.euler_from_quaternion(quat,axes='sxyz')
         return euler_angles[2]
