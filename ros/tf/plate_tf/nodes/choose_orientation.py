@@ -11,8 +11,9 @@ import math
 class ChooseOrientation:
     def __init__(self):
         pass
-    def choose_orientation(self,orient_ang,vel_ang):
-        rospy.logwarn("orient_ang = %s, vel_ang = %s" % (str(orient_ang*180/math.pi),str(vel_ang*180/math.pi)))
+    def choose_orientation(self,orient_ang,vel_ang,stopped):
+        if not stopped:
+            rospy.logwarn("orient_ang = %s, vel_ang = %s" % (str(orient_ang*180/math.pi),str(vel_ang*180/math.pi)))
 
     # def choose_orientations(rows, directions, frames_per_second=None,
     #                         velocity_weight_gain=0.5,

@@ -124,7 +124,7 @@ class PoseTFConversion:
                 quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
                 if quat_converted is not None:
                     orient_ang = self.angle_from_quaternion(quat_converted)
-                    quat_chosen = self.co_robot.choose_orientation(orient_ang,vel_ang)
+                    quat_chosen = self.co_robot.choose_orientation(orient_ang,vel_ang,robot_stopped)
 
                     self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
                                           quat_converted,
