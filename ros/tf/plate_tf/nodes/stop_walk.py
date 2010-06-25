@@ -15,10 +15,10 @@ class StopWalk:
         self.state = self.states['stopped']
         self.state_prev = self.state
 
-    def classify(self,vmag):
-        if (self.state == self.states['stopped']) and (self.vel_threshold_high < vmag):
+    def classify(self,vel_mag):
+        if (self.state == self.states['stopped']) and (self.vel_threshold_high < vel_mag):
             state = self.states['walking']
-        elif (self.state == self.states['walking']) and (vmag < self.vel_threshold_low):
+        elif (self.state == self.states['walking']) and (vel_mag < self.vel_threshold_low):
             state = self.states['stopped']
         else:
             state = self.state

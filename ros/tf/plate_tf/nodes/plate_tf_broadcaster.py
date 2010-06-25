@@ -8,6 +8,7 @@ from geometry_msgs.msg import PoseStamped
 from plate_tf.srv import *
 import kalman_filter as kf
 import stop_walk as sw
+import choose_orientation as co
 
 class PoseTFConversion:
     def __init__(self):
@@ -23,6 +24,9 @@ class PoseTFConversion:
         self.sw_fly = sw.StopWalk()
         self.sw_robot = sw.StopWalk()
 
+        self.co_fly = co.ChooseOrientation()
+        self.co_robot = co.ChooseOrientation()
+
         rospy.wait_for_service('camera_to_plate')
         try:
             self.camera_to_plate = rospy.ServiceProxy('camera_to_plate', PlateCameraConversion)
@@ -31,9 +35,14 @@ class PoseTFConversion:
         self.initialized = True
 
     def mag_angle_from_x_y(self,vx,vy):
-        vmag = math.sqrt(vx**2 + vy**2)
-        vang = math.atan2(vy,vx)
-        return (vmag,vang)
+        vel_mag = math.sqrt(vx**2 + vy**2)
+        vel_ang = math.atan2(vy,vx)
+        return (vel_mag,vel_ang)
+
+    def ang_from_quaternion(self,quat):
+        # Find and return angle of rotation about z-axis
+        euler_angles = tf.transformations.euler_from_quaternion(quat,axes='sxyz')
+        return euler_angles[2]
 
     def quaternion_camera_to_plate(self,quat):
         # Must be cleverer way to calculate this using quaternion math...
@@ -104,9 +113,9 @@ class PoseTFConversion:
 
                 # rospy.logwarn("robot: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
                 if (vx is not None) and (vy is not None):
-                    vmag,vang = self.mag_angle_from_x_y(vx,vy)
-                    robot_stopped = self.sw_robot.classify(vmag)
-                    rospy.logwarn("robot_stopped = %s" % (robot_stopped))
+                    vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
+                    robot_stopped = self.sw_robot.classify(vel_mag)
+                    # rospy.logwarn("robot_stopped = %s" % (robot_stopped))
 
                 if (x is not None) and (y is not None):
                     robot_plate_x = x
@@ -114,6 +123,9 @@ class PoseTFConversion:
 
                 quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
                 if quat_converted is not None:
+                    orient_ang = self.angle_from_quaternion(quat_converted)
+                    quat_chosen = self.co_robot.choose_orientation(orient_ang,vel_ang)
+
                     self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
                                           quat_converted,
                                           rospy.Time.now(),
@@ -144,9 +156,9 @@ class PoseTFConversion:
 
                 # rospy.logwarn("fly: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
                 if (vx is not None) and (vy is not None):
-                    vmag,vang = self.mag_angle_from_x_y(vx,vy)
-                    fly_stopped = self.sw_fly.classify(vmag)
-                    rospy.logwarn("fly_stopped = %s" % (fly_stopped))
+                    vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
+                    fly_stopped = self.sw_fly.classify(vel_mag)
+                    # rospy.logwarn("fly_stopped = %s" % (fly_stopped))
 
                 if (x is not None) and (y is not None):
                     fly_plate_x = x
