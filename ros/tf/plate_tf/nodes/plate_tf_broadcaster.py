@@ -39,11 +39,6 @@ class PoseTFConversion:
         vel_ang = math.atan2(vy,vx)
         return (vel_mag,vel_ang)
 
-    def angle_from_quaternion(self,quat):
-        # Find and return angle of rotation about z-axis
-        euler_angles = tf.transformations.euler_from_quaternion(quat,axes='sxyz')
-        return euler_angles[2]
-
     def quaternion_camera_to_plate(self,quat):
         # Must be cleverer way to calculate this using quaternion math...
         R = tf.transformations.quaternion_matrix(quat)
@@ -125,15 +120,17 @@ class PoseTFConversion:
 
                 quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
                 if quat_converted is not None:
-                    orient_ang = self.angle_from_quaternion(quat_converted)
-                    if vel_mag is not None:
-                        quat_chosen = self.co_robot.choose_orientation(orient_ang,vel_ang,robot_stopped)
+                    if vel_ang is not None:
+                        quat_chosen = self.co_robot.choose_orientation(quat_converted,vel_ang,robot_stopped)
+                    else:
+                        quat_chosen = None
 
-                    self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
-                                          quat_converted,
-                                          rospy.Time.now(),
-                                          "Robot",
-                                          "Plate")
+                    if quat_chose is not None:
+                        self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
+                                              quat_chosen,
+                                              rospy.Time.now(),
+                                              "Robot",
+                                              "Plate")
 
             except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):

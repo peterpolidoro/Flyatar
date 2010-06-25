@@ -4,16 +4,51 @@ import roslib
 roslib.load_manifest('plate_tf')
 import rospy
 
-import math
+import math, tf
 # import numpy
 # from geometry_msgs.msg import PoseStamped
 
 class ChooseOrientation:
     def __init__(self):
-        pass
-    def choose_orientation(self,orient_ang,vel_ang,stopped):
+        self.zaxis = (0,0,1)
+        self.orient_ang_previous = None
+
+    def angle_from_quaternion(self,quat):
+        # Find and return angle of rotation about z-axis
+        euler_angles = tf.transformations.euler_from_quaternion(quat,axes='sxyz')
+        return euler_angles[2]
+
+    def flip_quaternion(self,quat):
+        # Cheesy way to flip quaternion, knowing it is a vector at origin in xy-plane
+
+        ang = self.angle_from_quaternion(quat)
+        # Add pi to angle and compute new quaternion
+        qz = tf.transformations.quaternion_about_axis((ang + math.pi), self.zaxis)
+        return qz
+
+    def choose_orientation(self,quat,vel_ang,stopped):
+        # orient_ang is ambiguous modulo pi radians
+
+        # rospy.logwarn("orient_ang = %s, vel_ang = %s" % (str(orient_ang*180/math.pi),str(vel_ang*180/math.pi)))
         if not stopped:
-            rospy.logwarn("orient_ang = %s, vel_ang = %s" % (str(orient_ang*180/math.pi),str(vel_ang*180/math.pi)))
+            ref_ang = vel_ang
+        elif self.orient_ang_previous is not None:
+            ref_ang = self.orient_ang_previous
+        else:
+            return None
+
+        orient_ang = self.angle_from_quaternion(quat)
+        orient_ang_flipped = orient_ang + math.pi
+        diff_ang = abs(orient_ang - ref_ang)
+        diff_ang_flipped = abs(orient_ang_flipped - ref_ang)
+        rospy.logwarn("orient_ang = %s, orient_ang_flipped = %s, diff_ang = %s, diff_ang_flipped = %s" % (str(orient_ang*180/math.pi),str(orient_ang_flipped*180/math.pi),str(diff_ang*180/math.pi),str(diff_ang_flipped*180/math.pi)))
+        if diff_ang < diff_ang_flipped:
+            self.orient_ang_previous = orient_ang
+            return quat
+        else:
+            self.orient_ang_previous = orient_ang_flipped
+            quat_flipped = self.flip_quaternion(quat)
+            return quat_flipped
 
     # def choose_orientations(rows, directions, frames_per_second=None,
     #                         velocity_weight_gain=0.5,
