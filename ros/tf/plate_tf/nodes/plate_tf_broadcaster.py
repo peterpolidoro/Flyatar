@@ -120,17 +120,24 @@ class PoseTFConversion:
 
                 quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
                 if quat_converted is not None:
-                    if vel_ang is not None:
-                        quat_chosen = self.co_robot.choose_orientation(quat_converted,vel_ang,robot_stopped)
-                    else:
-                        quat_chosen = None
+                    # Do not flip robot orientation
+                    self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
+                                          quat_converted,
+                                          rospy.Time.now(),
+                                          "Robot",
+                                          "Plate")
 
-                    if quat_chosen is not None:
-                        self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
-                                              quat_chosen,
-                                              rospy.Time.now(),
-                                              "Robot",
-                                              "Plate")
+                    # if vel_ang is not None:
+                    #     quat_chosen = self.co_robot.choose_orientation(quat_converted,vel_ang,robot_stopped)
+                    # else:
+                    #     quat_chosen = None
+
+                    # if quat_chosen is not None:
+                    #     self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
+                    #                           quat_chosen,
+                    #                           rospy.Time.now(),
+                    #                           "Robot",
+                    #                           "Plate")
 
             except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
@@ -166,11 +173,18 @@ class PoseTFConversion:
 
                 quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
                 if quat_converted is not None:
-                    self.tf_broadcaster.sendTransform((fly_plate_x, fly_plate_y, 0),
-                                          quat_converted,
-                                          rospy.Time.now(),
-                                          "Fly",
-                                          "Plate")
+                    if vel_ang is not None:
+                        quat_chosen = self.co_fly.choose_orientation(quat_converted,vel_ang,fly_stopped)
+                    else:
+                        quat_chosen = None
+
+                    if quat_chosen is not None:
+                        self.tf_broadcaster.sendTransform((fly_plate_x, fly_plate_y, 0),
+                                              quat_chosen,
+                                              rospy.Time.now(),
+                                              "Fly",
+                                              "Plate")
+
             # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
                 pass
