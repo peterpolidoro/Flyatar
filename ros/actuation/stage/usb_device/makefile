@@ -58,6 +58,34 @@
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
 
+# # Device manufacturer
+# MANUFACTURER = Peter Polidoro
+# MANUFACTURER_LEN = 14
+
+# # Product
+# PRODUCT = StageUSBDevice
+# PRODUCT_LEN = 14
+
+# # Vendor ID
+# VENDOR_ID = 0x0004 
+
+# # Product ID
+# PRODUCT_ID = 0x0001
+
+# # Release number
+# RELEASE_NUMBER = 0x0001
+
+# # Device serial number
+# SERIAL_NUMBER = 00001 
+# SERIAL_NUMBER_LEN = 5  
+
+# # Location of lufa library source code (absolute path)
+# LUFA_SRC_DIR = /usr/local/src/avr/LUFA_090605
+
+# # Location of symolic link to LUFA library source (relative path) 
+# # This link is created if doesn't exist
+# LUFA_SYM_LINK = ./LUFA
+
 
 # MCU name
 MCU = at90usb646
@@ -115,11 +143,13 @@ TARGET = StageUSBDevice
 # Object files directory
 #     To put object files in current directory, use a dot (.), do NOT make
 #     this an empty or blank macro!
-OBJDIR = .
+# OBJDIR = .
+OBJDIR = ./obj
 
 
 # Path to the LUFA library
-LUFA_PATH = ../..
+# LUFA_PATH = ../..
+LUFA_PATH = $(LUFA090605)
 
 
 # List C source files here. (C dependencies are automatically generated.)
