@@ -37,4 +37,4 @@ cd ~/ros/Flyatar/Flyatar/ros/actuation/stage/usb_device/
 make
 ~/TEENSY/teensy &
 # Press button on teensy board
-# Select hex file in ~/ros/Flyatar/Flyatar/ros/actuation/stage/usb_device/src
+# Select hex file in ~/ros/Flyatar/Flyatar/ros/actuation/stage/usb_device/
