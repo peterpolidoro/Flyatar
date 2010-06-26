@@ -143,8 +143,11 @@ TARGET = StageUSBDevice
 # Object files directory
 #     To put object files in current directory, use a dot (.), do NOT make
 #     this an empty or blank macro!
-OBJDIR = .
+OBJDIR = ./obj
 
+
+# Source files directory
+SRCDIR = ./src
 
 # Path to the LUFA library
 # LUFA_PATH = ../..
@@ -162,8 +165,8 @@ LUFA_PATH =$(LUFA_SYM_LINK)
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = 	  $(TARGET).c                                                 \
-	  Descriptors.c                                               \
+SRC = 	  $(SRCDIR)/$(TARGET).c                                       \
+	  $(SRCDIR)/Descriptors.c                                     \
 	  $(LUFA_PATH)/LUFA/Scheduler/Scheduler.c                     \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/DevChapter9.c        \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/Endpoint.c           \
