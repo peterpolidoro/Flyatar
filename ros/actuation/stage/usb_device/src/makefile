@@ -745,7 +745,6 @@ clean_list:
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) $(SRC:.c=.i)
 	$(REMOVEDIR) .dep
-	-rm *~
 	-rm $(LUFA_SYM_LINK)
 
 
