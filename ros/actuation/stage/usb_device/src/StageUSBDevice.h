@@ -33,8 +33,6 @@
  *  Header file for StageUSBDevice.c.
  */
 
-/* Make change to test git branch */
-
 #ifndef _STAGEUSBDEVICE_H_
 #define _STAGEUSBDEVICE_H_
 
@@ -81,6 +79,8 @@
 #define MOTOR_1_INTERRUPT     TIMER3_OVF_vect
 #define MOTOR_2_INTERRUPT     TIMER2_OVF_vect
 
+#define INPOSITION_INTERRUPT  INT4_vect
+
 /* Software reset */
 #define AVR_RESET() wdt_enable(WDTO_30MS); while(1) {}
 #define AVR_IS_WDT_RESET()  ((MCUSR&(1<<WDRF)) ? 1:0)
@@ -103,6 +103,7 @@ typedef struct
   uint16_t    Position;
   uint16_t    PositionSetPoint;
   uint8_t     Update;
+  uint8_t     InPosition;
 } MotorWrapper_t;
 
 typedef struct
@@ -159,6 +160,7 @@ TimerWrapper_t          Timer[TIMER_NUM];
 USBPacketOutWrapper_t   USBPacketOut;
 USBPacketInWrapper_t    USBPacketIn;
 uint8_t                 IO_Enabled=0;
+uint8_t                 Interrupt_Enabled=0;
 
 /* Task Definitions: */
 TASK(USB_ProcessPacket);
@@ -176,6 +178,7 @@ static void USBPacket_Read(void);
 static void USBPacket_Write(void);
 static void IO_Init(void);
 static void IO_Disconnect(void);
+static void Interrupt_Init(void);
 static void Timer_Init(void);
 static void Timer_On(uint8_t Timer_N);
 static void Timer_Off(uint8_t Timer_N);

@@ -330,7 +330,28 @@ static void IO_Init(void)
   PORTB &= ~((1<<PB4) | (1<<PB5) | (1<<PB7));
   PORTC &= ~((1<<PC0) | (1<<PC1) | (1<<PC2) | (1<<PC6));
 
+  /* Set data direction of interrupt 4 to output (PORTE pin 4) */
+  DDRE |= (1<<DDB4);
+
+  /* Set interrupt 4 high to start (PORTE pin 4) */
+  PORTE |= (1<<PB4);
+
   IO_Enabled = 1;
+}
+
+static void Interrupt_Init(void)
+{
+  /* External interrupts initialization */
+  /* Disable external interrupt pin 4 before changing interrupt sense control */
+  EIMSK &= ~(1<<INT4);
+
+  /* Set external interrupt pin 4 to low level */
+  EICRB &= ~((1<<ISC40) | (1<<ISC41));
+
+  /* Enable external interrupt pins 4 */
+  EIMSK |= (1<<INT4);
+
+  Interrupt_Enabled = 1;
 }
 
 static void Timer_Init(void)
@@ -444,6 +465,7 @@ static void Motor_Init(void)
   Motor[0].Position = MOTOR_0_POSITION_HOME;
   Motor[0].PositionSetPoint = MOTOR_0_POSITION_HOME;
   Motor[0].Update = 1;
+  Motor[0].InPosition = 1;
 
   Motor[1].Timer = MOTOR_1_TIMER;
   Motor[1].DirectionPort = &PORTC;
@@ -456,6 +478,7 @@ static void Motor_Init(void)
   Motor[1].Position = MOTOR_1_POSITION_HOME;
   Motor[1].PositionSetPoint = MOTOR_1_POSITION_HOME;
   Motor[1].Update = 1;
+  Motor[1].InPosition = 1;
 
   Motor[2].Timer = MOTOR_2_TIMER;
   Motor[2].DirectionPort = &PORTC;
@@ -468,6 +491,7 @@ static void Motor_Init(void)
   Motor[2].Position = MOTOR_2_POSITION_HOME;
   Motor[2].PositionSetPoint = MOTOR_2_POSITION_HOME;
   Motor[2].Update = 1;
+  Motor[2].InPosition = 1;
 
   /* Update Motors */
   Motor_Update_All();
@@ -480,6 +504,12 @@ static void IO_Disconnect(void)
 
   /* Set data direction of PORTC pins 0:2,6 to input to reduce current draw */
   DDRC &= ~((1<<DDC0) | (1<<DDC1) | (1<<DDC2) | (1<<DDC6));
+
+  /* Disable external interrupt pin 4 before changing interrupt sense control */
+  EIMSK &= ~(1<<INT4);
+
+  /* Set data direction of PORTE pin 4 to input to reduce current draw */
+  DDRE &= ~(1<<DDC4);
 }
 
 static void Timer_On(uint8_t Timer_N)
@@ -655,8 +685,15 @@ ISR(MOTOR_0_INTERRUPT)
         {
           Motor[0].Frequency = 0;
           Timer_Off(Motor[0].Timer);
+          Motor[0].InPosition = 1;
           /* Add this to test drift problem... */
           *Motor[0].DirectionPort &= ~(1<<Motor[0].DirectionPin);
+          /* If all motors are in position, set InPosition interrupt */
+          if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
+            {
+              /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+              PORTE &= ~(1<<PB4);
+            }
         }
     }
   return;
@@ -678,8 +715,15 @@ ISR(MOTOR_1_INTERRUPT)
         {
           Motor[1].Frequency = 0;
           Timer_Off(Motor[1].Timer);
+          Motor[1].InPosition = 1;
           /* Add this to test drift problem... */
           *Motor[1].DirectionPort &= ~(1<<Motor[1].DirectionPin);
+          /* If all motors are in position, set InPosition interrupt */
+          if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
+            {
+              /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+              PORTE &= ~(1<<PB4);
+            }
         }
     }
   return;
@@ -701,9 +745,24 @@ ISR(MOTOR_2_INTERRUPT)
         {
           Motor[2].Frequency = 0;
           Timer_Off(Motor[2].Timer);
+          Motor[2].InPosition = 1;
           /* Add this to test drift problem... */
           *Motor[2].DirectionPort &= ~(1<<Motor[2].DirectionPin);
+          /* If all motors are in position, set InPosition interrupt */
+          if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
+            {
+              /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+              PORTE &= ~(1<<PB4);
+            }
         }
     }
   return;
 }
+
+ISR(INPOSITION_INTERRUPT) {
+  /* Set interrupt 4 high to disable interrupt (PORTE pin 4) */
+  PORTE |= (1<<PB4);
+  /* PWM_Update(4); */
+  return;
+}
+
