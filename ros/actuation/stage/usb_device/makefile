@@ -143,7 +143,7 @@ TARGET = StageUSBDevice
 # Object files directory
 #     To put object files in current directory, use a dot (.), do NOT make
 #     this an empty or blank macro!
-OBJDIR = ./obj
+OBJDIR = .
 
 
 # Source files directory
