@@ -144,7 +144,7 @@ TARGET = StageUSBDevice
 #     To put object files in current directory, use a dot (.), do NOT make
 #     this an empty or blank macro!
 # OBJDIR = .
-OBJDIR = ./obj
+OBJDIR = ../obj
 
 
 # Path to the LUFA library
