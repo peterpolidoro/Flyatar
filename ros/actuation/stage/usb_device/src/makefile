@@ -148,8 +148,18 @@ OBJDIR = .
 
 # Path to the LUFA library
 # LUFA_PATH = ../..
-LUFA_PATH = $(LUFA090605)
-@echo ${LUFA090605}
+
+# Location of lufa library source code (absolute path)
+# LUFA_SRC_DIR = /usr/local/src/avr/LUFA_090605
+LUFA_SRC_DIR = $(LUFA090605)
+
+# Location of symolic link to LUFA library source (relative path) 
+# This link is created if doesn't exist
+LUFA_SYM_LINK = ./LUFA
+
+# Path to the LUFA library
+LUFA_PATH =$(LUFA_SYM_LINK)
+
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = 	  $(TARGET).c                                                 \
@@ -735,6 +745,8 @@ clean_list:
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) $(SRC:.c=.i)
 	$(REMOVEDIR) .dep
+	-rm *~
+	-rm $(LUFA_SYM_LINK)
 
 
 doxygen:
@@ -744,6 +756,11 @@ doxygen:
 
 clean_doxygen:
 	rm -rf Documentation
+
+
+# Create symbolic link to LUFA src
+$(shell ln -s $(LUFA_SRC_DIR) $(LUFA_SYM_LINK) 2>/dev/null)
+
 
 # Create object files directory
 $(shell mkdir $(OBJDIR) 2>/dev/null)
