@@ -45,13 +45,14 @@ class PositionControl:
         self.target_point.point.x = 0
         self.target_point.point.y = 0
         self.target_point.point.z = 0
-        # self.home_stage_initialized = False
-        # while not self.home_stage_initialized:
-        #     try:
-        #         self.home_stage = self.tf_listener.transformPoint("Stage",self.target_point)
-        #         self.home_stage_initialized = True
-        #     except (tf.LookupException, tf.ConnectivityException):
-        #         pass
+
+        self.target_point_initialized = False
+        while not self.target_point_initialized:
+            try:
+                self.target_point = self.tf_listener.transformPoint("Stage",self.target_point)
+                self.target_point_initialized = True
+            except (tf.LookupException, tf.ConnectivityException):
+                pass
 
         self.homing = False
 
@@ -144,9 +145,9 @@ class PositionControl:
                     if not self.homing:
                         self.homing = True
                         self.stage_commands.position_control = True
-                        self.set_position_velocity(0,0,self.control_frame,self.vel_scale_factor/10)
-                        # self.stage_commands.x_position = self.home_stage.point.x
-                        # self.stage_commands.y_position = self.home_stage.point.y
+                        # self.set_position_velocity(0,0,self.control_frame,self.vel_scale_factor/10)
+                        self.stage_commands.x_position = self.target_point.point.x
+                        self.stage_commands.y_position = self.target_point.point.y
                         self.sc_ok_to_publish = True
                     else:
                         self.sc_ok_to_publish = False
