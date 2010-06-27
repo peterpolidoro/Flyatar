@@ -776,6 +776,7 @@ ISR(INPOSITION_INTERRUPT) {
   PORTE |= (1<<PB4);
   /* Set InPositionPin high (PORTE pin 5) */
   PORTE |= (1<<PB5);
+  *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin);
 
   /* PWM_Update(4); */
   return;
