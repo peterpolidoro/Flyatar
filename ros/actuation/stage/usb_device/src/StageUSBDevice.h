@@ -88,6 +88,7 @@
 #define MOTOR_NUM 3
 #define TIMER_NUM 4
 #define PRESCALER_NUM 5
+#define LOOKUP_NUM 20 // # values in lookup table
 
 /* Type Defines: */
 typedef struct
@@ -161,6 +162,9 @@ USBPacketOutWrapper_t   USBPacketOut;
 USBPacketInWrapper_t    USBPacketIn;
 uint8_t                 IO_Enabled=0;
 uint8_t                 Interrupt_Enabled=0;
+volatile MotorStatus_t  LookupTable[LOOKUP_NUM][MOTOR_NUM];
+uint8_t                 TableEnd=1;
+uint8_t                 TableEntry=0;
 
 /* Task Definitions: */
 TASK(USB_ProcessPacket);
