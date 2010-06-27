@@ -712,7 +712,7 @@ ISR(MOTOR_0_INTERRUPT)
         }
       else if (Motor[0].InPosition)
         {
-          Motor[0].InPosition = 0
+          Motor[0].InPosition = 0;
         }
     }
   return;
@@ -749,7 +749,7 @@ ISR(MOTOR_1_INTERRUPT)
         }
       else if (Motor[1].InPosition)
         {
-          Motor[1].InPosition = 0
+          Motor[1].InPosition = 0;
         }
     }
   return;
@@ -782,7 +782,7 @@ ISR(MOTOR_2_INTERRUPT)
         }
       else if (Motor[2].InPosition)
         {
-          Motor[2].InPosition = 0
+          Motor[2].InPosition = 0;
         }
     }
   return;
