@@ -288,6 +288,7 @@ TASK(USB_ProcessPacket)
                       {
                         IO_Init();
                       }
+                    MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableMove = 1;
                     TableEntry = 0;
                     for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
@@ -909,6 +910,7 @@ ISR(INPOSITION_INTERRUPT)
           for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
             {
               /* Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N)); */
+              Motor[Motor_N].Update = (MotorUpdateBits & (1<<Motor_N));
               if (Motor[Motor_N].Update)
                 {
                   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
