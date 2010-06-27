@@ -44,6 +44,7 @@ class PositionControl:
                 self.home_stage = self.tf_listener.transformPoint("Stage",self.home_plate)
                 self.home_stage_initialized = True
             except (tf.LookupException, tf.ConnectivityException):
+                pass
 
         self.homing = False
 
