@@ -707,6 +707,7 @@ ISR(MOTOR_0_INTERRUPT)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
+              *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin);
             }
         }
     }
@@ -733,13 +734,13 @@ ISR(MOTOR_1_INTERRUPT)
           /* Add this to test drift problem... */
           *Motor[1].DirectionPort &= ~(1<<Motor[1].DirectionPin);
 
-          *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin);
 
           /* If all motors are in position, set InPosition interrupt */
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
+              *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin);
             }
         }
     }
@@ -769,7 +770,6 @@ ISR(MOTOR_2_INTERRUPT)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
-              *Motor[2].DirectionPort &= ~(1<<Motor[2].DirectionPin);
             }
         }
     }
