@@ -631,8 +631,6 @@ static void Motor_Update_All(void)
 {
   /* Set InPositionPin low (PORTE pin 5) */
   PORTE &= ~(1<<PB5);
-  *Motor[2].DirectionPort &= ~(1<<Motor[2].DirectionPin);
-
 
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
     {
@@ -707,7 +705,6 @@ ISR(MOTOR_0_INTERRUPT)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
-              *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin);
               /* Set InPositionPin high (PORTE pin 5) */
               PORTE |= (1<<PB5);
             }
@@ -746,7 +743,6 @@ ISR(MOTOR_1_INTERRUPT)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
-              *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin);
               /* Set InPositionPin high (PORTE pin 5) */
               PORTE |= (1<<PB5);
             }
@@ -799,8 +795,6 @@ ISR(INPOSITION_INTERRUPT) {
   PORTE |= (1<<PB4);
   /* Set InPositionPin high (PORTE pin 5) */
   PORTE |= (1<<PB5);
-  /* *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin); */
-
   /* PWM_Update(4); */
   return;
 }
