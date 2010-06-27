@@ -339,8 +339,11 @@ static void IO_Init(void)
   /* Set data direction of InPositionPin to output (PORTE pin 5) */
   DDRE |= (1<<DDB5);
 
-  /* Set InPositionPin low to start (PORTE pin 5) */
-  PORTE &= ~(1<<PB5);
+  /* /\* Set InPositionPin low to start (PORTE pin 5) *\/ */
+  /* PORTE &= ~(1<<PB5); */
+
+  /* Set InPositionPin high (PORTE pin 5) */
+  PORTE |= (1<<PB5);
 
   IO_Enabled = 1;
 }
