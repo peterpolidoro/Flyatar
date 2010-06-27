@@ -9,7 +9,7 @@ import tf
 import cv
 import numpy
 from stage.srv import *
-from stage.msg import Velocity,Setpoint
+from stage.msg import StageCommands,Setpoint
 from joystick_commands.msg import JoystickCommands
 from geometry_msgs.msg import PointStamped
 
@@ -22,10 +22,10 @@ class PositionControl:
         self.tf_listener = tf.TransformListener()
 
         self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.commands_callback)
-        self.vel_pub = rospy.Publisher("stage/command_velocity",Velocity)
+        self.sc_pub = rospy.Publisher("StageCommands",StageCommands)
         self.setpoint_pub = rospy.Publisher("setpoint",Setpoint)
 
-        self.vel_stage = Velocity()
+        self.stage_commands = StageCommands()
         self.vel_scale_factor = 100     # mm/s
         self.vel_vector_plate = numpy.array([[0],[0],[0],[1]])
         self.vel_vector_robot = numpy.array([[0],[0],[0],[1]])
@@ -93,12 +93,12 @@ class PositionControl:
                 self.vel_vector_plate[1,0] = data.y_velocity*self.vel_scale_factor
 
                 try:
-                    (self.vel_stage.x_velocity,self.vel_stage.y_velocity) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
+                    (self.stage_commands.x_velocity,self.stage_commands.y_velocity) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
                 except (tf.LookupException, tf.ConnectivityException):
-                    self.vel_stage.x_velocity = self.vel_vector_plate[0,0]
-                    self.vel_stage.y_velocity = -self.vel_vector_plate[1,0]
+                    self.stage_commands.x_velocity = self.vel_vector_plate[0,0]
+                    self.stage_commands.y_velocity = -self.vel_vector_plate[1,0]
 
-                self.vel_pub.publish(self.vel_stage)
+                self.sc_pub.publish(self.stage_commands)
 
     def control_loop(self):
         while not rospy.is_shutdown():
@@ -107,7 +107,7 @@ class PositionControl:
                     self.gain_radius = rospy.get_param("gain_radius")
                     self.gain_theta = rospy.get_param("gain_theta")
 
-                    (self.vel_stage.x_velocity,self.vel_stage.y_velocity) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
+                    (self.stage_commands.x_velocity,self.stage_commands.y_velocity) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
 
                     (trans,q) = self.tf_listener.lookupTransform(self.control_frame,'/Robot',rospy.Time(0))
                     x = trans[0]
@@ -132,10 +132,10 @@ class PositionControl:
                     self.vel_vector_plate[1,0] = vel_vector_plate[1]
 
                     (x_vel_stage,y_vel_stage) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
-                    self.vel_stage.x_velocity += x_vel_stage
-                    self.vel_stage.y_velocity += y_vel_stage
+                    self.stage_commands.x_velocity += x_vel_stage
+                    self.stage_commands.y_velocity += y_vel_stage
 
-                    self.vel_pub.publish(self.vel_stage)
+                    self.sc_pub.publish(self.stage_commands)
                 except (tf.LookupException, tf.ConnectivityException):
                     pass
 
