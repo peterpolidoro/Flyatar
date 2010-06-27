@@ -718,6 +718,7 @@ static void Motor_Set_Values(MotorStatus_t MotorSetpoint[])
 {
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
     {
+      Motor[Motor_N].Update = (MotorUpdateBits & (1<<Motor_N));
       if (Motor[Motor_N].Update)
         {
           ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
@@ -906,39 +907,39 @@ ISR(INPOSITION_INTERRUPT)
     {
       if (TableEntry < TableEnd)
         {
-          /* Motor_Set_Values(LookupTable[TableEntry]); */
-          for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
-            {
-              /* Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N)); */
-              Motor[Motor_N].Update = (MotorUpdateBits & (1<<Motor_N));
-              if (Motor[Motor_N].Update)
-                {
-                  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-                  {
-                    if (LookupTable[TableEntry][Motor_N].Frequency > Motor[Motor_N].FrequencyMax)
-                      {
-                        Motor[Motor_N].Frequency = Motor[Motor_N].FrequencyMax;
-                      }
-                    else
-                      {
-                        Motor[Motor_N].Frequency = LookupTable[TableEntry][Motor_N].Frequency;
-                      }
-                    Motor[Motor_N].PositionSetPoint = LookupTable[TableEntry][Motor_N].Position;
-                    if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position)
-                      {
-                        Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos;
-                      }
-                    else if (Motor[Motor_N].PositionSetPoint < Motor[Motor_N].Position)
-                      {
-                        Motor[Motor_N].Direction = Motor[Motor_N].DirectionNeg;
-                      }
-                    else
-                      {
-                        Motor[Motor_N].Frequency = 0;
-                      }
-                  }
-                }
-            }
+          Motor_Set_Values(LookupTable[TableEntry]);
+          /* for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ ) */
+          /*   { */
+          /*     /\* Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N)); *\/ */
+          /*     Motor[Motor_N].Update = (MotorUpdateBits & (1<<Motor_N)); */
+          /*     if (Motor[Motor_N].Update) */
+          /*       { */
+          /*         ATOMIC_BLOCK(ATOMIC_RESTORESTATE) */
+          /*         { */
+          /*           if (LookupTable[TableEntry][Motor_N].Frequency > Motor[Motor_N].FrequencyMax) */
+          /*             { */
+          /*               Motor[Motor_N].Frequency = Motor[Motor_N].FrequencyMax; */
+          /*             } */
+          /*           else */
+          /*             { */
+          /*               Motor[Motor_N].Frequency = LookupTable[TableEntry][Motor_N].Frequency; */
+          /*             } */
+          /*           Motor[Motor_N].PositionSetPoint = LookupTable[TableEntry][Motor_N].Position; */
+          /*           if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position) */
+          /*             { */
+          /*               Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos; */
+          /*             } */
+          /*           else if (Motor[Motor_N].PositionSetPoint < Motor[Motor_N].Position) */
+          /*             { */
+          /*               Motor[Motor_N].Direction = Motor[Motor_N].DirectionNeg; */
+          /*             } */
+          /*           else */
+          /*             { */
+          /*               Motor[Motor_N].Frequency = 0; */
+          /*             } */
+          /*         } */
+          /*       } */
+          /*   } */
           TableEntry++;
           Motor_Update_All();
         }
