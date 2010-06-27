@@ -631,6 +631,8 @@ static void Motor_Update_All(void)
 {
   /* Set InPositionPin low (PORTE pin 5) */
   PORTE &= ~(1<<PB5);
+  *Motor[2].DirectionPort &= ~(1<<Motor[2].DirectionPin);
+
 
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
     {
