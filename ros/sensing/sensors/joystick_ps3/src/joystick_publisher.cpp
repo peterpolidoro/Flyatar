@@ -43,6 +43,10 @@ void JoystickValuePublisher::joyCallback(const joy::Joy::ConstPtr& joy)
   joy_values.select = joy->buttons[0];
   joy_values.start = joy->buttons[3];
   joy_values.playstation = joy->buttons[16];
+  joy_values.L1 = joy->buttons[10];
+  joy_values.L2 = joy->buttons[8];
+  joy_values.R1 = joy->buttons[11];
+  joy_values.R2 = joy->buttons[9];
 
   joy_values_pub_.publish(joy_values);
 }

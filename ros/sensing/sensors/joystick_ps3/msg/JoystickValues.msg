@@ -13,3 +13,7 @@ bool circle
 bool select
 bool start
 bool playstation
+bool L1
+bool L2
+bool R1
+bool R2
