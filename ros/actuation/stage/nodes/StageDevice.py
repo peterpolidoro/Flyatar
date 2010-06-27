@@ -2,7 +2,7 @@
 #
 # StageDevice.py
 #
-# Control interface for at90usb based xyfly stage board.
+# Control interface for at90usb based flyatar stage board.
 # Provides python module and a command line utility.
 #
 # Note, need to set permissions correctly to get device to respond to nonroot
@@ -18,7 +18,7 @@ import USBDevice
 import ctypes
 import time
 
-# XYFly stage device parameters
+# Flyatar stage device parameters
 _motor_num = 3
 
 # Input/Output Structures
@@ -125,6 +125,29 @@ class StageDevice(USBDevice.USB_Device):
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
+    def update_position(self,x_position,y_position):
+        self.x_pos_mm = x_position
+        self.y_pos_mm = y_position
+        self.x_pos_steps = self._mm_to_steps(self.x_pos_mm)
+        self.y_pos_steps = self._mm_to_steps(self.y_pos_mm)
+
+        if self.x_pos_steps < self.position_min:
+            self.x_pos_steps = self.position_min
+        elif self.position_max < self.x_pos_steps:
+            self.x_pos_steps = self.position_max
+        if self.y_pos_steps < self.position_min:
+            self.y_pos_steps = self.position_min
+        elif self.position_max < self.y_pos_steps:
+            self.y_pos_steps = self.position_max
+
+        self._set_frequency(self.axis_x,self.frequency_max/10)
+        self._set_position(self.axis_x,self.x_pos_steps)
+        self._set_frequency(self.axis_y,self.frequency_max/10)
+        self._set_position(self.axis_y,self.y_pos_steps)
+        self._set_motor_state()
+        x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
+        return x,y,theta,x_velocity,y_velocity,theta_velocity
+
     def get_state(self):
         self._get_motor_state()
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
@@ -196,8 +219,8 @@ class StageDevice(USBDevice.USB_Device):
 #-------------------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    print "Opening XYFly stage device ..."
+    print "Opening Flyatar stage device ..."
     dev = StageDevice()
     dev.print_values()
     dev.close()
-    print "XYFly stage device closed."
+    print "Flyatar stage device closed."

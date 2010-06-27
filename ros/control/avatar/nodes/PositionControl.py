@@ -25,6 +25,8 @@ class PositionControl:
         self.sc_pub = rospy.Publisher("StageCommands",StageCommands)
         self.setpoint_pub = rospy.Publisher("setpoint",Setpoint)
 
+        self.sc_ok_to_publish = False
+
         self.stage_commands = StageCommands()
         self.stage_commands.position_control = False
         self.vel_scale_factor = 100     # mm/s
@@ -105,10 +107,17 @@ class PositionControl:
             if not self.tracking:
                 if data.home:
                     if not self.homing:
+                        self.homing = True
                         self.stage_commands.position_control = True
-                        self.stage_commands.x = self.home_stage.point.x
-                        self.stage_commands.y = self.home_stage.point.y
+                        self.stage_commands.x_position = self.home_stage.point.x
+                        self.stage_commands.y_position = self.home_stage.point.y
+                        self.sc_ok_to_publish = True
+                    else:
+                        self.sc_ok_to_publish = False
                 else:
+                    self.sc_ok_to_publish = True
+                    if self.homing:
+                        self.homing = False
                     self.stage_commands.position_control = False
                     self.radius_velocity = data.radius_velocity*self.vel_scale_factor
                     self.tangent_velocity = data.tangent_velocity*self.vel_scale_factor
@@ -121,7 +130,8 @@ class PositionControl:
                         self.stage_commands.x_velocity = self.vel_vector_plate[0,0]
                         self.stage_commands.y_velocity = -self.vel_vector_plate[1,0]
 
-                self.sc_pub.publish(self.stage_commands)
+                if self.sc_ok_to_publish:
+                    self.sc_pub.publish(self.stage_commands)
 
     def control_loop(self):
         while not rospy.is_shutdown():

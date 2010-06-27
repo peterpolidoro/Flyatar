@@ -7,10 +7,10 @@ from stage.srv import *
 
 class StageCommunicator():
     def __init__(self):
-        print "Opening XYFly stage device..."
+        print "Opening Flyatar stage device..."
         self.dev = StageDevice.StageDevice()
         self.dev.print_values()
-        self.response = Velocity_StateResponse()
+        self.response = Stage_StateResponse()
         self.min_velocity = 1
 
     def _fill_response(self,return_state):
@@ -25,7 +25,7 @@ class StageCommunicator():
 
     def close(self):
         self.dev.close()
-        print "XYFly stage device closed."
+        print "Flyatar stage device closed."
 
     def get_stage_state(self,req):
         return_state = self.dev.return_state()
@@ -43,11 +43,19 @@ class StageCommunicator():
         self._fill_response(return_state)
         return self.response
 
+    def set_stage_position(self,req):
+        x_position = req.x_position
+        y_position = req.y_position
+        return_state = self.dev.update_position(x_position,y_position)
+        self._fill_response(return_state)
+        return self.response
+
 if __name__ == '__main__':
     rospy.init_node('StageCommunicator', anonymous=True)
     sc = StageCommunicator()
-    s_gss = rospy.Service('get_stage_state', Velocity_State, sc.get_stage_state)
-    s_ssv = rospy.Service('set_stage_velocity', Velocity_State, sc.set_stage_velocity)
+    s_gss = rospy.Service('get_stage_state', Stage_State, sc.get_stage_state)
+    s_ssv = rospy.Service('set_stage_velocity', Stage_State, sc.set_stage_velocity)
+    s_ssp = rospy.Service('set_stage_position', Stage_State, sc.set_stage_position)
 
     while not rospy.is_shutdown():
         rospy.spin()
