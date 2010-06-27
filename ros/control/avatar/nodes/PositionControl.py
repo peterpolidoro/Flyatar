@@ -35,18 +35,23 @@ class PositionControl:
 
         self.control_frame = "Plate"
 
-        self.home_plate = PointStamped()
-        self.home_plate.header.frame_id = "Plate"
-        self.home_plate.point.x = 0
-        self.home_plate.point.y = 0
-        self.home_plate.point.z = 0
-        self.home_stage_initialized = False
-        while not self.home_stage_initialized:
-            try:
-                self.home_stage = self.tf_listener.transformPoint("Stage",self.home_plate)
-                self.home_stage_initialized = True
-            except (tf.LookupException, tf.ConnectivityException):
-                pass
+        self.robot_position = PointStamped()
+        self.robot_position.header.frame_id = "Robot"
+        self.robot_position.point.x = 0
+        self.robot_position.point.y = 0
+        self.robot_position.point.z = 0
+        self.target_point = PointStamped()
+        self.target_point.header.frame_id = "Plate"
+        self.target_point.point.x = 0
+        self.target_point.point.y = 0
+        self.target_point.point.z = 0
+        # self.home_stage_initialized = False
+        # while not self.home_stage_initialized:
+        #     try:
+        #         self.home_stage = self.tf_listener.transformPoint("Stage",self.target_point)
+        #         self.home_stage_initialized = True
+        #     except (tf.LookupException, tf.ConnectivityException):
+        #         pass
 
         self.homing = False
 
@@ -88,6 +93,36 @@ class PositionControl:
         y_vel_stage = vel_vector_stage[1]
         return [x_vel_stage,y_vel_stage]
 
+    def set_position_velocity(self,x_target,y_target,frame_target,vel_mag):
+        self.target_point.header.frame_id = frame_target
+        self.target_point.point.x = x_target
+        self.target_point.point.y = y_target
+
+        target_acquired = False
+        while not target_acquired:
+            try:
+                target_point_stage = self.tf_listener.transformPoint("Stage",self.target_point)
+                self.target_acquired = True
+            except (tf.LookupException, tf.ConnectivityException):
+                pass
+
+        robot_position_acquired = False
+        while not robot_position_acquired:
+            try:
+                robot_position_stage = self.tf_listener.transformPoint("Stage",self.robot_position)
+                self.robot_position_acquired = True
+            except (tf.LookupException, tf.ConnectivityException):
+                pass
+
+        self.stage_commands.x_position = target_point_stage.point.x
+        self.stage_commands.y_position = target_point_stage.point.y
+
+        delta_x = abs(target_point_stage.point.x - robot_position_stage.point.x)
+        delta_y = abs(target_point_stage.point.y - robot_position_stage.point.y)
+        alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
+        self.stage_commands.x_velocity = alpha*delta_x
+        self.stage_commands.y_velocity = alpha*delta_y
+
     def commands_callback(self,data):
         if self.initialized:
             self.control_frame = data.header.frame_id
@@ -109,8 +144,9 @@ class PositionControl:
                     if not self.homing:
                         self.homing = True
                         self.stage_commands.position_control = True
-                        self.stage_commands.x_position = self.home_stage.point.x
-                        self.stage_commands.y_position = self.home_stage.point.y
+                        self.set_position_velocity(0,0,self.control_frame,self.vel_scale_factor/10)
+                        # self.stage_commands.x_position = self.home_stage.point.x
+                        # self.stage_commands.y_position = self.home_stage.point.y
                         self.sc_ok_to_publish = True
                     else:
                         self.sc_ok_to_publish = False

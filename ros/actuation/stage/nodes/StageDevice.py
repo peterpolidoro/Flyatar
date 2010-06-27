@@ -125,11 +125,15 @@ class StageDevice(USBDevice.USB_Device):
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
-    def update_position(self,x_position,y_position):
+    def update_position(self,x_position,y_position,x_velocity,y_velocity):
         self.x_pos_mm = x_position
         self.y_pos_mm = y_position
         self.x_pos_steps = self._mm_to_steps(self.x_pos_mm)
         self.y_pos_steps = self._mm_to_steps(self.y_pos_mm)
+        self.x_vel_mm = x_velocity
+        self.y_vel_mm = y_velocity
+        self.x_vel_steps = self._mm_to_steps(self.x_vel_mm)
+        self.y_vel_steps = self._mm_to_steps(self.y_vel_mm)
 
         if self.x_pos_steps < self.position_min:
             self.x_pos_steps = self.position_min
@@ -140,9 +144,16 @@ class StageDevice(USBDevice.USB_Device):
         elif self.position_max < self.y_pos_steps:
             self.y_pos_steps = self.position_max
 
-        self._set_frequency(self.axis_x,self.frequency_max/10)
+        if self.frequency_max < self.x_vel_steps:
+            self.y_vel_steps = (self.y_vel_steps/self.x_velocity_steps)*self.frequency_max
+            self.x_vel_steps = self.frequency_max
+        if self.frequency_max < self.y_vel_steps:
+            self.x_vel_steps = (self.x_vel_steps/self.y_velocity_steps)*self.frequency_max
+            self.y_vel_steps = self.frequency_max
+
+        self._set_frequency(self.axis_x,self.x_vel_steps)
         self._set_position(self.axis_x,self.x_pos_steps)
-        self._set_frequency(self.axis_y,self.frequency_max/10)
+        self._set_frequency(self.axis_y,self.y_vel_steps)
         self._set_position(self.axis_y,self.y_pos_steps)
         self._set_motor_state()
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()

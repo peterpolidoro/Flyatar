@@ -46,7 +46,9 @@ class StageCommunicator():
     def set_stage_position(self,req):
         x_position = req.x_position
         y_position = req.y_position
-        return_state = self.dev.update_position(x_position,y_position)
+        x_velocity = req.x_velocity
+        y_velocity = req.y_velocity
+        return_state = self.dev.update_position(x_position,y_position,x_velocity,y_velocity)
         self._fill_response(return_state)
         return self.response
 
