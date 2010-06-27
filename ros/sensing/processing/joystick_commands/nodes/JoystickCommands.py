@@ -30,7 +30,7 @@ class JoystickCommandPublisher:
     self.frame_bool = self.frame_bool ^ data.select
     self.tracking_bool = self.tracking_bool ^ data.playstation
     self.command_values.tracking = self.tracking_bool
-    self.home_bool = self.home_bool ^ data.L1
+    self.home_bool = self.home_bool ^ data.start
     self.command_values.home = self.home_bool
     self.command_values.header.frame_id = self.output_frame[self.frame_bool]
     if data.triangle:
