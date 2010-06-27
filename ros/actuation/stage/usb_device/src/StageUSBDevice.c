@@ -764,12 +764,12 @@ ISR(MOTOR_2_INTERRUPT)
           Timer_Off(Motor[2].Timer);
           Motor[2].InPosition = 1;
           /* Add this to test drift problem... */
-          *Motor[2].DirectionPort &= ~(1<<Motor[2].DirectionPin);
           /* If all motors are in position, set InPosition interrupt */
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
+              *Motor[2].DirectionPort &= ~(1<<Motor[2].DirectionPin);
             }
         }
     }
@@ -781,7 +781,7 @@ ISR(INPOSITION_INTERRUPT) {
   PORTE |= (1<<PB4);
   /* Set InPositionPin high (PORTE pin 5) */
   PORTE |= (1<<PB5);
-  *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin);
+  /* *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin); */
 
   /* PWM_Update(4); */
   return;
