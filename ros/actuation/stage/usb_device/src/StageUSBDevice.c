@@ -708,6 +708,8 @@ ISR(MOTOR_0_INTERRUPT)
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
               *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin);
+              /* Set InPositionPin high (PORTE pin 5) */
+              PORTE |= (1<<PB5);
             }
         }
       else if (Motor[0].InPosition)
@@ -745,6 +747,8 @@ ISR(MOTOR_1_INTERRUPT)
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
               *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin);
+              /* Set InPositionPin high (PORTE pin 5) */
+              PORTE |= (1<<PB5);
             }
         }
       else if (Motor[1].InPosition)
@@ -778,6 +782,8 @@ ISR(MOTOR_2_INTERRUPT)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
+              /* Set InPositionPin high (PORTE pin 5) */
+              PORTE |= (1<<PB5);
             }
         }
       else if (Motor[2].InPosition)
