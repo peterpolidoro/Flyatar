@@ -103,17 +103,17 @@ class PositionControl:
         while not target_acquired:
             try:
                 target_point_stage = self.tf_listener.transformPoint("Stage",self.target_point)
-                self.target_acquired = True
+                target_acquired = True
             except (tf.LookupException, tf.ConnectivityException):
-                pass
+                rospy.logwarn("Error finding target_point_stage!")
 
         robot_position_acquired = False
         while not robot_position_acquired:
             try:
                 robot_position_stage = self.tf_listener.transformPoint("Stage",self.robot_position)
-                self.robot_position_acquired = True
+                robot_position_acquired = True
             except (tf.LookupException, tf.ConnectivityException):
-                pass
+                rospy.logwarn("Error finding robot_position_stage!")
 
         self.stage_commands.x_position = target_point_stage.point.x
         self.stage_commands.y_position = target_point_stage.point.y
