@@ -212,9 +212,9 @@ TASK(USB_ProcessPacket)
                   break;
                 case USB_CMD_SET_STATE:
                   {
-                      if (!IO_Enabled)
+                    if (!IO_Enabled)
                       {
-                      IO_Init();
+                        IO_Init();
                       }
                     for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
                       {
@@ -247,7 +247,7 @@ TASK(USB_ProcessPacket)
                             }
                           }
                       }
-                      Motor_Update_All();
+                    Motor_Update_All();
                   }
                   break;
                 default:
@@ -705,8 +705,6 @@ ISR(MOTOR_0_INTERRUPT)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
-              /* Set InPositionPin high (PORTE pin 5) */
-              PORTE |= (1<<PB5);
             }
         }
       else if (Motor[0].InPosition)
@@ -743,8 +741,6 @@ ISR(MOTOR_1_INTERRUPT)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
-              /* Set InPositionPin high (PORTE pin 5) */
-              PORTE |= (1<<PB5);
             }
         }
       else if (Motor[1].InPosition)
@@ -778,8 +774,6 @@ ISR(MOTOR_2_INTERRUPT)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
               PORTE &= ~(1<<PB4);
-              /* Set InPositionPin high (PORTE pin 5) */
-              PORTE |= (1<<PB5);
             }
         }
       else if (Motor[2].InPosition)
@@ -790,11 +784,12 @@ ISR(MOTOR_2_INTERRUPT)
   return;
 }
 
-ISR(INPOSITION_INTERRUPT) {
-  /* Set interrupt 4 high to disable interrupt (PORTE pin 4) */
-  PORTE |= (1<<PB4);
+ISR(INPOSITION_INTERRUPT)
+{
   /* Set InPositionPin high (PORTE pin 5) */
   PORTE |= (1<<PB5);
+  /* Set interrupt 4 high to disable interrupt (PORTE pin 4) */
+  PORTE |= (1<<PB4);
   /* PWM_Update(4); */
   return;
 }
