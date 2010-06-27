@@ -336,6 +336,12 @@ static void IO_Init(void)
   /* Set interrupt 4 high to start (PORTE pin 4) */
   PORTE |= (1<<PB4);
 
+  /* Set data direction of InPositionPin to output (PORTE pin 5) */
+  DDRE |= (1<<DDB5);
+
+  /* Set InPositionPin low to start (PORTE pin 5) */
+  PORTE &= ~(1<<PB5);
+
   IO_Enabled = 1;
 }
 
@@ -620,6 +626,9 @@ static void Motor_Update(uint8_t Motor_N)
 
 static void Motor_Update_All(void)
 {
+  /* Set InPositionPin low (PORTE pin 5) */
+  PORTE &= ~(1<<PB5);
+
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
     {
       Motor_Update(Motor_N);
@@ -762,6 +771,9 @@ ISR(MOTOR_2_INTERRUPT)
 ISR(INPOSITION_INTERRUPT) {
   /* Set interrupt 4 high to disable interrupt (PORTE pin 4) */
   PORTE |= (1<<PB4);
+  /* Set InPositionPin high (PORTE pin 5) */
+  PORTE |= (1<<PB5);
+
   /* PWM_Update(4); */
   return;
 }
