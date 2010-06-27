@@ -52,12 +52,18 @@ class StageCommunicator():
         self._fill_response(return_state)
         return self.response
 
+    def stage_lookup_table_move(self,req):
+        return_state = self.dev.lookup_table_move()
+        self._fill_response(return_state)
+        return self.response
+
 if __name__ == '__main__':
     rospy.init_node('StageCommunicator', anonymous=True)
     sc = StageCommunicator()
     s_gss = rospy.Service('get_stage_state', Stage_State, sc.get_stage_state)
     s_ssv = rospy.Service('set_stage_velocity', Stage_State, sc.set_stage_velocity)
     s_ssp = rospy.Service('set_stage_position', Stage_State, sc.set_stage_position)
+    s_sltm = rospy.Service('stage_lookup_table_move', Stage_State, sc.stage_lookup_table_move)
 
     while not rospy.is_shutdown():
         rospy.spin()

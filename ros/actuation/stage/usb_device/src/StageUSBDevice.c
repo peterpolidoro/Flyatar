@@ -89,6 +89,37 @@ int main(void)
   /* Initialize Motors */
   Motor_Init();
 
+  /* Initialize Software Interrupt */
+  Interrupt_Init();
+
+  /* Dummy initialized LookupTable */
+  LookupTable[0][0].Frequency = 5000;
+  LookupTable[0][0].Position = 20000;
+  LookupTable[0][1].Frequency = 5000;
+  LookupTable[0][1].Position = 20000;
+
+  LookupTable[1][0].Frequency = 5000;
+  LookupTable[1][0].Position = 28000;
+  LookupTable[1][1].Frequency = 0;
+  LookupTable[1][1].Position = 20000;
+
+  LookupTable[2][0].Frequency = 0;
+  LookupTable[2][0].Position = 28000;
+  LookupTable[2][1].Frequency = 5000;
+  LookupTable[2][1].Position = 28000;
+
+  LookupTable[3][0].Frequency = 5000;
+  LookupTable[3][0].Position = 20000;
+  LookupTable[3][1].Frequency = 0;
+  LookupTable[3][1].Position = 28000;
+
+  LookupTable[4][0].Frequency = 0;
+  LookupTable[4][0].Position = 20000;
+  LookupTable[4][1].Frequency = 5000;
+  LookupTable[4][1].Position = 20000;
+
+  TableEnd = 5;
+
   /* Scheduling - routine never returns, so put this last in the main function */
   Scheduler_Start();
 }
@@ -704,9 +735,7 @@ ISR(MOTOR_0_INTERRUPT)
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
-              /* PORTE &= ~(1<<PB4); */
-              /* Set InPositionPin high (PORTE pin 5) */
-              PORTE |= (1<<PB5);
+              PORTE &= ~(1<<PB4);
             }
         }
       else if (Motor[0].InPosition)
@@ -742,9 +771,7 @@ ISR(MOTOR_1_INTERRUPT)
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
-              /* PORTE &= ~(1<<PB4); */
-              /* Set InPositionPin high (PORTE pin 5) */
-              PORTE |= (1<<PB5);
+              PORTE &= ~(1<<PB4);
             }
         }
       else if (Motor[1].InPosition)
@@ -777,9 +804,7 @@ ISR(MOTOR_2_INTERRUPT)
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
               /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
-              /* PORTE &= ~(1<<PB4); */
-              /* Set InPositionPin high (PORTE pin 5) */
-              PORTE |= (1<<PB5);
+              PORTE &= ~(1<<PB4);
             }
         }
       else if (Motor[2].InPosition)

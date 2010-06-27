@@ -41,6 +41,12 @@ class StageUpdate:
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
+    rospy.wait_for_service('stage_lookup_table_move')
+    try:
+      self.stage_lookup_table_move = rospy.ServiceProxy('stage_lookup_table_move', Stage_State)
+    except rospy.ServiceException, e:
+      print "Service call failed: %s"%e
+
     self.initialized = True
 
   def stage_commands_callback(self,data):
@@ -62,6 +68,7 @@ class StageUpdate:
         try:
           if self.update_position:
             response = self.set_stage_position(self.stage_commands)
+            # response = self.stage_lookup_table_move(self.stage_commands)
             x = response.x
             y = response.y
             self.update_position = False

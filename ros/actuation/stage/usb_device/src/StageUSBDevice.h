@@ -56,6 +56,7 @@
 /* USB Commands */
 #define USB_CMD_GET_STATE       1
 #define USB_CMD_SET_STATE       2
+#define USB_CMD_LOOKUP_TABLE_MOVE 3
 #define USB_CMD_AVR_RESET       200
 #define USB_CMD_AVR_DFU_MODE    201
 
@@ -163,7 +164,7 @@ USBPacketInWrapper_t    USBPacketIn;
 uint8_t                 IO_Enabled=0;
 uint8_t                 Interrupt_Enabled=0;
 volatile MotorStatus_t  LookupTable[LOOKUP_NUM][MOTOR_NUM];
-uint8_t                 TableEnd=1;
+uint8_t                 TableEnd=0;
 uint8_t                 TableEntry=0;
 
 /* Task Definitions: */

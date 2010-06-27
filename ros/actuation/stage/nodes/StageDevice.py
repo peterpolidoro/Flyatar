@@ -60,6 +60,7 @@ class StageDevice(USBDevice.USB_Device):
         # USB Command IDs
         self.USB_CMD_GET_STATE = ctypes.c_uint8(1)
         self.USB_CMD_SET_STATE = ctypes.c_uint8(2)
+        self.USB_CMD_LOOKUP_TABLE_MOVE = ctypes.c_uint8(3)
 
         self.USBPacketOut = USBPacketOut_t()
         self.USBPacketIn = USBPacketIn_t()
@@ -159,6 +160,11 @@ class StageDevice(USBDevice.USB_Device):
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
+    def lookup_table_move(self):
+        self._lookup_table_move()
+        x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
+        return x,y,theta,x_velocity,y_velocity,theta_velocity
+
     def get_state(self):
         self._get_motor_state()
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
@@ -200,6 +206,15 @@ class StageDevice(USBDevice.USB_Device):
         val_list = self.usb_cmd(outdata,intypes)
         cmd_id = val_list[0]
         self._check_cmd_id(self.USB_CMD_SET_STATE,cmd_id)
+        self.USBPacketIn = val_list[1]
+
+    def _lookup_table_move(self):
+        self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
+        outdata = [self.USB_CMD_LOOKUP_TABLE_MOVE, self.USBPacketOut]
+        intypes = [ctypes.c_uint8, USBPacketIn_t]
+        val_list = self.usb_cmd(outdata,intypes)
+        cmd_id = val_list[0]
+        self._check_cmd_id(self.USB_CMD_LOOKUP_TABLE_MOVE,cmd_id)
         self.USBPacketIn = val_list[1]
 
     def _print_motor_state(self):
