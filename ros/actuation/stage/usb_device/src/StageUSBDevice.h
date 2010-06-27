@@ -191,6 +191,7 @@ static void Timer_Off(uint8_t Timer_N);
 static void Motor_Init(void);
 static void Motor_Update(uint8_t Motor_N);
 static void Motor_Update_All(void);
+static void Motor_Set_Values(MotorStatus_t MotorSetpoint[]);
 //static void Position_Update(volatile uint8_t Motor_N);
 #endif
 
