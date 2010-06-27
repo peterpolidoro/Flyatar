@@ -26,11 +26,26 @@ class PositionControl:
         self.setpoint_pub = rospy.Publisher("setpoint",Setpoint)
 
         self.stage_commands = StageCommands()
+        self.stage_commands.position_control = False
         self.vel_scale_factor = 100     # mm/s
         self.vel_vector_plate = numpy.array([[0],[0],[0],[1]])
         self.vel_vector_robot = numpy.array([[0],[0],[0],[1]])
 
         self.control_frame = "Plate"
+
+        self.home_plate = PointStamped()
+        self.home_plate.header.frame_id = "Plate"
+        self.home_plate.point.x = 0
+        self.home_plate.point.y = 0
+        self.home_plate.point.z = 0
+        self.home_stage_initialized = False
+        while not self.home_stage_initialized:
+            try:
+                self.home_stage = self.tf_listener.transformPoint("Stage",self.home_plate)
+                self.home_stage_initialized = True
+            except (tf.LookupException, tf.ConnectivityException):
+
+        self.homing = False
 
         self.setpoint = Setpoint()
         self.setpoint.header.frame_id = self.control_frame
@@ -87,16 +102,23 @@ class PositionControl:
             self.tracking = data.tracking
 
             if not self.tracking:
-                self.radius_velocity = data.radius_velocity*self.vel_scale_factor
-                self.tangent_velocity = data.tangent_velocity*self.vel_scale_factor
-                self.vel_vector_plate[0,0] = data.x_velocity*self.vel_scale_factor
-                self.vel_vector_plate[1,0] = data.y_velocity*self.vel_scale_factor
+                if data.home:
+                    if not self.homing:
+                        self.stage_commands.position_control = True
+                        self.stage_commands.x = self.home_stage.point.x
+                        self.stage_commands.y = self.home_stage.point.y
+                else:
+                    self.stage_commands.position_control = False
+                    self.radius_velocity = data.radius_velocity*self.vel_scale_factor
+                    self.tangent_velocity = data.tangent_velocity*self.vel_scale_factor
+                    self.vel_vector_plate[0,0] = data.x_velocity*self.vel_scale_factor
+                    self.vel_vector_plate[1,0] = data.y_velocity*self.vel_scale_factor
 
-                try:
-                    (self.stage_commands.x_velocity,self.stage_commands.y_velocity) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
-                except (tf.LookupException, tf.ConnectivityException):
-                    self.stage_commands.x_velocity = self.vel_vector_plate[0,0]
-                    self.stage_commands.y_velocity = -self.vel_vector_plate[1,0]
+                    try:
+                        (self.stage_commands.x_velocity,self.stage_commands.y_velocity) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
+                    except (tf.LookupException, tf.ConnectivityException):
+                        self.stage_commands.x_velocity = self.vel_vector_plate[0,0]
+                        self.stage_commands.y_velocity = -self.vel_vector_plate[1,0]
 
                 self.sc_pub.publish(self.stage_commands)
 
