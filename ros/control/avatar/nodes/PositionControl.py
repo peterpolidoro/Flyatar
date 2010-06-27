@@ -145,11 +145,11 @@ class PositionControl:
                     if not self.homing:
                         self.homing = True
                         self.stage_commands.position_control = True
-                        # self.set_position_velocity(0,0,self.control_frame,self.vel_scale_factor/10)
-                        self.stage_commands.x_position = self.target_point.point.x
-                        self.stage_commands.y_position = self.target_point.point.y
-                        self.stage_commands.x_velocity = self.vel_scale_factor/10
-                        self.stage_commands.y_velocity = self.vel_scale_factor/10
+                        self.set_position_velocity(0,0,self.control_frame,self.vel_scale_factor/10)
+                        # self.stage_commands.x_position = self.target_point.point.x
+                        # self.stage_commands.y_position = self.target_point.point.y
+                        # self.stage_commands.x_velocity = self.vel_scale_factor/10
+                        # self.stage_commands.y_velocity = self.vel_scale_factor/10
                         self.sc_ok_to_publish = True
                     else:
                         self.sc_ok_to_publish = False
