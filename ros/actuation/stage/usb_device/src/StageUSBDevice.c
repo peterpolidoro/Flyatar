@@ -908,7 +908,7 @@ ISR(INPOSITION_INTERRUPT)
           /* Motor_Set_Values(LookupTable[TableEntry]); */
           for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
             {
-              Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N));
+              /* Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N)); */
               if (Motor[Motor_N].Update)
                 {
                   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
