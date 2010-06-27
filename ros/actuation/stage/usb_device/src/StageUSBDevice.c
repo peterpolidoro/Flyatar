@@ -247,6 +247,7 @@ TASK(USB_ProcessPacket)
                       {
                         IO_Init();
                       }
+                    LookupTableMove = 0;
                     for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
                       {
                         Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N));
@@ -287,46 +288,41 @@ TASK(USB_ProcessPacket)
                       {
                         IO_Init();
                       }
-                    InPosition = 0;
+                    LookupTableMove = 1;
                     TableEntry = 0;
-                    while ( TableEntry < TableEnd )
+                    for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
                       {
-                        for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
+                        Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N));
+                        if (Motor[Motor_N].Update)
                           {
-                            Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N));
-                            if (Motor[Motor_N].Update)
-                              {
-                                ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+                            ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+                            {
+                              if (LookupTable[TableEntry][Motor_N].Frequency > Motor[Motor_N].FrequencyMax)
                                 {
-                                  if (LookupTable[TableEntry][Motor_N].Frequency > Motor[Motor_N].FrequencyMax)
-                                    {
-                                      Motor[Motor_N].Frequency = Motor[Motor_N].FrequencyMax;
-                                    }
-                                  else
-                                    {
-                                      Motor[Motor_N].Frequency = LookupTable[TableEntry][Motor_N].Frequency;
-                                    }
-                                  Motor[Motor_N].PositionSetPoint = LookupTable[TableEntry][Motor_N].Position;
-                                  if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position)
-                                    {
-                                      Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos;
-                                    }
-                                  else if (Motor[Motor_N].PositionSetPoint < Motor[Motor_N].Position)
-                                    {
-                                      Motor[Motor_N].Direction = Motor[Motor_N].DirectionNeg;
-                                    }
-                                  else
-                                    {
-                                      Motor[Motor_N].Frequency = 0;
-                                    }
+                                  Motor[Motor_N].Frequency = Motor[Motor_N].FrequencyMax;
                                 }
-                              }
+                              else
+                                {
+                                  Motor[Motor_N].Frequency = LookupTable[TableEntry][Motor_N].Frequency;
+                                }
+                              Motor[Motor_N].PositionSetPoint = LookupTable[TableEntry][Motor_N].Position;
+                              if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position)
+                                {
+                                  Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos;
+                                }
+                              else if (Motor[Motor_N].PositionSetPoint < Motor[Motor_N].Position)
+                                {
+                                  Motor[Motor_N].Direction = Motor[Motor_N].DirectionNeg;
+                                }
+                              else
+                                {
+                                  Motor[Motor_N].Frequency = 0;
+                                }
+                            }
                           }
-                        Motor_Update_All();
-                        while (!InPosition)
-                          ;
-                        TableEntry++;
                       }
+                    TableEntry++;
+                    Motor_Update_All();
                   }
                   break;
                 default:
@@ -867,10 +863,55 @@ ISR(INPOSITION_INTERRUPT)
 {
   /* Set InPositionPin high (PORTE pin 5) */
   PORTE |= (1<<PB5);
+
   /* Set interrupt 4 high to disable interrupt (PORTE pin 4) */
   PORTE |= (1<<PB4);
-  InPosition = 1;
-  /* PWM_Update(4); */
+
+  if (LookupTableMove)
+    {
+      if (TableEntry < TableEnd)
+        {
+          for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
+            {
+              Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N));
+              if (Motor[Motor_N].Update)
+                {
+                  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+                  {
+                    if (LookupTable[TableEntry][Motor_N].Frequency > Motor[Motor_N].FrequencyMax)
+                      {
+                        Motor[Motor_N].Frequency = Motor[Motor_N].FrequencyMax;
+                      }
+                    else
+                      {
+                        Motor[Motor_N].Frequency = LookupTable[TableEntry][Motor_N].Frequency;
+                      }
+                    Motor[Motor_N].PositionSetPoint = LookupTable[TableEntry][Motor_N].Position;
+                    if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position)
+                      {
+                        Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos;
+                      }
+                    else if (Motor[Motor_N].PositionSetPoint < Motor[Motor_N].Position)
+                      {
+                        Motor[Motor_N].Direction = Motor[Motor_N].DirectionNeg;
+                      }
+                    else
+                      {
+                        Motor[Motor_N].Frequency = 0;
+                      }
+                  }
+                }
+            }
+
+          TableEntry++;
+          Motor_Update_All();
+        }
+      else
+        {
+          LookupTableMove = 0;
+        }
+    }
+
   return;
 }
 
