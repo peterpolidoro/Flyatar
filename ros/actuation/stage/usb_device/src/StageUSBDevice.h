@@ -166,6 +166,7 @@ uint8_t                 Interrupt_Enabled=0;
 volatile MotorStatus_t  LookupTable[LOOKUP_NUM][MOTOR_NUM];
 uint8_t                 TableEnd=0;
 uint8_t                 TableEntry=0;
+uint8_t                 InPosition=0;
 
 /* Task Definitions: */
 TASK(USB_ProcessPacket);

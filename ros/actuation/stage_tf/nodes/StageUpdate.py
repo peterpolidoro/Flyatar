@@ -67,8 +67,8 @@ class StageUpdate:
       if self.initialized:
         try:
           if self.update_position:
-            response = self.set_stage_position(self.stage_commands)
-            # response = self.stage_lookup_table_move(self.stage_commands)
+            # response = self.set_stage_position(self.stage_commands)
+            response = self.stage_lookup_table_move(self.stage_commands)
             x = response.x
             y = response.y
             self.update_position = False

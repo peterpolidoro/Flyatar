@@ -281,6 +281,54 @@ TASK(USB_ProcessPacket)
                     Motor_Update_All();
                   }
                   break;
+                case USB_CMD_LOOKUP_TABLE_MOVE:
+                  {
+                    if (!IO_Enabled)
+                      {
+                        IO_Init();
+                      }
+                    InPosition = 0;
+                    TableEntry = 0;
+                    while ( TableEntry < TableEnd )
+                      {
+                        for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
+                          {
+                            Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N));
+                            if (Motor[Motor_N].Update)
+                              {
+                                ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+                                {
+                                  if (LookupTable[TableEntry][Motor_N].Frequency > Motor[Motor_N].FrequencyMax)
+                                    {
+                                      Motor[Motor_N].Frequency = Motor[Motor_N].FrequencyMax;
+                                    }
+                                  else
+                                    {
+                                      Motor[Motor_N].Frequency = LookupTable[TableEntry][Motor_N].Frequency;
+                                    }
+                                  Motor[Motor_N].PositionSetPoint = LookupTable[TableEntry][Motor_N].Position;
+                                  if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position)
+                                    {
+                                      Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos;
+                                    }
+                                  else if (Motor[Motor_N].PositionSetPoint < Motor[Motor_N].Position)
+                                    {
+                                      Motor[Motor_N].Direction = Motor[Motor_N].DirectionNeg;
+                                    }
+                                  else
+                                    {
+                                      Motor[Motor_N].Frequency = 0;
+                                    }
+                                }
+                              }
+                          }
+                        Motor_Update_All();
+                        while (!InPosition)
+                          ;
+                        TableEntry++;
+                      }
+                  }
+                  break;
                 default:
                   {
                   }
@@ -821,6 +869,7 @@ ISR(INPOSITION_INTERRUPT)
   PORTE |= (1<<PB5);
   /* Set interrupt 4 high to disable interrupt (PORTE pin 4) */
   PORTE |= (1<<PB4);
+  InPosition = 1;
   /* PWM_Update(4); */
   return;
 }
