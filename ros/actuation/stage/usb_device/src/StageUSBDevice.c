@@ -730,6 +730,9 @@ ISR(MOTOR_1_INTERRUPT)
           Motor[1].InPosition = 1;
           /* Add this to test drift problem... */
           *Motor[1].DirectionPort &= ~(1<<Motor[1].DirectionPin);
+
+          *Motor[2].DirectionPort |= (1<<Motor[2].DirectionPin);
+
           /* If all motors are in position, set InPosition interrupt */
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
