@@ -29,8 +29,9 @@ class JoystickCommandPublisher:
     self.command_values.tangent_velocity = data.x_right
     self.frame_bool = self.frame_bool ^ data.select
     self.tracking_bool = self.tracking_bool ^ data.playstation
-    self.home_bool = self.home_bool ^ data.L1
     self.command_values.tracking = self.tracking_bool
+    self.home_bool = self.home_bool ^ data.L1
+    self.command_values.home = self.home_bool
     self.command_values.header.frame_id = self.output_frame[self.frame_bool]
     if data.triangle:
       self.command_values.radius_inc = 1
