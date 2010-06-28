@@ -20,6 +20,7 @@ import time
 
 # Flyatar stage device parameters
 _motor_num = 3
+_entries_max = 5
 
 # Input/Output Structures
 class MotorState_t(ctypes.LittleEndianStructure):
@@ -27,18 +28,31 @@ class MotorState_t(ctypes.LittleEndianStructure):
     _fields_ =[('Frequency', ctypes.c_uint16),
                ('Position', ctypes.c_uint16)]
 
+# class USBPacketOut_t(ctypes.LittleEndianStructure):
+#     _pack_ = 1
+#     _fields_ =[('MotorUpdate', ctypes.c_uint8),
+#                ('SetPoint', MotorState_t * _motor_num)]
+
+class LookupTableRow_t(ctypes.LittleEndianStructure):
+    _pack_ = 1
+    _fields_ =[('MotorSetPoint', MotorState_t * _motor_num)]
+
 class USBPacketOut_t(ctypes.LittleEndianStructure):
     _pack_ = 1
     _fields_ =[('MotorUpdate', ctypes.c_uint8),
-               ('SetPoint', MotorState_t * _motor_num)]
+               ('EntryCount', ctypes.c_uint8),
+               ('EntryLocation', ctypes.c_uint8),
+               ('Entry', LookupTableRow_t * _entries_max)]
 
+# Firmware Code for Reference:
+# typedef MotorStatus_t LookupTableRow_t[MOTOR_NUM];
 # typedef struct
 # {
 #   uint8_t       CommandID;
 #   uint8_t       MotorUpdate;
 #   uint8_t       EntryCount;
 #   uint8_t       EntryLocation;
-#   MotorStatus_t Setpoint[ENTRIES_MAX][MOTOR_NUM];
+#   LookupTableRow_t Setpoint[ENTRIES_MAX];
 # } USBPacketOutWrapper_t;
 
 class USBPacketIn_t(ctypes.LittleEndianStructure):
@@ -196,11 +210,17 @@ class StageDevice(USBDevice.USB_Device):
     def _steps_to_mm(self,quantity_steps):
         return quantity_steps/self.steps_per_mm
 
-    def _set_frequency(self,axis,freq):
-        self.USBPacketOut.SetPoint[axis].Frequency = int(freq)
+    # def _set_frequency(self,axis,freq):
+    #     self.USBPacketOut.SetPoint[axis].Frequency = int(freq)
 
-    def _set_position(self,axis,pos):
-        self.USBPacketOut.SetPoint[axis].Position = int(pos)
+    # def _set_position(self,axis,pos):
+    #     self.USBPacketOut.SetPoint[axis].Position = int(pos)
+
+    def _set_frequency(self,axis,freq,entry_n=0):
+        self.USBPacketOut.Entry[entry_n].MotorSetPoint[axis].Frequency = int(freq)
+
+    def _set_position(self,axis,pos,entry_n=0):
+        self.USBPacketOut.Entry[entry_n].MotorSetPoint[axis].Position = int(pos)
 
     def _get_motor_state(self):
         outdata = [self.USB_CMD_GET_STATE]

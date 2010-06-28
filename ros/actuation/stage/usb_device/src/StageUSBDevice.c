@@ -247,8 +247,8 @@ TASK(USB_ProcessPacket)
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableMove = 0;
-                    Motor_Set_Values(USBPacketOut.Setpoint);
-                    /* Motor_Set_Values(USBPacketOut.Setpoint[0]); */
+                    /* Motor_Set_Values(USBPacketOut.Setpoint); */
+                    Motor_Set_Values(USBPacketOut.Setpoint[0]);
                     Motor_Update_All();
                   }
                   break;
@@ -671,7 +671,6 @@ static void Motor_Update_All(void)
     }
 }
 
-/* static void Motor_Set_Values(MotorStatus_t MotorSetpoint[]) */
 static void Motor_Set_Values(LookupTableRow_t MotorSetpoint)
 {
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )

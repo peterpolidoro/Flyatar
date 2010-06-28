@@ -135,27 +135,25 @@ typedef struct
 
 typedef MotorStatus_t LookupTableRow_t[MOTOR_NUM];
 
-typedef struct
-{
-  uint8_t       CommandID;
-  uint8_t       MotorUpdate;
-  /* MotorStatus_t Setpoint[MOTOR_NUM]; */
-  LookupTableRow_t Setpoint;
-} USBPacketOutWrapper_t;
-
 /* typedef struct */
 /* { */
 /*   uint8_t       CommandID; */
 /*   uint8_t       MotorUpdate; */
-/*   uint8_t       EntryCount; */
-/*   uint8_t       EntryLocation; */
-/*   MotorStatus_t Setpoint[ENTRIES_MAX][MOTOR_NUM]; */
+/*   LookupTableRow_t Setpoint; */
 /* } USBPacketOutWrapper_t; */
 
 typedef struct
 {
   uint8_t       CommandID;
-  /* MotorStatus_t MotorStatus[MOTOR_NUM]; */
+  uint8_t       MotorUpdate;
+  uint8_t       EntryCount;
+  uint8_t       EntryLocation;
+  LookupTableRow_t Setpoint[ENTRIES_MAX];
+} USBPacketOutWrapper_t;
+
+typedef struct
+{
+  uint8_t       CommandID;
   LookupTableRow_t MotorStatus;
 } USBPacketInWrapper_t;
 
@@ -178,7 +176,6 @@ USBPacketOutWrapper_t   USBPacketOut;
 USBPacketInWrapper_t    USBPacketIn;
 uint8_t                 IO_Enabled=0;
 uint8_t                 Interrupt_Enabled=0;
-/* volatile MotorStatus_t  LookupTable[LOOKUP_NUM][MOTOR_NUM]; */
 LookupTableRow_t        LookupTable[LOOKUP_NUM];
 uint8_t                 TableEnd=0;
 uint8_t                 TableEntry=0;
@@ -187,7 +184,6 @@ uint8_t                 MotorUpdateBits;
 
 /* Just for testing */
 LookupTableRow_t        LookupTableTest[LOOKUP_NUM];
-/* volatile MotorStatus_t  LookupTableTest[LOOKUP_NUM][MOTOR_NUM]; */
 
 /* Task Definitions: */
 TASK(USB_ProcessPacket);
@@ -212,7 +208,6 @@ static void Timer_Off(uint8_t Timer_N);
 static void Motor_Init(void);
 static void Motor_Update(uint8_t Motor_N);
 static void Motor_Update_All(void);
-/* static void Motor_Set_Values(MotorStatus_t MotorSetpoint[]); */
 static void Motor_Set_Values(LookupTableRow_t MotorSetpoint);
 static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t EntryCount,uint8_t EntryLocation);
 //static void Position_Update(volatile uint8_t Motor_N);
