@@ -196,7 +196,7 @@ class StageDevice(USBDevice.USB_Device):
         self._set_position(self.axis_y,pos_steps_100,0)
 
         self._set_frequency(self.axis_x,vel_steps,1)
-        self._set_position(self.axis_x,pos_steps_120,1)
+        self._set_position(self.axis_x,pos_steps_140,1)
         self._set_frequency(self.axis_y,vel_steps,1)
         self._set_position(self.axis_y,pos_steps_120,1)
 
