@@ -185,6 +185,39 @@ class StageDevice(USBDevice.USB_Device):
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def lookup_table_move(self):
+        vel_steps = self._mm_to_steps(20)
+        pos_steps_100 = self._mm_to_steps(100)
+        pos_steps_120 = self._mm_to_steps(120)
+        pos_steps_140 = self._mm_to_steps(140)
+
+        self._set_frequency(self.axis_x,vel_steps,0)
+        self._set_position(self.axis_x,pos_steps_120,0)
+        self._set_frequency(self.axis_y,vel_steps,0)
+        self._set_position(self.axis_y,pos_steps_100,0)
+
+        self._set_frequency(self.axis_x,vel_steps,1)
+        self._set_position(self.axis_x,pos_steps_120,1)
+        self._set_frequency(self.axis_y,vel_steps,1)
+        self._set_position(self.axis_y,pos_steps_120,1)
+
+        self._set_frequency(self.axis_x,vel_steps,2)
+        self._set_position(self.axis_x,pos_steps_120,2)
+        self._set_frequency(self.axis_y,vel_steps,2)
+        self._set_position(self.axis_y,pos_steps_140,2)
+
+        self._set_frequency(self.axis_x,vel_steps,3)
+        self._set_position(self.axis_x,pos_steps_100,3)
+        self._set_frequency(self.axis_y,vel_steps,3)
+        self._set_position(self.axis_y,pos_steps_120,3)
+
+        self._set_frequency(self.axis_x,vel_steps,4)
+        self._set_position(self.axis_x,pos_steps_120,4)
+        self._set_frequency(self.axis_y,vel_steps,4)
+        self._set_position(self.axis_y,pos_steps_100,4)
+
+        self.USBPacketOut.EntryCount = 5
+        self.USBPacketOut.EntryLocation = 0
+
         self._lookup_table_fill()
         self._lookup_table_move()
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()

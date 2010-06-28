@@ -255,11 +255,11 @@ TASK(USB_ProcessPacket)
                 case USB_CMD_LOOKUP_TABLE_FILL:
                   {
                     LookupTableMove = 0;
-                    Lookup_Table_Fill(LookupTableTest,5,0);
-                    /* if (USBPacketOut.EntryLocation < LOOKUP_NUM) */
-                    /*   { */
-                    /*     Lookup_Table_Fill(USBPacketOut.Setpoint,USBPacketOut.EntryCount,USBPacketOut.EntryLocation); */
-                    /*   } */
+                    /* Lookup_Table_Fill(LookupTableTest,5,0); */
+                    if (USBPacketOut.EntryLocation < LOOKUP_NUM)
+                      {
+                        Lookup_Table_Fill(USBPacketOut.Setpoint,USBPacketOut.EntryCount,USBPacketOut.EntryLocation);
+                      }
                   }
                   break;
                 case USB_CMD_LOOKUP_TABLE_MOVE:
