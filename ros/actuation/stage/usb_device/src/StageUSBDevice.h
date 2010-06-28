@@ -176,14 +176,16 @@ USBPacketOutWrapper_t   USBPacketOut;
 USBPacketInWrapper_t    USBPacketIn;
 uint8_t                 IO_Enabled=0;
 uint8_t                 Interrupt_Enabled=0;
-volatile MotorStatus_t  LookupTable[LOOKUP_NUM][MOTOR_NUM];
+/* volatile MotorStatus_t  LookupTable[LOOKUP_NUM][MOTOR_NUM]; */
+LookupTableRow_t        LookupTable[LOOKUP_NUM];
 uint8_t                 TableEnd=0;
 uint8_t                 TableEntry=0;
 uint8_t                 LookupTableMove=0;
 uint8_t                 MotorUpdateBits;
 
 /* Just for testing */
-volatile MotorStatus_t  LookupTableTest[LOOKUP_NUM][MOTOR_NUM];
+LookupTableRow_t        LookupTableTest[LOOKUP_NUM];
+/* volatile MotorStatus_t  LookupTableTest[LOOKUP_NUM][MOTOR_NUM]; */
 
 /* Task Definitions: */
 TASK(USB_ProcessPacket);

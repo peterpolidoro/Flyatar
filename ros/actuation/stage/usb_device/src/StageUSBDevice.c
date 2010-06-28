@@ -247,18 +247,19 @@ TASK(USB_ProcessPacket)
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableMove = 0;
-                    Motor_Set_Values(USBPacketOut.Setpoint[0]);
+                    Motor_Set_Values(USBPacketOut.Setpoint);
+                    /* Motor_Set_Values(USBPacketOut.Setpoint[0]); */
                     Motor_Update_All();
                   }
                   break;
                 case USB_CMD_LOOKUP_TABLE_FILL:
                   {
                     LookupTableMove = 0;
-                    if (USBPacketOut.EntryLocation < LOOKUP_NUM)
-                      {
-                        /* Lookup_Table_Fill(USBPacketOut.Setpoint,USBPacketOut.EntryCount,USBPacketOut.EntryLocation); */
-                        Lookup_Table_Fill(LookupTableTest,5,0);
-                      }
+                    Lookup_Table_Fill(LookupTableTest,5,0);
+                    /* if (USBPacketOut.EntryLocation < LOOKUP_NUM) */
+                    /*   { */
+                    /*     Lookup_Table_Fill(USBPacketOut.Setpoint,USBPacketOut.EntryCount,USBPacketOut.EntryLocation); */
+                    /*   } */
                   }
                   break;
                 case USB_CMD_LOOKUP_TABLE_MOVE:
@@ -709,13 +710,13 @@ static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t Entry
 {
   /* This assignment assumes that entries are always appended onto the LookupTable, not inserted in the middle */
   TableEnd = EntryLocation;
-  for ( uint8_t Entry_N=EntryLocation; Entry_N<EntryCount; Entry_N++ )
+  for ( uint8_t Entry_N=0; Entry_N<EntryCount; Entry_N++ )
     {
       if (Entry_N < LOOKUP_NUM)
         {
           for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
             {
-              LookupTable[][Motor_N] = LookupTableEntries[][Motor_N];
+              LookupTable[TableEnd][Motor_N] = LookupTableEntries[Entry_N][Motor_N];
             }
           TableEnd++;
         }
