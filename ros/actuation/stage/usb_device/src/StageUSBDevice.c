@@ -228,7 +228,7 @@ TASK(USB_ProcessPacket)
                 case USB_CMD_LOOKUP_TABLE_FILL:
                   {
                     LookupTableMove = 0;
-                    if (USBPacketOut.EntryLocation < LOOKUP_NUM)
+                    if (USBPacketOut.EntryLocation < LOOKUP_TABLE_SIZE)
                       {
                         Lookup_Table_Fill(USBPacketOut.Setpoint,USBPacketOut.EntryCount,USBPacketOut.EntryLocation);
                       }
@@ -684,7 +684,7 @@ static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t Entry
   TableEnd = EntryLocation;
   for ( uint8_t Entry_N=0; Entry_N<EntryCount; Entry_N++ )
     {
-      if (Entry_N < LOOKUP_NUM)
+      if (Entry_N < LOOKUP_TABLE_SIZE)
         {
           for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
             {

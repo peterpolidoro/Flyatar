@@ -90,7 +90,7 @@
 #define MOTOR_NUM 3
 #define TIMER_NUM 4
 #define PRESCALER_NUM 5
-#define LOOKUP_NUM 20 // # values in lookup table
+#define LOOKUP_TABLE_SIZE 100 // # values in lookup table
 #define ENTRIES_MAX 5
 
 /* Type Defines: */
@@ -169,7 +169,7 @@ USBPacketOutWrapper_t   USBPacketOut;
 USBPacketInWrapper_t    USBPacketIn;
 uint8_t                 IO_Enabled=0;
 uint8_t                 Interrupt_Enabled=0;
-LookupTableRow_t        LookupTable[LOOKUP_NUM];
+LookupTableRow_t        LookupTable[LOOKUP_TABLE_SIZE];
 uint8_t                 TableEnd=0;
 uint8_t                 TableEntry=0;
 uint8_t                 LookupTableMove=0;
