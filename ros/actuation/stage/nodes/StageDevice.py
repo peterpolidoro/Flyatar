@@ -31,7 +31,7 @@ class MotorState_t(ctypes.LittleEndianStructure):
 
 class LookupTableRow_t(ctypes.LittleEndianStructure):
     _pack_ = 1
-    _fields_ =[('MotorSetPoint', MotorState_t * _motor_num)]
+    _fields_ =[('Motor', MotorState_t * _motor_num)]
 
 class USBPacketOut_t(ctypes.LittleEndianStructure):
     _pack_ = 1
@@ -42,7 +42,7 @@ class USBPacketOut_t(ctypes.LittleEndianStructure):
 
 class USBPacketIn_t(ctypes.LittleEndianStructure):
     _pack_ = 1
-    _fields_ =[('MotorState', LookupTableRow_t)]
+    _fields_ =[('State', LookupTableRow_t)]
 
 class StageDevice(USBDevice.USB_Device):
     def __init__(self, serial_number=None):
@@ -214,12 +214,12 @@ class StageDevice(USBDevice.USB_Device):
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def return_state(self):
-        x_velocity = self._steps_to_mm(self.USBPacketIn.MotorState[self.axis_x].Frequency)
-        x = self._steps_to_mm(self.USBPacketIn.MotorState[self.axis_x].Position)
-        y_velocity =  self._steps_to_mm(self.USBPacketIn.MotorState[self.axis_y].Frequency)
-        y =  self._steps_to_mm(self.USBPacketIn.MotorState[self.axis_y].Position)
-        theta_velocity = self._steps_to_mm(self.USBPacketIn.MotorState[self.axis_theta].Frequency)
-        theta =  self._steps_to_mm(self.USBPacketIn.MotorState[self.axis_theta].Position)
+        x_velocity = self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_x].Frequency)
+        x = self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_x].Position)
+        y_velocity =  self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_y].Frequency)
+        y =  self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_y].Position)
+        theta_velocity = self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_theta].Frequency)
+        theta =  self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_theta].Position)
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def _mm_to_steps(self,quantity_mm):
@@ -235,10 +235,10 @@ class StageDevice(USBDevice.USB_Device):
     #     self.USBPacketOut.SetPoint[axis].Position = int(pos)
 
     def _set_frequency(self,axis,freq,entry_n=0):
-        self.USBPacketOut.Entry[entry_n].MotorSetPoint[axis].Frequency = int(freq)
+        self.USBPacketOut.Entry[entry_n].Motor[axis].Frequency = int(freq)
 
     def _set_position(self,axis,pos,entry_n=0):
-        self.USBPacketOut.Entry[entry_n].MotorSetPoint[axis].Position = int(pos)
+        self.USBPacketOut.Entry[entry_n].Motor[axis].Position = int(pos)
 
     def _get_motor_state(self):
         outdata = [self.USB_CMD_GET_STATE]
@@ -277,12 +277,12 @@ class StageDevice(USBDevice.USB_Device):
 
     def _print_motor_state(self):
         print '*'*20
-        print 'Frequency X = ', self.USBPacketIn.MotorState[self.axis_x].Frequency
-        print 'Position X = ', self.USBPacketIn.MotorState[self.axis_x].Position
-        print 'Frequency Y = ', self.USBPacketIn.MotorState[self.axis_y].Frequency
-        print 'Position Y = ', self.USBPacketIn.MotorState[self.axis_y].Position
-        print 'Frequency Theta = ', self.USBPacketIn.MotorState[self.axis_theta].Frequency
-        print 'Position Theta = ', self.USBPacketIn.MotorState[self.axis_theta].Position
+        print 'Frequency X = ', self.USBPacketIn.State.Motor[self.axis_x].Frequency
+        print 'Position X = ', self.USBPacketIn.State.Motor[self.axis_x].Position
+        print 'Frequency Y = ', self.USBPacketIn.State.Motor[self.axis_y].Frequency
+        print 'Position Y = ', self.USBPacketIn.State.Motor[self.axis_y].Position
+        print 'Frequency Theta = ', self.USBPacketIn.State.Motor[self.axis_theta].Frequency
+        print 'Position Theta = ', self.USBPacketIn.State.Motor[self.axis_theta].Position
         print '*'*20
 
     def _check_cmd_id(self,expected_id,received_id):
