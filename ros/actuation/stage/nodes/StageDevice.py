@@ -21,17 +21,13 @@ import time
 # Flyatar stage device parameters
 _motor_num = 3
 _entries_max = 5
+_lookup_table_size = 100
 
 # Input/Output Structures
 class MotorState_t(ctypes.LittleEndianStructure):
     _pack_ = 1
     _fields_ =[('Frequency', ctypes.c_uint16),
                ('Position', ctypes.c_uint16)]
-
-# class USBPacketOut_t(ctypes.LittleEndianStructure):
-#     _pack_ = 1
-#     _fields_ =[('MotorUpdate', ctypes.c_uint8),
-#                ('SetPoint', MotorState_t * _motor_num)]
 
 class LookupTableRow_t(ctypes.LittleEndianStructure):
     _pack_ = 1
@@ -44,20 +40,9 @@ class USBPacketOut_t(ctypes.LittleEndianStructure):
                ('EntryLocation', ctypes.c_uint8),
                ('Entry', LookupTableRow_t * _entries_max)]
 
-# Firmware Code for Reference:
-# typedef MotorStatus_t LookupTableRow_t[MOTOR_NUM];
-# typedef struct
-# {
-#   uint8_t       CommandID;
-#   uint8_t       MotorUpdate;
-#   uint8_t       EntryCount;
-#   uint8_t       EntryLocation;
-#   LookupTableRow_t Setpoint[ENTRIES_MAX];
-# } USBPacketOutWrapper_t;
-
 class USBPacketIn_t(ctypes.LittleEndianStructure):
     _pack_ = 1
-    _fields_ =[('MotorState', MotorState_t * _motor_num)]
+    _fields_ =[('MotorState', LookupTableRow_t)]
 
 class StageDevice(USBDevice.USB_Device):
     def __init__(self, serial_number=None):
