@@ -94,8 +94,6 @@
 #define ENTRIES_MAX 5
 
 /* Type Defines: */
-typedef MotorStatus_t LookupTableRow_t[MOTOR_NUM];
-
 typedef struct
 {
   uint8_t     Timer;
@@ -134,6 +132,8 @@ typedef struct
   uint16_t   Frequency;
   uint16_t   Position;
 } MotorStatus_t;
+
+typedef MotorStatus_t LookupTableRow_t[MOTOR_NUM];
 
 typedef struct
 {
