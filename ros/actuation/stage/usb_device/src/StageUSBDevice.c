@@ -247,6 +247,7 @@ TASK(USB_ProcessPacket)
                       {
                         IO_Init();
                       }
+                    MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableMove = 0;
                     Motor_Set_Values(USBPacketOut.Setpoint);
                     /* for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ ) */
