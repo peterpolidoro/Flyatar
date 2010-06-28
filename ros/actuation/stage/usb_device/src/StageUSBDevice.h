@@ -135,13 +135,6 @@ typedef struct
 
 typedef MotorStatus_t LookupTableRow_t[MOTOR_NUM];
 
-/* typedef struct */
-/* { */
-/*   uint8_t       CommandID; */
-/*   uint8_t       MotorUpdate; */
-/*   LookupTableRow_t Setpoint; */
-/* } USBPacketOutWrapper_t; */
-
 typedef struct
 {
   uint8_t       CommandID;
@@ -181,9 +174,6 @@ uint8_t                 TableEnd=0;
 uint8_t                 TableEntry=0;
 uint8_t                 LookupTableMove=0;
 uint8_t                 MotorUpdateBits;
-
-/* Just for testing */
-LookupTableRow_t        LookupTableTest[LOOKUP_NUM];
 
 /* Task Definitions: */
 TASK(USB_ProcessPacket);

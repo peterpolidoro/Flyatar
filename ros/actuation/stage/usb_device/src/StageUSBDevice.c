@@ -92,32 +92,6 @@ int main(void)
   /* Initialize Software Interrupt */
   Interrupt_Init();
 
-  /* Dummy initialized LookupTableTest */
-  LookupTableTest[0][0].Frequency = 5000;
-  LookupTableTest[0][0].Position = 20000;
-  LookupTableTest[0][1].Frequency = 5000;
-  LookupTableTest[0][1].Position = 20000;
-
-  LookupTableTest[1][0].Frequency = 5000;
-  LookupTableTest[1][0].Position = 28000;
-  LookupTableTest[1][1].Frequency = 0;
-  LookupTableTest[1][1].Position = 20000;
-
-  LookupTableTest[2][0].Frequency = 0;
-  LookupTableTest[2][0].Position = 28000;
-  LookupTableTest[2][1].Frequency = 5000;
-  LookupTableTest[2][1].Position = 28000;
-
-  LookupTableTest[3][0].Frequency = 5000;
-  LookupTableTest[3][0].Position = 20000;
-  LookupTableTest[3][1].Frequency = 0;
-  LookupTableTest[3][1].Position = 28000;
-
-  LookupTableTest[4][0].Frequency = 0;
-  LookupTableTest[4][0].Position = 20000;
-  LookupTableTest[4][1].Frequency = 5000;
-  LookupTableTest[4][1].Position = 20000;
-
   /* Scheduling - routine never returns, so put this last in the main function */
   Scheduler_Start();
 }
@@ -247,7 +221,6 @@ TASK(USB_ProcessPacket)
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableMove = 0;
-                    /* Motor_Set_Values(USBPacketOut.Setpoint); */
                     Motor_Set_Values(USBPacketOut.Setpoint[0]);
                     Motor_Update_All();
                   }
@@ -255,7 +228,6 @@ TASK(USB_ProcessPacket)
                 case USB_CMD_LOOKUP_TABLE_FILL:
                   {
                     LookupTableMove = 0;
-                    /* Lookup_Table_Fill(LookupTableTest,5,0); */
                     if (USBPacketOut.EntryLocation < LOOKUP_NUM)
                       {
                         Lookup_Table_Fill(USBPacketOut.Setpoint,USBPacketOut.EntryCount,USBPacketOut.EntryLocation);
