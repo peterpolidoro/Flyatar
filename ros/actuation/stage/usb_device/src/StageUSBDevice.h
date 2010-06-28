@@ -94,6 +94,8 @@
 #define ENTRIES_MAX 5
 
 /* Type Defines: */
+typedef MotorStatus_t LookupTableRow_t[MOTOR_NUM];
+
 typedef struct
 {
   uint8_t     Timer;
@@ -137,7 +139,8 @@ typedef struct
 {
   uint8_t       CommandID;
   uint8_t       MotorUpdate;
-  MotorStatus_t Setpoint[MOTOR_NUM];
+  /* MotorStatus_t Setpoint[MOTOR_NUM]; */
+  LookupTableRow_t Setpoint;
 } USBPacketOutWrapper_t;
 
 /* typedef struct */
@@ -152,10 +155,9 @@ typedef struct
 typedef struct
 {
   uint8_t       CommandID;
-  MotorStatus_t MotorStatus[MOTOR_NUM];
+  /* MotorStatus_t MotorStatus[MOTOR_NUM]; */
+  LookupTableRow_t MotorStatus;
 } USBPacketInWrapper_t;
-
-typedef MotorStatus_t LookupTableRow_t[MOTOR_NUM];
 
 /* Enums: */
 /** Enum for the possible status codes for passing to the UpdateStatus() function. */
@@ -210,7 +212,8 @@ static void Timer_Off(uint8_t Timer_N);
 static void Motor_Init(void);
 static void Motor_Update(uint8_t Motor_N);
 static void Motor_Update_All(void);
-static void Motor_Set_Values(MotorStatus_t MotorSetpoint[]);
+/* static void Motor_Set_Values(MotorStatus_t MotorSetpoint[]); */
+static void Motor_Set_Values(LookupTableRow_t MotorSetpoint);
 static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t EntryCount,uint8_t EntryLocation);
 //static void Position_Update(volatile uint8_t Motor_N);
 #endif
