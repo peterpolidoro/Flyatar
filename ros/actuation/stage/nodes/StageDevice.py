@@ -240,40 +240,52 @@ class StageDevice(USBDevice.USB_Device):
     def _set_position(self,axis,pos,entry_n=0):
         self.USBPacketOut.Entry[entry_n].Motor[axis].Position = int(pos)
 
-    def _get_motor_state(self):
-        outdata = [self.USB_CMD_GET_STATE]
+    def _send_usb_cmd(self,cmd):
+        outdata = [cmd]
         intypes = [ctypes.c_uint8, USBPacketIn_t]
         val_list = self.usb_cmd(outdata,intypes)
         cmd_id = val_list[0]
-        self._check_cmd_id(self.USB_CMD_GET_STATE,cmd_id)
+        self._check_cmd_id(cmd,cmd_id)
         self.USBPacketIn = val_list[1]
+
+    def _get_motor_state(self):
+        self._send_usb_cmd(self.USB_CMD_GET_STATE)
+        # outdata = [self.USB_CMD_GET_STATE]
+        # intypes = [ctypes.c_uint8, USBPacketIn_t]
+        # val_list = self.usb_cmd(outdata,intypes)
+        # cmd_id = val_list[0]
+        # self._check_cmd_id(self.USB_CMD_GET_STATE,cmd_id)
+        # self.USBPacketIn = val_list[1]
 
     def _set_motor_state(self):
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
-        outdata = [self.USB_CMD_SET_STATE, self.USBPacketOut]
-        intypes = [ctypes.c_uint8, USBPacketIn_t]
-        val_list = self.usb_cmd(outdata,intypes)
-        cmd_id = val_list[0]
-        self._check_cmd_id(self.USB_CMD_SET_STATE,cmd_id)
-        self.USBPacketIn = val_list[1]
+        self._send_usb_cmd(self.USB_CMD_SET_STATE)
+        # outdata = [self.USB_CMD_SET_STATE, self.USBPacketOut]
+        # intypes = [ctypes.c_uint8, USBPacketIn_t]
+        # val_list = self.usb_cmd(outdata,intypes)
+        # cmd_id = val_list[0]
+        # self._check_cmd_id(self.USB_CMD_SET_STATE,cmd_id)
+        # self.USBPacketIn = val_list[1]
 
     def _lookup_table_fill(self):
-        self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
-        outdata = [self.USB_CMD_LOOKUP_TABLE_FILL, self.USBPacketOut]
-        intypes = [ctypes.c_uint8, USBPacketIn_t]
-        val_list = self.usb_cmd(outdata,intypes)
-        cmd_id = val_list[0]
-        self._check_cmd_id(self.USB_CMD_LOOKUP_TABLE_FILL,cmd_id)
-        self.USBPacketIn = val_list[1]
+        self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_FILL)
+        # self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
+        # outdata = [self.USB_CMD_LOOKUP_TABLE_FILL, self.USBPacketOut]
+        # intypes = [ctypes.c_uint8, USBPacketIn_t]
+        # val_list = self.usb_cmd(outdata,intypes)
+        # cmd_id = val_list[0]
+        # self._check_cmd_id(self.USB_CMD_LOOKUP_TABLE_FILL,cmd_id)
+        # self.USBPacketIn = val_list[1]
 
     def _lookup_table_move(self):
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
-        outdata = [self.USB_CMD_LOOKUP_TABLE_MOVE, self.USBPacketOut]
-        intypes = [ctypes.c_uint8, USBPacketIn_t]
-        val_list = self.usb_cmd(outdata,intypes)
-        cmd_id = val_list[0]
-        self._check_cmd_id(self.USB_CMD_LOOKUP_TABLE_MOVE,cmd_id)
-        self.USBPacketIn = val_list[1]
+        self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_MOVE)
+        # outdata = [self.USB_CMD_LOOKUP_TABLE_MOVE, self.USBPacketOut]
+        # intypes = [ctypes.c_uint8, USBPacketIn_t]
+        # val_list = self.usb_cmd(outdata,intypes)
+        # cmd_id = val_list[0]
+        # self._check_cmd_id(self.USB_CMD_LOOKUP_TABLE_MOVE,cmd_id)
+        # self.USBPacketIn = val_list[1]
 
     def _print_motor_state(self):
         print '*'*20
