@@ -250,37 +250,6 @@ TASK(USB_ProcessPacket)
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableMove = 0;
                     Motor_Set_Values(USBPacketOut.Setpoint);
-                    /* for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ ) */
-                    /*   { */
-                    /*     Motor[Motor_N].Update = (USBPacketOut.MotorUpdate & (1<<Motor_N)); */
-                    /*     if (Motor[Motor_N].Update) */
-                    /*       { */
-                    /*         ATOMIC_BLOCK(ATOMIC_RESTORESTATE) */
-                    /*         { */
-                    /*           if (USBPacketOut.Setpoint[Motor_N].Frequency > Motor[Motor_N].FrequencyMax) */
-                    /*             { */
-                    /*               Motor[Motor_N].Frequency = Motor[Motor_N].FrequencyMax; */
-                    /*             } */
-                    /*           else */
-                    /*             { */
-                    /*               Motor[Motor_N].Frequency = USBPacketOut.Setpoint[Motor_N].Frequency; */
-                    /*             } */
-                    /*           Motor[Motor_N].PositionSetPoint = USBPacketOut.Setpoint[Motor_N].Position; */
-                    /*           if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position) */
-                    /*             { */
-                    /*               Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos; */
-                    /*             } */
-                    /*           else if (Motor[Motor_N].PositionSetPoint < Motor[Motor_N].Position) */
-                    /*             { */
-                    /*               Motor[Motor_N].Direction = Motor[Motor_N].DirectionNeg; */
-                    /*             } */
-                    /*           else */
-                    /*             { */
-                    /*               Motor[Motor_N].Frequency = 0; */
-                    /*             } */
-                    /*         } */
-                    /*       } */
-                    /*   } */
                     Motor_Update_All();
                   }
                   break;
