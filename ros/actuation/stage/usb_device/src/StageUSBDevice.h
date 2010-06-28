@@ -56,7 +56,8 @@
 /* USB Commands */
 #define USB_CMD_GET_STATE       1
 #define USB_CMD_SET_STATE       2
-#define USB_CMD_LOOKUP_TABLE_MOVE 3
+#define USB_CMD_LOOKUP_TABLE_FILL 3
+#define USB_CMD_LOOKUP_TABLE_MOVE 4
 #define USB_CMD_AVR_RESET       200
 #define USB_CMD_AVR_DFU_MODE    201
 
@@ -90,6 +91,7 @@
 #define TIMER_NUM 4
 #define PRESCALER_NUM 5
 #define LOOKUP_NUM 20 // # values in lookup table
+#define ENTRIES_MAX 5
 
 /* Type Defines: */
 typedef struct
@@ -138,11 +140,22 @@ typedef struct
   MotorStatus_t Setpoint[MOTOR_NUM];
 } USBPacketOutWrapper_t;
 
+/* typedef struct */
+/* { */
+/*   uint8_t       CommandID; */
+/*   uint8_t       MotorUpdate; */
+/*   uint8_t       EntryCount; */
+/*   uint8_t       EntryLocation; */
+/*   MotorStatus_t Setpoint[ENTRIES_MAX][MOTOR_NUM]; */
+/* } USBPacketOutWrapper_t; */
+
 typedef struct
 {
   uint8_t       CommandID;
   MotorStatus_t MotorStatus[MOTOR_NUM];
 } USBPacketInWrapper_t;
+
+typedef MotorStatus_t LookupTableRow_t[MOTOR_NUM];
 
 /* Enums: */
 /** Enum for the possible status codes for passing to the UpdateStatus() function. */
@@ -169,6 +182,8 @@ uint8_t                 TableEntry=0;
 uint8_t                 LookupTableMove=0;
 uint8_t                 MotorUpdateBits;
 
+/* Just for testing */
+volatile MotorStatus_t  LookupTableTest[LOOKUP_NUM][MOTOR_NUM];
 
 /* Task Definitions: */
 TASK(USB_ProcessPacket);
@@ -194,6 +209,7 @@ static void Motor_Init(void);
 static void Motor_Update(uint8_t Motor_N);
 static void Motor_Update_All(void);
 static void Motor_Set_Values(MotorStatus_t MotorSetpoint[]);
+static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t EntryCount,uint8_t EntryLocation);
 //static void Position_Update(volatile uint8_t Motor_N);
 #endif
 

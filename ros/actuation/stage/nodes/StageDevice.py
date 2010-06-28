@@ -32,6 +32,15 @@ class USBPacketOut_t(ctypes.LittleEndianStructure):
     _fields_ =[('MotorUpdate', ctypes.c_uint8),
                ('SetPoint', MotorState_t * _motor_num)]
 
+# typedef struct
+# {
+#   uint8_t       CommandID;
+#   uint8_t       MotorUpdate;
+#   uint8_t       EntryCount;
+#   uint8_t       EntryLocation;
+#   MotorStatus_t Setpoint[ENTRIES_MAX][MOTOR_NUM];
+# } USBPacketOutWrapper_t;
+
 class USBPacketIn_t(ctypes.LittleEndianStructure):
     _pack_ = 1
     _fields_ =[('MotorState', MotorState_t * _motor_num)]
@@ -60,7 +69,8 @@ class StageDevice(USBDevice.USB_Device):
         # USB Command IDs
         self.USB_CMD_GET_STATE = ctypes.c_uint8(1)
         self.USB_CMD_SET_STATE = ctypes.c_uint8(2)
-        self.USB_CMD_LOOKUP_TABLE_MOVE = ctypes.c_uint8(3)
+        self.USB_CMD_LOOKUP_TABLE_FILL = ctypes.c_uint8(3)
+        self.USB_CMD_LOOKUP_TABLE_MOVE = ctypes.c_uint8(4)
 
         self.USBPacketOut = USBPacketOut_t()
         self.USBPacketIn = USBPacketIn_t()
@@ -161,6 +171,7 @@ class StageDevice(USBDevice.USB_Device):
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def lookup_table_move(self):
+        self._lookup_table_fill()
         self._lookup_table_move()
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
@@ -206,6 +217,15 @@ class StageDevice(USBDevice.USB_Device):
         val_list = self.usb_cmd(outdata,intypes)
         cmd_id = val_list[0]
         self._check_cmd_id(self.USB_CMD_SET_STATE,cmd_id)
+        self.USBPacketIn = val_list[1]
+
+    def _lookup_table_fill(self):
+        self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
+        outdata = [self.USB_CMD_LOOKUP_TABLE_FILL, self.USBPacketOut]
+        intypes = [ctypes.c_uint8, USBPacketIn_t]
+        val_list = self.usb_cmd(outdata,intypes)
+        cmd_id = val_list[0]
+        self._check_cmd_id(self.USB_CMD_LOOKUP_TABLE_FILL,cmd_id)
         self.USBPacketIn = val_list[1]
 
     def _lookup_table_move(self):

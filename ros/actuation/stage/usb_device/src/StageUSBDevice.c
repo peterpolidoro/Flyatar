@@ -92,33 +92,31 @@ int main(void)
   /* Initialize Software Interrupt */
   Interrupt_Init();
 
-  /* Dummy initialized LookupTable */
-  LookupTable[0][0].Frequency = 5000;
-  LookupTable[0][0].Position = 20000;
-  LookupTable[0][1].Frequency = 5000;
-  LookupTable[0][1].Position = 20000;
+  /* Dummy initialized LookupTableTest */
+  LookupTableTest[0][0].Frequency = 5000;
+  LookupTableTest[0][0].Position = 20000;
+  LookupTableTest[0][1].Frequency = 5000;
+  LookupTableTest[0][1].Position = 20000;
 
-  LookupTable[1][0].Frequency = 5000;
-  LookupTable[1][0].Position = 28000;
-  LookupTable[1][1].Frequency = 0;
-  LookupTable[1][1].Position = 20000;
+  LookupTableTest[1][0].Frequency = 5000;
+  LookupTableTest[1][0].Position = 28000;
+  LookupTableTest[1][1].Frequency = 0;
+  LookupTableTest[1][1].Position = 20000;
 
-  LookupTable[2][0].Frequency = 0;
-  LookupTable[2][0].Position = 28000;
-  LookupTable[2][1].Frequency = 5000;
-  LookupTable[2][1].Position = 28000;
+  LookupTableTest[2][0].Frequency = 0;
+  LookupTableTest[2][0].Position = 28000;
+  LookupTableTest[2][1].Frequency = 5000;
+  LookupTableTest[2][1].Position = 28000;
 
-  LookupTable[3][0].Frequency = 5000;
-  LookupTable[3][0].Position = 20000;
-  LookupTable[3][1].Frequency = 0;
-  LookupTable[3][1].Position = 28000;
+  LookupTableTest[3][0].Frequency = 5000;
+  LookupTableTest[3][0].Position = 20000;
+  LookupTableTest[3][1].Frequency = 0;
+  LookupTableTest[3][1].Position = 28000;
 
-  LookupTable[4][0].Frequency = 0;
-  LookupTable[4][0].Position = 20000;
-  LookupTable[4][1].Frequency = 5000;
-  LookupTable[4][1].Position = 20000;
-
-  TableEnd = 5;
+  LookupTableTest[4][0].Frequency = 0;
+  LookupTableTest[4][0].Position = 20000;
+  LookupTableTest[4][1].Frequency = 5000;
+  LookupTableTest[4][1].Position = 20000;
 
   /* Scheduling - routine never returns, so put this last in the main function */
   Scheduler_Start();
@@ -249,8 +247,18 @@ TASK(USB_ProcessPacket)
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableMove = 0;
-                    Motor_Set_Values(USBPacketOut.Setpoint);
+                    Motor_Set_Values(USBPacketOut.Setpoint[0]);
                     Motor_Update_All();
+                  }
+                  break;
+                case USB_CMD_LOOKUP_TABLE_FILL:
+                  {
+                    LookupTableMove = 0;
+                    if (USBPacketOut.EntryLocation < LOOKUP_NUM)
+                      {
+                        /* Lookup_Table_Fill(USBPacketOut.Setpoint,USBPacketOut.EntryCount,USBPacketOut.EntryLocation); */
+                        Lookup_Table_Fill(LookupTableTest,5,0);
+                      }
                   }
                   break;
                 case USB_CMD_LOOKUP_TABLE_MOVE:
@@ -693,6 +701,23 @@ static void Motor_Set_Values(MotorStatus_t MotorSetpoint[])
                 Motor[Motor_N].Frequency = 0;
               }
           }
+        }
+    }
+}
+
+static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t EntryCount,uint8_t EntryLocation)
+{
+  /* This assignment assumes that entries are always appended onto the LookupTable, not inserted in the middle */
+  TableEnd = EntryLocation;
+  for ( uint8_t Entry_N=EntryLocation; Entry_N<EntryCount; Entry_N++ )
+    {
+      if (Entry_N < LOOKUP_NUM)
+        {
+          for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
+            {
+              LookupTable[][Motor_N] = LookupTableEntries[][Motor_N];
+            }
+          TableEnd++;
         }
     }
 }
