@@ -40,7 +40,7 @@
 #include <driver_base/driver.h>
 
 #include "dev_camera1394.h"
-#include "camera1394/Camera1394Config.h"
+#include "camera1394v2/Camera1394Config.h"
 
 /** @file
 
