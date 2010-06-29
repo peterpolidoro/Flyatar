@@ -17,6 +17,7 @@ from __future__ import division
 import USBDevice
 import ctypes
 import time
+import math
 
 # Flyatar stage device parameters
 _motor_num = 3
@@ -169,41 +170,32 @@ class StageDevice(USBDevice.USB_Device):
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
-    def lookup_table_move(self):
-        vel_steps = self._mm_to_steps(20)
-        pos_steps_100 = self._mm_to_steps(100)
-        pos_steps_120 = self._mm_to_steps(120)
-        pos_steps_140 = self._mm_to_steps(140)
+    def lookup_table_move(self,x_pos_list,x_vel_list,y_pos_list,y_vel_list):
+        point_count = min(len(x_pos_list),len(x_vel_list),len(y_pos_list),len(y_vel_list))
+        if _lookup_table_size < point_count:
+            point_count = _lookup_table_size
 
-        self._set_frequency(self.axis_x,vel_steps,0)
-        self._set_position(self.axis_x,pos_steps_120,0)
-        self._set_frequency(self.axis_y,vel_steps,0)
-        self._set_position(self.axis_y,pos_steps_100,0)
+        packet_count = math.ceil(point_count/_entries_max)
+        point_n = 0
+        for packet_n in range(packet_count):
+            packet_point_n = 0
+            while (packet_point_n < _entries_max) and (point_n < point_count):
+                x_pos_steps = self._mm_to_steps(x_pos_list[point_n])
+                x_vel_steps = self._mm_to_steps(x_vel_list[point_n])
+                y_pos_steps = self._mm_to_steps(y_pos_list[point_n])
+                y_vel_steps = self._mm_to_steps(y_vel_list[point_n])
+                self._set_position(self.axis_x,x_pos_steps,packet_point_n)
+                self._set_frequency(self.axis_x,x_vel_steps,packet_point_n)
+                self._set_position(self.axis_y,y_pos_steps,packet_point_n)
+                self._set_frequency(self.axis_y,y_vel_steps,packet_point_n)
+                packet_point_n += 1
+                point_n += 1
 
-        self._set_frequency(self.axis_x,vel_steps,1)
-        self._set_position(self.axis_x,pos_steps_140,1)
-        self._set_frequency(self.axis_y,vel_steps,1)
-        self._set_position(self.axis_y,pos_steps_120,1)
+            self.USBPacketOut.EntryCount = packet_point_n
+            self.USBPacketOut.EntryLocation = point_n
+            rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
+            self._lookup_table_fill()
 
-        self._set_frequency(self.axis_x,vel_steps,2)
-        self._set_position(self.axis_x,pos_steps_120,2)
-        self._set_frequency(self.axis_y,vel_steps,2)
-        self._set_position(self.axis_y,pos_steps_140,2)
-
-        self._set_frequency(self.axis_x,vel_steps,3)
-        self._set_position(self.axis_x,pos_steps_100,3)
-        self._set_frequency(self.axis_y,vel_steps,3)
-        self._set_position(self.axis_y,pos_steps_120,3)
-
-        self._set_frequency(self.axis_x,vel_steps,4)
-        self._set_position(self.axis_x,pos_steps_120,4)
-        self._set_frequency(self.axis_y,vel_steps,4)
-        self._set_position(self.axis_y,pos_steps_100,4)
-
-        self.USBPacketOut.EntryCount = 5
-        self.USBPacketOut.EntryLocation = 0
-
-        self._lookup_table_fill()
         self._lookup_table_move()
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
@@ -253,42 +245,17 @@ class StageDevice(USBDevice.USB_Device):
 
     def _get_motor_state(self):
         self._send_usb_cmd(self.USB_CMD_GET_STATE,False)
-        # outdata = [self.USB_CMD_GET_STATE]
-        # intypes = [ctypes.c_uint8, USBPacketIn_t]
-        # val_list = self.usb_cmd(outdata,intypes)
-        # cmd_id = val_list[0]
-        # self._check_cmd_id(self.USB_CMD_GET_STATE,cmd_id)
-        # self.USBPacketIn = val_list[1]
 
     def _set_motor_state(self):
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_SET_STATE,True)
-        # outdata = [self.USB_CMD_SET_STATE, self.USBPacketOut]
-        # intypes = [ctypes.c_uint8, USBPacketIn_t]
-        # val_list = self.usb_cmd(outdata,intypes)
-        # cmd_id = val_list[0]
-        # self._check_cmd_id(self.USB_CMD_SET_STATE,cmd_id)
-        # self.USBPacketIn = val_list[1]
 
     def _lookup_table_fill(self):
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_FILL,True)
-        # self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
-        # outdata = [self.USB_CMD_LOOKUP_TABLE_FILL, self.USBPacketOut]
-        # intypes = [ctypes.c_uint8, USBPacketIn_t]
-        # val_list = self.usb_cmd(outdata,intypes)
-        # cmd_id = val_list[0]
-        # self._check_cmd_id(self.USB_CMD_LOOKUP_TABLE_FILL,cmd_id)
-        # self.USBPacketIn = val_list[1]
 
     def _lookup_table_move(self):
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_MOVE,True)
-        # outdata = [self.USB_CMD_LOOKUP_TABLE_MOVE, self.USBPacketOut]
-        # intypes = [ctypes.c_uint8, USBPacketIn_t]
-        # val_list = self.usb_cmd(outdata,intypes)
-        # cmd_id = val_list[0]
-        # self._check_cmd_id(self.USB_CMD_LOOKUP_TABLE_MOVE,cmd_id)
-        # self.USBPacketIn = val_list[1]
 
     def _print_motor_state(self):
         print '*'*20
