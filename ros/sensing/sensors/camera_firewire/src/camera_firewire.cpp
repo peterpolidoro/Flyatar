@@ -32,6 +32,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "dcam1394/dcam1394.h"
+
 using namespace std;
 using namespace ros;
 
