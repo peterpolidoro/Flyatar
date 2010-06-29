@@ -140,36 +140,66 @@ class StageDevice(USBDevice.USB_Device):
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
+    def _check_and_convert_setpoint(self,x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm):
+        x_pos_steps = self._mm_to_steps(x_pos_mm)
+        x_vel_steps = self._mm_to_steps(x_vel_mm)
+        y_pos_steps = self._mm_to_steps(y_pos_mm)
+        y_vel_steps = self._mm_to_steps(y_vel_mm)
+
+        # Set position values
+        if x_pos_steps < self.position_min:
+            x_pos_steps = self.position_min
+        elif self.position_max < x_pos_steps:
+            x_pos_steps = self.position_max
+        if y_pos_steps < self.position_min:
+            y_pos_steps = self.position_min
+        elif self.position_max < y_pos_steps:
+            y_pos_steps = self.position_max
+
+        # Set velocity values
+        x_vel_steps = abs(x_vel_steps)
+        y_vel_steps = abs(y_vel_steps)
+        if self.frequency_max < x_vel_steps:
+            y_vel_steps = (y_vel_steps/x_velocity_steps)*self.frequency_max
+            x_vel_steps = self.frequency_max
+        if self.frequency_max < y_vel_steps:
+            x_vel_steps = (x_vel_steps/y_velocity_steps)*self.frequency_max
+            y_vel_steps = self.frequency_max
+
+        return x_pos_steps,x_vel_steps,y_pos_steps,y_vel_steps
+
     def update_position(self,x_position,y_position,x_velocity,y_velocity):
-        self.x_pos_mm = x_position
-        self.y_pos_mm = y_position
-        self.x_pos_steps = self._mm_to_steps(self.x_pos_mm)
-        self.y_pos_steps = self._mm_to_steps(self.y_pos_mm)
-        self.x_vel_mm = x_velocity
-        self.y_vel_mm = y_velocity
-        self.x_vel_steps = self._mm_to_steps(self.x_vel_mm)
-        self.y_vel_steps = self._mm_to_steps(self.y_vel_mm)
+        # self.x_pos_mm = x_position
+        # self.y_pos_mm = y_position
+        # self.x_pos_steps = self._mm_to_steps(self.x_pos_mm)
+        # self.y_pos_steps = self._mm_to_steps(self.y_pos_mm)
+        # self.x_vel_mm = x_velocity
+        # self.y_vel_mm = y_velocity
+        # self.x_vel_steps = self._mm_to_steps(self.x_vel_mm)
+        # self.y_vel_steps = self._mm_to_steps(self.y_vel_mm)
 
-        if self.x_pos_steps < self.position_min:
-            self.x_pos_steps = self.position_min
-        elif self.position_max < self.x_pos_steps:
-            self.x_pos_steps = self.position_max
-        if self.y_pos_steps < self.position_min:
-            self.y_pos_steps = self.position_min
-        elif self.position_max < self.y_pos_steps:
-            self.y_pos_steps = self.position_max
+        # if self.x_pos_steps < self.position_min:
+        #     self.x_pos_steps = self.position_min
+        # elif self.position_max < self.x_pos_steps:
+        #     self.x_pos_steps = self.position_max
+        # if self.y_pos_steps < self.position_min:
+        #     self.y_pos_steps = self.position_min
+        # elif self.position_max < self.y_pos_steps:
+        #     self.y_pos_steps = self.position_max
 
-        if self.frequency_max < self.x_vel_steps:
-            self.y_vel_steps = (self.y_vel_steps/self.x_velocity_steps)*self.frequency_max
-            self.x_vel_steps = self.frequency_max
-        if self.frequency_max < self.y_vel_steps:
-            self.x_vel_steps = (self.x_vel_steps/self.y_velocity_steps)*self.frequency_max
-            self.y_vel_steps = self.frequency_max
+        # if self.frequency_max < self.x_vel_steps:
+        #     self.y_vel_steps = (self.y_vel_steps/self.x_velocity_steps)*self.frequency_max
+        #     self.x_vel_steps = self.frequency_max
+        # if self.frequency_max < self.y_vel_steps:
+        #     self.x_vel_steps = (self.x_vel_steps/self.y_velocity_steps)*self.frequency_max
+        #     self.y_vel_steps = self.frequency_max
 
-        self._set_frequency(self.axis_x,self.x_vel_steps)
-        self._set_position(self.axis_x,self.x_pos_steps)
-        self._set_frequency(self.axis_y,self.y_vel_steps)
-        self._set_position(self.axis_y,self.y_pos_steps)
+        x_pos_steps,x_vel_steps,y_pos_steps,y_vel_steps = self._check_and_convert_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm)
+
+        self._set_frequency(self.axis_x,x_vel_steps)
+        self._set_position(self.axis_x,x_pos_steps)
+        self._set_frequency(self.axis_y,y_vel_steps)
+        self._set_position(self.axis_y,y_pos_steps)
         self._set_motor_state()
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
@@ -184,10 +214,17 @@ class StageDevice(USBDevice.USB_Device):
         for packet_n in range(packet_count):
             packet_point_n = 0
             while (packet_point_n < _entries_max) and (point_n < point_count):
-                x_pos_steps = self._mm_to_steps(x_pos_list[point_n])
-                x_vel_steps = self._mm_to_steps(x_vel_list[point_n])
-                y_pos_steps = self._mm_to_steps(y_pos_list[point_n])
-                y_vel_steps = self._mm_to_steps(y_vel_list[point_n])
+                # x_pos_steps = self._mm_to_steps(x_pos_list[point_n])
+                # x_vel_steps = self._mm_to_steps(x_vel_list[point_n])
+                # y_pos_steps = self._mm_to_steps(y_pos_list[point_n])
+                # y_vel_steps = self._mm_to_steps(y_vel_list[point_n])
+                x_pos_steps = x_pos_list[point_n]
+                x_vel_steps = x_vel_list[point_n]
+                y_pos_steps = y_pos_list[point_n]
+                y_vel_steps = y_vel_list[point_n]
+
+                x_pos_steps,x_vel_steps,y_pos_steps,y_vel_steps = self._check_and_convert_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm)
+
                 self._set_position(self.axis_x,x_pos_steps,packet_point_n)
                 self._set_frequency(self.axis_x,x_vel_steps,packet_point_n)
                 self._set_position(self.axis_y,y_pos_steps,packet_point_n)
@@ -217,11 +254,11 @@ class StageDevice(USBDevice.USB_Device):
         theta_velocity = self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_theta].Frequency)
         theta =  self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_theta].Position)
         all_motors_in_position = self.USBPacketIn.AllMotorsInPosition
-        if all_motors_in_position:
-            rospy.logwarn("All motors in position.")
+        # if all_motors_in_position:
+        #     rospy.logwarn("All motors in position.")
         lookup_table_move_complete = self.USBPacketIn.LookupTableMoveComplete
-        if lookup_table_move_complete:
-            rospy.logwarn("Lookup table move complete.")
+        # if lookup_table_move_complete:
+        #     rospy.logwarn("Lookup table move complete.")
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def _mm_to_steps(self,quantity_mm):
