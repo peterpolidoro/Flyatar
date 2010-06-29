@@ -32,7 +32,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-// #include "dcam1394/dcam1394.h"
+#include "dcam1394/dcam1394.h"
 // #include <cstring>
 // #include <cstdio>
 
