@@ -486,9 +486,10 @@ public:
       break;
     case DC1394_COLOR_CODING_MONO8:
       if( bEnableBayer ) {
-        dc1394error_t err = dc1394_bayer_decoding_8bit(src,dst,frame->width,frame->height,bayer,DC1394_BAYER_METHOD_BILINEAR);
-        if( err != DC1394_SUCCESS )
-          ROS_WARN("bayer decoding error: %s",dc1394_error_get_string(err));
+        ;
+        // dc1394error_t err = dc1394_bayer_decoding_8bit(src,dst,frame->width,frame->height,bayer,DC1394_BAYER_METHOD_BILINEAR);
+        // if( err != DC1394_SUCCESS )
+        //   ROS_WARN("bayer decoding error: %s",dc1394_error_get_string(err));
       }
       else
         memcpy(dst,src,frame->width*frame->height);
