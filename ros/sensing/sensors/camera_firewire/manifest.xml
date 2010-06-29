@@ -29,7 +29,7 @@
   <!-- <depend package="libdc1394v2"/> -->
   <depend package="std_msgs" />
   <depend package="tf" />
-  <rosdep name="libdc1394-dev"/>
+  <rosdep name="libdc1394-22-dev"/>
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -ldcam1394" />
   </export>
