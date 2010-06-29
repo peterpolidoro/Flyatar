@@ -218,10 +218,10 @@ class StageDevice(USBDevice.USB_Device):
                 # x_vel_steps = self._mm_to_steps(x_vel_list[point_n])
                 # y_pos_steps = self._mm_to_steps(y_pos_list[point_n])
                 # y_vel_steps = self._mm_to_steps(y_vel_list[point_n])
-                x_pos_steps = x_pos_list[point_n]
-                x_vel_steps = x_vel_list[point_n]
-                y_pos_steps = y_pos_list[point_n]
-                y_vel_steps = y_vel_list[point_n]
+                x_pos_mm = x_pos_list[point_n]
+                x_vel_mm = x_vel_list[point_n]
+                y_pos_mm = y_pos_list[point_n]
+                y_vel_mm = y_vel_list[point_n]
 
                 x_pos_steps,x_vel_steps,y_pos_steps,y_vel_steps = self._check_and_convert_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm)
 
