@@ -93,22 +93,12 @@ class StageDevice(USBDevice.USB_Device):
 
     def update_velocity(self,x_vel_mm,y_vel_mm):
         self._convert_and_set_setpoint(None,x_vel_mm,None,y_vel_mm,0)
-        # x_pos_steps,x_vel_steps,y_pos_steps,y_vel_steps = self._check_and_convert_setpoint(None,x_vel_mm,None,y_vel_mm)
-        # self._set_frequency(self.axis_x,x_vel_steps)
-        # self._set_position(self.axis_x,x_pos_steps)
-        # self._set_frequency(self.axis_y,y_vel_steps)
-        # self._set_position(self.axis_y,y_pos_steps)
         self._set_motor_state()
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def update_position(self,x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm):
         self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,0)
-        # x_pos_steps,x_vel_steps,y_pos_steps,y_vel_steps = self._check_and_convert_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm)
-        # self._set_frequency(self.axis_x,x_vel_steps)
-        # self._set_position(self.axis_x,x_pos_steps)
-        # self._set_frequency(self.axis_y,y_vel_steps)
-        # self._set_position(self.axis_y,y_pos_steps)
         self._set_motor_state()
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
@@ -123,10 +113,6 @@ class StageDevice(USBDevice.USB_Device):
         for packet_n in range(packet_count):
             packet_point_n = 0
             while (packet_point_n < _entries_max) and (point_n < point_count):
-                # x_pos_steps = self._mm_to_steps(x_pos_list[point_n])
-                # x_vel_steps = self._mm_to_steps(x_vel_list[point_n])
-                # y_pos_steps = self._mm_to_steps(y_pos_list[point_n])
-                # y_vel_steps = self._mm_to_steps(y_vel_list[point_n])
                 x_pos_mm = x_pos_list[point_n]
                 x_vel_mm = x_vel_list[point_n]
                 y_pos_mm = y_pos_list[point_n]
@@ -134,11 +120,6 @@ class StageDevice(USBDevice.USB_Device):
 
                 self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,packet_point_n)
 
-                # x_pos_steps,x_vel_steps,y_pos_steps,y_vel_steps = self._check_and_convert_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm)
-                # self._set_position(self.axis_x,x_pos_steps,packet_point_n)
-                # self._set_frequency(self.axis_x,x_vel_steps,packet_point_n)
-                # self._set_position(self.axis_y,y_pos_steps,packet_point_n)
-                # self._set_frequency(self.axis_y,y_vel_steps,packet_point_n)
                 packet_point_n += 1
                 point_n += 1
 
