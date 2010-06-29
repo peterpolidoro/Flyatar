@@ -195,7 +195,7 @@ class StageDevice(USBDevice.USB_Device):
                 point_n += 1
 
             self.USBPacketOut.EntryCount = packet_point_n
-            self.USBPacketOut.EntryLocation = point_n
+            self.USBPacketOut.EntryLocation = point_n - packet_point_n
             rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
             self._lookup_table_fill()
 
