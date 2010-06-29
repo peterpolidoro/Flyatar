@@ -33,6 +33,9 @@
 #include <unistd.h>
 
 #include "dcam1394/dcam1394.h"
+#include <cstring>
+#include <cstdio>
+
 
 using namespace std;
 using namespace ros;
