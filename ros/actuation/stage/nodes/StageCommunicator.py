@@ -85,7 +85,7 @@ class StageCommunicator():
         x_pos_list = [120,140,120,100,120,100]
         x_vel_list = [20,20,20,20,20,20]
         y_pos_list = [100,120,140,120,100,100]
-        y_vel_list = [20,20,20,20,20,20]
+        y_vel_list = [20,20,20,20,20,0]
 
         return_state = self.dev.lookup_table_move(x_pos_list,x_vel_list,y_pos_list,y_vel_list)
         self._fill_response(return_state)
