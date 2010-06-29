@@ -30,6 +30,7 @@
   <depend package="tf" />
   <rosdep name="libdc1394"/>
   <export>
-    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -ldcam1394" />
+    <!-- <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -ldcam1394" /> -->
+    <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -ldc1394" />
   </export>
 </package>
