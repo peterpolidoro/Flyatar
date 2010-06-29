@@ -10,8 +10,8 @@
 
 <launch>
 
-  <node pkg="camera1394" type="camera1394_node" name="camera1394_node" >
+  <node pkg="camera1394v2" type="camera1394v2_node" name="camera1394v2_node" >
     <rosparam
-       file="$(find camera1394)/test/$(optenv CAMERA unibrain).yaml" /> 
+       file="$(find camera1394v2)/test/$(optenv CAMERA unibrain).yaml" /> 
   </node>
 </launch>

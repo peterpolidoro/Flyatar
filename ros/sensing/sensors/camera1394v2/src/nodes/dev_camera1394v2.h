@@ -26,7 +26,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-// $Id: dev_camera1394.h 30239 2010-06-13 13:52:28Z joq $
+// $Id: dev_camera1394v2.h 30239 2010-06-13 13:52:28Z joq $
 
 /** @file
 
@@ -34,8 +34,8 @@
 
  */
 
-#ifndef DEV_CAMERA1394_HH
-#define DEV_CAMERA1394_HH
+#ifndef DEV_CAMERA1394V2_HH
+#define DEV_CAMERA1394V2_HH
 
 #include <dc1394/dc1394.h>
 
@@ -44,7 +44,7 @@
 
 #include "features.h"
 
-namespace camera1394
+namespace camera1394v2
 {
   //! Macro for defining an exception with a given parent
   //  (std::runtime_error should be top parent)
@@ -55,14 +55,14 @@ namespace camera1394
     name (const char* msg) : parent (msg) {}	\
   }
 
-  //! A standard Camera1394 exception
+  //! A standard Camera1394v2 exception
   DEF_EXCEPTION(Exception, std::runtime_error);
 
-  class Camera1394
+  class Camera1394v2
   {
   public:
-    Camera1394 ();
-    ~Camera1394 ();
+    Camera1394v2 ();
+    ~Camera1394v2 ();
 
     int open (const char* guid,
 	      const char* video_mode,
@@ -97,4 +97,4 @@ namespace camera1394
   };
 };
 
-#endif // DEV_CAMERA1394_HH
+#endif // DEV_CAMERA1394V2_HH

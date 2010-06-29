@@ -9,7 +9,7 @@
 
   <!-- first camera and associated image pipeline -->
   <group ns="unibrain" >
-    <node pkg="camera1394" type="camera1394_node" name="camera1394_node" >
+    <node pkg="camera1394v2" type="camera1394v2_node" name="camera1394v2_node" >
       <param name="guid" value="08144361026320a0" />
       <param name="video_mode" value="640x480_yuv411" />
       <param name="frame_id" value="unibrain" />
@@ -24,7 +24,7 @@
 
   <!-- second camera and associated image pipeline -->
   <group ns="sony" >
-    <node pkg="camera1394" type="camera1394_node" name="camera1394_node" >
+    <node pkg="camera1394v2" type="camera1394v2_node" name="camera1394v2_node" >
       <param name="guid" value="0800461000821fa2" />
       <param name="video_mode" value="1280x960_mono8" />
       <param name="frame_id" value="sony" />

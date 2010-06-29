@@ -21,7 +21,7 @@
 
 /* Copyright (C) 2010 Jack O'Quin
  *
- * Minor changes for use with the ROS camera1394 driver:
+ * Minor changes for use with the ROS camera1394v2 driver:
  *
  *  * generate RGB rather than BGR
  *  * repackage as a separate file

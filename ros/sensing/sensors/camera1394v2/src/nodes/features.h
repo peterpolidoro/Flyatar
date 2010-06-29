@@ -40,17 +40,17 @@
 
 #include <dc1394/dc1394.h>
 
-#include "camera1394/Camera1394Config.h"
-typedef camera1394::Camera1394Config Config;
+#include "camera1394v2/Camera1394v2Config.h"
+typedef camera1394v2::Camera1394v2Config Config;
 
 /** @file
 
-    @brief Camera1394 features interface
+    @brief Camera1394v2 features interface
 
     @author Jack O'Quin
  */
 
-/** @brief Camera1394 Features class
+/** @brief Camera1394v2 Features class
 
     Sets IIDC features from Config updates.  Tracks values and ranges,
     modifying configured values to those supported by the device.
@@ -67,7 +67,7 @@ public:
   void reconfigure(Config *newconfig);
 
 private:
-  typedef int state_t;      ///< camera1394::Camera1394_* state values
+  typedef int state_t;      ///< camera1394v2::Camera1394v2_* state values
 
   void configure(dc1394feature_t feature, int *control,
                  double *value, double *value2=NULL);

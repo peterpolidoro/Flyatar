@@ -9,7 +9,7 @@
 
   <!-- first camera and associated image pipeline -->
   <group ns="unibrain" >
-    <node pkg="camera1394" type="camera1394_node" name="camera1394_node" >
+    <node pkg="camera1394v2" type="camera1394v2_node" name="camera1394v2_node" >
       <rosparam file="/cameras/unibrain.yaml" /> 
     </node>
     <include file="/cameras/image_pipeline.launch" />
@@ -17,7 +17,7 @@
 
   <!-- second camera and associated image pipeline -->
   <group ns="sony" >
-    <node pkg="camera1394" type="camera1394_node" name="camera1394_node" >
+    <node pkg="camera1394v2" type="camera1394v2_node" name="camera1394v2_node" >
       <rosparam file="/cameras/sony.yaml" /> 
     </node>
     <include file="/cameras/image_pipeline.launch" />

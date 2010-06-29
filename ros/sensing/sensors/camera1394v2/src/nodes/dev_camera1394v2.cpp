@@ -26,7 +26,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-// $Id: dev_camera1394.cpp 30346 2010-06-18 21:06:58Z joq $
+// $Id: dev_camera1394v2.cpp 30346 2010-06-18 21:06:58Z joq $
 
 #include <stdint.h>
 
@@ -38,7 +38,7 @@
 
 #include "yuv.h"
 #include <sensor_msgs/image_encodings.h>
-#include "dev_camera1394.h"
+#include "dev_camera1394v2.h"
 
 #define NUM_DMA_BUFFERS 4
 
@@ -49,7 +49,7 @@ const timespec NSLEEP_TIME = { 0, 10000 }; // (0s, 10ms) => max 100Hz
 #define CAM_EXCEPT(except, msg)					\
   {								\
     char buf[100];						\
-    snprintf(buf, 100, "[Camera1394::%s]: " msg, __FUNCTION__); \
+    snprintf(buf, 100, "[Camera1394v2::%s]: " msg, __FUNCTION__); \
     throw except(buf);						\
   }
 
@@ -57,26 +57,26 @@ const timespec NSLEEP_TIME = { 0, 10000 }; // (0s, 10ms) => max 100Hz
 #define CAM_EXCEPT_ARGS(except, msg, ...)				\
   {									\
     char buf[100];							\
-    snprintf(buf, 100, "[Camera1394::%s]: " msg, __FUNCTION__, __VA_ARGS__); \
+    snprintf(buf, 100, "[Camera1394v2::%s]: " msg, __FUNCTION__, __VA_ARGS__); \
     throw except(buf);							\
   }
 
 
-using namespace camera1394;
+using namespace camera1394v2;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructor
-Camera1394::Camera1394():
+Camera1394v2::Camera1394v2():
   features_(NULL), camera_(NULL)
 {}
 
-Camera1394::~Camera1394() 
+Camera1394v2::~Camera1394v2() 
 {
   SafeCleanup();
 }
 
 
-void Camera1394::findFrameRate(float fps)
+void Camera1394v2::findFrameRate(float fps)
 {
   if (fps < 3.75)
     frameRate_ = DC1394_FRAMERATE_1_875;
@@ -96,7 +96,7 @@ void Camera1394::findFrameRate(float fps)
     frameRate_ = DC1394_FRAMERATE_240;
 }
 
-void Camera1394::findVideoMode(const char* mode)
+void Camera1394v2::findVideoMode(const char* mode)
 {
   if (0 == strcmp(mode, "160x120_yuv444"))
     videoMode_ = DC1394_VIDEO_MODE_160x120_YUV444;
@@ -147,12 +147,12 @@ void Camera1394::findVideoMode(const char* mode)
   else
     {
       // raise exception
-      CAM_EXCEPT(camera1394::Exception, "Unsupported video_mode");
+      CAM_EXCEPT(camera1394v2::Exception, "Unsupported video_mode");
     }
 }
 
 
-void Camera1394::findBayerFilter(const char* bayer, const char* method) 
+void Camera1394v2::findBayerFilter(const char* bayer, const char* method) 
 {
   // determine Bayer color encoding pattern
   // (default is different from any color filter provided by DC1394)
@@ -211,7 +211,7 @@ void Camera1394::findBayerFilter(const char* bayer, const char* method)
     }
 }
 
-void Camera1394::findIsoSpeed(int iso_speed) 
+void Camera1394v2::findIsoSpeed(int iso_speed) 
 {
   switch (iso_speed)
     {
@@ -241,7 +241,7 @@ void Camera1394::findIsoSpeed(int iso_speed)
 }
 
 /** Open the 1394 device */
-int Camera1394::open(const char* guid,
+int Camera1394v2::open(const char* guid,
 		     const char* video_mode,
 		     float fps,
 		     int iso_speed,
@@ -263,7 +263,7 @@ int Camera1394::open(const char* guid,
   d = dc1394_new ();
   if (d == NULL)
     {
-      CAM_EXCEPT(camera1394::Exception,
+      CAM_EXCEPT(camera1394v2::Exception,
                  "Could not initialize dc1394_context.\n"
                  "Make sure /dev/raw1394 exists, you have access permission,\n"
                  "and libraw1394 development package is installed.");
@@ -272,13 +272,13 @@ int Camera1394::open(const char* guid,
   err = dc1394_camera_enumerate(d, &list);
   if (err != DC1394_SUCCESS)
     {
-      CAM_EXCEPT(camera1394::Exception, "Could not get camera list");
+      CAM_EXCEPT(camera1394v2::Exception, "Could not get camera list");
       return -1;
     }
   
   if (list->num == 0)
     {
-      CAM_EXCEPT(camera1394::Exception, "No cameras found");
+      CAM_EXCEPT(camera1394v2::Exception, "No cameras found");
       return -1;
     }
   
@@ -325,11 +325,11 @@ int Camera1394::open(const char* guid,
     {
       if (strcmp(guid,"")==0)
         { 
-          CAM_EXCEPT(camera1394::Exception, "Could not find camera");
+          CAM_EXCEPT(camera1394v2::Exception, "Could not find camera");
         }
       else
         {
-          CAM_EXCEPT_ARGS(camera1394::Exception,
+          CAM_EXCEPT_ARGS(camera1394v2::Exception,
                           "Could not find camera with guid %s", guid);
         }
       return -1;
@@ -344,7 +344,7 @@ int Camera1394::open(const char* guid,
 #if 0
       // This caused some AVT f145c2 cameras not to open...
       SafeCleanup();
-      CAM_EXCEPT(camera1394::Exception, "Unable to reset camera.");
+      CAM_EXCEPT(camera1394v2::Exception, "Unable to reset camera.");
       return -1;
 #endif
       // log a warning, but continue
@@ -358,7 +358,7 @@ int Camera1394::open(const char* guid,
           dc1394_video_set_operation_mode(camera_, DC1394_OPERATION_MODE_1394B))
         {
           SafeCleanup();
-          CAM_EXCEPT(camera1394::Exception,
+          CAM_EXCEPT(camera1394v2::Exception,
                      "Unable to enable B mode for IEEE1394-capable camera.");
           return -1;
         }
@@ -369,7 +369,7 @@ int Camera1394::open(const char* guid,
   if (DC1394_SUCCESS != dc1394_video_get_iso_speed(camera_, &speed))
     {
       SafeCleanup();
-      CAM_EXCEPT(camera1394::Exception,
+      CAM_EXCEPT(camera1394v2::Exception,
                  "Unable to get iso data; is the camera plugged in?");
       return -1;
     }
@@ -401,7 +401,7 @@ int Camera1394::open(const char* guid,
   if (!DMA_Success)
     {
       SafeCleanup();
-      CAM_EXCEPT(camera1394::Exception, "Failed to open device!");
+      CAM_EXCEPT(camera1394v2::Exception, "Failed to open device!");
       return -1;
     }
   
@@ -409,7 +409,7 @@ int Camera1394::open(const char* guid,
   if (DC1394_SUCCESS != dc1394_video_set_transmission(camera_, DC1394_ON))
     {
       SafeCleanup();
-      CAM_EXCEPT(camera1394::Exception, "Failed to start device!");
+      CAM_EXCEPT(camera1394v2::Exception, "Failed to start device!");
       return -1;
     }
 
@@ -422,7 +422,7 @@ int Camera1394::open(const char* guid,
 
 
 /** Safe Cleanup */
-void Camera1394::SafeCleanup()
+void Camera1394v2::SafeCleanup()
 {
   if (features_)
     {
@@ -442,7 +442,7 @@ void Camera1394::SafeCleanup()
 
 
 /** close the 1394 device */
-int Camera1394::close()
+int Camera1394v2::close()
 {
   if (camera_)
     {
@@ -459,21 +459,21 @@ int Camera1394::close()
 
 
 /** Return an image frame */
-void Camera1394::readData(sensor_msgs::Image& image)
+void Camera1394v2::readData(sensor_msgs::Image& image)
 {
 
   if (camera_ == NULL) {
-    CAM_EXCEPT(camera1394::Exception, "Read attempted on NULL camera port!");
+    CAM_EXCEPT(camera1394v2::Exception, "Read attempted on NULL camera port!");
     return;
   }
 
-  //  CAM_EXCEPT(camera1394::Exception, "Read not implemented.");
+  //  CAM_EXCEPT(camera1394v2::Exception, "Read not implemented.");
 
   dc1394video_frame_t * frame = NULL;
   dc1394_capture_dequeue (camera_, DC1394_CAPTURE_POLICY_WAIT, &frame);
   if (!frame)
     {
-      CAM_EXCEPT(camera1394::Exception, "Unable to capture frame");
+      CAM_EXCEPT(camera1394v2::Exception, "Unable to capture frame");
       return;
     }
   
@@ -496,7 +496,7 @@ void Camera1394::readData(sensor_msgs::Image& image)
         {
           free(frame2.image);
           dc1394_capture_enqueue(camera_, frame);
-          CAM_EXCEPT(camera1394::Exception, "Could not convert/debayer frames");
+          CAM_EXCEPT(camera1394v2::Exception, "Could not convert/debayer frames");
           return;
         }
 
@@ -626,7 +626,7 @@ void Camera1394::readData(sensor_msgs::Image& image)
         } 
       break;
     default:
-      CAM_EXCEPT(camera1394::Exception, "Unknown image mode");
+      CAM_EXCEPT(camera1394v2::Exception, "Unknown image mode");
       return;
     }
   dc1394_capture_enqueue(camera_, frame);

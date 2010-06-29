@@ -26,7 +26,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
-// $Id: camera1394.cpp 30349 2010-06-19 16:12:08Z joq $
+// $Id: camera1394v2.cpp 30349 2010-06-19 16:12:08Z joq $
 
 #include <signal.h>
 #include <ros/ros.h>
@@ -39,8 +39,8 @@
 #include <driver_base/SensorLevels.h>
 #include <driver_base/driver.h>
 
-#include "dev_camera1394.h"
-#include "camera1394v2/Camera1394Config.h"
+#include "dev_camera1394v2.h"
+#include "camera1394v2/Camera1394v2Config.h"
 
 /** @file
 
@@ -76,7 +76,7 @@ void sigsegv_handler(int sig)
   ros::shutdown();                      // stop the main loop
 }
 
-class Camera1394Node
+class Camera1394v2Node
 {
 private:
 
@@ -89,10 +89,10 @@ private:
   std::string camera_name_;             // camera name
 
   /** 1394 camera device interface */
-  camera1394::Camera1394 *dev_;
+  camera1394v2::Camera1394v2 *dev_;
 
   /** dynamic parameter configuration */
-  typedef camera1394::Camera1394Config Config;
+  typedef camera1394v2::Camera1394v2Config Config;
   Config config_;
 
   /** camera calibration information */
@@ -105,18 +105,18 @@ private:
   
 public:
 
-  Camera1394Node(): it_(0)
+  Camera1394v2Node(): it_(0)
   {
     state_ = Driver::CLOSED;
     privNH_ = ros::NodeHandle("~");
     camera_nh_ = ros::NodeHandle("camera");
     camera_name_ = "camera";
     cinfo_ = new CameraInfoManager(camera_nh_);
-    dev_ = new camera1394::Camera1394();
+    dev_ = new camera1394v2::Camera1394v2();
     calibration_matches_ = true;
   }
 
-  ~Camera1394Node()
+  ~Camera1394v2Node()
   {
     if (it_)
       delete it_;
@@ -178,7 +178,7 @@ public:
           }
 
       }
-    catch (camera1394::Exception& e)
+    catch (camera1394v2::Exception& e)
       {
         ROS_FATAL_STREAM("[" << camera_name_
                          << "] exception opening device: " << e.what());
@@ -247,7 +247,7 @@ public:
         dev_->readData(image_);
         ROS_DEBUG_STREAM("[" << camera_name_ << "] read returned");
       }
-    catch (camera1394::Exception& e)
+    catch (camera1394v2::Exception& e)
       {
         ROS_WARN_STREAM("[" << camera_name_
                         << "] Exception reading data: " << e.what());
@@ -348,7 +348,7 @@ public:
     // set initial parameter values, then open the device if it can.
     dynamic_reconfigure::Server<Config> srv;
     dynamic_reconfigure::Server<Config>::CallbackType f
-      = boost::bind(&Camera1394Node::reconfig, this, _1, _2);
+      = boost::bind(&Camera1394v2Node::reconfig, this, _1, _2);
     srv.setCallback(f);
 
     // set up ROS interfaces in camera namespace
@@ -371,15 +371,15 @@ public:
     closeCamera();
   }
 
-}; // end Camera1394Node class definition
+}; // end Camera1394v2Node class definition
 
 
 /** Main entry point */
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "camera1394_node");
+  ros::init(argc, argv, "camera1394v2_node");
   ros::NodeHandle node;
-  Camera1394Node cm;
+  Camera1394v2Node cm;
 
   cm.spin();
 
