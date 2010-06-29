@@ -83,10 +83,10 @@ class StageCommunicator():
         # self._set_frequency(self.axis_y,vel_steps,4)
         # self._set_position(self.axis_y,pos_steps_100,4)
 
-        x_pos_list = [120,140,120,100,120,140]
-        x_vel_list = [20,20,20,20,20,20]
-        y_pos_list = [100,120,140,120,100,140]
-        y_vel_list = [20,20,20,20,20,20]
+        x_pos_list = [120,140,120,100,120,100,100,140,140]
+        x_vel_list = [20]*len(x_pos_list)
+        y_pos_list = [100,120,140,120,100,100,140,140,100]
+        y_vel_list = [20]*len(y_pos_list)
 
         # x_pos_list = [120,140,120,100,120]
         # x_vel_list = [20,20,20,20,20]
