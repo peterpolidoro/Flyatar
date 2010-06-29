@@ -14,6 +14,8 @@
 #    pjp 08/19/09    version 1.0
 # ---------------------------------------------------------------------------
 from __future__ import division
+import roslib; roslib.load_manifest('stage')
+import rospy
 import USBDevice
 import ctypes
 import time
