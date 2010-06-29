@@ -45,7 +45,8 @@ class USBPacketOut_t(ctypes.LittleEndianStructure):
 
 class USBPacketIn_t(ctypes.LittleEndianStructure):
     _pack_ = 1
-    _fields_ =[('TableEnd', ctypes.c_uint8),
+    _fields_ =[('AllMotorsInPosition', ctypes.c_uint8),
+               ('LookupTableMoveComplete', ctypes.c_uint8),
                ('State', LookupTableRow_t)]
 
 class StageDevice(USBDevice.USB_Device):
@@ -196,7 +197,7 @@ class StageDevice(USBDevice.USB_Device):
 
             self.USBPacketOut.EntryCount = packet_point_n
             self.USBPacketOut.EntryLocation = point_n - packet_point_n
-            rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
+            # rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
             self._lookup_table_fill()
 
         self._lookup_table_move()
@@ -215,6 +216,12 @@ class StageDevice(USBDevice.USB_Device):
         y =  self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_y].Position)
         theta_velocity = self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_theta].Frequency)
         theta =  self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_theta].Position)
+        all_motors_in_position = self.USBPacketIn.AllMotorsInPosition
+        if all_motors_in_position:
+            rospy.logwarn("All motors in position.")
+        lookup_table_move_complete = self.USBPacketIn.AllMotorsInPosition
+        if lookup_table_move_complete:
+            rospy.logwarn("Lookup table move complete.")
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def _mm_to_steps(self,quantity_mm):
@@ -245,8 +252,6 @@ class StageDevice(USBDevice.USB_Device):
         cmd_id = val_list[0]
         self._check_cmd_id(cmd,cmd_id)
         self.USBPacketIn = val_list[1]
-        if cmd == self.USB_CMD_LOOKUP_TABLE_FILL:
-            rospy.logwarn("TableEnd = %s" % (str(self.USBPacketIn.TableEnd)))
 
     def _get_motor_state(self):
         self._send_usb_cmd(self.USB_CMD_GET_STATE,False)

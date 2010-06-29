@@ -147,7 +147,8 @@ typedef struct
 typedef struct
 {
   uint8_t       CommandID;
-  uint8_t       TableEnd;
+  uint8_t       AllMotorsInPosition;
+  uint8_t       LookupTableMoveComplete;
   LookupTableRow_t MotorStatus;
 } USBPacketInWrapper_t;
 
@@ -175,6 +176,8 @@ uint8_t                 TableEnd=0;
 uint8_t                 TableEntry=0;
 uint8_t                 LookupTableMove=0;
 uint8_t                 MotorUpdateBits;
+uint8_t                 AllMotorsInPosition=0;
+uint8_t                 LookupTableMoveComplete=0;
 
 /* Task Definitions: */
 TASK(USB_ProcessPacket);

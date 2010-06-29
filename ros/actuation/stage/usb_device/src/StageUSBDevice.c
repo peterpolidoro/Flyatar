@@ -242,6 +242,8 @@ TASK(USB_ProcessPacket)
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableMove = 1;
+                    LookupTableMoveComplete = 0;
+
                     TableEntry = 0;
                     if (TableEntry < TableEnd)
                       {
@@ -269,7 +271,8 @@ TASK(USB_ProcessPacket)
                     USBPacketIn.MotorStatus[Motor_N].Position = Motor[Motor_N].Position;
                   }
                 }
-              USBPacketIn.TableEnd = TableEnd;
+              USBPacketIn.AllMotorsInPosition = AllMotorsInPosition;
+              USBPacketIn.LookupTableMoveComplete = LookupTableMoveComplete;
               USBPacket_Write();
 
               /* Indicate ready */
@@ -637,6 +640,7 @@ static void Motor_Update_All(void)
 {
   /* Set InPositionPin low (PORTE pin 5) */
   PORTE &= ~(1<<PB5);
+  AllMotorsInPosition = 0;
 
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
     {
@@ -846,6 +850,7 @@ ISR(INPOSITION_INTERRUPT)
 {
   /* Set InPositionPin high (PORTE pin 5) */
   PORTE |= (1<<PB5);
+  AllMotorsInPosition = 1;
 
   /* Set interrupt 4 high to disable interrupt (PORTE pin 4) */
   PORTE |= (1<<PB4);
@@ -860,6 +865,7 @@ ISR(INPOSITION_INTERRUPT)
         }
       else
         {
+          LookupTableMoveComplete = 1;
           LookupTableMove = 0;
         }
     }
