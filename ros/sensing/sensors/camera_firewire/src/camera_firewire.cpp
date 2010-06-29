@@ -32,10 +32,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "dcam1394/dcam1394.h"
-#include <cstring>
-#include <cstdio>
-
+// #include "dcam1394/dcam1394.h"
+// #include <cstring>
+// #include <cstdio>
 
 using namespace std;
 using namespace ros;
@@ -47,14 +46,14 @@ public:
 
   dc1394video_frame_t* getFrame() { return camFrame; }
 
-  void setFeatureMode(dc1394feature_t feature, dc1394feature_mode_t mode)
-  {
-    if (!dcam::dcRef)
-      throw dcam::DcamException("not ready");
-    dc1394error_t err = dc1394_feature_set_mode(dcCam, feature, mode);
-    if( err != DC1394_SUCCESS )
-      throw dcam::DcamException("error");
-  }
+  // void setFeatureMode(dc1394feature_t feature, dc1394feature_mode_t mode)
+  // {
+  //   if (!dcam::dcRef)
+  //     throw dcam::DcamException("not ready");
+  //   dc1394error_t err = dc1394_feature_set_mode(dcCam, feature, mode);
+  //   if( err != DC1394_SUCCESS )
+  //     throw dcam::DcamException("error");
+  // }
 };
 
 class CameraOpenCVNode
