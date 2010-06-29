@@ -53,36 +53,6 @@ class StageCommunicator():
         return self.response
 
     def stage_lookup_table_move(self,req):
-        # vel_steps = self._mm_to_steps(20)
-        # pos_steps_100 = self._mm_to_steps(100)
-        # pos_steps_120 = self._mm_to_steps(120)
-        # pos_steps_140 = self._mm_to_steps(140)
-
-        # self._set_frequency(self.axis_x,vel_steps,0)
-        # self._set_position(self.axis_x,pos_steps_120,0)
-        # self._set_frequency(self.axis_y,vel_steps,0)
-        # self._set_position(self.axis_y,pos_steps_100,0)
-
-        # self._set_frequency(self.axis_x,vel_steps,1)
-        # self._set_position(self.axis_x,pos_steps_140,1)
-        # self._set_frequency(self.axis_y,vel_steps,1)
-        # self._set_position(self.axis_y,pos_steps_120,1)
-
-        # self._set_frequency(self.axis_x,vel_steps,2)
-        # self._set_position(self.axis_x,pos_steps_120,2)
-        # self._set_frequency(self.axis_y,vel_steps,2)
-        # self._set_position(self.axis_y,pos_steps_140,2)
-
-        # self._set_frequency(self.axis_x,vel_steps,3)
-        # self._set_position(self.axis_x,pos_steps_100,3)
-        # self._set_frequency(self.axis_y,vel_steps,3)
-        # self._set_position(self.axis_y,pos_steps_120,3)
-
-        # self._set_frequency(self.axis_x,vel_steps,4)
-        # self._set_position(self.axis_x,pos_steps_120,4)
-        # self._set_frequency(self.axis_y,vel_steps,4)
-        # self._set_position(self.axis_y,pos_steps_100,4)
-
         x_pos_list = [120,140,120,100,120,100,100,140,140]*3
         x_vel_list = [20]*len(x_pos_list)
         y_pos_list = [100,120,140,120,100,100,140,140,100]*3

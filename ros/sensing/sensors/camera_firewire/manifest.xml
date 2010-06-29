@@ -26,7 +26,7 @@
   <depend package="cv_bridge"/>
   <depend package="image_transport"/>
   <depend package="sensor_msgs"/>
-  <depend package="libdc1394v2"/>
+  <!-- <depend package="libdc1394v2"/> -->
   <depend package="std_msgs" />
   <depend package="tf" />
   <export>
