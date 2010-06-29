@@ -219,7 +219,7 @@ class StageDevice(USBDevice.USB_Device):
         all_motors_in_position = self.USBPacketIn.AllMotorsInPosition
         if all_motors_in_position:
             rospy.logwarn("All motors in position.")
-        lookup_table_move_complete = self.USBPacketIn.AllMotorsInPosition
+        lookup_table_move_complete = self.USBPacketIn.LookupTableMoveComplete
         if lookup_table_move_complete:
             rospy.logwarn("Lookup table move complete.")
         return x,y,theta,x_velocity,y_velocity,theta_velocity
