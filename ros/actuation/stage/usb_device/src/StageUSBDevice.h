@@ -147,6 +147,7 @@ typedef struct
 typedef struct
 {
   uint8_t       CommandID;
+  uint8_t       TableEnd;
   LookupTableRow_t MotorStatus;
 } USBPacketInWrapper_t;
 

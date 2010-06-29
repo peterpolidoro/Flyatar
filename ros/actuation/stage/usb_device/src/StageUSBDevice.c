@@ -269,6 +269,7 @@ TASK(USB_ProcessPacket)
                     USBPacketIn.MotorStatus[Motor_N].Position = Motor[Motor_N].Position;
                   }
                 }
+              USBPacketIn.TableEnd = TableEnd;
               USBPacket_Write();
 
               /* Indicate ready */

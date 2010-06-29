@@ -45,7 +45,8 @@ class USBPacketOut_t(ctypes.LittleEndianStructure):
 
 class USBPacketIn_t(ctypes.LittleEndianStructure):
     _pack_ = 1
-    _fields_ =[('State', LookupTableRow_t)]
+    _fields_ =[('TableEnd', ctypes.c_uint8),
+               ('State', LookupTableRow_t)]
 
 class StageDevice(USBDevice.USB_Device):
     def __init__(self, serial_number=None):
@@ -244,6 +245,7 @@ class StageDevice(USBDevice.USB_Device):
         cmd_id = val_list[0]
         self._check_cmd_id(cmd,cmd_id)
         self.USBPacketIn = val_list[1]
+        rospy.logwarn("TableEnd = %s" % (str(self.USBPacketIn.TableEnd)))
 
     def _get_motor_state(self):
         self._send_usb_cmd(self.USB_CMD_GET_STATE,False)
