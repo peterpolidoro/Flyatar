@@ -39,6 +39,7 @@
 //
 
 #include "dcam1394/dcam1394.h"
+#include <dc1394/dc1394.h>
 #include <cstring>
 #include <cstdio>
 #include <errno.h>
