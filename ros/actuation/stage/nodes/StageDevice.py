@@ -245,7 +245,8 @@ class StageDevice(USBDevice.USB_Device):
         cmd_id = val_list[0]
         self._check_cmd_id(cmd,cmd_id)
         self.USBPacketIn = val_list[1]
-        rospy.logwarn("TableEnd = %s" % (str(self.USBPacketIn.TableEnd)))
+        if cmd == self.USB_CMD_LOOKUP_TABLE_FILL:
+            rospy.logwarn("TableEnd = %s" % (str(self.USBPacketIn.TableEnd)))
 
     def _get_motor_state(self):
         self._send_usb_cmd(self.USB_CMD_GET_STATE,False)
