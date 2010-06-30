@@ -569,6 +569,7 @@ void Camera1394v2::readData(sensor_msgs::Image& image)
     case DC1394_VIDEO_MODE_1024x768_MONO8:
     case DC1394_VIDEO_MODE_1280x960_MONO8:
     case DC1394_VIDEO_MODE_1600x1200_MONO8:
+    case DC1394_VIDEO_MODE_FORMAT7_0:
       if (!DoBayerConversion_)
         {
           image.step=image.width;
