@@ -94,8 +94,7 @@ class PoseTFConversion:
                 Xsrc = [msg.pose.position.x]
                 Ysrc = [msg.pose.position.y]
                 self.tf_broadcaster.sendTransform((msg.pose.position.x, msg.pose.position.y, 0),
-                                      # (msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w),
-                                      (0,0,0,0),
+                                      (msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w),
                                       rospy.Time.now(),
                                       "RobotImage",
                                       "Camera")
