@@ -23,7 +23,7 @@ class Calibration:
     self.tf_listener = tf.TransformListener()
     self.tf_broadcaster = tf.TransformBroadcaster()
     self.bridge = CvBridge()
-    self.image_sub = rospy.Subscriber("UndistortedImage", Image, self.image_callback)
+    self.image_sub = rospy.Subscriber("camera/image_rect", Image, self.image_callback)
     self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joy_callback)
     self.color_max = 255
     self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
@@ -40,12 +40,12 @@ class Calibration:
     # self.plate_origin.point.x = 0
     # self.plate_origin.point.y = 0
 
-    (self.intrinsic_matrix,self.distortion_coeffs) = CameraParameters.intrinsic("undistorted")
+    (self.intrinsic_matrix,self.distortion_coeffs) = CameraParameters.intrinsic("rect")
     self.KK_cx = self.intrinsic_matrix[0,2]
     self.KK_cy = self.intrinsic_matrix[1,2]
 
     self.M = cvNumpy.mat_to_array(self.intrinsic_matrix)
-    # Makes with respect to Camera coordinate system instead of Undistorted
+    # Makes with respect to Camera coordinate system instead of ImageRect
     self.M[:-1,-1] = 0
 
     # Pattern info
@@ -213,9 +213,9 @@ class Calibration:
       # cv.PutText(self.im_display,display_text,(25,45),self.font,self.font_color)
 
       try:
-        self.undistorted_camera = self.tf_listener.transformPoint("UndistortedImage",self.camera_origin)
+        self.undistorted_camera = self.tf_listener.transformPoint("ImageRect",self.camera_origin)
         cv.Circle(self.im_display, (int(self.undistorted_camera.point.x),int(self.undistorted_camera.point.y)), 3, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
-        self.undistorted_plate = self.tf_listener.transformPoint("UndistortedImage",self.camera_plate)
+        self.undistorted_plate = self.tf_listener.transformPoint("ImageRect",self.camera_plate)
         cv.Circle(self.im_display, (int(self.undistorted_plate.point.x),int(self.undistorted_plate.point.y)), 3, cv.CV_RGB(0,self.color_max,0), cv.CV_FILLED)
         cv.Circle(self.im_display, (int(self.undistorted_plate.point.x),int(self.undistorted_plate.point.y)), int(self.mask_radius), cv.CV_RGB(0,self.color_max,0))
         display_text = "mask radius = " + str(int(self.mask_radius))
@@ -235,51 +235,6 @@ class Calibration:
       self.mask_radius += data.radius_velocity
 
   def remap_extrinsics(self):
-    # self.find_H_image_to_plate()
-    # display_text = "undistorted_plate.point = " + str(int(self.undistorted_plate.point.x)) + "," + str(int(self.undistorted_plate.point.y))
-    # cv.PutText(self.im_display,display_text,(25,300),self.font,self.font_color)
-    # Ximage = [self.undistorted_plate.point.x.tolist()]
-    # Yimage = [self.undistorted_plate.point.y.tolist()]
-    # Xplate,Yplate = self.image_to_plate(Ximage,Yimage)
-    # display_text = "new origin point = " + str(int(Xplate)) + "," + str(int(Yplate))
-    # cv.PutText(self.im_display,display_text,(25,320),self.font,self.font_color)
-    # cv.SetZero(self.distortion_coeffs)
-    # rotation_matrix = cv.CreateMat(3,3,cv.CV_32FC1)
-    # cv.Rodrigues2(self.rvec, rotation_matrix)
-    # R = cvNumpy.mat_to_array(rotation_matrix)
-    # T = cvNumpy.mat_to_array(self.tvec).transpose()
-    # W = numpy.concatenate((R,numpy.zeros((1,3))),0)
-    # T = numpy.append(T,1)
-    # T = numpy.array([T]).transpose()
-    # rospy.logwarn("R = %s", str(R))
-    # rospy.logwarn("T = %s", str(T))
-    # W = numpy.concatenate((W,T),1)
-    # rospy.logwarn("W = %s", str(W))
-
-    # T2 = numpy.array([36.1,55.3,0,1])
-    # T2 = numpy.array([10,0,0,1])
-    # T2 = numpy.array([T2]).transpose()
-    # ang = 1.086
-    # ang = -1.086
-    # R2 = numpy.array([[math.cos(ang), math.sin(ang), 0],
-    #                   [-math.sin(ang), math.cos(ang), 0],
-    #                   [0,0,1]])
-    # rospy.logwarn("R2 = %s", str(R2))
-    # rospy.logwarn("T2 = %s", str(T2))
-    # W2 = numpy.concatenate((R2,numpy.zeros((1,3))),0)
-    # W2 = numpy.concatenate((W2,T2),1)
-    # rospy.logwarn("W2 = %s", str(W2))
-
-    # W3 = numpy.dot(W,W2)
-    # W3 = numpy.dot(W2,W)
-    # rospy.logwarn("W3 = %s", str(W3))
-    # tvec_new = W3[:-1,-1]
-    # R_new = W3[:-1,:-1]
-    # R_new = R_new.astype('float32')
-    # rvec_new = cv.CreateMat(1,3,cv.CV_32FC1)
-    # R_new = cvNumpy.array_to_mat(R_new)
-    # cv.Rodrigues2(R_new,rvec_new)
-
     X = [self.camera_plate.point.x, self.camera_plate.point.x + self.checker_size]
     Y = [self.camera_plate.point.y, self.camera_plate.point.y]
     Z = [1,1]
@@ -331,123 +286,6 @@ class Calibration:
     except (tf.LookupException, tf.ConnectivityException):
       pass
 
-    # rospy.logwarn("tvec_array = %s", str(self.tvec_array))
-    # rotation_matrix = cv.CreateMat(3,3,cv.CV_32FC1)
-    # cv.Rodrigues2(self.rvec, rotation_matrix)
-    # R = cvNumpy.mat_to_array(rotation_matrix)
-    # Rinv = numpy.linalg.inv(R)
-    # plate_points = numpy.dot(Rinv,plate_points)
-    # plate_points[-1,0] = 0
-    # tvec_array_new = self.tvec_array + plate_points[:,0]
-    # rospy.logwarn("tvec_array_new = %s", str(tvec_array_new))
-    # rospy.logwarn("tvec_array_new_2 = %s", str(tvec_array_new_2))
-    # tvec_array_new[0] += 5
-    # rospy.logwarn("rvec_array = %s", str(self.rvec_array))
-    # rospy.logwarn("tvec_array = %s", str(self.tvec_array))
-    # rospy.logwarn("rvec_new = %s", str(rvec_new))
-    # rospy.logwarn("tvec_new = %s", str(tvec_new))
-
-    # rospy.logwarn("rvec_array = %s", str(rvec_array))
-    # rospy.logwarn("tvec_array = %s", str(tvec_array))
-    # self.rvec = cvNumpy.array_to_mat(rvec_new)
-    # self.tvec = cvNumpy.array_to_mat(tvec_new)
-    # Winv = la.inv(W)
-    # rospy.logwarn("Winv = %s", str(Winv))
-    # H = numpy.dot(M,Winv)
-    # rospy.logwarn("H = %s", str(H))
-
-  # def find_H_image_to_plate(self):
-  #   Xplate = numpy.arange(0,self.pattern_size[0],1)
-  #   Yplate = numpy.arange(0,self.pattern_size[1],1)
-  #   XXplate,YYplate = numpy.meshgrid(Xplate,Yplate)
-  #   XXplate = (XXplate - (self.pattern_size[0]-1)/2)*self.checker_size
-  #   YYplate = (YYplate - (self.pattern_size[1]-1)/2)*self.checker_size
-  #   XXplate_list = (XXplate.reshape(1,self.pattern_size[0]*self.pattern_size[1])).squeeze().tolist()
-  #   YYplate_list = (YYplate.reshape(1,self.pattern_size[0]*self.pattern_size[1])).squeeze().tolist()
-  #   # class PlatePoints:
-  #   #     def __init__(self):
-  #   #         Xsrc = ()
-  #   #         Ysrc = ()
-  #   # plate_points = PlatePoints()
-  #   # plate_points.Xsrc = XXplate_list
-  #   # plate_points.Ysrc = YYplate_list
-  #   (XXcamera_list,YYcamera_list) = self.plate_to_camera(XXplate_list,YYplate_list)
-  #   # XXcamera_list = list(image_points['Xdst'])
-  #   # YYcamera_list = list(image_points['Ydst'])
-  #   plate_points = numpy.array([XXplate_list,YYplate_list])
-  #   plate_points = plate_points.transpose()
-  #   plate_points = plate_points.astype('float32')
-  #   # rospy.logwarn("plate_points = %s", str(plate_points))
-  #   plate_points = cvNumpy.array_to_mat(plate_points)
-  #   image_points = numpy.array([XXcamera_list,YYcamera_list])
-  #   image_points = image_points.transpose()
-  #   image_points = image_points.astype('float32')
-  #   # rospy.logwarn("image_points = %s", str(image_points))
-  #   image_points = cvNumpy.array_to_mat(image_points)
-  #   Homography_camera_to_plate = cv.CreateMat(3,3,cv.CV_32FC1)
-  #   # rospy.logwarn("image_points = %s", str(image_points))
-  #   # rospy.logwarn("plate_points = %s", str(plate_points))
-  #   # rospy.logwarn("self.Homography_camera_to_plate = %s", str(Homography_camera_to_plate))
-  #   # cv.FindHomography(image_points,plate_points,Homography_camera_to_plate,0)
-  #   self.Homography_camera_to_plate_array = cvNumpy.mat_to_array(Homography_camera_to_plate)
-
-  #   # image_points = self.image_points
-  #   # plate_points = cvNumpy.mat_to_array(self.plate_points)
-  #   # plate_points = plate_points[:,:2]
-  #   # # image_points = image_points.astype('float32')
-  #   # plate_points = plate_points.astype('float32')
-  #   # plate_points = cvNumpy.array_to_mat(plate_points)
-  #   # rospy.loginfo("image_points = %s", str(image_points))
-  #   # rospy.loginfo("plate_points = %s", str(plate_points))
-  #   # self.Homography_image_to_plate = cv.CreateMat(3,3,cv.CV_32FC1)
-  #   # rospy.loginfo("homography = %s", str(self.Homography_image_to_plate))
-  #   # cv.FindHomography(image_points,plate_points,self.Homography_image_to_plate,0)
-  #   # rospy.logwarn("Homo_mat = %s", str(self.Homography_image_to_plate))
-  #   # rospy.logwarn("Homo_mat_type = %s", str(cv.GetElemType(self.Homography_image_to_plate)))
-  #   # self.Homography_image_to_plate_array = cvNumpy.mat_to_array(self.Homography_image_to_plate)
-  #   # rospy.logwarn("Homo_array = %s", str(self.Homography_image_to_plate_array))
-
-  # def image_to_plate(self,Xsrc,Ysrc):
-  #   Xsrc = list(Xsrc)
-  #   Ysrc = list(Ysrc)
-  #   point_count = min(len(Xsrc),len(Ysrc))
-  #   Zsrc = [1]*point_count
-  #   image_points = numpy.array([Xsrc,Ysrc,Zsrc])
-  #   # rospy.loginfo("image_points = %s", str(image_points))
-  #   # plate_points = numpy.dot(self.Homography_image_to_plate_array,image_points)
-  #   plate_points = image_points
-  #   Xdst = plate_points[0,:]
-  #   Ydst = plate_points[1,:]
-  #   return Xdst,Ydst
-
-  # def plate_to_camera(self,Xsrc,Ysrc):
-  #   point_count = min(len(Xsrc),len(Ysrc))
-  #   # ProjectPoints2 does not like point counts less than three
-  #   # Could use multiple channels
-  #   # Or just stuff dummy points into point calculation
-  #   if point_count < 3:
-  #     point_count_calc = point_count + 2
-  #     Xsrc = list(Xsrc)
-  #     Xsrc.extend([0,0])
-  #     Ysrc = list(Ysrc)
-  #     Ysrc.extend([0,0])
-  #   else:
-  #     point_count_calc = point_count
-  #     Xsrc = Xsrc
-  #     Ysrc = Ysrc
-
-  #   image_points = cv.CreateMat(point_count_calc,2,cv.CV_32FC1)
-  #   # rospy.loginfo("image_points = %s", str(image_points))
-  #   Zsrc = [0]*point_count_calc
-  #   object_points = numpy.array([Xsrc,Ysrc,Zsrc])
-  #   object_points = object_points.transpose()
-  #   # rospy.loginfo("object_points = %s", str(object_points))
-  #   object_points = cvNumpy.array_to_mat(object_points)
-  #   cv.ProjectPoints2(object_points,self.rvec,self.tvec,self.intrinsic_matrix,self.distortion_coeffs,image_points)
-  #   image_points = cvNumpy.mat_to_array(image_points)
-  #   Xdst = image_points[:point_count,0].tolist()
-  #   Ydst = image_points[:point_count,1].tolist()
-  #   return Xdst,Ydst
 
 def main(args):
   rospy.init_node('camera_plate_calibration')

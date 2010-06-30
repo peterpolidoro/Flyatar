@@ -35,6 +35,7 @@ roslaunch camera1394v2 flyatar_camera_cal_b.launch
 rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/camera/image_rect camera:=/camera
 <wave 30 mm checkerboard in front of camera until calibrate button activates>
 <click commit button>
+<transfer camera calibration info into camera_calibration_data.launch by hand>
 
 Compiling Stage USB Device Firmware:
 mkdir ~/LUFA
