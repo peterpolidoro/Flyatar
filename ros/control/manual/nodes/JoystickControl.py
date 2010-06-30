@@ -7,7 +7,7 @@ import rospy
 from stage.msg import StageCommands
 from joystick_commands.msg import JoystickCommands
 
-class PositionControl:
+class JoystickControl:
 
     def __init__(self):
         self.initialized = False
