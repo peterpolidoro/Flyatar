@@ -6,9 +6,13 @@ frame_id: basler
 # camera_info_url: file:///cameras/unibrain_calibration.yaml
 
 # set some feature values:
+auto_brightness: 3      #Manual 
 brightness: 100
+auto_exposure: 5        #None 
 exposure: 100
+auto_gain: 3            #Manual 
 gain: 600
+auto_shutter: 3         #Manual
 shutter: 400
 
 
