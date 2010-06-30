@@ -19,9 +19,10 @@ class ImageDisplay:
         self.initialized = False
         self.images_initialized = False
         self.tf_listener = tf.TransformListener()
-        self.image_frame = "UndistortedImage"
-        self.image_sub = rospy.Subscriber(self.image_frame, Image, self.image_callback)
-        self.image_pub = rospy.Publisher("DisplayImage",Image)
+        self.image_name = "camera/image_rect"
+        self.image_frame = "ImageRect"
+        self.image_sub = rospy.Subscriber(self.image_name, Image, self.image_callback)
+        self.image_pub = rospy.Publisher("/camera/image_display",Image)
         self.setpoint_sub = rospy.Subscriber("setpoint",Setpoint, self.setpoint_callback)
 
         cv.NamedWindow("Display",1)
