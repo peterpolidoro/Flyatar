@@ -24,7 +24,7 @@ class Calibration():
     self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.commands_callback)
     self.vel_pub = rospy.Publisher("stage/command_velocity",Velocity)
 
-    self.image_sub = rospy.Subscriber("UndistortedImage", Image, self.image_callback)
+    self.image_sub = rospy.Subscriber("camera/image_rect", Image, self.image_callback)
     self.contour_info_sub = rospy.Subscriber("ContourInfo",ContourInfo,self.contour_callback)
     # self.pose_sub = rospy.Subscriber("RobotImagePose", PoseStamped, self.pose_callback)
 
@@ -59,7 +59,7 @@ class Calibration():
 
     # self.plate_point_array = numpy.zeros((1,3))
     # self.stage_point_array = numpy.zeros((1,3))
-    (self.intrinsic_matrix,self.distortion_coeffs) = CameraParameters.intrinsic("undistorted")
+    (self.intrinsic_matrix,self.distortion_coeffs) = CameraParameters.intrinsic("rect")
     (self.rvec,self.tvec) = CameraParameters.extrinsic("plate")
     self.origin_points = cv.CreateMat(4,3,cv.CV_32FC1)
     self.origin_points_projected = cv.CreateMat(4,2,cv.CV_32FC1)
@@ -73,7 +73,7 @@ class Calibration():
     got_trans = False
     while not got_trans:
       try:
-        (self.camera_undistorted_trans,rot) = self.tf_listener.lookupTransform('/UndistortedImage', '/Camera', rospy.Time(0))
+        (self.camera_undistorted_trans,rot) = self.tf_listener.lookupTransform('/ImageRect', '/Camera', rospy.Time(0))
         got_trans = True
       except:
         rospy.logdebug("tf_listener.lookupTransform threw exception \n")

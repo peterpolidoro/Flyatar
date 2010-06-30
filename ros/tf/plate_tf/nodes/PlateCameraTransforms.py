@@ -10,7 +10,7 @@ from plate_tf.srv import *
 
 class Transforms:
     def __init__(self):
-        (intrinsic_matrix,distortion_coeffs) = CameraParameters.intrinsic("undistorted")
+        (intrinsic_matrix,distortion_coeffs) = CameraParameters.intrinsic("rect")
         (rvec,tvec) = CameraParameters.extrinsic("plate")
         intrinsic_matrix = cvNumpy.mat_to_array(intrinsic_matrix)
         rvec = cvNumpy.mat_to_array(rvec).squeeze()
