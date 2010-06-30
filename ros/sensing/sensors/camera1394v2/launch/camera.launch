@@ -1,0 +1,9 @@
+<launch>
+  <node pkg="camera1394v2" type="camera1394v2_node" name="camera1394v2_node" >
+    <param name="mode" value="format7_mode0" />
+    <param name="brightness" value="100.0" />
+    <param name="exposure" value="100.0" />
+    <param name="gain" value="600.0" />
+    <param name="shutter" value="400.0" />
+  </node>
+</launch>
