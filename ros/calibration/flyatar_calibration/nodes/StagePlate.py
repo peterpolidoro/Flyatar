@@ -7,7 +7,7 @@ import numpy
 import tf
 from cv_bridge import CvBridge, CvBridgeError
 from pythonmodules import cvNumpy,CameraParameters
-from stage.msg import Velocity
+from stage.msg import StageCommands
 from joystick_commands.msg import JoystickCommands
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import PoseStamped
@@ -22,7 +22,7 @@ class Calibration():
     self.arrays_initialized = False
 
     self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.commands_callback)
-    self.vel_pub = rospy.Publisher("stage/command_velocity",Velocity)
+    self.vel_pub = rospy.Publisher("StageCommands",StageCommands)
 
     self.image_sub = rospy.Subscriber("camera/image_rect", Image, self.image_callback)
     self.contour_info_sub = rospy.Subscriber("ContourInfo",ContourInfo,self.contour_callback)
@@ -30,7 +30,8 @@ class Calibration():
 
     cv.NamedWindow("Stage Plate Calibration", 1)
 
-    self.vel_stage = Velocity()
+    self.stage_cmds = StageCommands()
+    self.stage_cmds.position_control = False
     self.vel_scale_factor = 40     # mm/s
 
     self.robot_image_pose_camera = PoseStamped()
@@ -97,9 +98,9 @@ class Calibration():
 
   def commands_callback(self,data):
     if self.initialized:
-      self.vel_stage.x_velocity = data.y_velocity*self.vel_scale_factor
-      self.vel_stage.y_velocity = -data.x_velocity*self.vel_scale_factor
-      self.vel_pub.publish(self.vel_stage)
+      self.stage_cmds.x_velocity = data.y_velocity*self.vel_scale_factor
+      self.stage_cmds.y_velocity = -data.x_velocity*self.vel_scale_factor
+      self.vel_pub.publish(self.stage_cmds)
 
   def draw_origin(self,im_color):
     cv.SetZero(self.origin_points)
