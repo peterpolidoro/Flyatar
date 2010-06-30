@@ -30,6 +30,11 @@ rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/
 <click commit button>
 mv /tmp/calibration_00305300013c2f28.yaml /cameras/basler_a622f_calibration.yaml
 cp /cameras/basler_a622f_calibration.yaml /cameras/basler_a622f_rect_calibration.yaml
+roslaunch camera1394v2 flyatar_camera_cal_b.launch
+<open new terminal>
+rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/camera/image_rect camera:=/camera
+<wave 30 mm checkerboard in front of camera until calibrate button activates>
+<click commit button>
 
 Compiling Stage USB Device Firmware:
 mkdir ~/LUFA

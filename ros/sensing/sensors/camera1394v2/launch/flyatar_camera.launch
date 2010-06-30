@@ -3,4 +3,5 @@
     <rosparam
        file="$(find flyatar_calibration)/calibration_data/$(optenv CAMERA basler_a622f).yaml" /> 
   </node>
+  <node ns="camera" pkg="image_proc" type="image_proc" name="image_proc" />
 </launch>
