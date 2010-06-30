@@ -18,6 +18,11 @@ sudo adduser $USER usb
 sudo cp ~/git/Flyatar/ros/udevrules/99*.rules /etc/udev/rules.d/
 (restart computer)
 
+Calibration:
+sudo mkdir /cameras
+sudo chown $USER cameras/
+ln -s ~/git/Flyatar/ros/calibration/flyatar_calibration/calibration_data/basler_a622f_calibration.yaml /cameras/basler_a622f_calibration
+
 Compiling Stage USB Device Firmware:
 mkdir ~/LUFA
 cd ~/LUFA
