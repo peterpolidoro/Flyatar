@@ -20,7 +20,21 @@ class ContourIdentifier:
 
     # Pose
     self.robot_image_pose = PoseStamped()
+    self.robot_image_pose.pose.position.x = 0
+    self.robot_image_pose.pose.position.y = 0
+    self.robot_image_pose.pose.position.z = 0
+    self.robot_image_pose.pose.orientation.x = 0
+    self.robot_image_pose.pose.orientation.y = 0
+    self.robot_image_pose.pose.orientation.z = 0
+    self.robot_image_pose.pose.orientation.w = 0
     self.fly_image_pose = PoseStamped()
+    self.fly_image_pose.pose.position.x = 0
+    self.fly_image_pose.pose.position.y = 0
+    self.fly_image_pose.pose.position.z = 0
+    self.fly_image_pose.pose.orientation.x = 0
+    self.fly_image_pose.pose.orientation.y = 0
+    self.fly_image_pose.pose.orientation.z = 0
+    self.fly_image_pose.pose.orientation.w = 0
 
     # Robot Info
     self.robot_min_ecc = rospy.get_param("robot_min_ecc",0.5)
