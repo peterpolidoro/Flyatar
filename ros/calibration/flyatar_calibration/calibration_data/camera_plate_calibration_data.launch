@@ -1,9 +1,9 @@
 <launch>
-  <param name="camera_plate_rvec_0" type="double" value="-3.092"/>
-  <param name="camera_plate_rvec_1" type="double" value="0.006"/>
-  <param name="camera_plate_rvec_2" type="double" value="-0.009"/>
-  <param name="camera_plate_tvec_0" type="double" value="-9.607"/>
-  <param name="camera_plate_tvec_1" type="double" value="-4.28"/>
-  <param name="camera_plate_tvec_2" type="double" value="437.9"/>
+  <param name="camera_plate_rvec_0" type="double" value="-3.082"/>
+  <param name="camera_plate_rvec_1" type="double" value="0.002"/>
+  <param name="camera_plate_rvec_2" type="double" value="-0.028"/>
+  <param name="camera_plate_tvec_0" type="double" value="-2.690"/>
+  <param name="camera_plate_tvec_1" type="double" value="-1.520"/>
+  <param name="camera_plate_tvec_2" type="double" value="439.25"/>
 
 </launch>
