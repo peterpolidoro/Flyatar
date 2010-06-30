@@ -244,7 +244,7 @@ public:
     cam_info_.header.frame_id = config_.frame_id;
     cam_info_.header.stamp = image_.header.stamp;
     cam_rect_info_.header.frame_id = config_.frame_id; // !
-    cam_rect__info_.header.stamp = image_.header.stamp; // !
+    cam_rect_info_.header.stamp = image_.header.stamp; // !
 
     // @todo log a warning if (filtered) time since last published
     // image is not reasonably close to configured frame_rate
