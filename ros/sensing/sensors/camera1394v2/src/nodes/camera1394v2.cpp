@@ -84,9 +84,13 @@ private:
 
   ros::NodeHandle privNH_;              // private node handle
   ros::NodeHandle camera_nh_;           // camera name space handle
+  ros::NodeHandle camera_rect_nh_;      // ! camera name space handle
   sensor_msgs::Image image_;
   sensor_msgs::CameraInfo cam_info_;
+  sensor_msgs::CameraInfo cam_rect_info_; // !
   std::string camera_name_;             // camera name
+  std::string camera_rect_name_;         // ! camera name
+  std::string camera_rect_url_;         // ! camera url
 
   /** 1394 camera device interface */
   camera1394v2::Camera1394v2 *dev_;
@@ -97,6 +101,7 @@ private:
 
   /** camera calibration information */
   CameraInfoManager *cinfo_;
+  CameraInfoManager *c_rect_info_; // !
   bool calibration_matches_;            // cam_info_ matches video mode
 
   /** image transport interfaces */
@@ -110,8 +115,12 @@ public:
     state_ = Driver::CLOSED;
     privNH_ = ros::NodeHandle("~");
     camera_nh_ = ros::NodeHandle("camera");
+    camera_rect_nh_ = ros::NodeHandle("camera_rect"); // !
     camera_name_ = "camera";
+    camera_rect_name_ = "camera_rect"; // !
+    camera_rect_url_ = "file:///cameras/basler_a622f_rect_calibration.yaml"; // !
     cinfo_ = new CameraInfoManager(camera_nh_);
+    c_rect_info_ = new CameraInfoManager(camera_rect_nh_); // !
     dev_ = new camera1394v2::Camera1394v2();
     calibration_matches_ = true;
   }
@@ -122,6 +131,7 @@ public:
       delete it_;
     delete dev_;
     delete cinfo_;
+    delete c_rect_info_;        // !
   }
 
   /** Close camera device
@@ -152,6 +162,9 @@ public:
     bool success = true;
     try
       {
+        c_rect_info_->setCameraName(camera_rect_name_); // !
+        c_rect_info_->validateURL(camera_rect_url_);    // !
+        c_rect_info_->loadCameraInfo(camera_rect_url_);    // !
         if (dev_->open(newconfig.guid.c_str(), newconfig.video_mode.c_str(),
                        newconfig.frame_rate, newconfig.iso_speed,
                        newconfig.bayer_pattern.c_str(),
@@ -198,6 +211,7 @@ public:
 
     // get current CameraInfo data
     cam_info_ = cinfo_->getCameraInfo();
+    cam_rect_info_ = c_rect_info_->getCameraInfo(); // !
 
     if (cam_info_.height != image_.height || cam_info_.width != image_.width)
       {
@@ -214,6 +228,10 @@ public:
         cam_info_ = sensor_msgs::CameraInfo();
         cam_info_.height = image_.height;
         cam_info_.width = image_.width;
+
+        cam_rect_info_ = sensor_msgs::CameraInfo(); // !
+        cam_rect_info_.height = image_.height;      // !
+        cam_rect_info_.width = image_.width;        // !
       }
     else if (!calibration_matches_)
       {
@@ -225,6 +243,8 @@ public:
 
     cam_info_.header.frame_id = config_.frame_id;
     cam_info_.header.stamp = image_.header.stamp;
+    cam_rect_info_.header.frame_id = config_.frame_id; // !
+    cam_rect__info_.header.stamp = image_.header.stamp; // !
 
     // @todo log a warning if (filtered) time since last published
     // image is not reasonably close to configured frame_rate
