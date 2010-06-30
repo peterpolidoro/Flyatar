@@ -1,0 +1,18 @@
+<launch>
+  <!-- The camera_firewire package and associated parameters -->
+  <include file="$(find camera1394v2)/launch/flyatar_camera.launch" />
+
+  <!-- various image parameters -->
+  <param name="diff_threshold" type="double" value="65"/>
+  <param name="contour_count_max" type="double" value="2"/>
+  <param name="image_processor_display_images" type="boolean" value="true"/>
+
+  <!-- Coordinate Systems parameters -->
+  <param name="ImageProcessor_OutputCoordinates" type="string" value="Camera"/>
+
+  <include file="$(find flyatar_calibration)/calibration_data/camera_plateimage_calibration_data.launch" />
+  <include file="$(find flyatar_calibration)/calibration_data/robotimage_calibration_data.launch" />
+
+  <node pkg="track_image_contours" type="ImageProcessor.py" name="ImageProcessor" />
+  <node pkg="track_image_contours" type="ContourIdentifier.py" name="ContourIdentifier" />
+</launch>
