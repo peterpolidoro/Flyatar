@@ -1,16 +1,16 @@
 <launch>
   <!-- various image parameters -->
-  <param name="mask_radius" type="double" value="486"/>
+  <param name="mask_radius" type="double" value="491"/>
 
   <!-- Coordinate Systems -->
-  <node pkg="tf" type="static_transform_publisher" name="PlateImage_broadcaster" args="-41 -16 0 0 0 0 Camera PlateImage 10" />
+  <node pkg="tf" type="static_transform_publisher" name="PlateImage_broadcaster" args="-9 -5 0 0 0 0 Camera PlateImage 10" />
 
   <!-- ROI Coordinate Systems -->
-  <node pkg="tf" type="static_transform_publisher" name="ROIPlateImage_broadcaster" args="0 0 0 0 0 0 UndistortedImage ROIPlateImage 10" />
+  <!-- <node pkg="tf" type="static_transform_publisher" name="ROIPlateImage_broadcaster" args="0 0 0 0 0 0 UndistortedImage ROIPlateImage 10" /> -->
 
   <!-- ROI parameters -->
   <!-- <param name="ROIPlateImage_width" type="double" value="480"/> -->
-  <param name="ROIPlateImage_width" type="double" value="1024"/>
-  <param name="ROIPlateImage_height" type="double" value="1024"/>
+  <!-- <param name="ROIPlateImage_width" type="double" value="1024"/> -->
+  <!-- <param name="ROIPlateImage_height" type="double" value="1024"/> -->
 
 </launch>

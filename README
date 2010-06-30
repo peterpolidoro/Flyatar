@@ -39,6 +39,11 @@ rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/
  and /cameras/basler_a622f_rect_calibration.yaml into 
  $(find flyatar_calibration)/calibration_data/camera_calibration_data.launch by hand>
 roslaunch flyatar_calibration CameraPlate.launch
+<Use left joystick to move green circle until centered on plate>
+<Use right joystick to change green circle radius until on edges of plate>
+<Place checkerboard on plate>
+<Record mask radius and camera_plate_origin info into camera_plateimage_calibration_data.launch>
+<Record rvec and tvec info into camera_plate_calibration_data.launch>
 
 Compiling Stage USB Device Firmware:
 mkdir ~/LUFA
