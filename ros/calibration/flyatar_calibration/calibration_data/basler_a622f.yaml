@@ -1,7 +1,7 @@
 guid: 00305300013c2f28          # (defaults to first camera on bus)
 video_mode: format7_mode0
 frame_id: basler_a622f
-# camera_info_url: file:///cameras/unibrain_calibration.yaml
+camera_info_url: file:///home/peter/git/Flyatar/ros/calibration/flyatar_calibration/calibration_data/basler_a622f_calibration.yaml
 
 # set some feature values:
 auto_brightness: 3      #Manual 
