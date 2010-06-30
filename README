@@ -21,7 +21,15 @@ sudo cp ~/git/Flyatar/ros/udevrules/99*.rules /etc/udev/rules.d/
 Calibration:
 sudo mkdir /cameras
 sudo chown $USER cameras/
-ln -s ~/git/Flyatar/ros/calibration/flyatar_calibration/calibration_data/basler_a622f_calibration.yaml /cameras/basler_a622f_calibration
+roslaunch camera1394v2 flyatar_camera_cal_a.launch
+<open new terminal>
+rosdep install camera_calibration
+rosmake camera_calibration
+rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/camera/image_raw camera:=/camera
+<wave 30 mm checkerboard in front of camera until calibrate button activates>
+<click commit button>
+mv /tmp/calibration_00305300013c2f28.yaml /cameras/basler_a622f_calibration.yaml
+cp /cameras/basler_a622f_calibration.yaml /cameras/basler_a622f_rect_calibration.yaml
 
 Compiling Stage USB Device Firmware:
 mkdir ~/LUFA
