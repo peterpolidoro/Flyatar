@@ -13,12 +13,12 @@
 // modify it under the terms of the GNU General Public License as
 // published by the Free Software Foundation; either version 2 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -32,7 +32,7 @@
 
     @brief IEEE 1394 digital camera library interface
 
- */
+*/
 
 #ifndef DEV_CAMERA1394V2_HH
 #define DEV_CAMERA1394V2_HH
@@ -49,10 +49,10 @@ namespace camera1394v2
   //! Macro for defining an exception with a given parent
   //  (std::runtime_error should be top parent)
   // code borrowed from drivers/laser/hokuyo_driver/hokuyo.h
-#define DEF_EXCEPTION(name, parent)		\
-  class name  : public parent {			\
-  public:					\
-    name (const char* msg) : parent (msg) {}	\
+#define DEF_EXCEPTION(name, parent)             \
+  class name  : public parent {                 \
+  public:                                       \
+    name (const char* msg) : parent (msg) {}    \
   }
 
   //! A standard Camera1394v2 exception
@@ -65,11 +65,11 @@ namespace camera1394v2
     ~Camera1394v2 ();
 
     int open (const char* guid,
-	      const char* video_mode,
-	      float fps,
-	      int iso_speed,
-	      const char* bayer,
-	      const char* method);
+              const char* video_mode,
+              float fps,
+              int iso_speed,
+              const char* bayer,
+              const char* method);
     int close();
 
     void readData (sensor_msgs::Image &image);
@@ -80,7 +80,7 @@ namespace camera1394v2
   private:
     // device identifier
     dc1394camera_t * camera_;
-      
+
     dc1394framerate_t frameRate_;
     dc1394video_mode_t videoMode_;
     dc1394speed_t isoSpeed_;

@@ -13,12 +13,12 @@
 // modify it under the terms of the GNU General Public License as
 // published by the Free Software Foundation; either version 2 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -34,7 +34,7 @@
 
     @brief IEEE 1394 digital camera library interface implementation
 
- */
+*/
 
 #include "yuv.h"
 #include <sensor_msgs/image_encodings.h>
@@ -46,19 +46,19 @@ const timespec NSLEEP_TIME = { 0, 10000 }; // (0s, 10ms) => max 100Hz
 
 
 //! Macro for throwing an exception with a message
-#define CAM_EXCEPT(except, msg)					\
-  {								\
-    char buf[100];						\
-    snprintf(buf, 100, "[Camera1394v2::%s]: " msg, __FUNCTION__); \
-    throw except(buf);						\
+#define CAM_EXCEPT(except, msg)                                         \
+  {                                                                     \
+    char buf[100];                                                      \
+    snprintf(buf, 100, "[Camera1394v2::%s]: " msg, __FUNCTION__);       \
+    throw except(buf);                                                  \
   }
 
 //! Macro for throwing an exception with a message, passing args
-#define CAM_EXCEPT_ARGS(except, msg, ...)				\
-  {									\
-    char buf[100];							\
+#define CAM_EXCEPT_ARGS(except, msg, ...)                               \
+  {                                                                     \
+    char buf[100];                                                      \
     snprintf(buf, 100, "[Camera1394v2::%s]: " msg, __FUNCTION__, __VA_ARGS__); \
-    throw except(buf);							\
+    throw except(buf);                                                  \
   }
 
 
@@ -70,7 +70,7 @@ Camera1394v2::Camera1394v2():
   features_(NULL), camera_(NULL)
 {}
 
-Camera1394v2::~Camera1394v2() 
+Camera1394v2::~Camera1394v2()
 {
   SafeCleanup();
 }
@@ -144,6 +144,8 @@ void Camera1394v2::findVideoMode(const char* mode)
     videoMode_ = DC1394_VIDEO_MODE_1280x960_MONO16;
   else if (0 == strcmp(mode, "1600x1200_mono16"))
     videoMode_ = DC1394_VIDEO_MODE_1600x1200_MONO16;
+  else if (0 == strcmp(mode, "format7_mode0"))
+    videoMode_ = DC1394_VIDEO_MODE_FORMAT7_0;
   else
     {
       // raise exception
@@ -152,7 +154,7 @@ void Camera1394v2::findVideoMode(const char* mode)
 }
 
 
-void Camera1394v2::findBayerFilter(const char* bayer, const char* method) 
+void Camera1394v2::findBayerFilter(const char* bayer, const char* method)
 {
   // determine Bayer color encoding pattern
   // (default is different from any color filter provided by DC1394)
@@ -211,7 +213,7 @@ void Camera1394v2::findBayerFilter(const char* bayer, const char* method)
     }
 }
 
-void Camera1394v2::findIsoSpeed(int iso_speed) 
+void Camera1394v2::findIsoSpeed(int iso_speed)
 {
   switch (iso_speed)
     {
@@ -242,11 +244,11 @@ void Camera1394v2::findIsoSpeed(int iso_speed)
 
 /** Open the 1394 device */
 int Camera1394v2::open(const char* guid,
-		     const char* video_mode,
-		     float fps,
-		     int iso_speed,
-		     const char* bayer,
-		     const char* method)
+                       const char* video_mode,
+                       float fps,
+                       int iso_speed,
+                       const char* bayer,
+                       const char* method)
 {
 
   findFrameRate(fps);
@@ -275,31 +277,31 @@ int Camera1394v2::open(const char* guid,
       CAM_EXCEPT(camera1394v2::Exception, "Could not get camera list");
       return -1;
     }
-  
+
   if (list->num == 0)
     {
       CAM_EXCEPT(camera1394v2::Exception, "No cameras found");
       return -1;
     }
-  
+
   char* temp=(char*)malloc(1024*sizeof(char));
   for (unsigned i=0; i < list->num; i++)
     {
       // Create a camera
       camera_ = dc1394_camera_new (d, list->ids[i].guid);
       if (!camera_)
-	ROS_WARN_STREAM("Failed to initialize camera with GUID "
+        ROS_WARN_STREAM("Failed to initialize camera with GUID "
                         << std::hex << list->ids[i].guid);
       else
         ROS_INFO_STREAM("Found camera with GUID "
                         << std::hex << list->ids[i].guid);
 
       uint32_t value[3];
-      
+
       value[0]= camera_->guid & 0xffffffff;
       value[1]= (camera_->guid >>32) & 0x000000ff;
       value[2]= (camera_->guid >>40) & 0xfffff;
-      
+
       sprintf(temp,"%06x%02x%08x", value[2], value[1], value[0]);
 
       if (strcmp(guid,"")==0)
@@ -320,11 +322,11 @@ int Camera1394v2::open(const char* guid,
     }
   free (temp);
   dc1394_camera_free_list (list);
-  
+
   if (!camera_)
     {
       if (strcmp(guid,"")==0)
-        { 
+        {
           CAM_EXCEPT(camera1394v2::Exception, "Could not find camera");
         }
       else
@@ -373,7 +375,7 @@ int Camera1394v2::open(const char* guid,
                  "Unable to get iso data; is the camera plugged in?");
       return -1;
     }
-  
+
   // Set camera to use DMA, improves performance.
   bool DMA_Success = true;
   // first set parameters that are common between format 7 and other modes
@@ -392,19 +394,19 @@ int Camera1394v2::open(const char* guid,
       ROS_WARN("Failed to set mode");
       DMA_Success = false;
     }
-  
+
   // now start capture
   if (DC1394_SUCCESS != dc1394_capture_setup(camera_, NUM_DMA_BUFFERS,
                                              DC1394_CAPTURE_FLAGS_DEFAULT))
     DMA_Success = false;
-  
+
   if (!DMA_Success)
     {
       SafeCleanup();
       CAM_EXCEPT(camera1394v2::Exception, "Failed to open device!");
       return -1;
     }
-  
+
   // Start transmitting camera data
   if (DC1394_SUCCESS != dc1394_video_set_transmission(camera_, DC1394_ON))
     {
@@ -414,10 +416,10 @@ int Camera1394v2::open(const char* guid,
     }
 
   features_ = new Features(camera_);
- 
+
   return 0;
-  
-  
+
+
 }
 
 
@@ -476,7 +478,7 @@ void Camera1394v2::readData(sensor_msgs::Image& image)
       CAM_EXCEPT(camera1394v2::Exception, "Unable to capture frame");
       return;
     }
-  
+
   uint8_t* capture_buffer;
 
   image.header.stamp = ros::Time((double) frame->timestamp / 1000000.0);
@@ -514,9 +516,9 @@ void Camera1394v2::readData(sensor_msgs::Image& image)
       capture_buffer = reinterpret_cast<uint8_t *>(frame->image);
     }
 
-  assert(capture_buffer);   
+  assert(capture_buffer);
 
-  int image_size;  
+  int image_size;
   switch (videoMode_)
     {
     case DC1394_VIDEO_MODE_160x120_YUV444:
@@ -599,7 +601,7 @@ void Camera1394v2::readData(sensor_msgs::Image& image)
           image.encoding = sensor_msgs::image_encodings::RGB8;
           image.data.resize(image_size);
           memcpy(&image.data[0], capture_buffer, image_size);
-        } 
+        }
       break;
     case DC1394_VIDEO_MODE_640x480_MONO16:
     case DC1394_VIDEO_MODE_800x600_MONO16:
@@ -623,7 +625,7 @@ void Camera1394v2::readData(sensor_msgs::Image& image)
           image.encoding = sensor_msgs::image_encodings::RGB8;
           image.data.resize(image_size);
           memcpy(&image.data[0], capture_buffer, image_size);
-        } 
+        }
       break;
     default:
       CAM_EXCEPT(camera1394v2::Exception, "Unknown image mode");
@@ -631,6 +633,6 @@ void Camera1394v2::readData(sensor_msgs::Image& image)
     }
   dc1394_capture_enqueue(camera_, frame);
 
-  if (DoBayerConversion_) 
+  if (DoBayerConversion_)
     free(capture_buffer);
 }

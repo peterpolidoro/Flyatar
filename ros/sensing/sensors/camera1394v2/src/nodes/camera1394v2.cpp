@@ -13,12 +13,12 @@
 // modify it under the terms of the GNU General Public License as
 // published by the Free Software Foundation; either version 2 of the
 // License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -44,23 +44,23 @@
 
 /** @file
 
-@brief ROS driver node for IEEE 1394 digital cameras.
+    @brief ROS driver node for IEEE 1394 digital cameras.
 
-This is a ROS port of the Player driver for 1394 cameras, using
-libdc1394.  It provides a reliable driver with minimal dependencies,
-intended to fill a role in the ROS image pipeline similar to the other
-ROS camera drivers.
+    This is a ROS port of the Player driver for 1394 cameras, using
+    libdc1394.  It provides a reliable driver with minimal dependencies,
+    intended to fill a role in the ROS image pipeline similar to the other
+    ROS camera drivers.
 
-The ROS image pipeline provides Bayer filtering at a higher level (in
-image_proc).  In some cases it is useful to run the driver without the
-entire image pipeline, so libdc1394 Bayer decoding is also provided.
+    The ROS image pipeline provides Bayer filtering at a higher level (in
+    image_proc).  In some cases it is useful to run the driver without the
+    entire image pipeline, so libdc1394 Bayer decoding is also provided.
 
-@par Advertises
+    @par Advertises
 
- - @b camera/image_raw topic (sensor_msgs/Image) raw 2D camera images
+    - @b camera/image_raw topic (sensor_msgs/Image) raw 2D camera images
 
- - @b camera/camera_info topic (sensor_msgs/CameraInfo) Calibration
-   information for each image.
+    - @b camera/camera_info topic (sensor_msgs/CameraInfo) Calibration
+    information for each image.
 
 */
 
@@ -102,7 +102,7 @@ private:
   /** image transport interfaces */
   image_transport::ImageTransport *it_;
   image_transport::CameraPublisher image_pub_;
-  
+
 public:
 
   Camera1394v2Node(): it_(0)
@@ -153,7 +153,7 @@ public:
     try
       {
         if (dev_->open(newconfig.guid.c_str(), newconfig.video_mode.c_str(),
-                       newconfig.frame_rate, newconfig.iso_speed, 
+                       newconfig.frame_rate, newconfig.iso_speed,
                        newconfig.bayer_pattern.c_str(),
                        newconfig.bayer_method.c_str())
             == 0)
@@ -195,7 +195,7 @@ public:
   void publish()
   {
     image_.header.frame_id = config_.frame_id;
-      
+
     // get current CameraInfo data
     cam_info_ = cinfo_->getCameraInfo();
 
@@ -228,7 +228,7 @@ public:
 
     // @todo log a warning if (filtered) time since last published
     // image is not reasonably close to configured frame_rate
-	  
+
     // Publish via image_transport
     image_pub_.publish(image_, cam_info_);
   }
@@ -364,7 +364,7 @@ public:
                 publish();
               }
           }
-      
+
         ros::spinOnce();
       }
 
