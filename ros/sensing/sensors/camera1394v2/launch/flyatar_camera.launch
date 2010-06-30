@@ -4,5 +4,5 @@
        file="$(find flyatar_calibration)/calibration_data/$(optenv CAMERA basler_a622f).yaml" /> 
   </node>
   <node ns="camera" pkg="image_proc" type="image_proc" name="image_proc" />
-  <!-- <include file="$(find flyatar_calibration)/calibration_data/camera_calibration_data.launch" /> -->
+  <include file="$(find flyatar_calibration)/calibration_data/camera_calibration_data.launch" />
 </launch>
