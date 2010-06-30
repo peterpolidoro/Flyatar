@@ -22,13 +22,13 @@ class ImageProcessor:
     self.initialized = False
 
     # Listener/Subscribers
-    self.image_sub = rospy.Subscriber("UndistortedImage",Image,self.image_callback)
+    self.image_sub = rospy.Subscriber("camera/image_rect",Image,self.image_callback)
     self.tf_listener = tf.TransformListener()
 
     # Broadcaster/Publishers
-    self.image_processed_pub = rospy.Publisher("ProcessedImage",Image)
-    self.image_diff_pub = rospy.Publisher("DiffImage",Image)
-    self.image_foreground_pub = rospy.Publisher("ForegroundImage",Image)
+    self.image_processed_pub = rospy.Publisher("camera/image_processed",Image)
+    self.image_diff_pub = rospy.Publisher("camera/image_diff",Image)
+    self.image_foreground_pub = rospy.Publisher("camera/image_foreground",Image)
     self.contour_info_pub = rospy.Publisher("ContourInfo",ContourInfo)
 
     # Contour Info
@@ -67,7 +67,7 @@ class ImageProcessor:
         self.ROIPlateImage_origin.header.frame_id = "ROIPlateImage"
         self.ROIPlateImage_origin.point.x = 0
         self.ROIPlateImage_origin.point.y = 0
-        self.undistorted_ROIPlateImage_origin = self.tf_listener.transformPoint("UndistortedImage",self.ROIPlateImage_origin)
+        self.undistorted_ROIPlateImage_origin = self.tf_listener.transformPoint("ImageRect",self.ROIPlateImage_origin)
         self.PlateImage_origin = PointStamped()
         self.PlateImage_origin.header.frame_id = "PlateImage"
         self.PlateImage_origin.point.x = 0

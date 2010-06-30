@@ -1,6 +1,6 @@
 <launch>
   <!-- The camera_firewire package and associated parameters -->
-  <include file="$(find camera_firewire)/launch/camera_firewire.launch" />
+  <include file="$(find camera1394v2)/launch/flyatar_camera.launch" />
 
   <!-- various image parameters -->
   <param name="diff_threshold" type="double" value="65"/>

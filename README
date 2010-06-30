@@ -44,6 +44,7 @@ roslaunch flyatar_calibration CameraPlate.launch
 <Place checkerboard on plate>
 <Record mask radius and camera_plate_origin info into camera_plateimage_calibration_data.launch>
 <Record rvec and tvec info into camera_plate_calibration_data.launch>
+roslaunch flyatar_calibration StagePlate.launch
 
 Compiling Stage USB Device Firmware:
 mkdir ~/LUFA
