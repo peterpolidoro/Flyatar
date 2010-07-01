@@ -20,6 +20,15 @@ class Transforms:
         rospy.logwarn("trans = %s" % (str(trans)))
         rospy.logwarn("rot = %s" % (str(rot)))
 
+        self.T = tf.transformations.translation_matrix(trans)
+        self.R = tf.transformations.quaternion_matrix(rot)
+        self.M1 = tf.transformations.concatenate_matrices(R, T)
+        self.M2 = tf.transformations.concatenate_matrices(T, R)
+        rospy.logwarn("T = \n%s" % (str(T)))
+        rospy.logwarn("R = \n%s" % (str(R)))
+        rospy.logwarn("M1 = \n%s" % (str(R)))
+        rospy.logwarn("M2 = \n%s" % (str(R)))
+
         # (intrinsic_matrix,distortion_coeffs) = StageParameters.intrinsic("rect")
         # (rvec,tvec) = StageParameters.extrinsic("plate")
         # intrinsic_matrix = cvNumpy.mat_to_array(intrinsic_matrix)
