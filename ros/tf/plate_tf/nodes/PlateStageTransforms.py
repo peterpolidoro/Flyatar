@@ -12,18 +12,18 @@ class Transforms:
         self.transforms_initialized = False
         while not self.transforms_initialized:
             try:
-                (trans,rot) = self.tf_listener.lookupTransform("Plate", "Stage", rospy.Time.now())
+                (self.trans,self.rot) = self.tf_listener.lookupTransform("Plate", "Stage", rospy.Time.now())
                 self.transforms_initialized = True
             except (tf.LookupException, tf.ConnectivityException):
                 pass
 
-        rospy.logwarn("trans = %s" % (str(trans)))
-        rospy.logwarn("rot = %s" % (str(rot)))
+        rospy.logwarn("trans = %s" % (str(self.trans)))
+        rospy.logwarn("rot = %s" % (str(self.rot)))
 
-        self.T = tf.transformations.translation_matrix(trans)
-        self.R = tf.transformations.quaternion_matrix(rot)
-        self.M1 = tf.transformations.concatenate_matrices(R, T)
-        self.M2 = tf.transformations.concatenate_matrices(T, R)
+        self.T = tf.transformations.translation_matrix(self.trans)
+        self.R = tf.transformations.quaternion_matrix(self.rot)
+        self.M1 = tf.transformations.concatenate_matrices(self.R, self.T)
+        self.M2 = tf.transformations.concatenate_matrices(self.T, self.R)
         rospy.logwarn("T = \n%s" % (str(T)))
         rospy.logwarn("R = \n%s" % (str(R)))
         rospy.logwarn("M1 = \n%s" % (str(R)))
