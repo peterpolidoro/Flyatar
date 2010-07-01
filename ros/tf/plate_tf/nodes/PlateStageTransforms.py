@@ -73,6 +73,31 @@ class Transforms:
         rospy.logwarn("stage_point2.x = \n%s" % (str(stage_point.point.x)))
         rospy.logwarn("stage_point2.y = \n%s" % (str(stage_point.point.y)))
 
+        Xsrc = [100,50]
+        Ysrc = [100,150]
+        Zsrc = [0,0]
+        Hsrc = [1,1]
+        stage_points = numpy.array([Xsrc,Ysrc,Zsrc,Hsrc])
+        # rospy.logwarn("M = \n%s" % (str(self.M)))
+        rospy.logwarn("stage_points = \n%s" % (str(stage_points)))
+        plate_points = numpy.dot(self.M22inv,stage_points)
+        rospy.logwarn("plate_points22inv = \n%s" % (str(plate_points)))
+
+        stage_point.point.x = 100
+        stage_point.point.y = 100
+        plate_point = self.tf_listener.transformPoint("Plate",stage_point)
+        rospy.logwarn("stage_point1.x = \n%s" % (str(stage_point.point.x)))
+        rospy.logwarn("stage_point1.y = \n%s" % (str(stage_point.point.y)))
+        rospy.logwarn("plate_point1.x = \n%s" % (str(plate_point.point.x)))
+        rospy.logwarn("plate_point1.y = \n%s" % (str(plate_point.point.y)))
+        stage_point.point.x = 50
+        stage_point.point.y = 150
+        plate_point = self.tf_listener.transformPoint("Plate",stage_point)
+        rospy.logwarn("stage_point2.x = \n%s" % (str(stage_point.point.x)))
+        rospy.logwarn("stage_point2.y = \n%s" % (str(stage_point.point.y)))
+        rospy.logwarn("plate_point2.x = \n%s" % (str(plate_point.point.x)))
+        rospy.logwarn("plate_point2.y = \n%s" % (str(plate_point.point.y)))
+
     def plate_to_stage(self,req):
         point_count = min(len(req.Xsrc),len(req.Ysrc))
         Xsrc = list(req.Xsrc)
