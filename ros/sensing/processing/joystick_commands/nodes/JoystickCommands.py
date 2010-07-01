@@ -20,7 +20,7 @@ class JoystickCommandPublisher:
     self.output_frame = {False: "Plate", True:"Fly"}
     self.frame_bool = False
     self.tracking_bool = False
-    self.home_bool = False
+    self.start_bool = False
 
   def joy_callback(self,data):
     self.command_values.x_velocity = data.x_left
@@ -30,8 +30,8 @@ class JoystickCommandPublisher:
     self.frame_bool = self.frame_bool ^ data.select
     self.tracking_bool = self.tracking_bool ^ data.playstation
     self.command_values.tracking = self.tracking_bool
-    self.home_bool = self.home_bool ^ data.start
-    self.command_values.home = self.home_bool
+    self.start_bool = self.start_bool ^ data.start
+    self.command_values.start = self.start_bool
     self.command_values.header.frame_id = self.output_frame[self.frame_bool]
     if data.triangle:
       self.command_values.radius_inc = 1

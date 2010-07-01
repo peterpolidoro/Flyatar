@@ -35,7 +35,7 @@ class SetpointControl:
         self.vel_vector_robot = numpy.array([[0],[0],[0],[1]])
 
         self.control_frame = "Plate"
-        self.home_frame = "Plate"
+        self.start_frame = "Plate"
 
         self.robot_position = PointStamped()
         self.robot_position.header.frame_id = "Robot"
@@ -56,7 +56,7 @@ class SetpointControl:
             except (tf.LookupException, tf.ConnectivityException):
                 pass
 
-        self.homing = False
+        self.moving_to_start = False
 
         self.setpoint = Setpoint()
         self.setpoint.header.frame_id = self.control_frame
@@ -81,13 +81,13 @@ class SetpointControl:
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
-        Xsrc = [0,10,15.4,-34.1]
-        Ysrc = [0,10,-15.3,-65.9]
-        rospy.logwarn("plate_points_x = %s" % (str(Xsrc)))
-        rospy.logwarn("plate_points_y = %s" % (str(Ysrc)))
-        response = self.plate_to_stage(Xsrc,Ysrc)
-        rospy.logwarn("stage_points_x = %s" % (str(response.Xdst)))
-        rospy.logwarn("stage_points_y = %s" % (str(response.Ydst)))
+        # Xsrc = [0,10,15.4,-34.1]
+        # Ysrc = [0,10,-15.3,-65.9]
+        # rospy.logwarn("plate_points_x = %s" % (str(Xsrc)))
+        # rospy.logwarn("plate_points_y = %s" % (str(Ysrc)))
+        # response = self.plate_to_stage(Xsrc,Ysrc)
+        # rospy.logwarn("stage_points_x = %s" % (str(response.Xdst)))
+        # rospy.logwarn("stage_points_y = %s" % (str(response.Ydst)))
 
         self.initialized = True
 
@@ -158,11 +158,11 @@ class SetpointControl:
             self.setpoint_pub.publish(self.setpoint)
 
             if not self.tracking:
-                if data.home:
-                    if not self.homing:
-                        self.homing = True
+                if data.start:
+                    if not self.moving_to_start:
+                        self.moving_to_start = True
                         self.stage_commands.position_control = True
-                        self.set_position_velocity_point(0,0,self.home_frame,self.robot_velocity_max/2)
+                        self.set_position_velocity_point(0,0,self.start_frame,self.robot_velocity_max/2)
                         # x_pos_list = [120,140,120,100,120,100,100,140,140]*3
                         # x_vel_list = [20]*len(x_pos_list)
                         # y_pos_list = [100,120,140,120,100,100,140,140,100]*3
@@ -181,8 +181,8 @@ class SetpointControl:
                         self.sc_ok_to_publish = False
                 else:
                     self.sc_ok_to_publish = True
-                    if self.homing:
-                        self.homing = False
+                    if self.moving_to_start:
+                        self.moving_to_start = False
                     self.stage_commands.position_control = False
                     self.radius_velocity = data.radius_velocity*self.robot_velocity_max
                     self.tangent_velocity = data.tangent_velocity*self.robot_velocity_max
