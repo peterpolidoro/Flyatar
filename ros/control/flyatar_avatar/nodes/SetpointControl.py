@@ -195,9 +195,6 @@ class SetpointControl:
         plate_points_x = [x_ro,xi]
         plate_points_y = [y_ro,yi]
 
-        self.setpoint_position.point.x = xi
-        self.setpoint_position.point.y = yi
-
         self.set_stage_commands_from_position_points(plate_points_x,plate_points_y,vel_mag)
 
     # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
