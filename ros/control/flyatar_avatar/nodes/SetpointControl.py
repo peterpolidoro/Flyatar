@@ -194,6 +194,10 @@ class SetpointControl:
         yi = y_so + dy_norm*self.setpoint.radius
         plate_points_x = [x_ro,xi]
         plate_points_y = [y_ro,yi]
+
+        self.setpoint_position.point.x = xi
+        self.setpoint_position.point.y = yi
+
         self.set_stage_commands_from_position_points(plate_points_x,plate_points_y,vel_mag)
 
     # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
@@ -266,20 +270,22 @@ class SetpointControl:
     def control_loop(self):
         while not rospy.is_shutdown():
             if self.tracking:
-                # if not self.moving_to_setpoint:
-                #     self.moving_to_setpoint = True
-                #     self.stage_commands.position_control = True
-                #     self.set_path_to_setpoint(self.robot_velocity_max/4)
-                #     self.sc_ok_to_publish = True
-                # else:
-                #     self.sc_ok_to_publish = False
+                if not self.moving_to_setpoint:
+                    self.moving_to_setpoint = True
+                    self.stage_commands.position_control = True
+                    self.set_path_to_setpoint(self.robot_velocity_max/4)
+                    self.sc_ok_to_publish = True
+                else:
+                    self.sc_ok_to_publish = False
 
-                # if self.sc_ok_to_publish:
-                #     self.sc_pub.publish(self.stage_commands)
+                if self.sc_ok_to_publish:
+                    self.sc_pub.publish(self.stage_commands)
+            else:
+                self.moving_to_setpoint = False
 
-                self.stage_commands.position_control = True
-                self.set_path_to_setpoint(self.robot_velocity_max/4)
-                self.sc_pub.publish(self.stage_commands)
+                # self.stage_commands.position_control = True
+                # self.set_path_to_setpoint(self.robot_velocity_max/4)
+                # self.sc_pub.publish(self.stage_commands)
 
                 # try:
                     # self.gain_radius = rospy.get_param("gain_radius")
