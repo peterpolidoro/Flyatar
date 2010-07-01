@@ -37,24 +37,26 @@ class SetpointControl:
         self.control_frame = "Plate"
         self.start_frame = "Plate"
 
+        self.robot_origin = PointStamped()
+        self.robot_origin.header.frame_id = "Robot"
+        self.robot_origin.point.x = 0
+        self.robot_origin.point.y = 0
+        self.robot_origin.point.z = 0
         self.robot_position = PointStamped()
-        self.robot_position.header.frame_id = "Robot"
-        self.robot_position.point.x = 0
-        self.robot_position.point.y = 0
-        self.robot_position.point.z = 0
-        self.target_point = PointStamped()
-        self.target_point.header.frame_id = "Plate"
-        self.target_point.point.x = 0
-        self.target_point.point.y = 0
-        self.target_point.point.z = 0
+        self.robot_position.header.frame_id = "Plate"
+        self.target_position = PointStamped()
+        self.target_position.header.frame_id = "Plate"
+        self.target_position.point.x = 0
+        self.target_position.point.y = 0
+        self.target_position.point.z = 0
 
-        self.target_point_initialized = False
-        while not self.target_point_initialized:
-            try:
-                self.target_point = self.tf_listener.transformPoint("Stage",self.target_point)
-                self.target_point_initialized = True
-            except (tf.LookupException, tf.ConnectivityException):
-                pass
+        # self.target_position_initialized = False
+        # while not self.target_position_initialized:
+        #     try:
+        #         self.target_position = self.tf_listener.transformPoint("Stage",self.target_position)
+        #         self.target_position_initialized = True
+        #     except (tf.LookupException, tf.ConnectivityException):
+        #         pass
 
         self.moving_to_start = False
 
@@ -111,35 +113,52 @@ class SetpointControl:
         y_vel_stage = vel_vector_stage[1]
         return [x_vel_stage],[y_vel_stage]
 
-    def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
-        self.target_point.header.frame_id = frame_target
-        self.target_point.point.x = x_target
-        self.target_point.point.y = y_target
-
-        target_acquired = False
-        while not target_acquired:
-            try:
-                target_point_stage = self.tf_listener.transformPoint("Stage",self.target_point)
-                target_acquired = True
-            except (tf.LookupException, tf.ConnectivityException):
-                rospy.logwarn("Error finding target_point_stage!")
-
+    def find_robot_position(self):
         robot_position_acquired = False
         while not robot_position_acquired:
             try:
-                robot_position_stage = self.tf_listener.transformPoint("Stage",self.robot_position)
+                self.robot_position = self.tf_listener.transformPoint("Plate",self.robot_origin)
                 robot_position_acquired = True
             except (tf.LookupException, tf.ConnectivityException):
                 rospy.logwarn("Error finding robot_position_stage!")
 
-        self.stage_commands.x_position = [robot_position_stage.point.x,target_point_stage.point.x]
-        self.stage_commands.y_position = [robot_position_stage.point.y,target_point_stage.point.y]
+    def set_stage_commands_from_position_points(self,plate_points_x,plate_points_y,vel_mag):
+        response = self.plate_to_stage(plate_points_x,plate_points_y)
+        stage_points_x = response.Xdst
+        stage_points_y = response.Ydst
+        rospy.logwarn("plate_points_x = %s" % (str(plate_points_x)))
+        rospy.logwarn("plate_points_y = %s" % (str(plate_points_y)))
+        rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
+        rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
 
-        delta_x = abs(target_point_stage.point.x - robot_position_stage.point.x)
-        delta_y = abs(target_point_stage.point.y - robot_position_stage.point.y)
-        alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
-        self.stage_commands.x_velocity = [vel_mag,alpha*delta_x]
-        self.stage_commands.y_velocity = [vel_mag,alpha*delta_y]
+    def set_path_to_start(self,vel_mag):
+        self.find_robot_position()
+        plate_points_x = [self.robot_position.point.x,0]
+        plate_points_y = [self.robot_position.point.y,0]
+        self.set_stage_commands_from_position_points(plate_points_x,plate_points_y,vel_mag)
+        # self.set_position_velocity_point(0,0,self.start_frame,vel_mag)
+
+    # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
+    #     self.target_position.header.frame_id = frame_target
+    #     self.target_position.point.x = x_target
+    #     self.target_position.point.y = y_target
+
+    #     target_acquired = False
+    #     while not target_acquired:
+    #         try:
+    #             target_position_stage = self.tf_listener.transformPoint("Stage",self.target_position)
+    #             target_acquired = True
+    #         except (tf.LookupException, tf.ConnectivityException):
+    #             rospy.logwarn("Error finding target_position_stage!")
+
+    #     self.stage_commands.x_position = [robot_position_stage.point.x,target_position_stage.point.x]
+    #     self.stage_commands.y_position = [robot_position_stage.point.y,target_position_stage.point.y]
+
+    #     delta_x = abs(target_position_stage.point.x - robot_position_stage.point.x)
+    #     delta_y = abs(target_position_stage.point.y - robot_position_stage.point.y)
+    #     alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
+    #     self.stage_commands.x_velocity = [vel_mag,alpha*delta_x]
+    #     self.stage_commands.y_velocity = [vel_mag,alpha*delta_y]
 
     def joystick_commands_callback(self,data):
         if self.initialized:
@@ -162,20 +181,7 @@ class SetpointControl:
                     if not self.moving_to_start:
                         self.moving_to_start = True
                         self.stage_commands.position_control = True
-                        self.set_position_velocity_point(0,0,self.start_frame,self.robot_velocity_max/2)
-                        # x_pos_list = [120,140,120,100,120,100,100,140,140]*3
-                        # x_vel_list = [20]*len(x_pos_list)
-                        # y_pos_list = [100,120,140,120,100,100,140,140,100]*3
-                        # y_vel_list = [20]*len(y_pos_list)
-                        # self.stage_commands.x_position = x_pos_list
-                        # self.stage_commands.y_position = y_pos_list
-                        # self.stage_commands.x_velocity = x_vel_list
-                        # self.stage_commands.y_velocity = y_vel_list
-
-                        # self.stage_commands.x_position = self.target_point.point.x
-                        # self.stage_commands.y_position = self.target_point.point.y
-                        # self.stage_commands.x_velocity = self.robot_velocity_max/10
-                        # self.stage_commands.y_velocity = self.robot_velocity_max/10
+                        self.set_path_to_start(self.robot_velocity_max/2)
                         self.sc_ok_to_publish = True
                     else:
                         self.sc_ok_to_publish = False
