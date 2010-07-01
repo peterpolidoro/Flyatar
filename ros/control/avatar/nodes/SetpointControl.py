@@ -94,7 +94,7 @@ class SetpointControl:
         y_vel_stage = vel_vector_stage[1]
         return [x_vel_stage],[y_vel_stage]
 
-    def set_position_velocity(self,x_target,y_target,frame_target,vel_mag):
+    def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
         self.target_point.header.frame_id = frame_target
         self.target_point.point.x = x_target
         self.target_point.point.y = y_target
@@ -115,14 +115,14 @@ class SetpointControl:
             except (tf.LookupException, tf.ConnectivityException):
                 rospy.logwarn("Error finding robot_position_stage!")
 
-        self.stage_commands.x_position = target_point_stage.point.x
-        self.stage_commands.y_position = target_point_stage.point.y
+        self.stage_commands.x_position = [target_point_stage.point.x]
+        self.stage_commands.y_position = [target_point_stage.point.y]
 
         delta_x = abs(target_point_stage.point.x - robot_position_stage.point.x)
         delta_y = abs(target_point_stage.point.y - robot_position_stage.point.y)
         alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
-        self.stage_commands.x_velocity = alpha*delta_x
-        self.stage_commands.y_velocity = alpha*delta_y
+        self.stage_commands.x_velocity = [alpha*delta_x]
+        self.stage_commands.y_velocity = [alpha*delta_y]
 
     def joystick_commands_callback(self,data):
         if self.initialized:
@@ -145,15 +145,15 @@ class SetpointControl:
                     if not self.homing:
                         self.homing = True
                         self.stage_commands.position_control = True
-                        # self.set_position_velocity(0,0,self.control_frame,self.vel_scale_factor/10)
-                        x_pos_list = [120,140,120,100,120,100,100,140,140]*3
-                        x_vel_list = [20]*len(x_pos_list)
-                        y_pos_list = [100,120,140,120,100,100,140,140,100]*3
-                        y_vel_list = [20]*len(y_pos_list)
-                        self.stage_commands.x_position = x_pos_list
-                        self.stage_commands.y_position = y_pos_list
-                        self.stage_commands.x_velocity = x_vel_list
-                        self.stage_commands.y_velocity = y_vel_list
+                        self.set_position_velocity_point(0,0,self.control_frame,self.vel_scale_factor/10)
+                        # x_pos_list = [120,140,120,100,120,100,100,140,140]*3
+                        # x_vel_list = [20]*len(x_pos_list)
+                        # y_pos_list = [100,120,140,120,100,100,140,140,100]*3
+                        # y_vel_list = [20]*len(y_pos_list)
+                        # self.stage_commands.x_position = x_pos_list
+                        # self.stage_commands.y_position = y_pos_list
+                        # self.stage_commands.x_velocity = x_vel_list
+                        # self.stage_commands.y_velocity = y_vel_list
 
                         # self.stage_commands.x_position = self.target_point.point.x
                         # self.stage_commands.y_position = self.target_point.point.y
