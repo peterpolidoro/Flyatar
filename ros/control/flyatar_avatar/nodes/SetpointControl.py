@@ -182,7 +182,7 @@ class SetpointControl:
         self.find_robot_origin_position()
         self.find_setpoint_origin_position()
         x_ro = self.robot_origin_position.point.x
-        y_ro = self.robot_origin_position.point.x
+        y_ro = self.robot_origin_position.point.y
         x_so =  self.setpoint_origin_position.point.x
         y_so =  self.setpoint_origin_position.point.y
         dx = x_ro - x_so
