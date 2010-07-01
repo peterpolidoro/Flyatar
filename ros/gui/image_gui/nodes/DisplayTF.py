@@ -124,11 +124,17 @@ class ImageDisplay:
             rospy.logwarn("axes_y_image.point.x = %s" % (str(axes_y_image.point.x)))
             rospy.logwarn("axes_y_image.point.y = %s" % (str(axes_y_image.point.y)))
             # Do not attempt to display lines when garbage values are calculated
-            if (axes_center_image.point.x < self.im_size[0]) and \
+            if (0 <= axes_center_image.point.x) and \
+               (axes_center_image.point.x < self.im_size[0]) and \
+               (0 <= axes_center_image.point.y) and \
                (axes_center_image.point.y < self.im_size[1]) and \
+               (0 <= axes_x_image.point.x) and \
                (axes_x_image.point.x < self.im_size[0]) and \
+               (0 <= axes_x_image.point.y) and \
                (axes_x_image.point.y < self.im_size[1]) and \
+               (0 <= axes_y_image.point.x) and \
                (axes_y_image.point.x < self.im_size[0]) and \
+               (0 <= axes_y_image.point.y) and \
                (axes_y_image.point.y < self.im_size[1]):
 
                 cv.Line(self.im_display,
