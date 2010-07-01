@@ -13,7 +13,6 @@
   <depend package="camera1394v2"/>
   <depend package="pythonmodules"/>
   <depend package="track_image_contours"/>
-  <depend package="stage_tf"/>
   <depend package="plate_tf"/>
 
 </package>
