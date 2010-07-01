@@ -63,7 +63,7 @@ class SetpointControl:
         self.inc_radius = 1
         self.inc_theta = 0.05
         self.setpoint_radius_max = 80
-        self.setpoint_radius_min = 20
+        self.setpoint_radius_min = 0
 
         self.rate = rospy.Rate(1/self.control_dt)
         self.gain_radius = rospy.get_param("gain_radius","4")
@@ -115,14 +115,14 @@ class SetpointControl:
             except (tf.LookupException, tf.ConnectivityException):
                 rospy.logwarn("Error finding robot_position_stage!")
 
-        self.stage_commands.x_position = [target_point_stage.point.x]
-        self.stage_commands.y_position = [target_point_stage.point.y]
+        self.stage_commands.x_position = [robot_position_stage.point.x,target_point_stage.point.x]
+        self.stage_commands.y_position = [robot_position_stage.point.y,target_point_stage.point.y]
 
         delta_x = abs(target_point_stage.point.x - robot_position_stage.point.x)
         delta_y = abs(target_point_stage.point.y - robot_position_stage.point.y)
         alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
-        self.stage_commands.x_velocity = [alpha*delta_x]
-        self.stage_commands.y_velocity = [alpha*delta_y]
+        self.stage_commands.x_velocity = [vel_mag,alpha*delta_x]
+        self.stage_commands.y_velocity = [vel_mag,alpha*delta_y]
 
     def joystick_commands_callback(self,data):
         if self.initialized:
@@ -137,15 +137,15 @@ class SetpointControl:
             self.setpoint.theta = math.fmod(self.setpoint.theta,2*math.pi)
             if self.setpoint.theta < 0:
                 self.setpoint.theta = 2*math.pi - self.setpoint.theta
-            self.setpoint_pub.publish(self.setpoint)
             self.tracking = data.tracking
+            self.setpoint_pub.publish(self.setpoint)
 
             if not self.tracking:
                 if data.home:
                     if not self.homing:
                         self.homing = True
                         self.stage_commands.position_control = True
-                        self.set_position_velocity_point(0,0,self.control_frame,self.vel_scale_factor/10)
+                        self.set_position_velocity_point(0,0,self.control_frame,self.vel_scale_factor/4)
                         # x_pos_list = [120,140,120,100,120,100,100,140,140]*3
                         # x_vel_list = [20]*len(x_pos_list)
                         # y_pos_list = [100,120,140,120,100,100,140,140,100]*3

@@ -160,6 +160,8 @@ class ImageDisplay:
             setpoint_image = self.tf_listener.transformPoint(self.image_frame,self.setpoint_camera)
             setpoint_image_radius = math.sqrt((setpoint_image.point.x - self.setpoint_image_origin.point.x)**2 +
                                               (setpoint_image.point.y - self.setpoint_image_origin.point.y)**2 )
+            if setpoint_image_radius < 3:
+                setpoint_image_radius = 3
 
             cv.Line(self.im_display,
                     (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
