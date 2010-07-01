@@ -122,14 +122,37 @@ class SetpointControl:
             except (tf.LookupException, tf.ConnectivityException):
                 rospy.logwarn("Error finding robot_position_stage!")
 
+    def find_velocity_from_position(self,pos_x,pos_y,vel_mag):
+        point_count = min(len(pos_x),len(pos_y))
+        vel_x = []
+        vel_y = []
+        vel_mag = abs(vel_mag)          # Just to be sure
+        for point_n in range(point_count):
+            if point_n == 0:
+                vel_x.append(math.sqrt(2)*vel_mag)
+                vel_y.append(math.sqrt(2)*vel_mag)
+            else:
+                delta_x = abs(pos_x[point_n] - pos_x[point_n - 1])
+                delta_y = abs(pos_y[point_n] - pos_y[point_n - 1])
+                alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
+                vel_x.append(alpha*delta_x)
+                vel_y.append(alpha*delta_y)
+        return vel_x,vel_y
+
     def set_stage_commands_from_position_points(self,plate_points_x,plate_points_y,vel_mag):
         response = self.plate_to_stage(plate_points_x,plate_points_y)
         stage_points_x = response.Xdst
         stage_points_y = response.Ydst
-        rospy.logwarn("plate_points_x = %s" % (str(plate_points_x)))
-        rospy.logwarn("plate_points_y = %s" % (str(plate_points_y)))
-        rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
-        rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
+        stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag)
+        self.stage_commands.x_position = stage_points_x
+        self.stage_commands.y_position = stage_points_y
+        self.stage_commands.x_velocity = stage_velocity_x
+        self.stage_commands.y_velocity = stage_velocity_y
+
+        # rospy.logwarn("plate_points_x = %s" % (str(plate_points_x)))
+        # rospy.logwarn("plate_points_y = %s" % (str(plate_points_y)))
+        # rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
+        # rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
 
     def set_path_to_start(self,vel_mag):
         self.find_robot_position()
