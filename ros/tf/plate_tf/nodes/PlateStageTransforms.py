@@ -12,7 +12,7 @@ class Transforms:
         self.transforms_initialized = False
         while not self.transforms_initialized:
             try:
-                (trans,rot) = listener.lookupTransform("Plate", "Stage", rospy.Time.now())
+                (trans,rot) = self.tf_listener.lookupTransform("Plate", "Stage", rospy.Time.now())
                 self.transforms_initialized = True
             except (tf.LookupException, tf.ConnectivityException):
                 pass
