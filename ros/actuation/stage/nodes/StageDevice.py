@@ -100,7 +100,7 @@ class StageDevice(USBDevice.USB_Device):
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
-    def update_position(self,x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm):
+    def update_position(self,x_pos_list,x_vel_list,y_pos_list,y_vel_list):
         point_count = min(len(x_pos_list),len(x_vel_list),len(y_pos_list),len(y_vel_list))
         if _lookup_table_size < point_count:
             point_count = _lookup_table_size
