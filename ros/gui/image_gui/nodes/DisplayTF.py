@@ -117,12 +117,12 @@ class ImageDisplay:
             axes_x_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_camera)
             axes_y_image = self.tf_listener.transformPoint(self.image_frame,self.axes_y_camera)
 
-            # rospy.logwarn("axes_center_image.point.x = %s" % (str(axes_center_image.point.x)))
-            # rospy.logwarn("axes_center_image.point.y = %s" % (str(axes_center_image.point.y)))
-            # rospy.logwarn("axes_x_image.point.x = %s" % (str(axes_x_image.point.x)))
-            # rospy.logwarn("axes_x_image.point.y = %s" % (str(axes_x_image.point.y)))
-            # rospy.logwarn("axes_y_image.point.x = %s" % (str(axes_y_image.point.x)))
-            # rospy.logwarn("axes_y_image.point.y = %s" % (str(axes_y_image.point.y)))
+            rospy.logwarn("axes_center_image.point.x = %s" % (str(axes_center_image.point.x)))
+            rospy.logwarn("axes_center_image.point.y = %s" % (str(axes_center_image.point.y)))
+            rospy.logwarn("axes_x_image.point.x = %s" % (str(axes_x_image.point.x)))
+            rospy.logwarn("axes_x_image.point.y = %s" % (str(axes_x_image.point.y)))
+            rospy.logwarn("axes_y_image.point.x = %s" % (str(axes_y_image.point.x)))
+            rospy.logwarn("axes_y_image.point.y = %s" % (str(axes_y_image.point.y)))
             # Do not attempt to display lines when garbage values are calculated
             if (axes_center_image.point.x < self.im_size[0]) and \
                (axes_center_image.point.y < self.im_size[1]) and \
