@@ -22,8 +22,8 @@ class JoystickControl:
 
     def commands_callback(self,data):
         if self.initialized:
-            self.stage_commands.x_velocity = data.y_velocity*self.vel_scale_factor
-            self.stage_commands.y_velocity = -data.x_velocity*self.vel_scale_factor
+            self.stage_commands.x_velocity = [data.y_velocity*self.vel_scale_factor]
+            self.stage_commands.y_velocity = [-data.x_velocity*self.vel_scale_factor]
 
             self.sc_pub.publish(self.stage_commands)
 

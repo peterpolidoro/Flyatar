@@ -83,6 +83,7 @@ class StageDevice(USBDevice.USB_Device):
         self.frequency_max = 30000
         self.position_min = 0
         self.position_max = 44000
+        self.min_vel_mm = 1
 
         self.steps_per_mm = 5000/25.4   # 5000 steps per inch
                                         # 25.4 mm per inch
@@ -91,46 +92,80 @@ class StageDevice(USBDevice.USB_Device):
         self.axis_y = 1
         self.axis_theta = 2
 
-    def update_velocity(self,x_vel_mm,y_vel_mm):
+    def update_velocity(self,x_vel_list,y_vel_list):
+        x_vel_mm = x_vel_list[0]
+        y_vel_mm = y_vel_list[0]
         self._convert_and_set_setpoint(None,x_vel_mm,None,y_vel_mm,0)
         self._set_motor_state()
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def update_position(self,x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm):
-        self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,0)
-        self._set_motor_state()
-        x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
-        return x,y,theta,x_velocity,y_velocity,theta_velocity
-
-    def lookup_table_move(self,x_pos_list,x_vel_list,y_pos_list,y_vel_list):
         point_count = min(len(x_pos_list),len(x_vel_list),len(y_pos_list),len(y_vel_list))
         if _lookup_table_size < point_count:
             point_count = _lookup_table_size
 
-        packet_count = int(math.ceil(point_count/_entries_max))
-        point_n = 0
-        for packet_n in range(packet_count):
-            packet_point_n = 0
-            while (packet_point_n < _entries_max) and (point_n < point_count):
-                x_pos_mm = x_pos_list[point_n]
-                x_vel_mm = x_vel_list[point_n]
-                y_pos_mm = y_pos_list[point_n]
-                y_vel_mm = y_vel_list[point_n]
+        if point_count == 1:
+            x_pos_mm = x_pos_list[0]
+            x_vel_mm = x_vel_list[0]
+            y_pos_mm = y_pos_list[0]
+            y_vel_mm = y_vel_list[0]
+            self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,0)
+            self._set_motor_state()
+        else:
+            packet_count = int(math.ceil(point_count/_entries_max))
+            point_n = 0
+            for packet_n in range(packet_count):
+                packet_point_n = 0
+                while (packet_point_n < _entries_max) and (point_n < point_count):
+                    x_pos_mm = x_pos_list[point_n]
+                    x_vel_mm = x_vel_list[point_n]
+                    y_pos_mm = y_pos_list[point_n]
+                    y_vel_mm = y_vel_list[point_n]
 
-                self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,packet_point_n)
+                    self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,packet_point_n)
 
-                packet_point_n += 1
-                point_n += 1
+                    packet_point_n += 1
+                    point_n += 1
 
-            self.USBPacketOut.EntryCount = packet_point_n
-            self.USBPacketOut.EntryLocation = point_n - packet_point_n
-            # rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
-            self._lookup_table_fill()
+                self.USBPacketOut.EntryCount = packet_point_n
+                self.USBPacketOut.EntryLocation = point_n - packet_point_n
+                # rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
+                self._lookup_table_fill()
 
-        self._lookup_table_move()
+            self._lookup_table_move()
+
         x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
+
+    # def lookup_table_move(self,x_pos_list,x_vel_list,y_pos_list,y_vel_list):
+    #     point_count = min(len(x_pos_list),len(x_vel_list),len(y_pos_list),len(y_vel_list))
+    #     if _lookup_table_size < point_count:
+    #         point_count = _lookup_table_size
+
+    #     packet_count = int(math.ceil(point_count/_entries_max))
+    #     point_n = 0
+    #     for packet_n in range(packet_count):
+    #         packet_point_n = 0
+    #         while (packet_point_n < _entries_max) and (point_n < point_count):
+    #             x_pos_mm = x_pos_list[point_n]
+    #             x_vel_mm = x_vel_list[point_n]
+    #             y_pos_mm = y_pos_list[point_n]
+    #             y_vel_mm = y_vel_list[point_n]
+
+    #             self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,packet_point_n)
+
+    #             packet_point_n += 1
+    #             point_n += 1
+
+    #         self.USBPacketOut.EntryCount = packet_point_n
+    #         self.USBPacketOut.EntryLocation = point_n - packet_point_n
+    #         # rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
+    #         self._lookup_table_fill()
+
+    #     self._lookup_table_move()
+    #     x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
+    #     return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def get_state(self):
         self._get_motor_state()
