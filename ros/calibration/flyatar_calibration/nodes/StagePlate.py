@@ -21,7 +21,7 @@ class Calibration():
     self.pose_initialized = False
     self.arrays_initialized = False
 
-    self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.commands_callback)
+    self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joystick_commands_callback)
     self.vel_pub = rospy.Publisher("StageCommands",StageCommands)
 
     self.image_sub = rospy.Subscriber("camera/image_rect", Image, self.image_callback)
@@ -96,10 +96,10 @@ class Calibration():
     cv.Zero(self.im_display)
     self.images_initialized = True
 
-  def commands_callback(self,data):
+  def joystick_commands_callback(self,data):
     if self.initialized:
-      self.stage_cmds.x_velocity = data.y_velocity*self.vel_scale_factor
-      self.stage_cmds.y_velocity = -data.x_velocity*self.vel_scale_factor
+      self.stage_cmds.x_velocity = [data.y_velocity*self.vel_scale_factor]
+      self.stage_cmds.y_velocity = [-data.x_velocity*self.vel_scale_factor]
       self.vel_pub.publish(self.stage_cmds)
 
   def draw_origin(self,im_color):
