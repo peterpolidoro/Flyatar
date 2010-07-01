@@ -72,9 +72,9 @@ class Calibration():
 
     rospy.wait_for_service('camera_to_plate')
     try:
-        self.camera_to_plate = rospy.ServiceProxy('camera_to_plate', PlateCameraConversion)
+      self.camera_to_plate = rospy.ServiceProxy('camera_to_plate', PlateCameraConversion)
     except rospy.ServiceException, e:
-        print "Service call failed: %s"%e
+      print "Service call failed: %s"%e
 
     self.initialized = True
 
@@ -200,60 +200,61 @@ class Calibration():
       cv.Line(im_color,tuple(start_points[line_n,:]),tuple(end_points[line_n,:]),cv.CV_RGB(0,self.color_max,0),axis_line_width)
 
   def image_callback(self,data):
-    try:
-      cv_image = cv.GetImage(self.bridge.imgmsg_to_cv(data, "passthrough"))
-    except CvBridgeError, e:
-      print e
-
-    if not self.images_initialized:
-      self.initialize_images(cv_image)
-
-    cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
-
-    if self.pose_initialized:
+    if self.initialized:
       try:
-        (trans,rot_quat) = self.tf_listener.lookupTransform('Stage', 'Magnet', rospy.Time(0))
-        magnet_stage_x = trans[0]
-        magnet_stage_y = trans[1]
-        magnet_stage_z = trans[2]
+        cv_image = cv.GetImage(self.bridge.imgmsg_to_cv(data, "passthrough"))
+      except CvBridgeError, e:
+        print e
 
-        if self.arrays_initialized:
-          image_point_num = self.image_point_array.shape[1]
-          for image_point_n in range(image_point_num):
-            cv.Circle(self.im_display, (int(self.image_point_array[0,image_point_n]),int(self.image_point_array[1,image_point_n])), 5, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
+      if not self.images_initialized:
+        self.initialize_images(cv_image)
 
-        cv.Circle(self.im_display, (int(self.robot_image_pose_rect.pose.position.x),int(self.robot_image_pose_rect.pose.position.y)), 3, cv.CV_RGB(0,0,self.color_max), cv.CV_FILLED)
-        # display_text = "robot_image_pose_camera.x = " + str(round(self.robot_image_pose_camera.pose.position.x,3))
-        # cv.PutText(self.im_display,display_text,(25,25),self.font,self.font_color)
-        # display_text = "robot_image_pose_camera.y = " + str(round(self.robot_image_pose_camera.pose.position.y,3))
-        # cv.PutText(self.im_display,display_text,(25,45),self.font,self.font_color)
+      cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
 
-        display_text = "RobotImage Pose with Respect to Plate = [%0.3f, %0.3f]" % (self.robot_image_pose_plate.pose.position.x,self.robot_image_pose_plate.pose.position.y)
-        cv.PutText(self.im_display,display_text,(25,25),self.font,self.font_color)
+      if self.pose_initialized:
+        try:
+          (trans,rot_quat) = self.tf_listener.lookupTransform('Stage', 'Magnet', rospy.Time(0))
+          magnet_stage_x = trans[0]
+          magnet_stage_y = trans[1]
+          magnet_stage_z = trans[2]
 
-        # display_text = "robot_image_pose_plate.x = " + str(round(self.robot_image_pose_plate.pose.position.x,3))
-        # cv.PutText(self.im_display,display_text,(25,65),self.font,self.font_color)
-        # display_text = "robot_image_pose_plate.y = " + str(round(self.robot_image_pose_plate.pose.position.y,3))
-        # cv.PutText(self.im_display,display_text,(25,85),self.font,self.font_color)
+          if self.arrays_initialized:
+            image_point_num = self.image_point_array.shape[1]
+            for image_point_n in range(image_point_num):
+              cv.Circle(self.im_display, (int(self.image_point_array[0,image_point_n]),int(self.image_point_array[1,image_point_n])), 5, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
 
-        display_text = "Magnet Pose with Respect to Stage = [%0.3f, %0.3f]" % (magnet_stage_x,magnet_stage_y)
-        cv.PutText(self.im_display,display_text,(25,45),self.font,self.font_color)
+          cv.Circle(self.im_display, (int(self.robot_image_pose_rect.pose.position.x),int(self.robot_image_pose_rect.pose.position.y)), 3, cv.CV_RGB(0,0,self.color_max), cv.CV_FILLED)
+          # display_text = "robot_image_pose_camera.x = " + str(round(self.robot_image_pose_camera.pose.position.x,3))
+          # cv.PutText(self.im_display,display_text,(25,25),self.font,self.font_color)
+          # display_text = "robot_image_pose_camera.y = " + str(round(self.robot_image_pose_camera.pose.position.y,3))
+          # cv.PutText(self.im_display,display_text,(25,45),self.font,self.font_color)
 
-        # display_text = "stage_state.x = " + str(round(self.stage_state.x,3))
-        # cv.PutText(self.im_display,display_text,(25,105),self.font,self.font_color)
-        # display_text = "stage_state.y = " + str(round(self.stage_state.y,3))
-        # cv.PutText(self.im_display,display_text,(25,125),self.font,self.font_color)
+          display_text = "RobotImage Pose with Respect to Plate = [%0.3f, %0.3f]" % (self.robot_image_pose_plate.pose.position.x,self.robot_image_pose_plate.pose.position.y)
+          cv.PutText(self.im_display,display_text,(25,25),self.font,self.font_color)
 
-        image_point_new = numpy.array([[self.robot_image_pose_rect.pose.position.x], [self.robot_image_pose_rect.pose.position.y]])
-        plate_point_new = numpy.array([[self.robot_image_pose_plate.pose.position.x], [self.robot_image_pose_plate.pose.position.y],[0]])
-        stage_point_new = numpy.array([[magnet_stage_x], [magnet_stage_y], [magnet_stage_z]])
-        # rospy.logwarn("plate_point_new = \n%s", str(plate_point_new))
-        # rospy.logwarn("stage_point_new = \n%s", str(stage_point_new))
+          # display_text = "robot_image_pose_plate.x = " + str(round(self.robot_image_pose_plate.pose.position.x,3))
+          # cv.PutText(self.im_display,display_text,(25,65),self.font,self.font_color)
+          # display_text = "robot_image_pose_plate.y = " + str(round(self.robot_image_pose_plate.pose.position.y,3))
+          # cv.PutText(self.im_display,display_text,(25,85),self.font,self.font_color)
 
-        if self.arrays_initialized:
-          plate_point_prev = self.plate_point_array[:,-1].reshape((3,1))
-          # rospy.logwarn("plate_point_prev = \n%s", str(plate_point_prev))
-          if self.dist_min < tf.transformations.vector_norm((plate_point_new - plate_point_prev)):
+          display_text = "Magnet Pose with Respect to Stage = [%0.3f, %0.3f]" % (magnet_stage_x,magnet_stage_y)
+          cv.PutText(self.im_display,display_text,(25,45),self.font,self.font_color)
+
+          # display_text = "stage_state.x = " + str(round(self.stage_state.x,3))
+          # cv.PutText(self.im_display,display_text,(25,105),self.font,self.font_color)
+          # display_text = "stage_state.y = " + str(round(self.stage_state.y,3))
+          # cv.PutText(self.im_display,display_text,(25,125),self.font,self.font_color)
+
+          image_point_new = numpy.array([[self.robot_image_pose_rect.pose.position.x], [self.robot_image_pose_rect.pose.position.y]])
+          plate_point_new = numpy.array([[self.robot_image_pose_plate.pose.position.x], [self.robot_image_pose_plate.pose.position.y],[0]])
+          stage_point_new = numpy.array([[magnet_stage_x], [magnet_stage_y], [magnet_stage_z]])
+          # rospy.logwarn("plate_point_new = \n%s", str(plate_point_new))
+          # rospy.logwarn("stage_point_new = \n%s", str(stage_point_new))
+
+          if self.arrays_initialized:
+            plate_point_prev = self.plate_point_array[:,-1].reshape((3,1))
+            # rospy.logwarn("plate_point_prev = \n%s", str(plate_point_prev))
+            if self.dist_min < tf.transformations.vector_norm((plate_point_new - plate_point_prev)):
               self.image_point_array = numpy.append(self.image_point_array,image_point_new,axis=1)
               self.plate_point_array = numpy.append(self.plate_point_array,plate_point_new,axis=1)
               # rospy.logwarn("plate_point_array = \n%s", str(self.plate_point_array))
@@ -261,64 +262,64 @@ class Calibration():
               # rospy.logwarn("stage_point_array = \n%s", str(self.stage_point_array))
               self.robot_ecc_array = numpy.append(self.robot_ecc_array,self.robot_ecc)
               self.robot_area_array = numpy.append(self.robot_area_array,self.robot_area)
-        else:
-          self.image_point_array = image_point_new
-          self.plate_point_array = plate_point_new
-          self.stage_point_array = stage_point_new
-          self.arrays_initialized = True
+          else:
+            self.image_point_array = image_point_new
+            self.plate_point_array = plate_point_new
+            self.stage_point_array = stage_point_new
+            self.arrays_initialized = True
 
-        if self.point_count_min < self.plate_point_array.shape[1]:
-          self.T_plate_stage = tf.transformations.superimposition_matrix(self.plate_point_array, self.stage_point_array)
-          self.T_stage_plate = tf.transformations.inverse_matrix(self.T_plate_stage)
-          # self.T_stage_plate = tf.transformations.superimposition_matrix(self.plate_point_array, self.stage_point_array)
-          # self.T_plate_stage = tf.transformations.inverse_matrix(self.T_stage_plate)
-          # tvector = tf.transformations.translation_from_matrix(self.T_plate_stage)
-          tvector = tf.transformations.translation_from_matrix(self.T_stage_plate)
-          display_text = "Translation Vector = [%0.3f, %0.3f, %0.3f]" % (tvector[0],tvector[1],tvector[2])
-          cv.PutText(self.im_display,display_text,(25,65),self.font,self.font_color)
-          # rospy.logwarn("tvec = \n%s",str(tvec))
-          # quaternion = tf.transformations.quaternion_from_matrix(self.T_plate_stage)
-          quaternion = tf.transformations.quaternion_from_matrix(self.T_stage_plate)
-          display_text = "Quaternion = [%0.3f, %0.3f, %0.3f, %0.3f]" % (quaternion[0],quaternion[1],quaternion[2],quaternion[3])
-          cv.PutText(self.im_display,display_text,(25,85),self.font,self.font_color)
-          # rospy.logwarn("quaternion = \n%s",str(quaternion))
-          # euler = tf.transformations.euler_from_matrix(self.T_plate_stage,'rxyz')
-          # display_text = "Translation Vector = [%0.2f, %0.2f, %0.2f]" % (self.tvec[0],
-          # cv.PutText(self.im_display,display_text,(25,65),self.font,self.font_color)
-          # rospy.logwarn("euler = \n%s",str(euler))
+          if self.point_count_min < self.plate_point_array.shape[1]:
+            self.T_plate_stage = tf.transformations.superimposition_matrix(self.plate_point_array, self.stage_point_array)
+            self.T_stage_plate = tf.transformations.inverse_matrix(self.T_plate_stage)
+            # self.T_stage_plate = tf.transformations.superimposition_matrix(self.plate_point_array, self.stage_point_array)
+            # self.T_plate_stage = tf.transformations.inverse_matrix(self.T_stage_plate)
+            # tvector = tf.transformations.translation_from_matrix(self.T_plate_stage)
+            tvector = tf.transformations.translation_from_matrix(self.T_stage_plate)
+            display_text = "Translation Vector = [%0.3f, %0.3f, %0.3f]" % (tvector[0],tvector[1],tvector[2])
+            cv.PutText(self.im_display,display_text,(25,65),self.font,self.font_color)
+            # rospy.logwarn("tvec = \n%s",str(tvec))
+            # quaternion = tf.transformations.quaternion_from_matrix(self.T_plate_stage)
+            quaternion = tf.transformations.quaternion_from_matrix(self.T_stage_plate)
+            display_text = "Quaternion = [%0.3f, %0.3f, %0.3f, %0.3f]" % (quaternion[0],quaternion[1],quaternion[2],quaternion[3])
+            cv.PutText(self.im_display,display_text,(25,85),self.font,self.font_color)
+            # rospy.logwarn("quaternion = \n%s",str(quaternion))
+            # euler = tf.transformations.euler_from_matrix(self.T_plate_stage,'rxyz')
+            # display_text = "Translation Vector = [%0.2f, %0.2f, %0.2f]" % (self.tvec[0],
+            # cv.PutText(self.im_display,display_text,(25,65),self.font,self.font_color)
+            # rospy.logwarn("euler = \n%s",str(euler))
 
-          ecc_mean = numpy.mean(self.robot_ecc_array)
-          ecc_std = numpy.std(self.robot_ecc_array)
-          # rospy.logwarn("ecc_mean = %s, ecc_std = %s\n" % (ecc_mean, ecc_std))
-          self.robot_min_ecc = ecc_mean - ecc_std*3
-          if self.robot_min_ecc < 0:
-            self.robot_min_ecc = 0
-          self.robot_max_ecc = ecc_mean + ecc_std*3
-          area_mean = numpy.mean(self.robot_area_array)
-          area_std = numpy.std(self.robot_area_array)
-          # rospy.logwarn("area_mean = %s, area_std = %s\n" % (area_mean, area_std))
-          self.robot_min_area = area_mean - area_std*3
-          if self.robot_min_area < 0:
-            self.robot_min_area = 0
-          self.robot_max_area = area_mean + area_std*3
-          display_text = "robot_min_ecc = %0.3f, robot_max_ecc = %0.3f" % (self.robot_min_ecc, self.robot_max_ecc)
-          cv.PutText(self.im_display,display_text,(25,105),self.font,self.font_color)
-          display_text = "robot_min_area = %0.0f, robot_max_area = %0.0f" % (self.robot_min_area, self.robot_max_area)
-          cv.PutText(self.im_display,display_text,(25,125),self.font,self.font_color)
+            ecc_mean = numpy.mean(self.robot_ecc_array)
+            ecc_std = numpy.std(self.robot_ecc_array)
+            # rospy.logwarn("ecc_mean = %s, ecc_std = %s\n" % (ecc_mean, ecc_std))
+            self.robot_min_ecc = ecc_mean - ecc_std*3
+            if self.robot_min_ecc < 0:
+              self.robot_min_ecc = 0
+            self.robot_max_ecc = ecc_mean + ecc_std*3
+            area_mean = numpy.mean(self.robot_area_array)
+            area_std = numpy.std(self.robot_area_array)
+            # rospy.logwarn("area_mean = %s, area_std = %s\n" % (area_mean, area_std))
+            self.robot_min_area = area_mean - area_std*3
+            if self.robot_min_area < 0:
+              self.robot_min_area = 0
+            self.robot_max_area = area_mean + area_std*3
+            display_text = "robot_min_ecc = %0.3f, robot_max_ecc = %0.3f" % (self.robot_min_ecc, self.robot_max_ecc)
+            cv.PutText(self.im_display,display_text,(25,105),self.font,self.font_color)
+            display_text = "robot_min_area = %0.0f, robot_max_area = %0.0f" % (self.robot_min_area, self.robot_max_area)
+            cv.PutText(self.im_display,display_text,(25,125),self.font,self.font_color)
 
-          self.rotate_grid = True
+            self.rotate_grid = True
+            self.draw_grid(self.im_display)
+
+          self.draw_origin(self.im_display)
           self.draw_grid(self.im_display)
-
-        self.draw_origin(self.im_display)
-        self.draw_grid(self.im_display)
-      except (tf.LookupException, tf.ConnectivityException):
-        pass
+        except (tf.LookupException, tf.ConnectivityException):
+          pass
 
 
-    cv.PutText(self.im_display,self.error_text,(25,185),self.font,self.font_color)
+      cv.PutText(self.im_display,self.error_text,(25,185),self.font,self.font_color)
 
-    cv.ShowImage("Stage Plate Calibration", self.im_display)
-    cv.WaitKey(3)
+      cv.ShowImage("Stage Plate Calibration", self.im_display)
+      cv.WaitKey(3)
 
   # def pose_callback(self,data):
   #   if not self.pose_initialized:
@@ -330,46 +331,47 @@ class Calibration():
   #   self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
 
   def contour_callback(self,data):
-    header = data.header
-    x_list = data.x
-    y_list = data.y
-    theta_list = data.theta
-    area_list = data.area
-    ecc_list = data.ecc
-    contour_count = min(len(x_list),len(y_list),len(theta_list),len(area_list),len(ecc_list))
+    if self.initialized:
+      header = data.header
+      x_list = data.x
+      y_list = data.y
+      theta_list = data.theta
+      area_list = data.area
+      ecc_list = data.ecc
+      contour_count = min(len(x_list),len(y_list),len(theta_list),len(area_list),len(ecc_list))
 
-    if contour_count == 1:
-      self.error_text = ""
-      if not self.pose_initialized:
-        self.pose_initialized = True
-      self.robot_image_pose_camera.header = data.header
-      self.robot_image_pose_camera.pose.position.x = x_list[0]
-      self.robot_image_pose_camera.pose.position.y = y_list[0]
-      self.robot_image_pose_rect = self.camera_to_rect_pose(self.robot_image_pose_camera)
-      self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
-      self.robot_area = area_list[0]
-      self.robot_ecc = ecc_list[0]
-    else:
-      rospy.logwarn("Error! More than one object detected!")
-      self.error_text = "Error! More than one object detected!"
+      if contour_count == 1:
+        self.error_text = ""
+        if not self.pose_initialized:
+          self.pose_initialized = True
+        self.robot_image_pose_camera.header = data.header
+        self.robot_image_pose_camera.pose.position.x = x_list[0]
+        self.robot_image_pose_camera.pose.position.y = y_list[0]
+        self.robot_image_pose_rect = self.camera_to_rect_pose(self.robot_image_pose_camera)
+        self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
+        self.robot_area = area_list[0]
+        self.robot_ecc = ecc_list[0]
+      else:
+        rospy.logwarn("Error! More than one object detected!")
+        self.error_text = "Error! More than one object detected!"
 
-    # for contour in range(contour_count):
-    #   x = x_list[contour]
-    #   y = y_list[contour]
-    #   theta = theta_list[contour]
-    #   area = area_list[contour]
-    #   ecc = ecc_list[contour]
-    #   # Identify robot
-    #   if ((self.robot_min_area < area) and (area < self.robot_max_area)) and ((self.robot_min_ecc < ecc) and (ecc < self.robot_max_ecc)):
-    #     self.robot_image_pose.header = header
-    #     self.robot_image_pose.pose.position.x = x
-    #     self.robot_image_pose.pose.position.y = y
-    #     self.robot_image_pose_pub.publish(self.robot_image_pose)
-    #   elif contour_count == 2:
-    #     self.fly_image_pose.header = header
-    #     self.fly_image_pose.pose.position.x = x
-    #     self.fly_image_pose.pose.position.y = y
-    #     self.fly_image_pose_pub.publish(self.fly_image_pose)
+      # for contour in range(contour_count):
+      #   x = x_list[contour]
+      #   y = y_list[contour]
+      #   theta = theta_list[contour]
+      #   area = area_list[contour]
+      #   ecc = ecc_list[contour]
+      #   # Identify robot
+      #   if ((self.robot_min_area < area) and (area < self.robot_max_area)) and ((self.robot_min_ecc < ecc) and (ecc < self.robot_max_ecc)):
+      #     self.robot_image_pose.header = header
+      #     self.robot_image_pose.pose.position.x = x
+      #     self.robot_image_pose.pose.position.y = y
+      #     self.robot_image_pose_pub.publish(self.robot_image_pose)
+      #   elif contour_count == 2:
+      #     self.fly_image_pose.header = header
+      #     self.fly_image_pose.pose.position.x = x
+      #     self.fly_image_pose.pose.position.y = y
+      #     self.fly_image_pose_pub.publish(self.fly_image_pose)
 
   def camera_to_rect_pose(self,input_pose):
     output_pose = PoseStamped()
