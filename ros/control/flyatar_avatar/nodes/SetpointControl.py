@@ -86,8 +86,8 @@ class SetpointControl:
         rospy.logwarn("plate_points_x = %s" % (str(Xsrc)))
         rospy.logwarn("plate_points_y = %s" % (str(Ysrc)))
         response = self.plate_to_stage(Xsrc,Ysrc)
-        rospy.logwarn("stage_points_x = %s" % (str(response.Xsrc)))
-        rospy.logwarn("stage_points_y = %s" % (str(response.Ysrc)))
+        rospy.logwarn("stage_points_x = %s" % (str(response.Xdst)))
+        rospy.logwarn("stage_points_y = %s" % (str(response.Ydst)))
 
         self.initialized = True
 
