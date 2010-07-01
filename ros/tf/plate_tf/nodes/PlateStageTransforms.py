@@ -14,7 +14,7 @@ class Transforms:
             try:
                 (self.trans,self.rot) = self.tf_listener.lookupTransform("Plate", "Stage", rospy.Time.now())
                 self.transforms_initialized = True
-            except (tf.LookupException, tf.ConnectivityException):
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 pass
 
         # rospy.logwarn("trans = %s" % (str(self.trans)))
