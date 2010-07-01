@@ -145,11 +145,11 @@ class SetpointControl:
                     if not self.homing:
                         self.homing = True
                         self.stage_commands.position_control = True
-                        self.set_position_velocity(0,0,self.control_frame,self.vel_scale_factor/10)
-                            x_pos_list = [120,140,120,100,120,100,100,140,140]*3
-                            x_vel_list = [20]*len(x_pos_list)
-                            y_pos_list = [100,120,140,120,100,100,140,140,100]*3
-                            y_vel_list = [20]*len(y_pos_list)
+                        # self.set_position_velocity(0,0,self.control_frame,self.vel_scale_factor/10)
+                        x_pos_list = [120,140,120,100,120,100,100,140,140]*3
+                        x_vel_list = [20]*len(x_pos_list)
+                        y_pos_list = [100,120,140,120,100,100,140,140,100]*3
+                        y_vel_list = [20]*len(y_pos_list)
                         self.stage_commands.x_position = x_pos_list
                         self.stage_commands.y_position = y_pos_list
                         self.stage_commands.x_velocity = x_vel_list
