@@ -7,7 +7,7 @@
   <include file="$(find joystick_commands)/launch/joystick_commands.launch" />
   <include file="$(find plate_tf)/launch/plate_tf.launch" />
   <include file="$(find stage_tf)/launch/stage_tf.launch" />
-  <node pkg="avatar" type="PositionControl.py" name="PositionControl" />
+  <node pkg="avatar" type="SetpointControl.py" name="PositionControl" />
 
   <!-- <param name="contour_count_max" type="double" value="2"/> -->
   <!-- <param name="image_processor_display_images" type="boolean" value="false"/> -->
