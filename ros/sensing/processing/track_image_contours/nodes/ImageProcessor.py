@@ -60,7 +60,7 @@ class ImageProcessor:
 
     # Coordinate Systems
     CS_initialized = False
-    while(not CS_initialized):
+    while not CS_initialized:
       try:
         self.output_coordinates = rospy.get_param("ImageProcessor_OutputCoordinates","Camera")
         self.ROIPlateImage_origin = PointStamped()
