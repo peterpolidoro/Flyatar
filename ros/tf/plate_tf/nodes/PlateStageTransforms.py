@@ -26,14 +26,14 @@ class Transforms:
         self.Minv = numpy.linalg.inv(self.M)
         # rospy.logwarn("T = \n%s" % (str(self.T)))
         # rospy.logwarn("R = \n%s" % (str(self.R)))
-        # rospy.logwarn("M1 = \n%s" % (str(self.M1)))
         Xsrc = [0,10]
         Ysrc = [0,10]
         Zsrc = [0,0]
         Hsrc = [1,1]
         plate_points = numpy.array([Xsrc,Ysrc,Zsrc])
-        stage_points = numpy.dot(self.M,plate_points)
+        rospy.logwarn("M = \n%s" % (str(self.M)))
         rospy.logwarn("plate_points = \n%s" % (str(plate_points)))
+        stage_points = numpy.dot(self.M,plate_points)
         rospy.logwarn("stage_points = \n%s" % (str(plate_points)))
 
     def plate_to_stage(self,req):
