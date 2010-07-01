@@ -42,23 +42,31 @@ class SetpointControl:
         self.robot_origin.point.x = 0
         self.robot_origin.point.y = 0
         self.robot_origin.point.z = 0
-        self.robot_position = PointStamped()
-        self.robot_position.header.frame_id = "Plate"
-        self.target_position = PointStamped()
-        self.target_position.header.frame_id = "Plate"
-        self.target_position.point.x = 0
-        self.target_position.point.y = 0
-        self.target_position.point.z = 0
+        self.robot_origin_position = PointStamped()
+        self.robot_origin_position.header.frame_id = "Plate"
+        self.setpoint_origin = PointStamped()
+        self.setpoint_origin.header.frame_id = "Fly"
+        self.setpoint_origin.point.x = 0
+        self.setpoint_origin.point.y = 0
+        self.setpoint_origin.point.z = 0
+        self.setpoint_origin_position = PointStamped()
+        self.setpoint_origin_position.header.frame_id = "Plate"
+        self.setpoint_position = PointStamped()
+        self.setpoint_position.header.frame_id = "Plate"
+        self.setpoint_position.point.x = 0
+        self.setpoint_position.point.y = 0
+        self.setpoint_position.point.z = 0
 
-        # self.target_position_initialized = False
-        # while not self.target_position_initialized:
+        # self.setpoint_position_initialized = False
+        # while not self.setpoint_position_initialized:
         #     try:
-        #         self.target_position = self.tf_listener.transformPoint("Stage",self.target_position)
-        #         self.target_position_initialized = True
+        #         self.setpoint_position = self.tf_listener.transformPoint("Stage",self.setpoint_position)
+        #         self.setpoint_position_initialized = True
         #     except (tf.LookupException, tf.ConnectivityException):
         #         pass
 
         self.moving_to_start = False
+        self.moving_to_setpoint = False
 
         self.setpoint = Setpoint()
         self.setpoint.header.frame_id = self.control_frame
@@ -113,14 +121,23 @@ class SetpointControl:
         y_vel_stage = vel_vector_stage[1]
         return [x_vel_stage],[y_vel_stage]
 
-    def find_robot_position(self):
-        robot_position_acquired = False
-        while not robot_position_acquired:
+    def find_robot_origin_position(self):
+        robot_origin_position_acquired = False
+        while not robot_origin_position_acquired:
             try:
-                self.robot_position = self.tf_listener.transformPoint("Plate",self.robot_origin)
-                robot_position_acquired = True
+                self.robot_origin_position = self.tf_listener.transformPoint("Plate",self.robot_origin)
+                robot_origin_position_acquired = True
             except (tf.LookupException, tf.ConnectivityException):
-                rospy.logwarn("Error finding robot_position_stage!")
+                rospy.logwarn("Error finding robot_origin_position_stage!")
+
+    def find_setpoint_origin_position(self):
+        setpoint_origin_position_acquired = False
+        while not setpoint_origin_position_acquired:
+            try:
+                self.setpoint_origin_position = self.tf_listener.transformPoint("Plate",self.setpoint_origin)
+                setpoint_origin_position_acquired = True
+            except (tf.LookupException, tf.ConnectivityException):
+                rospy.logwarn("Error finding robot_origin_position_stage!")
 
     def find_velocity_from_position(self,pos_x,pos_y,vel_mag):
         point_count = min(len(pos_x),len(pos_y))
@@ -155,30 +172,48 @@ class SetpointControl:
         # rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
 
     def set_path_to_start(self,vel_mag):
-        self.find_robot_position()
-        plate_points_x = [self.robot_position.point.x,0]
-        plate_points_y = [self.robot_position.point.y,0]
+        self.find_robot_origin_position()
+        plate_points_x = [self.robot_origin_position.point.x,0]
+        plate_points_y = [self.robot_origin_position.point.y,0]
         self.set_stage_commands_from_position_points(plate_points_x,plate_points_y,vel_mag)
         # self.set_position_velocity_point(0,0,self.start_frame,vel_mag)
 
+    def set_path_to_setpoint(self,vel_mag):
+        self.find_robot_origin_position()
+        self.find_setpoint_origin_position()
+        x_ro = self.robot_origin_position.point.x
+        y_ro = self.robot_origin_position.point.x
+        x_so =  self.setpoint_origin_position.point.x
+        y_so =  self.setpoint_origin_position.point.y
+        dx = x_ro - x_so
+        dy = y_ro - y_so
+        dr = math.sqrt(dx**2 + dy**2)
+        dx_norm = dx/dr
+        dy_norm = dy/dr
+        xi = x_so + dx_norm*self.setpoint.radius
+        yi = y_so + dy_norm*self.setpoint.radius
+        plate_points_x = [x_ro,xi]
+        plate_points_y = [y_ro,yi]
+        self.set_stage_commands_from_position_points(plate_points_x,plate_points_y,vel_mag)
+
     # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
-    #     self.target_position.header.frame_id = frame_target
-    #     self.target_position.point.x = x_target
-    #     self.target_position.point.y = y_target
+    #     self.setpoint_position.header.frame_id = frame_target
+    #     self.setpoint_position.point.x = x_target
+    #     self.setpoint_position.point.y = y_target
 
     #     target_acquired = False
     #     while not target_acquired:
     #         try:
-    #             target_position_stage = self.tf_listener.transformPoint("Stage",self.target_position)
+    #             setpoint_position_stage = self.tf_listener.transformPoint("Stage",self.setpoint_position)
     #             target_acquired = True
     #         except (tf.LookupException, tf.ConnectivityException):
-    #             rospy.logwarn("Error finding target_position_stage!")
+    #             rospy.logwarn("Error finding setpoint_position_stage!")
 
-    #     self.stage_commands.x_position = [robot_position_stage.point.x,target_position_stage.point.x]
-    #     self.stage_commands.y_position = [robot_position_stage.point.y,target_position_stage.point.y]
+    #     self.stage_commands.x_position = [robot_origin_position_stage.point.x,setpoint_position_stage.point.x]
+    #     self.stage_commands.y_position = [robot_origin_position_stage.point.y,setpoint_position_stage.point.y]
 
-    #     delta_x = abs(target_position_stage.point.x - robot_position_stage.point.x)
-    #     delta_y = abs(target_position_stage.point.y - robot_position_stage.point.y)
+    #     delta_x = abs(setpoint_position_stage.point.x - robot_origin_position_stage.point.x)
+    #     delta_y = abs(setpoint_position_stage.point.y - robot_origin_position_stage.point.y)
     #     alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
     #     self.stage_commands.x_velocity = [vel_mag,alpha*delta_x]
     #     self.stage_commands.y_velocity = [vel_mag,alpha*delta_y]
@@ -187,6 +222,7 @@ class SetpointControl:
         if self.initialized:
             self.control_frame = data.header.frame_id
             self.setpoint.header.frame_id = self.control_frame
+            self.setpoint_origin.header.frame_id = self.control_frame
             self.setpoint.radius += self.inc_radius*data.radius_inc
             if self.setpoint.radius < self.setpoint_radius_min:
                 self.setpoint.radius = self.setpoint_radius_min
@@ -230,41 +266,52 @@ class SetpointControl:
     def control_loop(self):
         while not rospy.is_shutdown():
             if self.tracking:
-                try:
-                    self.gain_radius = rospy.get_param("gain_radius")
-                    self.gain_theta = rospy.get_param("gain_theta")
+                if not self.moving_to_setpoint:
+                    self.moving_to_setpoint = True
+                    self.stage_commands.position_control = True
+                    self.set_path_to_setpoint(self.robot_velocity_max/4)
+                    self.sc_ok_to_publish = True
+                else:
+                    self.sc_ok_to_publish = False
 
-                    (self.stage_commands.x_velocity,self.stage_commands.y_velocity) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
-
-                    (trans,q) = self.tf_listener.lookupTransform(self.control_frame,'/Robot',rospy.Time(0))
-                    x = trans[0]
-                    y = trans[1]
-                    theta = math.atan2(y,x)
-                    radius = math.sqrt(x**2 + y**2)
-
-                    # rospy.logwarn("self.setpoint.radius = \n%s",str(self.setpoint.radius))
-                    # rospy.logwarn("radius = \n%s",str(radius))
-                    # rospy.logwarn("self.radius_velocity = \n%s",str(self.radius_velocity))
-
-                    self.gain_radius = self.gain_radius + (6/math.pi)*abs(self.circle_dist(self.setpoint.theta,theta))
-                    self.radius_velocity = self.gain_radius*(self.setpoint.radius - radius)
-                    # rospy.logwarn("self.gain_radius = \n%s",str(self.gain_radius))
-                    self.tangent_velocity = self.gain_theta*self.circle_dist(self.setpoint.theta,theta)
-
-                    rot_matrix = tf.transformations.rotation_matrix(theta, (0,0,1))
-                    self.vel_vector_robot[0,0] = self.radius_velocity
-                    self.vel_vector_robot[1,0] = self.tangent_velocity
-                    vel_vector_plate = numpy.dot(rot_matrix,self.vel_vector_robot)
-                    self.vel_vector_plate[0,0] = vel_vector_plate[0]
-                    self.vel_vector_plate[1,0] = vel_vector_plate[1]
-
-                    (x_vel_stage,y_vel_stage) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
-                    self.stage_commands.x_velocity += x_vel_stage
-                    self.stage_commands.y_velocity += y_vel_stage
-
+                if self.sc_ok_to_publish:
                     self.sc_pub.publish(self.stage_commands)
-                except (tf.LookupException, tf.ConnectivityException):
-                    pass
+
+                # try:
+                    # self.gain_radius = rospy.get_param("gain_radius")
+                    # self.gain_theta = rospy.get_param("gain_theta")
+
+                    # (self.stage_commands.x_velocity,self.stage_commands.y_velocity) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
+
+                    # (trans,q) = self.tf_listener.lookupTransform(self.control_frame,'/Robot',rospy.Time(0))
+                    # x = trans[0]
+                    # y = trans[1]
+                    # theta = math.atan2(y,x)
+                    # radius = math.sqrt(x**2 + y**2)
+
+                    # # rospy.logwarn("self.setpoint.radius = \n%s",str(self.setpoint.radius))
+                    # # rospy.logwarn("radius = \n%s",str(radius))
+                    # # rospy.logwarn("self.radius_velocity = \n%s",str(self.radius_velocity))
+
+                    # self.gain_radius = self.gain_radius + (6/math.pi)*abs(self.circle_dist(self.setpoint.theta,theta))
+                    # self.radius_velocity = self.gain_radius*(self.setpoint.radius - radius)
+                    # # rospy.logwarn("self.gain_radius = \n%s",str(self.gain_radius))
+                    # self.tangent_velocity = self.gain_theta*self.circle_dist(self.setpoint.theta,theta)
+
+                    # rot_matrix = tf.transformations.rotation_matrix(theta, (0,0,1))
+                    # self.vel_vector_robot[0,0] = self.radius_velocity
+                    # self.vel_vector_robot[1,0] = self.tangent_velocity
+                    # vel_vector_plate = numpy.dot(rot_matrix,self.vel_vector_robot)
+                    # self.vel_vector_plate[0,0] = vel_vector_plate[0]
+                    # self.vel_vector_plate[1,0] = vel_vector_plate[1]
+
+                    # (x_vel_stage,y_vel_stage) = self.vel_vector_convert(self.vel_vector_plate,"Plate")
+                    # self.stage_commands.x_velocity += x_vel_stage
+                    # self.stage_commands.y_velocity += y_vel_stage
+
+                #     self.sc_pub.publish(self.stage_commands)
+                # except (tf.LookupException, tf.ConnectivityException):
+                #     pass
 
             self.rate.sleep()
 
