@@ -8,6 +8,7 @@ import math
 import tf
 import cv
 import numpy
+from plate_tf.srv import *
 from stage.srv import *
 from stage.msg import StageCommands,Setpoint
 from joystick_commands.msg import JoystickCommands
@@ -73,6 +74,21 @@ class SetpointControl:
         self.radius_velocity = 0
         self.tangent_velocity = 0
         self.tracking = False
+
+        rospy.wait_for_service('plate_to_stage')
+        try:
+            self.plate_to_stage = rospy.ServiceProxy('plate_to_stage', PlateCameraConversion)
+        except rospy.ServiceException, e:
+            print "Service call failed: %s"%e
+
+        Xsrc = [0,10,15.4,-34.1]
+        Ysrc = [0,10,-15.3,-65.9]
+        rospy.logwarn("plate_points_x = %s" % (str(Xsrc)))
+        rospy.logwarn("plate_points_y = %s" % (str(Ysrc)))
+        response = self.plate_to_stage(Xsrc,Ysrc)
+        rospy.logwarn("stage_points_x = %s" % (str(response.Xsrc)))
+        rospy.logwarn("stage_points_y = %s" % (str(response.Ysrc)))
+
         self.initialized = True
 
     def circle_dist(self,setpoint,angle):
