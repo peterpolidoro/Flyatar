@@ -9,9 +9,14 @@ from plate_tf.srv import *
 class Transforms:
     def __init__(self):
         self.tf_listener = tf.TransformListener()
-        now = rospy.Time.now()
-        self.tf_listener.waitForTransform("Plate", "Stage", now, rospy.Duration(4.0))
-        (trans,rot) = listener.lookupTransform("Plate", "Stage", now)
+        self.transforms_initialized = False
+        while not self.transforms_initialized:
+            try:
+                (trans,rot) = listener.lookupTransform("Plate", "Stage", rospy.Time.now())
+                self.transforms_initialized = True
+            except (tf.LookupException, tf.ConnectivityException):
+                pass
+
         rospy.logwarn("trans = %s" % (str(trans)))
         rospy.logwarn("rot = %s" % (str(rot)))
 
