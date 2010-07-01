@@ -26,7 +26,7 @@ class Calibration():
     cv.NamedWindow("Stage Plate Calibration", 1)
 
     self.robot_image_pose_camera = PoseStamped()
-    self.robot_image_pose_undistorted = PoseStamped()
+    self.robot_image_pose_rect = PoseStamped()
     self.robot_image_pose_plate = PoseStamped()
 
     self.bridge = CvBridge()
@@ -65,7 +65,7 @@ class Calibration():
     got_trans = False
     while not got_trans:
       try:
-        (self.camera_undistorted_trans,rot) = self.tf_listener.lookupTransform('/ImageRect', '/Camera', rospy.Time(0))
+        (self.camera_rect_trans,rot) = self.tf_listener.lookupTransform('/ImageRect', '/Camera', rospy.Time(0))
         got_trans = True
       except:
         rospy.logdebug("tf_listener.lookupTransform threw exception \n")
@@ -222,7 +222,7 @@ class Calibration():
           for image_point_n in range(image_point_num):
             cv.Circle(self.im_display, (int(self.image_point_array[0,image_point_n]),int(self.image_point_array[1,image_point_n])), 5, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
 
-        cv.Circle(self.im_display, (int(self.robot_image_pose_undistorted.pose.position.x),int(self.robot_image_pose_undistorted.pose.position.y)), 3, cv.CV_RGB(0,0,self.color_max), cv.CV_FILLED)
+        cv.Circle(self.im_display, (int(self.robot_image_pose_rect.pose.position.x),int(self.robot_image_pose_rect.pose.position.y)), 3, cv.CV_RGB(0,0,self.color_max), cv.CV_FILLED)
         # display_text = "robot_image_pose_camera.x = " + str(round(self.robot_image_pose_camera.pose.position.x,3))
         # cv.PutText(self.im_display,display_text,(25,25),self.font,self.font_color)
         # display_text = "robot_image_pose_camera.y = " + str(round(self.robot_image_pose_camera.pose.position.y,3))
@@ -244,7 +244,7 @@ class Calibration():
         # display_text = "stage_state.y = " + str(round(self.stage_state.y,3))
         # cv.PutText(self.im_display,display_text,(25,125),self.font,self.font_color)
 
-        image_point_new = numpy.array([[self.robot_image_pose_undistorted.pose.position.x], [self.robot_image_pose_undistorted.pose.position.y]])
+        image_point_new = numpy.array([[self.robot_image_pose_rect.pose.position.x], [self.robot_image_pose_rect.pose.position.y]])
         plate_point_new = numpy.array([[self.robot_image_pose_plate.pose.position.x], [self.robot_image_pose_plate.pose.position.y],[0]])
         stage_point_new = numpy.array([[magnet_stage_x], [magnet_stage_y], [magnet_stage_z]])
         # rospy.logwarn("plate_point_new = \n%s", str(plate_point_new))
@@ -326,7 +326,7 @@ class Calibration():
   #   self.robot_image_pose_camera.header = data.header
   #   self.robot_image_pose_camera.pose.position.x = data.pose.position.x
   #   self.robot_image_pose_camera.pose.position.y = data.pose.position.y
-  #   self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
+  #   self.robot_image_pose_rect = self.camera_to_rect_pose(self.robot_image_pose_camera)
   #   self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
 
   def contour_callback(self,data):
@@ -345,7 +345,7 @@ class Calibration():
       self.robot_image_pose_camera.header = data.header
       self.robot_image_pose_camera.pose.position.x = x_list[0]
       self.robot_image_pose_camera.pose.position.y = y_list[0]
-      self.robot_image_pose_undistorted = self.camera_to_undistorted_pose(self.robot_image_pose_camera)
+      self.robot_image_pose_rect = self.camera_to_rect_pose(self.robot_image_pose_camera)
       self.robot_image_pose_plate = self.camera_to_plate_pose(self.robot_image_pose_camera)
       self.robot_area = area_list[0]
       self.robot_ecc = ecc_list[0]
@@ -371,15 +371,15 @@ class Calibration():
     #     self.fly_image_pose.pose.position.y = y
     #     self.fly_image_pose_pub.publish(self.fly_image_pose)
 
-  def camera_to_undistorted_pose(self,input_pose):
+  def camera_to_rect_pose(self,input_pose):
     output_pose = PoseStamped()
-    output_pose.pose.position.x = self.camera_undistorted_trans[0] + input_pose.pose.position.x
+    output_pose.pose.position.x = self.camera_rect_trans[0] + input_pose.pose.position.x
     # rospy.logwarn("input_pose.pose.position.x \n%s",str(input_pose.pose.position.x))
-    # rospy.logwarn("self.camera_undistorted_trans[0] \n%s",str(self.camera_undistorted_trans[0]))
+    # rospy.logwarn("self.camera_rect_trans[0] \n%s",str(self.camera_rect_trans[0]))
     # rospy.logwarn("self.output_pose.pose.position.x \n%s",str(output_pose.pose.position.x))
-    output_pose.pose.position.y = self.camera_undistorted_trans[1] + input_pose.pose.position.y
+    output_pose.pose.position.y = self.camera_rect_trans[1] + input_pose.pose.position.y
     # rospy.logwarn("input_pose.pose.position.y \n%s",str(input_pose.pose.position.y))
-    # rospy.logwarn("self.camera_undistorted_trans[1] \n%s",str(self.camera_undistorted_trans[1]))
+    # rospy.logwarn("self.camera_rect_trans[1] \n%s",str(self.camera_rect_trans[1]))
     # rospy.logwarn("self.output_pose.pose.position.y \n%s",str(output_pose.pose.position.y))
     return output_pose
 
