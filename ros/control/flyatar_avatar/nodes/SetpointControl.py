@@ -266,16 +266,20 @@ class SetpointControl:
     def control_loop(self):
         while not rospy.is_shutdown():
             if self.tracking:
-                if not self.moving_to_setpoint:
-                    self.moving_to_setpoint = True
-                    self.stage_commands.position_control = True
-                    self.set_path_to_setpoint(self.robot_velocity_max/4)
-                    self.sc_ok_to_publish = True
-                else:
-                    self.sc_ok_to_publish = False
+                # if not self.moving_to_setpoint:
+                #     self.moving_to_setpoint = True
+                #     self.stage_commands.position_control = True
+                #     self.set_path_to_setpoint(self.robot_velocity_max/4)
+                #     self.sc_ok_to_publish = True
+                # else:
+                #     self.sc_ok_to_publish = False
 
-                if self.sc_ok_to_publish:
-                    self.sc_pub.publish(self.stage_commands)
+                # if self.sc_ok_to_publish:
+                #     self.sc_pub.publish(self.stage_commands)
+
+                self.stage_commands.position_control = True
+                self.set_path_to_setpoint(self.robot_velocity_max/4)
+                self.sc_pub.publish(self.stage_commands)
 
                 # try:
                     # self.gain_radius = rospy.get_param("gain_radius")
