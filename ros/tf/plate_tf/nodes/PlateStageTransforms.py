@@ -30,7 +30,7 @@ class Transforms:
         Ysrc = [0,10]
         Zsrc = [0,0]
         Hsrc = [1,1]
-        plate_points = numpy.array([Xsrc,Ysrc,Zsrc])
+        plate_points = numpy.array([Xsrc,Ysrc,Zsrc,Hsrc])
         rospy.logwarn("M = \n%s" % (str(self.M)))
         rospy.logwarn("plate_points = \n%s" % (str(plate_points)))
         stage_points = numpy.dot(self.M,plate_points)
