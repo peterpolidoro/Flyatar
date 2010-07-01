@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division
 import roslib
-roslib.load_manifest('manual')
+roslib.load_manifest('flyatar_manual')
 import sys
 import rospy
 from stage.msg import StageCommands
@@ -17,13 +17,13 @@ class JoystickControl:
 
         self.stage_commands = StageCommands()
         self.stage_commands.position_control = False
-        self.vel_scale_factor = 100     # mm/s
+        self.robot_velocity_max = rospy.get_param("robot_velocity_max",100) # mm/s
         self.initialized = True
 
     def commands_callback(self,data):
         if self.initialized:
-            self.stage_commands.x_velocity = [data.y_velocity*self.vel_scale_factor]
-            self.stage_commands.y_velocity = [-data.x_velocity*self.vel_scale_factor]
+            self.stage_commands.x_velocity = [data.y_velocity*self.robot_velocity_max]
+            self.stage_commands.y_velocity = [-data.x_velocity*self.robot_velocity_max]
 
             self.sc_pub.publish(self.stage_commands)
 

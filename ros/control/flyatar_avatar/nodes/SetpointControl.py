@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division
 import roslib
-roslib.load_manifest('avatar')
+roslib.load_manifest('flyatar_avatar')
 import sys
 import rospy
 import math
@@ -29,7 +29,7 @@ class SetpointControl:
 
         self.stage_commands = StageCommands()
         self.stage_commands.position_control = False
-        self.vel_scale_factor = 100     # mm/s
+        self.robot_velocity_max = rospy.get_param("robot_velocity_max",100) # mm/s
         self.vel_vector_plate = numpy.array([[0],[0],[0],[1]])
         self.vel_vector_robot = numpy.array([[0],[0],[0],[1]])
 
@@ -145,7 +145,7 @@ class SetpointControl:
                     if not self.homing:
                         self.homing = True
                         self.stage_commands.position_control = True
-                        self.set_position_velocity_point(0,0,self.control_frame,self.vel_scale_factor/4)
+                        self.set_position_velocity_point(0,0,self.control_frame,self.robot_velocity_max/4)
                         # x_pos_list = [120,140,120,100,120,100,100,140,140]*3
                         # x_vel_list = [20]*len(x_pos_list)
                         # y_pos_list = [100,120,140,120,100,100,140,140,100]*3
@@ -157,8 +157,8 @@ class SetpointControl:
 
                         # self.stage_commands.x_position = self.target_point.point.x
                         # self.stage_commands.y_position = self.target_point.point.y
-                        # self.stage_commands.x_velocity = self.vel_scale_factor/10
-                        # self.stage_commands.y_velocity = self.vel_scale_factor/10
+                        # self.stage_commands.x_velocity = self.robot_velocity_max/10
+                        # self.stage_commands.y_velocity = self.robot_velocity_max/10
                         self.sc_ok_to_publish = True
                     else:
                         self.sc_ok_to_publish = False
@@ -167,10 +167,10 @@ class SetpointControl:
                     if self.homing:
                         self.homing = False
                     self.stage_commands.position_control = False
-                    self.radius_velocity = data.radius_velocity*self.vel_scale_factor
-                    self.tangent_velocity = data.tangent_velocity*self.vel_scale_factor
-                    self.vel_vector_plate[0,0] = data.x_velocity*self.vel_scale_factor
-                    self.vel_vector_plate[1,0] = data.y_velocity*self.vel_scale_factor
+                    self.radius_velocity = data.radius_velocity*self.robot_velocity_max
+                    self.tangent_velocity = data.tangent_velocity*self.robot_velocity_max
+                    self.vel_vector_plate[0,0] = data.x_velocity*self.robot_velocity_max
+                    self.vel_vector_plate[1,0] = data.y_velocity*self.robot_velocity_max
 
                     try:
                         (self.stage_commands.x_velocity,self.stage_commands.y_velocity) = self.vel_vector_convert(self.vel_vector_plate,"Plate")

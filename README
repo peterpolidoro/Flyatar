@@ -48,7 +48,7 @@ roslaunch flyatar_calibration CameraPlate.launch
 roslaunch track_image_contours track_image_contours_view_images.launch
 <Place magnet on plate, check to see if contour is found properly>
 <Power on stage motors, wait for Coolmuscle motors to home>
-roslaunch manual joystick_control.launch
+roslaunch flyatar_manual joystick_control.launch
 <Test to make sure joystick moves stage>
 roslaunch flyatar_calibration StagePlate.launch
 <Drive magnet around randomly all over plate until calibration values seem to converge>
@@ -56,7 +56,7 @@ roslaunch flyatar_calibration StagePlate.launch
 <Record translation vector and quaternion info in stage_plate_calibration_data.launch>
 
 Run in Avatar Mode:
-roslaunch avatar avatar.launch
+roslaunch flyatar_avatar avatar.launch
 
 Compiling Stage USB Device Firmware:
 mkdir ~/LUFA

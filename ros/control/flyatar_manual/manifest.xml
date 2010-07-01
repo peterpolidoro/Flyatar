@@ -1,17 +1,17 @@
 <package>
-  <description brief="avatar">
+  <description brief="flyatar_manual">
 
-     avatar
+     flyatar_manual
 
   </description>
-  <author>XYFly</author>
+  <author>Peter Polidoro</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/avatar</url>
+  <url>http://ros.org/wiki/manual</url>
   <depend package="rospy"/>
-  <depend package="tf"/>
+  <!-- <depend package="tf"/> -->
   <depend package="joystick_commands"/>
-  <depend package="image_gui"/>
+  <!-- <depend package="image_gui"/> -->
   <depend package="stage_tf"/>
 
 </package>

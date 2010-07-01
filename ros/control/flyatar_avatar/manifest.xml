@@ -1,13 +1,13 @@
 <package>
-  <description brief="manual">
+  <description brief="flyatar_avatar">
 
-     manual
+     flyatar_avatar
 
   </description>
   <author>Peter Polidoro</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/manual</url>
+  <url>http://ros.org/wiki/avatar</url>
   <depend package="rospy"/>
   <depend package="tf"/>
   <depend package="joystick_commands"/>
