@@ -42,14 +42,14 @@ class Transforms:
         plate_point.point.x = 0
         plate_point.point.y = 0
         plate_point.point.z = 0
-        stage_point = self.tf_listener.transformPoint("Stage","Plate")
+        stage_point = self.tf_listener.transformPoint("Stage",plate_point)
         rospy.logwarn("plate_point1.x = \n%s" % (str(plate.point.point.x)))
         rospy.logwarn("plate_point1.y = \n%s" % (str(plate.point.point.y)))
         rospy.logwarn("stage_point1.x = \n%s" % (str(stage.point.point.x)))
         rospy.logwarn("stage_point1.y = \n%s" % (str(stage.point.point.y)))
         plate_point.point.x = 10
         plate_point.point.y = 10
-        stage_point = self.tf_listener.transformPoint("Stage","Plate")
+        stage_point = self.tf_listener.transformPoint("Stage",plate_point)
         rospy.logwarn("plate_point2.x = \n%s" % (str(plate.point.point.x)))
         rospy.logwarn("plate_point2.y = \n%s" % (str(plate.point.point.y)))
         rospy.logwarn("stage_point2.x = \n%s" % (str(stage.point.point.x)))
