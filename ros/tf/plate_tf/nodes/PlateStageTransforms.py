@@ -34,7 +34,7 @@ class Transforms:
         rospy.logwarn("M = \n%s" % (str(self.M)))
         rospy.logwarn("plate_points = \n%s" % (str(plate_points)))
         stage_points = numpy.dot(self.M,plate_points)
-        rospy.logwarn("stage_points = \n%s" % (str(plate_points)))
+        rospy.logwarn("stage_points = \n%s" % (str(stage_points)))
 
     def plate_to_stage(self,req):
         point_count = min(len(req.Xsrc),len(req.Ysrc))
