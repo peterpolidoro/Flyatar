@@ -5,6 +5,7 @@ import rospy
 import numpy
 import tf
 from plate_tf.srv import *
+from geometry_msgs.msg import PointStamped
 
 class Transforms:
     def __init__(self):
@@ -35,6 +36,24 @@ class Transforms:
         rospy.logwarn("plate_points = \n%s" % (str(plate_points)))
         stage_points = numpy.dot(self.M,plate_points)
         rospy.logwarn("stage_points = \n%s" % (str(stage_points)))
+
+        plate_point = PointStamped()
+        plate_point.header.frame_id = "Plate"
+        plate_point.point.x = 0
+        plate_point.point.y = 0
+        plate_point.point.z = 0
+        stage_point = self.tf_listener.transformPoint("Stage","Plate")
+        rospy.logwarn("plate_point1.x = \n%s" % (str(plate.point.point.x)))
+        rospy.logwarn("plate_point1.y = \n%s" % (str(plate.point.point.y)))
+        rospy.logwarn("stage_point1.x = \n%s" % (str(stage.point.point.x)))
+        rospy.logwarn("stage_point1.y = \n%s" % (str(stage.point.point.y)))
+        plate_point.point.x = 10
+        plate_point.point.y = 10
+        stage_point = self.tf_listener.transformPoint("Stage","Plate")
+        rospy.logwarn("plate_point2.x = \n%s" % (str(plate.point.point.x)))
+        rospy.logwarn("plate_point2.y = \n%s" % (str(plate.point.point.y)))
+        rospy.logwarn("stage_point2.x = \n%s" % (str(stage.point.point.x)))
+        rospy.logwarn("stage_point2.y = \n%s" % (str(stage.point.point.y)))
 
     def plate_to_stage(self,req):
         point_count = min(len(req.Xsrc),len(req.Ysrc))
