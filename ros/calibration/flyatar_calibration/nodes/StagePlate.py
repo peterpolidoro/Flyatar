@@ -32,7 +32,7 @@ class Calibration():
 
     self.stage_cmds = StageCommands()
     self.stage_cmds.position_control = False
-    self.vel_scale_factor = 40     # mm/s
+    self.vel_scale_factor = 20     # mm/s
 
     self.robot_image_pose_camera = PoseStamped()
     self.robot_image_pose_undistorted = PoseStamped()

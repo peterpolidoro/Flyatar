@@ -1,5 +1,5 @@
 <launch>
   <!-- Coordinate Systems parameters -->
-  <node pkg="tf" type="static_transform_publisher" name="stage_broadcaster" args="124.394 -117.026 0 0 0 0.712 0.702 Plate Stage 10" />
+  <node pkg="tf" type="static_transform_publisher" name="stage_broadcaster" args="115.8 -116.2 0 0 0 0.707 0.707 Plate Stage 10" />
 
 </launch>
