@@ -37,6 +37,15 @@ class SetpointControl:
         self.control_frame = "Plate"
         self.start_frame = "Plate"
 
+        self.setpoint = Setpoint()
+        self.setpoint.header.frame_id = self.control_frame
+        self.setpoint.radius = 20
+        self.setpoint.theta = 0
+        self.inc_radius = 1
+        self.inc_theta = 0.05
+        self.setpoint_radius_max = 80
+        self.setpoint_radius_min = 0
+
         self.robot_origin = PointStamped()
         self.robot_origin.header.frame_id = "Robot"
         self.robot_origin.point.x = 0
@@ -58,9 +67,10 @@ class SetpointControl:
         self.setpoint_plate.point.z = 0
         self.setpoint_origin = PointStamped()
         self.setpoint_origin.header.frame_id = self.control_frame
-        self.setpoint_origin.point.x = 0
-        self.setpoint_origin.point.y = 0
+        self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
+        self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
         self.setpoint_origin.point.z = 0
+
 
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
@@ -72,15 +82,6 @@ class SetpointControl:
 
         self.moving_to_start = False
         self.moving_to_setpoint = False
-
-        self.setpoint = Setpoint()
-        self.setpoint.header.frame_id = self.control_frame
-        self.setpoint.radius = 20
-        self.setpoint.theta = 0
-        self.inc_radius = 1
-        self.inc_theta = 0.05
-        self.setpoint_radius_max = 80
-        self.setpoint_radius_min = 0
 
         self.rate = rospy.Rate(1/self.control_dt)
         self.gain_radius = rospy.get_param("gain_radius","4")
