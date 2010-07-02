@@ -74,13 +74,13 @@ class SetpointControl:
         self.setpoint_plate.point.x = 0
         self.setpoint_plate.point.y = 0
         self.setpoint_plate.point.z = 0
-        self.setpoint_int_origin = PointStamped()
-        self.setpoint_int_origin.header.frame_id = self.control_frame
-        self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
-        self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
-        self.setpoint_int_origin.point.z = 0
-        self.setpoint_int_plate = PointStamped()
-        self.setpoint_int_plate.header.frame_id = "Plate"
+        # self.setpoint_int_origin = PointStamped()
+        # self.setpoint_int_origin.header.frame_id = self.control_frame
+        # self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
+        # self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
+        # self.setpoint_int_origin.point.z = 0
+        # self.setpoint_int_plate = PointStamped()
+        # self.setpoint_int_plate.header.frame_id = "Plate"
 
 
         # self.setpoint_plate_initialized = False
@@ -229,18 +229,18 @@ class SetpointControl:
         y_so =  self.setpoint_center_plate.point.y
         dx = x_ro - x_so
         dy = y_ro - y_so
-        self.setpoint_int.theta = math.atan2(dy,dx)
-        self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
-        self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
-        self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
-        xi = self.setpoint_int_plate.point.x
-        yi = self.setpoint_int_plate.point.y
+        # self.setpoint_int.theta = math.atan2(dy,dx)
+        # self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
+        # self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
+        # self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
+        # xi = self.setpoint_int_plate.point.x
+        # yi = self.setpoint_int_plate.point.y
         # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
-        # dr = math.sqrt(dx**2 + dy**2)
-        # dx_norm = dx/dr
-        # dy_norm = dy/dr
-        # xi = x_so + dx_norm*self.setpoint.radius
-        # yi = y_so + dy_norm*self.setpoint.radius
+        dr = math.sqrt(dx**2 + dy**2)
+        dx_norm = dx/dr
+        dy_norm = dy/dr
+        xi = x_so + dx_norm*self.setpoint.radius
+        yi = y_so + dy_norm*self.setpoint.radius
         # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
         plate_points_x = [x_ro,xi]
         plate_points_y = [y_ro,yi]
@@ -279,7 +279,7 @@ class SetpointControl:
             self.setpoint.header.frame_id = self.control_frame
             self.setpoint_center_origin.header.frame_id = self.control_frame
             self.setpoint_origin.header.frame_id = self.control_frame
-            self.setpoint_int_origin.header.frame_id = self.control_frame
+            # self.setpoint_int_origin.header.frame_id = self.control_frame
             self.setpoint.radius += self.inc_radius*data.radius_inc
             if self.setpoint.radius < self.setpoint_radius_min:
                 self.setpoint.radius = self.setpoint_radius_min
@@ -291,9 +291,9 @@ class SetpointControl:
                 self.setpoint.theta = 2*math.pi - self.setpoint.theta
             self.tracking = data.tracking
             self.setpoint_pub.publish(self.setpoint)
-            self.setpoint_int.radius = self.setpoint.radius
-            self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
-            self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
+            # self.setpoint_int.radius = self.setpoint.radius
+            # self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
+            # self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
             # rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
             # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
 
