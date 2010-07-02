@@ -221,10 +221,10 @@ class SetpointControl:
             else:
                 delta_x = abs(pos_x[point_n] - pos_x[point_n - 1])
                 delta_y = abs(pos_y[point_n] - pos_y[point_n - 1])
-                try:
-                    alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
-                except:
-                    alpha = 1
+                # try:
+                alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
+                # except:
+                #     alpha = 1
                 vel_x.append(alpha*delta_x)
                 vel_y.append(alpha*delta_y)
         return vel_x,vel_y
