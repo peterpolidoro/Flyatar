@@ -84,7 +84,7 @@ class SetpointControl:
         self.setpoint_int_plate = PointStamped()
         self.setpoint_int_plate.header.frame_id = "Plate"
 
-        self.chord_length = 10
+        self.chord_length = 1
         self.point_count_max = 100
         self.plate_points_x = []
         self.plate_points_y = []
@@ -219,10 +219,10 @@ class SetpointControl:
                 vel_x.append(math.sqrt(2)*vel_mag)
                 vel_y.append(math.sqrt(2)*vel_mag)
             else:
-                rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
-                rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
-                rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
-                rospy.logwarn("pos_y[point_n - 1] = %s" % (str(pos_y[point_n -1])))
+                # rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
+                # rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
+                # rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
+                # rospy.logwarn("pos_y[point_n - 1] = %s" % (str(pos_y[point_n -1])))
                 delta_x = abs(pos_x[point_n] - pos_x[point_n - 1])
                 delta_y = abs(pos_y[point_n] - pos_y[point_n - 1])
                 # try:
@@ -235,12 +235,12 @@ class SetpointControl:
 
     def set_stage_commands_from_plate_points(self,vel_mag):
         response = self.plate_to_stage(self.plate_points_x,self.plate_points_y)
-        rospy.logwarn("self.plate_points_x = %s" % (str(self.plate_points_x)))
-        rospy.logwarn("self.plate_points_y = %s" % (str(self.plate_points_y)))
+        # rospy.logwarn("self.plate_points_x = %s" % (str(self.plate_points_x)))
+        # rospy.logwarn("self.plate_points_y = %s" % (str(self.plate_points_y)))
         stage_points_x = response.Xdst
         stage_points_y = response.Ydst
-        rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
-        rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
+        # rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
+        # rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
         stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag)
         self.stage_commands.x_position = stage_points_x
         self.stage_commands.y_position = stage_points_y
@@ -295,8 +295,8 @@ class SetpointControl:
 
         # angle_list = self.angle_divide(self.setpoint_int.theta,self.setpoint.theta)
         angle_list = self.angle_divide(start_theta,self.setpoint.theta)
-        rospy.logwarn("angle_list = %s" % (str(angle_list)))
-        rospy.logwarn("len(angle_list) = %s" % (str(len(angle_list))))
+        # rospy.logwarn("angle_list = %s" % (str(angle_list)))
+        # rospy.logwarn("len(angle_list) = %s" % (str(len(angle_list))))
         for angle_n in range(len(angle_list)):
             self.append_int_setpoint_to_plate_points(angle_list[angle_n])
             # self.setpoint_int.theta = angle_list(angle_n)
@@ -322,10 +322,10 @@ class SetpointControl:
         # self.plate_points_x.append(self.setpoint_plate.point.x)
         # self.plate_points_y.append(self.setpoint_plate.point.y)
         self.set_stage_commands_from_plate_points(vel_mag)
-        rospy.logwarn("self.stage_commands.x_position = %s" % (str(self.stage_commands.x_position)))
-        rospy.logwarn("self.stage_commands.y_position = %s" % (str(self.stage_commands.y_position)))
-        rospy.logwarn("self.stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
-        rospy.logwarn("self.stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
+        # rospy.logwarn("self.stage_commands.x_position = %s" % (str(self.stage_commands.x_position)))
+        # rospy.logwarn("self.stage_commands.y_position = %s" % (str(self.stage_commands.y_position)))
+        # rospy.logwarn("self.stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+        # rospy.logwarn("self.stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
 
     # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
     #     self.setpoint_plate.header.frame_id = frame_target
