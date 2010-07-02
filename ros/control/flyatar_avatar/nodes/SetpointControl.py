@@ -45,6 +45,7 @@ class SetpointControl:
         self.setpoint_int.header.frame_id = self.control_frame
         self.setpoint_int.radius = 20
         self.setpoint_int.theta = 0
+        self.setpoint_previous = self.setpoint
         self.inc_radius = 1
         self.inc_theta = 0.05
         self.setpoint_radius_max = 80
@@ -123,6 +124,12 @@ class SetpointControl:
         # rospy.logwarn("stage_points_y = %s" % (str(response.Ydst)))
 
         self.initialized = True
+
+    def check_setpoint_change(self):
+        if (self.setpoint_previous.radius != self.setpoint.radius) or (self.setpoint_previous.theta != self.setpoint.theta):
+            setpoint_changed = True
+        self.setpoint_previous = self.setpoint
+        return setpoint_changed
 
     def circle_dist(self,setpoint,angle):
         diff1 = setpoint - angle
@@ -404,20 +411,19 @@ class SetpointControl:
     def control_loop(self):
         while not rospy.is_shutdown():
             if self.tracking:
-                # if not self.moving_to_setpoint:
-                #     self.moving_to_setpoint = True
-                #     self.stage_commands.position_control = True
-                #     self.set_path_to_setpoint(self.robot_velocity_max/4)
-                #     self.sc_ok_to_publish = True
-                # else:
-                #     self.sc_ok_to_publish = False
+                if (not self.moving_to_setpoint) or self.check_setpoint_change():
+                    self.moving_to_setpoint = True
+                    self.stage_commands.position_control = True
+                    self.set_path_to_setpoint(self.robot_velocity_max/4)
+                    self.sc_ok_to_publish = True
+                else:
+                    self.sc_ok_to_publish = False
 
                 # if self.sc_ok_to_publish:
                 #     self.sc_pub.publish(self.stage_commands)
-                self.stage_commands.position_control = True
-                self.set_path_to_setpoint(self.robot_velocity_max/4)
-                self.sc_pub.publish(self.stage_commands)
-
+                # self.stage_commands.position_control = True
+                # self.set_path_to_setpoint(self.robot_velocity_max/4)
+                # self.sc_pub.publish(self.stage_commands)
             else:
                 self.moving_to_setpoint = False
 
