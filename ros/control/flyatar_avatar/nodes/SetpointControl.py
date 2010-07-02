@@ -235,8 +235,12 @@ class SetpointControl:
 
     def set_stage_commands_from_plate_points(self,vel_mag):
         response = self.plate_to_stage(self.plate_points_x,self.plate_points_y)
+        rospy.logwarn("self.plate_points_x = %s" % (str(self.plate_points_x)))
+        rospy.logwarn("self.plate_points_y = %s" % (str(self.plate_points_y)))
         stage_points_x = response.Xdst
         stage_points_y = response.Ydst
+        rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
+        rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
         stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag)
         self.stage_commands.x_position = stage_points_x
         self.stage_commands.y_position = stage_points_y
