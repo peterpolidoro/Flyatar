@@ -85,7 +85,7 @@ class SetpointControl:
         self.setpoint_int_plate.header.frame_id = "Plate"
 
         self.chord_length = 1
-        self.points_count_max = 100
+        self.point_count_max = 100
         self.plate_points_x = []
         self.plate_points_y = []
 
