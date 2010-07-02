@@ -309,7 +309,7 @@ class SetpointControl:
         # self.plate_points_x.append(self.setpoint_plate.point.x)
         # self.plate_points_y.append(self.setpoint_plate.point.y)
         self.set_stage_commands_from_plate_points(vel_mag)
-        rospy.logwarn("self.stage_commands.x_position = %s" % (str(self.stage_commands.x_position)))
+        rospy.logwarn("self.stage_commands.x_velocity = %s" % (str(self.stage_commands.x_position)))
 
     # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
     #     self.setpoint_plate.header.frame_id = frame_target
