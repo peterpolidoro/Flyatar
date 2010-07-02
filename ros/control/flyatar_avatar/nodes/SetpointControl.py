@@ -142,7 +142,7 @@ class SetpointControl:
             angle_list = list(numpy.linspace(angle_start,angle_stop,num=point_count,endpoint=True))
         else:
             angle_list = []
-        rospy.logwarn("angle_list = %s" % (str(list)))
+        rospy.logwarn("angle_list = %s" % (str(angle_list)))
         return angle_list
 
     def vel_vector_convert(self,vel_vector,frame):
