@@ -235,13 +235,13 @@ class SetpointControl:
         self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
         xi = self.setpoint_int_plate.point.x
         yi = self.setpoint_int_plate.point.y
-        rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
-        dr = math.sqrt(dx**2 + dy**2)
-        dx_norm = dx/dr
-        dy_norm = dy/dr
-        xi = x_so + dx_norm*self.setpoint.radius
-        yi = y_so + dy_norm*self.setpoint.radius
-        rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
+        # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
+        # dr = math.sqrt(dx**2 + dy**2)
+        # dx_norm = dx/dr
+        # dy_norm = dy/dr
+        # xi = x_so + dx_norm*self.setpoint.radius
+        # yi = y_so + dy_norm*self.setpoint.radius
+        # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
         plate_points_x = [x_ro,xi]
         plate_points_y = [y_ro,yi]
 
