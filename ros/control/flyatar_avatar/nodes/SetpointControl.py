@@ -134,7 +134,8 @@ class SetpointControl:
             return diff2
 
     def angle_divide(self,angle_start,angle_stop):
-        diff = self.circle_dist(angle_start,angle_stop)
+        diff = self.circle_dist(angle_stop,angle_start)
+        rospy.logwarn("diff = %s" % (str(diff)))
         r = self.setpoint.radius
         if 0 < r:
             angle_inc = self.chord_length/r
