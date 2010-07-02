@@ -282,6 +282,7 @@ class SetpointControl:
         # yi = self.setpoint_int_plate.point.y
 
         angle_list = self.angle_divide(self.setpoint_int.theta,self.setpoint.theta)
+        rospy.logwarn("angle_list = %s" % (str(angle_list)))
         for angle_n in range(len(angle_list)):
             self.append_int_setpoint_to_plate_points(angle_list[angle_n])
             # self.setpoint_int.theta = angle_list(angle_n)
@@ -292,6 +293,7 @@ class SetpointControl:
             # yi = self.setpoint_int_plate.point.y
             # self.plate_points_x.append(xi)
             # self.plate_points_y.append(yi)
+        rospy.logwarn("plate_points = %s" % (str(self.plate_points)))
 
         # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
         # dr = math.sqrt(dx**2 + dy**2)
