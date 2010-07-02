@@ -128,6 +128,8 @@ class SetpointControl:
     def check_setpoint_change(self):
         if (self.setpoint_previous.radius != self.setpoint.radius) or (self.setpoint_previous.theta != self.setpoint.theta):
             setpoint_changed = True
+        else:
+            setpoint_changed = False
         self.setpoint_previous = self.setpoint
         return setpoint_changed
 
