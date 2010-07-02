@@ -134,7 +134,7 @@ class SetpointControl:
             return diff2
 
     def angle_divide(self,angle_start,angle_stop):
-        diff = self.circle_dist(angle_stop,angle_start)
+        diff = self.circle_dist(angle_start,angle_stop)
         rospy.logwarn("diff = %s" % (str(diff)))
         r = self.setpoint.radius
         if 0 < r:
@@ -278,7 +278,7 @@ class SetpointControl:
         # xi = self.setpoint_int_plate.point.x
         # yi = self.setpoint_int_plate.point.y
 
-        angle_list = self.angle_divide(self.setpoint.theta,self.setpoint_int.theta)
+        angle_list = self.angle_divide(self.setpoint_int.theta,self.setpoint.theta)
         for angle_n in range(len(angle_list)):
             plate_points_x,plate_points_y = self.append_int_setpoint(angle_list[angle_n],plate_points_x,plate_points_y)
             # self.setpoint_int.theta = angle_list(angle_n)
