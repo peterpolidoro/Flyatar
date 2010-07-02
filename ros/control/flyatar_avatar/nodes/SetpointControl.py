@@ -135,15 +135,15 @@ class SetpointControl:
 
     def angle_divide(self,angle_start,angle_stop):
         diff = self.circle_dist(angle_start,angle_stop)
-        rospy.logwarn("diff = %s" % (str(diff)))
         r = self.setpoint.radius
         if 0 < r:
             angle_inc = self.chord_length/r
             point_count = math.ceil(abs(diff)/angle_inc)
-            angle_array = numpy.linspace(angle_start,angle_stop,num=point_count,endpoint=True)
+            angle_list = list(numpy.linspace(angle_start,angle_stop,num=point_count,endpoint=True))
         else:
-            angle_array = []
-        return list(angle_array)
+            angle_list = []
+        rospy.logwarn("angle_list = %s" % (str(list)))
+        return angle_list
 
     def vel_vector_convert(self,vel_vector,frame):
         (trans,q) = self.tf_listener.lookupTransform("Stage",frame,rospy.Time(0))
