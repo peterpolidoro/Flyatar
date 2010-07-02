@@ -100,6 +100,7 @@ class SetpointControl:
 
         self.moving_to_start = False
         self.moving_to_setpoint = False
+        self.setpoint_changed = False
 
         self.rate = rospy.Rate(1/self.control_dt)
         self.gain_radius = rospy.get_param("gain_radius","4")
@@ -125,13 +126,12 @@ class SetpointControl:
 
         self.initialized = True
 
-    def check_setpoint_change(self):
+    def update_setpoint_changed(self):
         if (self.setpoint_previous.radius != self.setpoint.radius) or (self.setpoint_previous.theta != self.setpoint.theta):
-            setpoint_changed = True
+            self.setpoint_changed = True
         else:
-            setpoint_changed = False
+            self.setpoint_changed = False
         self.setpoint_previous = self.setpoint
-        return setpoint_changed
 
     def circle_dist(self,setpoint,angle):
         diff1 = setpoint - angle
@@ -379,6 +379,7 @@ class SetpointControl:
             self.setpoint_int.radius = self.setpoint.radius
             self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
             self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
+            self.update_setpoint_change()
             # rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
             # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
 
@@ -413,7 +414,7 @@ class SetpointControl:
     def control_loop(self):
         while not rospy.is_shutdown():
             if self.tracking:
-                if (not self.moving_to_setpoint) or self.check_setpoint_change():
+                if (not self.moving_to_setpoint) or self.setpoint_changed:
                     self.moving_to_setpoint = True
                     self.stage_commands.position_control = True
                     self.set_path_to_setpoint(self.robot_velocity_max/4)
