@@ -423,11 +423,11 @@ class SetpointControl:
                 else:
                     self.sc_ok_to_publish = False
 
-                # if self.sc_ok_to_publish:
-                #     self.sc_pub.publish(self.stage_commands)
+                if self.sc_ok_to_publish:
+                    self.sc_pub.publish(self.stage_commands)
                 # self.stage_commands.position_control = True
                 # self.set_path_to_setpoint(self.robot_velocity_max/4)
-                self.sc_pub.publish(self.stage_commands)
+                # self.sc_pub.publish(self.stage_commands)
             else:
                 self.moving_to_setpoint = False
 
