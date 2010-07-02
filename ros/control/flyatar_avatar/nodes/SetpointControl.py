@@ -284,15 +284,17 @@ class SetpointControl:
         # dy = y_ro - y_so
         dx = self.robot_control_frame.point.x
         dy = self.robot_control_frame.point.y
-        self.append_int_setpoint_to_plate_points(math.atan2(dy,dx))
+        # self.append_int_setpoint_to_plate_points(math.atan2(dy,dx))
         # self.setpoint_int.theta = math.atan2(dy,dx)
         # self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
         # self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
         # self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
         # xi = self.setpoint_int_plate.point.x
         # yi = self.setpoint_int_plate.point.y
+        start_theta = math.atan2(dy,dx)
 
-        angle_list = self.angle_divide(self.setpoint_int.theta,self.setpoint.theta)
+        # angle_list = self.angle_divide(self.setpoint_int.theta,self.setpoint.theta)
+        angle_list = self.angle_divide(start_theta,self.setpoint.theta)
         rospy.logwarn("angle_list = %s" % (str(angle_list)))
         rospy.logwarn("len(angle_list) = %s" % (str(len(angle_list))))
         for angle_n in range(len(angle_list)):
