@@ -146,10 +146,15 @@ class SetpointControl:
                 pass
 
     def find_setpoint_plate(self):
+        rospy.logwarn("self.setpoint_origin.header.frame_id = %s" % (str(self.setpoint_origin.header.frame_id)))
+        rospy.logwarn("self.setpoint_origin.x = %s" % (str(self.setpoint_origin.x)))
+        rospy.logwarn("self.setpoint_origin.y = %s" % (str(self.setpoint_origin.y)))
         setpoint_plate_acquired = False
         while not setpoint_plate_acquired:
             try:
                 self.setpoint_plate = self.tf_listener.transformPoint("Plate",self.setpoint_origin)
+                rospy.logwarn("self.setpoint_plate.x = %s" % (str(self.setpoint_plate.x)))
+                rospy.logwarn("self.setpoint_plate.y = %s" % (str(self.setpoint_plate.y)))
                 setpoint_plate_acquired = True
             except (tf.LookupException, tf.ConnectivityException):
                 pass
@@ -209,13 +214,9 @@ class SetpointControl:
         yi = y_so + dy_norm*self.setpoint.radius
         plate_points_x = [x_ro,xi]
         plate_points_y = [y_ro,yi]
-        rospy.logwarn("plate_points_x = %s" % (str(plate_points_x)))
-        rospy.logwarn("plate_points_y = %s" % (str(plate_points_y)))
         self.find_setpoint_plate
         plate_points_x.append(self.setpoint_plate.point.x)
         plate_points_y.append(self.setpoint_plate.point.y)
-        rospy.logwarn("plate_points_x = %s" % (str(plate_points_x)))
-        rospy.logwarn("plate_points_y = %s" % (str(plate_points_y)))
         self.set_stage_commands_from_position_points(plate_points_x,plate_points_y,vel_mag)
 
     # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
