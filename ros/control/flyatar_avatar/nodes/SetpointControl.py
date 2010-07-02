@@ -414,8 +414,8 @@ class SetpointControl:
     def control_loop(self):
         while not rospy.is_shutdown():
             if self.tracking:
-                if (not self.moving_to_setpoint) or self.setpoint_changed:
-                # if not self.moving_to_setpoint:
+                # if (not self.moving_to_setpoint) or self.setpoint_changed:
+                if not self.moving_to_setpoint:
                     self.moving_to_setpoint = True
                     self.stage_commands.position_control = True
                     self.set_path_to_setpoint(self.robot_velocity_max/4)
