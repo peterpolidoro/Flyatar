@@ -293,7 +293,7 @@ class SetpointControl:
             # yi = self.setpoint_int_plate.point.y
             # self.plate_points_x.append(xi)
             # self.plate_points_y.append(yi)
-        rospy.logwarn("plate_points_x = %s" % (str(self.plate_points_x)))
+        rospy.logwarn("plate_points_y = %s" % (str(self.plate_points_y)))
 
         # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
         # dr = math.sqrt(dx**2 + dy**2)
