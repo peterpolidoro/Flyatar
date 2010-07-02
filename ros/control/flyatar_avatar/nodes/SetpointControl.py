@@ -84,6 +84,7 @@ class SetpointControl:
         self.setpoint_int_plate = PointStamped()
         self.setpoint_int_plate.header.frame_id = "Plate"
 
+        self.chord_length = 1
 
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
@@ -131,6 +132,17 @@ class SetpointControl:
             return diff1
         else:
             return diff2
+
+    def angle_divide(self,angle_start,angle_stop):
+        diff = self.circle_dist(angle_stop,angle_start)
+        r = self.setpoint.radius
+        if 0 < r:
+            angle_inc = self.chord_length/r
+            point_count = math.ceil(abs(diff)/angle_inc)
+            angle_array = numpy.linspace(angle_start,angle_stop,num=point_count,endpoint=True)
+        else:
+            angle_array = []
+        return list(angle_array)
 
     def vel_vector_convert(self,vel_vector,frame):
         (trans,q) = self.tf_listener.lookupTransform("Stage",frame,rospy.Time(0))
@@ -231,6 +243,17 @@ class SetpointControl:
         self.set_stage_commands_from_position_points(plate_points_x,plate_points_y,vel_mag)
         # self.set_position_velocity_point(0,0,self.start_frame,vel_mag)
 
+    def append_int_setpoint(self,setpoint_angle,plate_points_x,plate_points_y):
+        self.setpoint_int.theta = setpoint_angle
+        self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
+        self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
+        self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
+        xi = self.setpoint_int_plate.point.x
+        yi = self.setpoint_int_plate.point.y
+        plate_points_x.append(xi)
+        plate_points_y.append(yi)
+        return plate_points_x,plate_points_y
+
     def set_path_to_setpoint(self,vel_mag):
         self.robot_control_frame = self.convert_to_control_frame(self.robot_origin)
         self.robot_plate = self.convert_to_plate(self.robot_origin)
@@ -238,18 +261,34 @@ class SetpointControl:
         # self.find_setpoint_center_plate()
         x_rp = self.robot_plate.point.x
         y_rp = self.robot_plate.point.y
+        plate_points_x = [x_rp]
+        plate_points_y = [y_rp]
         # x_scp =  self.setpoint_center_plate.point.x
         # y_scp =  self.setpoint_center_plate.point.y
         # dx = x_ro - x_so
         # dy = y_ro - y_so
         dx = self.robot_control_frame.point.x
         dy = self.robot_control_frame.point.y
-        self.setpoint_int.theta = math.atan2(dy,dx)
-        self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
-        self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
-        self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
-        xi = self.setpoint_int_plate.point.x
-        yi = self.setpoint_int_plate.point.y
+        plate_points_x,plate_points_y = self.append_int_setpoint(math.atan2(dy,dx),plate_points_x,plate_points_y)
+        # self.setpoint_int.theta = math.atan2(dy,dx)
+        # self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
+        # self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
+        # self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
+        # xi = self.setpoint_int_plate.point.x
+        # yi = self.setpoint_int_plate.point.y
+
+        angle_list = self.angle_divide(self.setpoint.theta,self.setpoint_int.theta)
+        for angle_n in range(len(angle_list)):
+            plate_points_x,plate_points_y = self.append_int_setpoint(angle_list[angle_n],plate_points_x,plate_points_y)
+            # self.setpoint_int.theta = angle_list(angle_n)
+            # self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
+            # self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
+            # self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
+            # xi = self.setpoint_int_plate.point.x
+            # yi = self.setpoint_int_plate.point.y
+            # plate_points_x.append(xi)
+            # plate_points_y.append(yi)
+
         # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
         # dr = math.sqrt(dx**2 + dy**2)
         # dx_norm = dx/dr
@@ -257,13 +296,11 @@ class SetpointControl:
         # xi = x_so + dx_norm*self.setpoint.radius
         # yi = y_so + dy_norm*self.setpoint.radius
         # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
-        plate_points_x = [x_rp,xi]
-        plate_points_y = [y_rp,yi]
 
-        self.setpoint_plate = self.convert_to_plate(self.setpoint_origin)
+        # self.setpoint_plate = self.convert_to_plate(self.setpoint_origin)
         # self.find_setpoint_plate()
-        plate_points_x.append(self.setpoint_plate.point.x)
-        plate_points_y.append(self.setpoint_plate.point.y)
+        # plate_points_x.append(self.setpoint_plate.point.x)
+        # plate_points_y.append(self.setpoint_plate.point.y)
         self.set_stage_commands_from_position_points(plate_points_x,plate_points_y,vel_mag)
 
     # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
