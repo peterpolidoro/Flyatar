@@ -57,6 +57,8 @@ class SetpointControl:
         self.robot_origin.point.z = 0
         self.robot_plate = PointStamped()
         self.robot_plate.header.frame_id = "Plate"
+        self.robot_control_frame = PointStamped()
+        self.robot_control_frame.header.frame_id = self.control_frame
         self.setpoint_center_origin = PointStamped()
         self.setpoint_center_origin.header.frame_id = self.control_frame
         self.setpoint_center_origin.point.x = 0
@@ -74,13 +76,13 @@ class SetpointControl:
         self.setpoint_plate.point.x = 0
         self.setpoint_plate.point.y = 0
         self.setpoint_plate.point.z = 0
-        # self.setpoint_int_origin = PointStamped()
-        # self.setpoint_int_origin.header.frame_id = self.control_frame
-        # self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
-        # self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
-        # self.setpoint_int_origin.point.z = 0
-        # self.setpoint_int_plate = PointStamped()
-        # self.setpoint_int_plate.header.frame_id = "Plate"
+        self.setpoint_int_origin = PointStamped()
+        self.setpoint_int_origin.header.frame_id = self.control_frame
+        self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
+        self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
+        self.setpoint_int_origin.point.z = 0
+        self.setpoint_int_plate = PointStamped()
+        self.setpoint_int_plate.header.frame_id = "Plate"
 
 
         # self.setpoint_plate_initialized = False
@@ -147,6 +149,16 @@ class SetpointControl:
             except (tf.LookupException, tf.ConnectivityException):
                 pass
         return point_plate
+
+    def convert_to_control_frame(self,point):
+        point_converted = False
+        while not point_converted:
+            try:
+                point_control_frame = self.tf_listener.transformPoint(self.control_frame,point)
+                point_converted = True
+            except (tf.LookupException, tf.ConnectivityException):
+                pass
+        return point_control_frame
 
     # def find_robot_plate(self):
     #     robot_plate_acquired = False
@@ -220,21 +232,24 @@ class SetpointControl:
         # self.set_position_velocity_point(0,0,self.start_frame,vel_mag)
 
     def set_path_to_setpoint(self,vel_mag):
-        self.robot_plate = self.convert_to_plate(self.robot_origin)
-        self.setpoint_center_plate = self.convert_to_plate(self.setpoint_center_origin)
+        self.robot_control_frame = self.convert_to_control_frame(self.robot_origin)
+        # self.robot_plate = self.convert_to_plate(self.robot_origin)
+        # self.setpoint_center_plate = self.convert_to_plate(self.setpoint_center_origin)
         # self.find_setpoint_center_plate()
-        x_ro = self.robot_plate.point.x
-        y_ro = self.robot_plate.point.y
-        x_so =  self.setpoint_center_plate.point.x
-        y_so =  self.setpoint_center_plate.point.y
-        dx = x_ro - x_so
-        dy = y_ro - y_so
-        # self.setpoint_int.theta = math.atan2(dy,dx)
-        # self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
-        # self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
-        # self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
-        # xi = self.setpoint_int_plate.point.x
-        # yi = self.setpoint_int_plate.point.y
+        # x_ro = self.robot_plate.point.x
+        # y_ro = self.robot_plate.point.y
+        # x_scp =  self.setpoint_center_plate.point.x
+        # y_scp =  self.setpoint_center_plate.point.y
+        # dx = x_ro - x_so
+        # dy = y_ro - y_so
+        dx = self.robot_control_frame.point.x
+        dy = self.robot_control_frame.point.y
+        self.setpoint_int.theta = math.atan2(dy,dx)
+        self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
+        self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
+        self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
+        xi = self.setpoint_int_plate.point.x
+        yi = self.setpoint_int_plate.point.y
         # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
         dr = math.sqrt(dx**2 + dy**2)
         dx_norm = dx/dr
@@ -291,11 +306,11 @@ class SetpointControl:
                 self.setpoint.theta = 2*math.pi - self.setpoint.theta
             self.tracking = data.tracking
             self.setpoint_pub.publish(self.setpoint)
-            # self.setpoint_int.radius = self.setpoint.radius
-            # self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
-            # self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
-            # rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
-            # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
+            self.setpoint_int.radius = self.setpoint.radius
+            self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
+            self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
+            rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
+            rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
 
             if not self.tracking:
                 if data.start:
