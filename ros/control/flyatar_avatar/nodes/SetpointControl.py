@@ -209,9 +209,13 @@ class SetpointControl:
         yi = y_so + dy_norm*self.setpoint.radius
         plate_points_x = [x_ro,xi]
         plate_points_y = [y_ro,yi]
+        rospy.logwarn("plate_points_x = %s" % (str(plate_points_x)))
+        rospy.logwarn("plate_points_y = %s" % (str(plate_points_y)))
         self.find_setpoint_plate
         plate_points_x.append(self.setpoint_plate.point.x)
         plate_points_y.append(self.setpoint_plate.point.y)
+        rospy.logwarn("plate_points_x = %s" % (str(plate_points_x)))
+        rospy.logwarn("plate_points_y = %s" % (str(plate_points_y)))
         self.set_stage_commands_from_position_points(plate_points_x,plate_points_y,vel_mag)
 
     # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
@@ -255,8 +259,8 @@ class SetpointControl:
             self.setpoint_pub.publish(self.setpoint)
             self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
             self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
-            rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
-            rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
+            # rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
+            # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
 
             if not self.tracking:
                 if data.start:
