@@ -294,7 +294,7 @@ class SetpointControl:
             self.setpoint.header.frame_id = self.control_frame
             self.setpoint_center_origin.header.frame_id = self.control_frame
             self.setpoint_origin.header.frame_id = self.control_frame
-            # self.setpoint_int_origin.header.frame_id = self.control_frame
+            self.setpoint_int_origin.header.frame_id = self.control_frame
             self.setpoint.radius += self.inc_radius*data.radius_inc
             if self.setpoint.radius < self.setpoint_radius_min:
                 self.setpoint.radius = self.setpoint_radius_min
@@ -309,8 +309,8 @@ class SetpointControl:
             self.setpoint_int.radius = self.setpoint.radius
             self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
             self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
-            rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
-            rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
+            # rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
+            # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
 
             if not self.tracking:
                 if data.start:
