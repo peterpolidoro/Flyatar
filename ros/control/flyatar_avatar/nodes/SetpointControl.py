@@ -233,11 +233,11 @@ class SetpointControl:
 
     def set_path_to_setpoint(self,vel_mag):
         self.robot_control_frame = self.convert_to_control_frame(self.robot_origin)
-        # self.robot_plate = self.convert_to_plate(self.robot_origin)
+        self.robot_plate = self.convert_to_plate(self.robot_origin)
         # self.setpoint_center_plate = self.convert_to_plate(self.setpoint_center_origin)
         # self.find_setpoint_center_plate()
-        # x_ro = self.robot_plate.point.x
-        # y_ro = self.robot_plate.point.y
+        x_rp = self.robot_plate.point.x
+        y_rp = self.robot_plate.point.y
         # x_scp =  self.setpoint_center_plate.point.x
         # y_scp =  self.setpoint_center_plate.point.y
         # dx = x_ro - x_so
@@ -257,8 +257,8 @@ class SetpointControl:
         # xi = x_so + dx_norm*self.setpoint.radius
         # yi = y_so + dy_norm*self.setpoint.radius
         # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
-        plate_points_x = [x_ro,xi]
-        plate_points_y = [y_ro,yi]
+        plate_points_x = [x_rp,xi]
+        plate_points_y = [y_rp,yi]
 
         self.setpoint_plate = self.convert_to_plate(self.setpoint_origin)
         # self.find_setpoint_plate()
