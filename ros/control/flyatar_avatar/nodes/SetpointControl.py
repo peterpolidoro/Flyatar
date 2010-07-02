@@ -282,7 +282,8 @@ class SetpointControl:
         # yi = self.setpoint_int_plate.point.y
 
         angle_list = self.angle_divide(self.setpoint_int.theta,self.setpoint.theta)
-        rospy.logwarn("angle_list = %s" % (str(angle_list)))
+        # rospy.logwarn("angle_list = %s" % (str(angle_list)))
+        rospy.logwarn("len(angle_list) = %s" % (str(len(angle_list))))
         for angle_n in range(len(angle_list)):
             self.append_int_setpoint_to_plate_points(angle_list[angle_n])
             # self.setpoint_int.theta = angle_list(angle_n)
@@ -293,7 +294,7 @@ class SetpointControl:
             # yi = self.setpoint_int_plate.point.y
             # self.plate_points_x.append(xi)
             # self.plate_points_y.append(yi)
-        rospy.logwarn("plate_points_y = %s" % (str(self.plate_points_y)))
+        # rospy.logwarn("plate_points_y = %s" % (str(self.plate_points_y)))
 
         # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
         # dr = math.sqrt(dx**2 + dy**2)
@@ -308,6 +309,7 @@ class SetpointControl:
         # self.plate_points_x.append(self.setpoint_plate.point.x)
         # self.plate_points_y.append(self.setpoint_plate.point.y)
         self.set_stage_commands_from_plate_points(vel_mag)
+        rospy.logwarn("self.stage_commands.x_position = %s" % (str(self.stage_commands.x_position)))
 
     # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
     #     self.setpoint_plate.header.frame_id = frame_target
