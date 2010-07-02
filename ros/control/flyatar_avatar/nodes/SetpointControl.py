@@ -283,7 +283,7 @@ class SetpointControl:
 
         angle_list = self.angle_divide(self.setpoint_int.theta,self.setpoint.theta)
         for angle_n in range(len(angle_list)):
-            self.append_int_setpoint(angle_list[angle_n])
+            self.append_int_setpoint_to_plate_points(angle_list[angle_n])
             # self.setpoint_int.theta = angle_list(angle_n)
             # self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
             # self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
