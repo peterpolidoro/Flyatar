@@ -379,7 +379,7 @@ class SetpointControl:
             self.setpoint_int.radius = self.setpoint.radius
             self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
             self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
-            self.update_setpoint_change()
+            self.update_setpoint_changed()
             # rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
             # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
 
