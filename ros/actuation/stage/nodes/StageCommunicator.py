@@ -55,6 +55,8 @@ class StageCommunicator():
         # x_velocity = req.x_velocity
         # y_velocity = req.y_velocity
         # return_state = self.dev.update_position(x_position,x_velocity,y_position,y_velocity)
+        point_count = min(len(x_position),len(y_position),len(x_velocity),len(y_velocity))
+        rospy.logwarn("point_count = %s" % (str(point_count)))
         x_pos_list = req.x_position
         y_pos_list = req.y_position
         x_vel_list = req.x_velocity

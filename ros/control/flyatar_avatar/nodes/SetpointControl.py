@@ -85,6 +85,7 @@ class SetpointControl:
         self.setpoint_int_plate.header.frame_id = "Plate"
 
         self.chord_length = 1
+        self.points_count_max = 100
         self.plate_points_x = []
         self.plate_points_y = []
 
@@ -141,6 +142,8 @@ class SetpointControl:
         if 0 < r:
             angle_inc = self.chord_length/r
             point_count = math.ceil(abs(diff)/angle_inc)
+            if self.point_count_max < point_count:
+                point_count = self.point_count_max
             angle_list = list(numpy.linspace(angle_start,angle_stop,num=point_count,endpoint=True))
         else:
             angle_list = []
