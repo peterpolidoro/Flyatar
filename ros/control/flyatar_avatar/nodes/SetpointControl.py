@@ -144,8 +144,8 @@ class SetpointControl:
         # rospy.logwarn("setpoint_plate.point.x = %s" % (str(self.setpoint_plate.point.x)))
         # rospy.logwarn("setpoint_plate_previous.point.y = %s" % (str(self.setpoint_plate_previous.point.y)))
         # rospy.logwarn("setpoint_plate.point.y = %s" % (str(self.setpoint_plate.point.y)))
-        rospy.logwarn("abs(self.setpoint_plate_previous.point.x - self.setpoint_plate.point.x) = %s" % (str(abs(self.setpoint_plate_previous.point.x - self.setpoint_plate.point.x))))
-        rospy.logwarn("abs(self.setpoint_plate_previous.point.y - self.setpoint_plate.point.y) = %s" % (str(abs(self.setpoint_plate_previous.point.y - self.setpoint_plate.point.y))))
+        # rospy.logwarn("abs(self.setpoint_plate_previous.point.x - self.setpoint_plate.point.x) = %s" % (str(abs(self.setpoint_plate_previous.point.x - self.setpoint_plate.point.x))))
+        # rospy.logwarn("abs(self.setpoint_plate_previous.point.y - self.setpoint_plate.point.y) = %s" % (str(abs(self.setpoint_plate_previous.point.y - self.setpoint_plate.point.y))))
         if self.setpoint_move_threshold < abs(self.setpoint_plate_previous.point.x - self.setpoint_plate.point.x) or \
            self.setpoint_move_threshold < abs(self.setpoint_plate_previous.point.y - self.setpoint_plate.point.y):
             self.setpoint_moved = True
