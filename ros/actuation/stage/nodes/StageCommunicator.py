@@ -27,7 +27,8 @@ class StageCommunicator():
         print "Flyatar stage device closed."
 
     def get_stage_state(self,req):
-        return_state = self.dev.return_state()
+        # return_state = self.dev.return_state()
+        return_state = self.dev.get_state()
         self._fill_response(return_state)
         return self.response
 
