@@ -197,7 +197,7 @@ class PoseTFConversion:
                 pass
 
 if __name__ == '__main__':
-    rospy.init_node('plate_tf_broadcaster')
+    rospy.init_node('robot_fly_plate_tf_broadcaster')
     ptc = PoseTFConversion()
     while not rospy.is_shutdown():
         rospy.spin()
