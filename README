@@ -35,6 +35,7 @@ rosdep install camera_calibration
 rosmake camera_calibration
 rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/camera/image_raw camera:=/camera
 <wave 30 mm checkerboard in front of camera until calibrate button activates>
+<click calibrate button>
 <click commit button>
 mv /tmp/calibration_00305300013c2f28.yaml /cameras/basler_a622f_calibration.yaml
 cp /cameras/basler_a622f_calibration.yaml /cameras/basler_a622f_rect_calibration.yaml
@@ -42,6 +43,7 @@ roslaunch camera1394v2 flyatar_camera_cal_c.launch
 <open new terminal>
 rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/camera/image_rect camera:=/camera
 <wave 30 mm checkerboard in front of camera until calibrate button activates>
+<click calibrate button>
 <click commit button>
 <transfer camera calibration info from /cameras/basler_a622f_calibration.yaml 
  and /cameras/basler_a622f_rect_calibration.yaml into 
@@ -52,6 +54,7 @@ roslaunch flyatar_calibration CameraPlate.launch
 <place checkerboard on plate>
 <record mask radius and camera_plate_origin info into camera_plateimage_calibration_data.launch>
 <record rvec and tvec info into camera_plate_calibration_data.launch>
+rm $ROS_ROOT/background.png
 <remove all objects from plate, next step acquires a background image>
 roslaunch track_image_contours track_image_contours_view_images.launch
 <place magnet on plate, check to see if contour is found properly>
