@@ -8,6 +8,7 @@ import tf
 from geometry_msgs.msg import PointStamped
 # from plate_tf.srv import *
 import kalman_filter as kf
+import copy
 
 class StagePlateTFBroadcaster:
     def __init__(self):
