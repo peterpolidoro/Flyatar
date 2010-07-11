@@ -136,6 +136,12 @@ class SetpointControl:
         # rospy.logwarn("setpoint.theta = %s" % (str(self.setpoint.theta)))
         # rospy.logwarn("setpoint_previous.header.frame_id = %s" % (str(self.setpoint_previous.header.frame_id)))
         # rospy.logwarn("setpoint.header.frame_id = %s" % (str(self.setpoint.header.frame_id)))
+        rospy.logwarn("setpoint_center_plate_previous.point.x = %s" % (str(self.setpoint_center_plate_previous.point.x)))
+        rospy.logwarn("setpoint_center_plate_previous.point.y = %s" % (str(self.setpoint_center_plate_previous.point.y)))
+        rospy.logwarn("setpoint_center_plate_previous.header.frame_id = %s" % (str(self.setpoint_center_plate_previous.header.frame_id)))
+        rospy.logwarn("setpoint_center_plate.point.x = %s" % (str(self.setpoint_center_plate.point.x)))
+        rospy.logwarn("setpoint_center_plate.point.y = %s" % (str(self.setpoint_center_plate.point.y)))
+        rospy.logwarn("setpoint_center_plate.header.frame_id = %s" % (str(self.setpoint_center_plate.header.frame_id)))
         if (self.setpoint_previous.radius != self.setpoint.radius) or \
            (self.setpoint_previous.theta != self.setpoint.theta) or \
            (self.setpoint_previous.header.frame_id != self.setpoint.header.frame_id) or \
@@ -147,7 +153,7 @@ class SetpointControl:
         #     self.setpoint_moved = False
         self.setpoint_previous = copy.deepcopy(self.setpoint)
         self.setpoint_center_plate_previous = copy.deepcopy(self.setpoint_center_plate)
-        # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
+        rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
     def circle_dist(self,setpoint,angle):
         diff1 = setpoint - angle
