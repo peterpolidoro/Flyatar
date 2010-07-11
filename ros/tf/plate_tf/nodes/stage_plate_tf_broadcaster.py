@@ -67,7 +67,7 @@ class StagePlateTFBroadcaster:
             if self.initialized:
                 # try:
                 robot_plate = self.convert_to_plate(self.robot_origin)
-                magnet_plate = self.convert_to_plate(self.magnet_plate)
+                magnet_plate = self.convert_to_plate(self.magnet_origin)
                 self.stage_plate_offset_x_error = magnet_plate.point.x - robot_plate.point.x
                 self.stage_plate_offset_y_error = magnet_plate.point.y - robot_plate.point.y
                 rospy.logwarn("self.stage_plate_offset_x_error = \n%s" % (str(self.stage_plate_offset_x_error)))
