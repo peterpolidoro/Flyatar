@@ -5,11 +5,9 @@ import rospy
 
 import tf
 # import numpy, math
-# from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PointStamped
 # from plate_tf.srv import *
-# import kalman_filter as kf
-# import stop_walk as sw
-# import choose_orientation as co
+import kalman_filter as kf
 
 class StagePlateTFBroadcaster:
     def __init__(self):
@@ -25,13 +23,61 @@ class StagePlateTFBroadcaster:
         self.stage_plate_quat_z = rospy.get_param("stage_plate_quat_z")
         self.stage_plate_quat_w = rospy.get_param("stage_plate_quat_w")
 
+        self.stage_plate_offset_x_error = 0
+        self.stage_plate_offset_y_error = 0
+
+        self.robot_origin = PointStamped()
+        self.robot_origin.header.frame_id = "Robot"
+        self.robot_origin.point.x = 0
+        self.robot_origin.point.y = 0
+        self.robot_origin.point.z = 0
+        self.magnet_origin = PointStamped()
+        self.magnet_origin.header.frame_id = "Magnet"
+        self.magnet_origin.point.x = 0
+        self.magnet_origin.point.y = 0
+        self.magnet_origin.point.z = 0
+        self.dummy_point = PointStamped()
+        self.dummy_point.header.frame_id = "Plate"
+        self.dummy_point.point.x = 0
+        self.dummy_point.point.y = 0
+        self.dummy_point.point.z = 0
+
+
+        self.kf_stage_plate_offset = kf.KalmanFilter()
         self.initialized = True
+
+    def convert_to_plate(self,point):
+        point_converted = False
+        tries = 0
+        point_plate = copy.deepcopy(self.dummy_point)
+        self.dummy_point.header.frame_id = "Plate"
+        while (not point_converted) and (tries < self.tries_limit):
+            tries += 1
+            try:
+                point_plate = self.tf_listener.transformPoint("Plate",point)
+                point_converted = True
+            except (tf.LookupException, tf.ConnectivityException):
+                pass
+        return point_plate
 
     def broadcast(self):
         while not rospy.is_shutdown():
             if self.initialized:
                 # try:
-                self.tf_broadcaster.sendTransform((self.stage_plate_offset_x, self.stage_plate_offset_y, 0),
+                robot_plate = self.convert_to_plate(self.robot_origin)
+                magnet_plate = self.convert_to_plate(self.magnet_plate)
+                self.stage_plate_offset_x_error = magnet_plate.point.x - robot_plate.point.x
+                self.stage_plate_offset_y_error = magnet_plate.point.y - robot_plate.point.y
+                rospy.logwarn("self.stage_plate_offset_x_error = \n%s" % (str(self.stage_plate_offset_x_error)))
+                rospy.logwarn("self.stage_plate_offset_y_error = \n%s" % (str(self.stage_plate_offset_y_error)))
+
+                stage_plate_offset_x_adjusted = self.stage_plate_offset_x + self.stage_plate_offset_x_error
+                stage_plate_offset_y_adjusted = self.stage_plate_offset_y + self.stage_plate_offset_y_error
+
+                t = rospy.get_time()
+                (x,y,vx,vy) = self.kf_stage_plate_offset.update((stage_plate_offset_x_adjusted,stage_plate_offset_y_adjusted),t)
+
+                self.tf_broadcaster.sendTransform((x, y, 0),
                                                   (0, 0, self.stage_plate_quat_z, self.stage_plate_quat_w),
                                                   rospy.Time.now(),
                                                   "Stage",
