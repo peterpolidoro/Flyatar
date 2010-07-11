@@ -159,9 +159,9 @@ class SetpointControl:
         else:
             if angle_start < angle_stop:
                 angle_stop = angle_stop - 2*math.pi
-        rospy.logwarn("angle_start = \n%s" % (str(angle_start)))
-        rospy.logwarn("angle_stop = \n%s" % (str(angle_stop)))
-        rospy.logwarn("diff = \n%s" % (str(diff)))
+        # rospy.logwarn("angle_start = \n%s" % (str(angle_start)))
+        # rospy.logwarn("angle_stop = \n%s" % (str(angle_stop)))
+        # rospy.logwarn("diff = \n%s" % (str(diff)))
         r = self.setpoint.radius
         if 0 < r:
             angle_inc = self.chord_length/r
