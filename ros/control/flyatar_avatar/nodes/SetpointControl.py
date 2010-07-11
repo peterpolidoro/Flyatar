@@ -86,6 +86,8 @@ class SetpointControl:
         self.setpoint_int_plate = PointStamped()
         self.setpoint_int_plate.header.frame_id = "Plate"
 
+        self.setpoint_center_plate_previous = copy.deepcopy(self.setpoint_center_plate)
+
         self.chord_length = 1
         self.point_count_max = 100
         self.plate_points_x = []
@@ -132,16 +134,20 @@ class SetpointControl:
         # rospy.logwarn("setpoint.radius = %s" % (str(self.setpoint.radius)))
         # rospy.logwarn("setpoint_previous.theta = %s" % (str(self.setpoint_previous.theta)))
         # rospy.logwarn("setpoint.theta = %s" % (str(self.setpoint.theta)))
-        rospy.logwarn("setpoint_previous.header.frame_id = %s" % (str(self.setpoint_previous.header.frame_id)))
-        rospy.logwarn("setpoint.header.frame_id = %s" % (str(self.setpoint.header.frame_id)))
+        # rospy.logwarn("setpoint_previous.header.frame_id = %s" % (str(self.setpoint_previous.header.frame_id)))
+        # rospy.logwarn("setpoint.header.frame_id = %s" % (str(self.setpoint.header.frame_id)))
         if (self.setpoint_previous.radius != self.setpoint.radius) or \
            (self.setpoint_previous.theta != self.setpoint.theta) or \
-           (self.setpoint_previous.header.frame_id != self.setpoint.header.frame_id):
+           (self.setpoint_previous.header.frame_id != self.setpoint.header.frame_id) or \
+           (self.setpoint_center_plate_previous.point.x != self.setpoint_center_plate.point.x) or \
+           (self.setpoint_center_plate_previous.point.y != self.setpoint_center_plate.point.y) or \
+           (self.setpoint_center_plate_previous.header.frame_id != self.setpoint_center_plate.header.frame_id):
             self.setpoint_moved = True
         # else:
         #     self.setpoint_moved = False
         self.setpoint_previous = copy.deepcopy(self.setpoint)
-        rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
+        self.setpoint_center_plate_previous = copy.deepcopy(self.setpoint_center_plate)
+        # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
     def circle_dist(self,setpoint,angle):
         diff1 = setpoint - angle
@@ -405,6 +411,7 @@ class SetpointControl:
             self.setpoint_int.radius = self.setpoint.radius
             self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
             self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
+            self.setpoint_center_plate = self.convert_to_plate(self.setpoint_center_origin)
             self.update_setpoint_moved()
             # rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
             # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
