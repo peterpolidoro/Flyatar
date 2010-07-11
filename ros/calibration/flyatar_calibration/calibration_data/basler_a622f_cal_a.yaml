@@ -1,14 +1,3 @@
 guid: 00305300013c2f28          # (defaults to first camera on bus)
 video_mode: format7_mode0
 frame_id: basler_a622f
-
-# set some feature values:
-auto_brightness: 3      #Manual 
-brightness: 100
-auto_exposure: 5        #None 
-exposure: 100
-auto_gain: 3            #Manual 
-gain: 600
-auto_shutter: 3         #Manual
-shutter: 400
-
