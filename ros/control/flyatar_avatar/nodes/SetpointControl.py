@@ -145,7 +145,13 @@ class SetpointControl:
         else:
             return diff2
 
+    def angle_condition(self,angle):
+        angle_conditioned = angle%(2*math.pi)
+        return angle_conditioned
+
     def angle_divide(self,angle_start,angle_stop):
+        angle_start = self.angle_condition(angle_start)
+        angle_stop = self.angle_condition(angle_stop)
         diff = self.circle_dist(angle_start,angle_stop)
         rospy.logwarn("angle_start = \n%s" % (str(angle_start)))
         rospy.logwarn("angle_stop = \n%s" % (str(angle_stop)))
