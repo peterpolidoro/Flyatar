@@ -132,6 +132,8 @@ class SetpointControl:
         # rospy.logwarn("setpoint.radius = %s" % (str(self.setpoint.radius)))
         # rospy.logwarn("setpoint_previous.theta = %s" % (str(self.setpoint_previous.theta)))
         # rospy.logwarn("setpoint.theta = %s" % (str(self.setpoint.theta)))
+        rospy.logwarn("setpoint_previous.header.frame_id = %s" % (str(self.setpoint_previous.header.frame_id)))
+        rospy.logwarn("setpoint.header.frame_id = %s" % (str(self.setpoint.header.frame_id)))
         if (self.setpoint_previous.radius != self.setpoint.radius) or \
            (self.setpoint_previous.theta != self.setpoint.theta) or \
            (self.setpoint_previous.header.frame_id != self.setpoint.header.frame_id):
@@ -139,7 +141,7 @@ class SetpointControl:
         # else:
         #     self.setpoint_moved = False
         self.setpoint_previous = copy.copy(self.setpoint)
-        # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
+        rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
     def circle_dist(self,setpoint,angle):
         diff1 = setpoint - angle
