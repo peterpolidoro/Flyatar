@@ -1,6 +1,6 @@
 <launch>
-  <param name="robot_min_ecc" type="double" value="0.889"/>
-  <param name="robot_max_ecc" type="double" value="1.393"/>
-  <param name="robot_min_area" type="double" value="3119"/>
-  <param name="robot_max_area" type="double" value="5985"/>
+  <param name="robot_min_ecc" type="double" value="0.871"/>
+  <param name="robot_max_ecc" type="double" value="1.518"/>
+  <param name="robot_min_area" type="double" value="1935"/>
+  <param name="robot_max_area" type="double" value="5510"/>
 </launch>
