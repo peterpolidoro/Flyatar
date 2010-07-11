@@ -9,7 +9,7 @@
   <include file="$(find stage_tf)/launch/stage_tf.launch" />
 
   <param name="robot_velocity_max" type="double" value="100"/>
-  <node pkg="flyatar_avatar" type="SetpointControl.py" name="PositionControl" />
+  <node pkg="flyatar_avatar" type="SetpointControl.py" name="SetpointControl" />
 
   <!-- <param name="contour_count_max" type="double" value="2"/> -->
   <!-- <param name="image_processor_display_images" type="boolean" value="false"/> -->
