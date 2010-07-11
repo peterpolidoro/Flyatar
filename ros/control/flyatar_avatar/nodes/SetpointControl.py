@@ -46,7 +46,6 @@ class SetpointControl:
         self.setpoint_int.header.frame_id = self.control_frame
         self.setpoint_int.radius = 20
         self.setpoint_int.theta = 0
-        self.setpoint_previous = copy.deepcopy(self.setpoint)
         self.inc_radius = 1
         self.inc_theta = 0.05
         self.setpoint_radius_max = 80
@@ -86,14 +85,14 @@ class SetpointControl:
         self.setpoint_int_plate = PointStamped()
         self.setpoint_int_plate.header.frame_id = "Plate"
 
-        self.setpoint_center_plate_previous = copy.deepcopy(self.setpoint_center_plate)
+        self.setpoint_plate_previous = copy.deepcopy(self.setpoint_plate)
 
         self.chord_length = 1
         self.point_count_max = 100
         self.plate_points_x = []
         self.plate_points_y = []
 
-        self.fly_move_threshold = 0.1   # mm
+        self.setpoint_move_threshold = 0.1   # mm
 
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
@@ -132,30 +131,14 @@ class SetpointControl:
         self.initialized = True
 
     def update_setpoint_moved(self):
-        # rospy.logwarn("setpoint_previous.radius = %s" % (str(self.setpoint_previous.radius)))
-        # rospy.logwarn("setpoint.radius = %s" % (str(self.setpoint.radius)))
-        # rospy.logwarn("setpoint_previous.theta = %s" % (str(self.setpoint_previous.theta)))
-        # rospy.logwarn("setpoint.theta = %s" % (str(self.setpoint.theta)))
-        # rospy.logwarn("setpoint_previous.header.frame_id = %s" % (str(self.setpoint_previous.header.frame_id)))
-        # rospy.logwarn("setpoint.header.frame_id = %s" % (str(self.setpoint.header.frame_id)))
-        # rospy.logwarn("setpoint_center_plate_previous.point.x = %s" % (str(self.setpoint_center_plate_previous.point.x)))
-        # rospy.logwarn("setpoint_center_plate_previous.point.y = %s" % (str(self.setpoint_center_plate_previous.point.y)))
-        # rospy.logwarn("setpoint_center_plate_previous.header.frame_id = %s" % (str(self.setpoint_center_plate_previous.header.frame_id)))
-        # rospy.logwarn("setpoint_center_plate.point.x = %s" % (str(self.setpoint_center_plate.point.x)))
-        # rospy.logwarn("setpoint_center_plate.point.y = %s" % (str(self.setpoint_center_plate.point.y)))
         # rospy.logwarn("setpoint_center_plate.header.frame_id = %s" % (str(self.setpoint_center_plate.header.frame_id)))
-        if (self.setpoint_previous.radius != self.setpoint.radius) or \
-           (self.setpoint_previous.theta != self.setpoint.theta) or \
-           (self.setpoint_previous.header.frame_id != self.setpoint.header.frame_id) or \
-           self.fly_move_threshold < abs(self.setpoint_center_plate_previous.point.x - self.setpoint_center_plate.point.x) or \
-           self.fly_move_threshold < abs(self.setpoint_center_plate_previous.point.y - self.setpoint_center_plate.point.y) or \
-           (self.setpoint_center_plate_previous.header.frame_id != self.setpoint_center_plate.header.frame_id):
+        if self.setpoint_move_threshold < abs(self.setpoint_plate_previous.point.x - self.setpoint_plate.point.x) or \
+           self.setpoint_move_threshold < abs(self.setpoint_plate_previous.point.y - self.setpoint_plate.point.y):
             self.setpoint_moved = True
         # else:
         #     self.setpoint_moved = False
-        self.setpoint_previous = copy.deepcopy(self.setpoint)
-        self.setpoint_center_plate_previous = copy.deepcopy(self.setpoint_center_plate)
-        rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
+        self.setpoint_plate_previous = copy.deepcopy(self.setpoint_plate)
+        # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
     def circle_dist(self,setpoint,angle):
         diff1 = setpoint - angle
@@ -419,7 +402,7 @@ class SetpointControl:
             self.setpoint_int.radius = self.setpoint.radius
             self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
             self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
-            self.setpoint_center_plate = self.convert_to_plate(self.setpoint_center_origin)
+            self.setpoint_plate = self.convert_to_plate(self.setpoint_origin)
             self.update_setpoint_moved()
             # rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
             # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
