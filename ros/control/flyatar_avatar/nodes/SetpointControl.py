@@ -93,6 +93,8 @@ class SetpointControl:
         self.plate_points_x = []
         self.plate_points_y = []
 
+        self.fly_move_threshold = 0.1   # mm
+
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
         #     try:
@@ -136,17 +138,17 @@ class SetpointControl:
         # rospy.logwarn("setpoint.theta = %s" % (str(self.setpoint.theta)))
         # rospy.logwarn("setpoint_previous.header.frame_id = %s" % (str(self.setpoint_previous.header.frame_id)))
         # rospy.logwarn("setpoint.header.frame_id = %s" % (str(self.setpoint.header.frame_id)))
-        rospy.logwarn("setpoint_center_plate_previous.point.x = %s" % (str(self.setpoint_center_plate_previous.point.x)))
-        rospy.logwarn("setpoint_center_plate_previous.point.y = %s" % (str(self.setpoint_center_plate_previous.point.y)))
-        rospy.logwarn("setpoint_center_plate_previous.header.frame_id = %s" % (str(self.setpoint_center_plate_previous.header.frame_id)))
-        rospy.logwarn("setpoint_center_plate.point.x = %s" % (str(self.setpoint_center_plate.point.x)))
-        rospy.logwarn("setpoint_center_plate.point.y = %s" % (str(self.setpoint_center_plate.point.y)))
-        rospy.logwarn("setpoint_center_plate.header.frame_id = %s" % (str(self.setpoint_center_plate.header.frame_id)))
+        # rospy.logwarn("setpoint_center_plate_previous.point.x = %s" % (str(self.setpoint_center_plate_previous.point.x)))
+        # rospy.logwarn("setpoint_center_plate_previous.point.y = %s" % (str(self.setpoint_center_plate_previous.point.y)))
+        # rospy.logwarn("setpoint_center_plate_previous.header.frame_id = %s" % (str(self.setpoint_center_plate_previous.header.frame_id)))
+        # rospy.logwarn("setpoint_center_plate.point.x = %s" % (str(self.setpoint_center_plate.point.x)))
+        # rospy.logwarn("setpoint_center_plate.point.y = %s" % (str(self.setpoint_center_plate.point.y)))
+        # rospy.logwarn("setpoint_center_plate.header.frame_id = %s" % (str(self.setpoint_center_plate.header.frame_id)))
         if (self.setpoint_previous.radius != self.setpoint.radius) or \
            (self.setpoint_previous.theta != self.setpoint.theta) or \
            (self.setpoint_previous.header.frame_id != self.setpoint.header.frame_id) or \
-           (self.setpoint_center_plate_previous.point.x != self.setpoint_center_plate.point.x) or \
-           (self.setpoint_center_plate_previous.point.y != self.setpoint_center_plate.point.y) or \
+           self.fly_move_threshold < abs(self.setpoint_center_plate_previous.point.x - self.setpoint_center_plate.point.x) or \
+           self.fly_move_threshold < abs(self.setpoint_center_plate_previous.point.y - self.setpoint_center_plate.point.y) or \
            (self.setpoint_center_plate_previous.header.frame_id != self.setpoint_center_plate.header.frame_id):
             self.setpoint_moved = True
         # else:
