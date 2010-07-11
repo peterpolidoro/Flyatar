@@ -129,8 +129,8 @@ class SetpointControl:
     def update_setpoint_changed(self):
         if (self.setpoint_previous.radius != self.setpoint.radius) or (self.setpoint_previous.theta != self.setpoint.theta):
             self.setpoint_changed = True
-        else:
-            self.setpoint_changed = False
+        # else:
+        #     self.setpoint_changed = False
         self.setpoint_previous = self.setpoint
         rospy.logwarn("setpoint_changed = %s" % (str(self.setpoint_changed)))
 
@@ -431,8 +431,9 @@ class SetpointControl:
     def control_loop(self):
         while not rospy.is_shutdown():
             if self.tracking:
-                if (not self.moving_to_setpoint) or self.setpoint_changed:
                 # if not self.moving_to_setpoint:
+                if (not self.moving_to_setpoint) or self.setpoint_changed:
+                    self.setpoint_changed = False
                     self.moving_to_setpoint = True
                     self.stage_commands.position_control = True
                     self.set_path_to_setpoint(self.robot_velocity_max/4)
