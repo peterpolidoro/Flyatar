@@ -101,7 +101,7 @@ class SetpointControl:
 
         self.moving_to_start = False
         self.moving_to_setpoint = False
-        self.setpoint_changed = False
+        self.setpoint_moved = False
 
         self.rate = rospy.Rate(1/self.control_dt)
         self.gain_radius = rospy.get_param("gain_radius","4")
@@ -127,17 +127,19 @@ class SetpointControl:
 
         self.initialized = True
 
-    def update_setpoint_changed(self):
-        rospy.logwarn("setpoint_previous.radius = %s" % (str(self.setpoint_previous.radius)))
-        rospy.logwarn("setpoint.radius = %s" % (str(self.setpoint.radius)))
-        rospy.logwarn("setpoint_previous.theta = %s" % (str(self.setpoint_previous.theta)))
-        rospy.logwarn("setpoint.theta = %s" % (str(self.setpoint.theta)))
-        if (self.setpoint_previous.radius != self.setpoint.radius) or (self.setpoint_previous.theta != self.setpoint.theta):
-            self.setpoint_changed = True
+    def update_setpoint_moved(self):
+        # rospy.logwarn("setpoint_previous.radius = %s" % (str(self.setpoint_previous.radius)))
+        # rospy.logwarn("setpoint.radius = %s" % (str(self.setpoint.radius)))
+        # rospy.logwarn("setpoint_previous.theta = %s" % (str(self.setpoint_previous.theta)))
+        # rospy.logwarn("setpoint.theta = %s" % (str(self.setpoint.theta)))
+        if (self.setpoint_previous.radius != self.setpoint.radius) or \
+           (self.setpoint_previous.theta != self.setpoint.theta) or \
+           (self.setpoint_previous.header.frame_id != self.setpoint.header.frame_id):
+            self.setpoint_moved = True
         # else:
-        #     self.setpoint_changed = False
+        #     self.setpoint_moved = False
         self.setpoint_previous = copy.copy(self.setpoint)
-        rospy.logwarn("setpoint_changed = %s" % (str(self.setpoint_changed)))
+        # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
     def circle_dist(self,setpoint,angle):
         diff1 = setpoint - angle
@@ -401,7 +403,7 @@ class SetpointControl:
             self.setpoint_int.radius = self.setpoint.radius
             self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
             self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
-            self.update_setpoint_changed()
+            self.update_setpoint_moved()
             # rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
             # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
 
@@ -437,8 +439,8 @@ class SetpointControl:
         while not rospy.is_shutdown():
             if self.tracking:
                 # if not self.moving_to_setpoint:
-                if (not self.moving_to_setpoint) or self.setpoint_changed:
-                    self.setpoint_changed = False
+                if (not self.moving_to_setpoint) or self.setpoint_moved:
+                    self.setpoint_moved = False
                     self.moving_to_setpoint = True
                     self.stage_commands.position_control = True
                     self.set_path_to_setpoint(self.robot_velocity_max/4)
