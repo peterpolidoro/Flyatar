@@ -87,6 +87,8 @@ class SetpointControl:
 
         self.setpoint_plate_previous = copy.deepcopy(self.setpoint_plate)
 
+        self.tries_limit = 4
+
         self.chord_length = 1
         self.point_count_max = 100
         self.plate_points_x = []
@@ -194,7 +196,9 @@ class SetpointControl:
 
     def convert_to_plate(self,point):
         point_converted = False
-        while not point_converted:
+        tries = 0
+        while (not point_converted) and (tries < self.tries_limit):
+            tries += 1
             try:
                 point_plate = self.tf_listener.transformPoint("Plate",point)
                 point_converted = True
@@ -204,7 +208,9 @@ class SetpointControl:
 
     def convert_to_control_frame(self,point):
         point_converted = False
-        while not point_converted:
+        tries = 0
+        while (not point_converted) and (tries < self.tries_limit):
+            tries += 1
             try:
                 point_control_frame = self.tf_listener.transformPoint(self.control_frame,point)
                 point_converted = True
