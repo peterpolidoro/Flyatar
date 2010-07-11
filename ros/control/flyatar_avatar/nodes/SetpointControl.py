@@ -127,6 +127,10 @@ class SetpointControl:
         self.initialized = True
 
     def update_setpoint_changed(self):
+        rospy.logwarn("setpoint_previous.radius = %s" % (str(self.setpoint_previous.radius)))
+        rospy.logwarn("setpoint.radius = %s" % (str(self.setpoint.radius)))
+        rospy.logwarn("setpoint_previous.theta = %s" % (str(self.setpoint_previous.theta)))
+        rospy.logwarn("setpoint.theta = %s" % (str(self.setpoint.theta)))
         if (self.setpoint_previous.radius != self.setpoint.radius) or (self.setpoint_previous.theta != self.setpoint.theta):
             self.setpoint_changed = True
         # else:
