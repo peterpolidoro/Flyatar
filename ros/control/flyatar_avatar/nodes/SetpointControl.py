@@ -8,6 +8,7 @@ import math
 import tf
 import cv
 import numpy
+import copy
 from plate_tf.srv import *
 from stage.srv import *
 from stage.msg import StageCommands,Setpoint
@@ -45,7 +46,7 @@ class SetpointControl:
         self.setpoint_int.header.frame_id = self.control_frame
         self.setpoint_int.radius = 20
         self.setpoint_int.theta = 0
-        self.setpoint_previous = self.setpoint
+        self.setpoint_previous = copy.copy(self.setpoint)
         self.inc_radius = 1
         self.inc_theta = 0.05
         self.setpoint_radius_max = 80
@@ -135,7 +136,7 @@ class SetpointControl:
             self.setpoint_changed = True
         # else:
         #     self.setpoint_changed = False
-        self.setpoint_previous = self.setpoint
+        self.setpoint_previous = copy.copy(self.setpoint)
         rospy.logwarn("setpoint_changed = %s" % (str(self.setpoint_changed)))
 
     def circle_dist(self,setpoint,angle):
