@@ -43,6 +43,7 @@ class StagePlateTFBroadcaster:
         self.dummy_point.point.y = 0
         self.dummy_point.point.z = 0
 
+        self.tries_limit = 4
 
         self.kf_stage_plate_offset = kf.KalmanFilter()
         self.initialized = True
