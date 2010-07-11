@@ -149,9 +149,9 @@ class SetpointControl:
         if self.setpoint_move_threshold < abs(self.setpoint_plate_previous.point.x - self.setpoint_plate.point.x) or \
            self.setpoint_move_threshold < abs(self.setpoint_plate_previous.point.y - self.setpoint_plate.point.y):
             self.setpoint_moved = True
+            self.setpoint_plate_previous = copy.deepcopy(self.setpoint_plate)
         # else:
         #     self.setpoint_moved = False
-        self.setpoint_plate_previous = copy.deepcopy(self.setpoint_plate)
         # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
     def circle_dist(self,setpoint,angle):
