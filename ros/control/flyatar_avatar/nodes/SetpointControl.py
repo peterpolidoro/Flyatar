@@ -101,7 +101,7 @@ class SetpointControl:
         self.plate_points_x = []
         self.plate_points_y = []
 
-        self.setpoint_move_threshold = 0.2   # mm
+        self.setpoint_move_threshold = 0.5   # mm
 
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
