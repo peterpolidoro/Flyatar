@@ -132,6 +132,7 @@ class SetpointControl:
         else:
             self.setpoint_changed = False
         self.setpoint_previous = self.setpoint
+        rospy.logwarn("setpoint_changed = %s" % (str(self.setpoint_changed)))
 
     def circle_dist(self,setpoint,angle):
         diff1 = setpoint - angle
