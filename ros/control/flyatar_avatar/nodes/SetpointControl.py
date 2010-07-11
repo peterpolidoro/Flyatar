@@ -51,6 +51,13 @@ class SetpointControl:
         self.setpoint_radius_max = 80
         self.setpoint_radius_min = 0
 
+
+        self.dummy_point = PointStamped()
+        self.dummy_point.header.frame_id = "Plate"
+        self.dummy_point.point.x = 0
+        self.dummy_point.point.y = 0
+        self.dummy_point.point.z = 0
+
         self.robot_origin = PointStamped()
         self.robot_origin.header.frame_id = "Robot"
         self.robot_origin.point.x = 0
@@ -197,6 +204,8 @@ class SetpointControl:
     def convert_to_plate(self,point):
         point_converted = False
         tries = 0
+        point_plate = copy.deepcopy(self.dummy_point)
+        self.dummy_point.header.frame_id = "Plate"
         while (not point_converted) and (tries < self.tries_limit):
             tries += 1
             try:
@@ -209,6 +218,8 @@ class SetpointControl:
     def convert_to_control_frame(self,point):
         point_converted = False
         tries = 0
+        point_control_frame = copy.deepcopy(self.dummy_point)
+        self.dummy_point.header.frame_id = self.control_frame
         while (not point_converted) and (tries < self.tries_limit):
             tries += 1
             try:
