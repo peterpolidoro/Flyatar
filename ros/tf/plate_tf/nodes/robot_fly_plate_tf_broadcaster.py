@@ -20,7 +20,7 @@ class PoseTFConversion:
         self.fly_image_pose_sub = rospy.Subscriber('FlyImagePose',PoseStamped,self.handle_fly_image_pose)
 
         self.stop_pub = rospy.Publisher('StopState',StopState)
-        self.stop_state = StopState
+        self.stop_state = StopState()
 
         self.kf_fly = kf.KalmanFilter()
         self.kf_robot = kf.KalmanFilter()
