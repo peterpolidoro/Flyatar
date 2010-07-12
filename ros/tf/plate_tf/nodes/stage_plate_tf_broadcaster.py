@@ -103,7 +103,7 @@ class StagePlateTFBroadcaster:
                         self.adjusted = True
                         # self.stage_plate_offset_x = x
                         # self.stage_plate_offset_y = y
-                elif self.adjusted:
+                elif (not self.stop_state.RobotStopped) and self.adjusted:
                     self.adjusted = False
 
                 self.tf_broadcaster.sendTransform((self.stage_plate_offset_x, self.stage_plate_offset_y, 0),
