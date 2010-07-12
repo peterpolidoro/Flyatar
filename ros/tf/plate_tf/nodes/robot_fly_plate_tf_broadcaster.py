@@ -9,6 +9,7 @@ from plate_tf.srv import *
 import kalman_filter as kf
 import stop_walk as sw
 import choose_orientation as co
+from plate_tf.msg import StopState
 
 class PoseTFConversion:
     def __init__(self):
@@ -17,6 +18,9 @@ class PoseTFConversion:
         self.tf_broadcaster = tf.TransformBroadcaster()
         self.robot_image_pose_sub = rospy.Subscriber('RobotImagePose',PoseStamped,self.handle_robot_image_pose)
         self.fly_image_pose_sub = rospy.Subscriber('FlyImagePose',PoseStamped,self.handle_fly_image_pose)
+
+        self.stop_pub = rospy.Publisher('StopState',StopState)
+        self.stop_state = StopState
 
         self.kf_fly = kf.KalmanFilter()
         self.kf_robot = kf.KalmanFilter()
@@ -116,6 +120,13 @@ class PoseTFConversion:
                     else:
                         vel_mag = vel_ang = robot_stopped = None
 
+                    if robot_stopped:
+                        self.stop_state.RobotStopped = 1
+                    else:
+                        self.stop_state.RobotStopped = 0
+
+                    self.stop_pub.publish(self.stop_state)
+
                     if (x is not None) and (y is not None):
                         robot_plate_x = x
                         robot_plate_y = y
@@ -172,6 +183,13 @@ class PoseTFConversion:
                         # rospy.logwarn("fly_stopped = %s" % (fly_stopped))
                     else:
                         vel_mag = vel_ang = fly_stopped = None
+
+                    if fly_stopped:
+                        self.stop_state.FlyStopped = 1
+                    else:
+                        self.stop_state.FlyStopped = 0
+
+                    self.stop_pub.publish(self.stop_state)
 
                     if (x is not None) and (y is not None):
                         fly_plate_x = x
