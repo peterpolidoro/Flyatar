@@ -52,7 +52,7 @@ class ImageDisplay:
 
         self.axis_length = 15
         self.axis_line_width = 3
-        self.axis_head_dist = 8
+        self.axis_head_dist = 12
         self.axes_center = PointStamped()
         self.axes_center.point.x = 0
         self.axes_center.point.y = 0
