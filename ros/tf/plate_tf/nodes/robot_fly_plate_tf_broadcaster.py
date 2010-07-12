@@ -111,7 +111,7 @@ class PoseTFConversion:
                     quat_plate = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
 
                     if quat_plate is not None:
-                        rospy.logwarn("robot_plate_a = %s" % (tf.transformations.euler_from_quaternion(quat_plate)))
+                        rospy.logwarn("robot_plate_a = %s" % (str(tf.transformations.euler_from_quaternion(quat_plate))))
                         robot_plate_a = 0
                         t = msg.header.stamp.to_sec()
                         # (x,y,vx,vy) = self.kf_robot.update((robot_plate_x,robot_plate_y),t)
@@ -178,7 +178,7 @@ class PoseTFConversion:
                     quat_plate = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
 
                     if quat_plate is not None:
-                        rospy.logwarn("fly_plate_a = %s" % (tf.transformations.euler_from_quaternion(quat_plate)))
+                        rospy.logwarn("fly_plate_a = %s" % (str(tf.transformations.euler_from_quaternion(quat_plate))))
                         fly_plate_a = 0
                         t = msg.header.stamp.to_sec()
                         # (x,y,vx,vy) = self.kf_fly.update((fly_plate_x,fly_plate_y),t)
