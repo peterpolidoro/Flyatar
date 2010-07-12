@@ -97,50 +97,47 @@ class PoseTFConversion:
             try:
                 Xsrc = [msg.pose.position.x]
                 Ysrc = [msg.pose.position.y]
-                self.tf_broadcaster.sendTransform((msg.pose.position.x, msg.pose.position.y, 0),
-                                      (msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w),
-                                      rospy.Time.now(),
-                                      "RobotImage",
-                                      "Camera")
-                # if (Xsrc is not None) and (Ysrc is not None):
-                #     if (0 < len(Xsrc)) and (0 < len(Ysrc)):
-                # try:
-                response = self.camera_to_plate(Xsrc,Ysrc)
-                robot_plate_x = response.Xdst[0]
-                robot_plate_y = response.Ydst[0]
-
-                t = msg.header.stamp.to_sec()
-                (x,y,vx,vy) = self.kf_robot.update((robot_plate_x,robot_plate_y),t)
-
-                # rospy.logwarn("robot: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
-                if (vx is not None) and (vy is not None):
-                    vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
-                    robot_stopped = self.sw_robot.classify(vel_mag)
-                    # rospy.logwarn("robot_stopped = %s" % (robot_stopped))
-                else:
-                    vel_mag = vel_ang = robot_stopped = None
-
-                if robot_stopped:
-                    self.stop_state.RobotStopped = 1
-                else:
-                    self.stop_state.RobotStopped = 0
-
-                self.stop_pub.publish(self.stop_state)
-
-                if (x is not None) and (y is not None):
-                    robot_plate_x = x
-                    robot_plate_y = y
-
-                quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
-                if quat_converted is not None:
-                    # Do not flip robot orientation
-                    self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
-                                          quat_converted,
+                if (Xsrc is not None) and (Ysrc is not None) and \
+                       (0 < len(Xsrc)) and (0 < len(Ysrc)):
+                    self.tf_broadcaster.sendTransform((msg.pose.position.x, msg.pose.position.y, 0),
+                                          (msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w),
                                           rospy.Time.now(),
-                                          "Robot",
-                                          "Plate")
-                # except:
-                #     pass
+                                          "RobotImage",
+                                          "Camera")
+                    response = self.camera_to_plate(Xsrc,Ysrc)
+                    robot_plate_x = response.Xdst[0]
+                    robot_plate_y = response.Ydst[0]
+
+                    t = msg.header.stamp.to_sec()
+                    (x,y,vx,vy) = self.kf_robot.update((robot_plate_x,robot_plate_y),t)
+
+                    # rospy.logwarn("robot: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
+                    if (vx is not None) and (vy is not None):
+                        vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
+                        robot_stopped = self.sw_robot.classify(vel_mag)
+                        # rospy.logwarn("robot_stopped = %s" % (robot_stopped))
+                    else:
+                        vel_mag = vel_ang = robot_stopped = None
+
+                    if robot_stopped:
+                        self.stop_state.RobotStopped = 1
+                    else:
+                        self.stop_state.RobotStopped = 0
+
+                    self.stop_pub.publish(self.stop_state)
+
+                    if (x is not None) and (y is not None):
+                        robot_plate_x = x
+                        robot_plate_y = y
+
+                    quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
+                    if quat_converted is not None:
+                        # Do not flip robot orientation
+                        self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
+                                              quat_converted,
+                                              rospy.Time.now(),
+                                              "Robot",
+                                              "Plate")
 
                     # if vel_ang is not None:
                     #     quat_chosen = self.co_robot.choose_orientation(quat_converted,vel_ang,robot_stopped)
@@ -163,55 +160,54 @@ class PoseTFConversion:
             try:
                 Xsrc = [msg.pose.position.x]
                 Ysrc = [msg.pose.position.y]
-                self.tf_broadcaster.sendTransform((msg.pose.position.x, msg.pose.position.y, 0),
-                                      (msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w),
-                                      rospy.Time.now(),
-                                      "FlyImage",
-                                      "Camera")
-                # try:
-                response = self.camera_to_plate(Xsrc,Ysrc)
-                fly_plate_x = response.Xdst[0]
-                fly_plate_y = response.Ydst[0]
+                if (Xsrc is not None) and (Ysrc is not None) and \
+                       (0 < len(Xsrc)) and (0 < len(Ysrc)):
+                    self.tf_broadcaster.sendTransform((msg.pose.position.x, msg.pose.position.y, 0),
+                                                      (msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w),
+                                                      rospy.Time.now(),
+                                                      "FlyImage",
+                                                      "Camera")
+                    response = self.camera_to_plate(Xsrc,Ysrc)
+                    fly_plate_x = response.Xdst[0]
+                    fly_plate_y = response.Ydst[0]
 
-                t = msg.header.stamp.to_sec()
-                (x,y,vx,vy) = self.kf_fly.update((fly_plate_x,fly_plate_y),t)
+                    t = msg.header.stamp.to_sec()
+                    (x,y,vx,vy) = self.kf_fly.update((fly_plate_x,fly_plate_y),t)
 
-                # rospy.logwarn("fly: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
-                if (vx is not None) and (vy is not None):
-                    vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
-                    fly_stopped = self.sw_fly.classify(vel_mag)
-                    # rospy.logwarn("fly_stopped = %s" % (fly_stopped))
-                else:
-                    vel_mag = vel_ang = fly_stopped = None
-
-                if fly_stopped:
-                    self.stop_state.FlyStopped = 1
-                else:
-                    self.stop_state.FlyStopped = 0
-
-                self.stop_pub.publish(self.stop_state)
-
-                if (x is not None) and (y is not None):
-                    fly_plate_x = x
-                    fly_plate_y = y
-
-                quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
-                if quat_converted is not None:
-                    if vel_ang is not None:
-                        quat_chosen = self.co_fly.choose_orientation(quat_converted,vel_ang,fly_stopped)
+                    # rospy.logwarn("fly: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
+                    if (vx is not None) and (vy is not None):
+                        vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
+                        fly_stopped = self.sw_fly.classify(vel_mag)
+                        # rospy.logwarn("fly_stopped = %s" % (fly_stopped))
                     else:
-                        quat_chosen = None
+                        vel_mag = vel_ang = fly_stopped = None
 
-                    if quat_chosen is not None:
-                        self.tf_broadcaster.sendTransform((fly_plate_x, fly_plate_y, 0),
-                                              quat_chosen,
-                                              rospy.Time.now(),
-                                              "Fly",
-                                              "Plate")
-                # except:
-                #     pass
-            # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
-            except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
+                    if fly_stopped:
+                        self.stop_state.FlyStopped = 1
+                    else:
+                        self.stop_state.FlyStopped = 0
+
+                    self.stop_pub.publish(self.stop_state)
+
+                    if (x is not None) and (y is not None):
+                        fly_plate_x = x
+                        fly_plate_y = y
+
+                    quat_converted = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
+                    if quat_converted is not None:
+                        if vel_ang is not None:
+                            quat_chosen = self.co_fly.choose_orientation(quat_converted,vel_ang,fly_stopped)
+                        else:
+                            quat_chosen = None
+
+                        if quat_chosen is not None:
+                            self.tf_broadcaster.sendTransform((fly_plate_x, fly_plate_y, 0),
+                                                  quat_chosen,
+                                                  rospy.Time.now(),
+                                                  "Fly",
+                                                  "Plate")
+            except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
+            # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
                 pass
 
 if __name__ == '__main__':
