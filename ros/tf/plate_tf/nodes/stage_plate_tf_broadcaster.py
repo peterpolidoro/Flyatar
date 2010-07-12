@@ -101,8 +101,8 @@ class StagePlateTFBroadcaster:
                         # rospy.logwarn("x = \n%s" % (str(x)))
                         # rospy.logwarn("y = \n%s" % (str(y)))
                         self.adjusted = True
-                        self.stage_plate_offset_x = stage_plate_offset_x_adjusted
-                        self.stage_plate_offset_y = stage_plate_offset_y_adjusted
+                        # self.stage_plate_offset_x = stage_plate_offset_x_adjusted
+                        # self.stage_plate_offset_y = stage_plate_offset_y_adjusted
                 elif (not self.stop_state.RobotStopped) and self.adjusted:
                     self.adjusted = False
 
