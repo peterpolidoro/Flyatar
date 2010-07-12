@@ -52,7 +52,7 @@ class ImageDisplay:
 
         self.axis_length = 15
         self.axis_line_width = 3
-        self.axis_head_dist = 5
+        self.axis_head_dist = 4
         self.axes_center = PointStamped()
         self.axes_center.point.x = 0
         self.axes_center.point.y = 0
@@ -182,9 +182,6 @@ class ImageDisplay:
 
                 circle_radius = int(math.sqrt((axes_x_head_image.point.x - axes_center_image.point.x)**2 + (axes_x_head_image.point.y - axes_center_image.point.y)**2))
 
-                cv.Circle(self.im_display,
-                          (int(axes_center_image.point.x),int(axes_center_image.point.y)),
-                          circle_radius, circle_color,2)
                 cv.Line(self.im_display,
                         (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
                         (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
@@ -193,6 +190,9 @@ class ImageDisplay:
                         (int(axes_y_head_image.point.x),int(axes_y_head_image.point.y)),
                         (int(axes_y_tail_image.point.x),int(axes_y_tail_image.point.y)),
                         cv.CV_RGB(0,self.color_max,0), self.axis_line_width)
+                cv.Circle(self.im_display,
+                          (int(axes_center_image.point.x),int(axes_center_image.point.y)),
+                          circle_radius, circle_color,2)
 
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
