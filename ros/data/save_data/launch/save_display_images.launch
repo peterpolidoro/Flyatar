@@ -1,5 +1,5 @@
 <launch>
-  <param name="save_image_frame" type="string" value="DisplayImage"/>
+  <param name="save_image_frame" type="string" value="/camera/image_display"/>
   <param name="save_image_format" type="string" value="flv"/>
   <node pkg="save_data" type="SaveImages.py" name="SaveImages" />
 </launch>
