@@ -180,7 +180,7 @@ class ImageDisplay:
                 else:
                     circle_color = cv.CV_RGB(self.color_max,0,0)
 
-                circle_radius = int(math.sqrt(axes_x_head_image.point.x**2 + axes_x_head_image.point.y**2))
+                circle_radius = int(math.sqrt((axes_x_head_image.point.x - axes_center_image.point.x)**2 + (axes_x_head_image.point.y - axes_center_image.point.y)**2))
 
                 cv.Circle(self.im_display,
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),
