@@ -52,7 +52,7 @@ class ImageDisplay:
 
         self.axis_length = 15
         self.axis_line_width = 3
-        self.axis_head_dist = 4
+        self.axis_head_dist = 8
         self.axes_center = PointStamped()
         self.axes_center.point.x = 0
         self.axes_center.point.y = 0
@@ -133,10 +133,10 @@ class ImageDisplay:
             self.axes_y_tail_camera.point.x = response.Xdst[2]
             self.axes_y_tail_camera.point.y = response.Ydst[2]
 
-            self.axes_x_head_camera.point.x = response.Xdst[1]
-            self.axes_x_head_camera.point.y = response.Ydst[1]
-            self.axes_y_head_camera.point.x = response.Xdst[2]
-            self.axes_y_head_camera.point.y = response.Ydst[2]
+            self.axes_x_head_camera.point.x = response.Xdst[3]
+            self.axes_x_head_camera.point.y = response.Ydst[3]
+            self.axes_y_head_camera.point.x = response.Xdst[4]
+            self.axes_y_head_camera.point.y = response.Ydst[4]
 
             axes_center_image = self.tf_listener.transformPoint(self.image_frame,self.axes_center_camera)
             axes_x_tail_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_tail_camera)
@@ -218,7 +218,7 @@ class ImageDisplay:
             cv.Line(self.im_display,
                     (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
                     (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                    cv.CV_RGB(self.color_max,0,0), 1)
+                    cv.CV_RGB(self.color_max,0,0), 2)
             cv.Circle(self.im_display,
                       (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
                       int(setpoint_image_radius), cv.CV_RGB(self.color_max,0,0),1)
