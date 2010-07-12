@@ -204,6 +204,9 @@ class PoseTFConversion:
                             fly_plate_x = x
                             fly_plate_y = y
 
+                        if a is not None:
+                            quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
+
                         if vel_ang is not None:
                             quat_chosen = self.co_fly.choose_orientation(quat_plate,vel_ang,fly_stopped)
                         else:
