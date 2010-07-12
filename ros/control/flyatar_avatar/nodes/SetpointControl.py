@@ -434,7 +434,7 @@ class SetpointControl:
                     if not self.moving_to_start:
                         self.moving_to_start = True
                         self.stage_commands.position_control = True
-                        self.set_path_to_start(self.robot_velocity_max/2)
+                        self.set_path_to_start(self.robot_velocity_max)
                         self.sc_ok_to_publish = True
                     else:
                         self.sc_ok_to_publish = False
@@ -465,7 +465,7 @@ class SetpointControl:
                     self.setpoint_moved = False
                     self.moving_to_setpoint = True
                     self.stage_commands.position_control = True
-                    self.set_path_to_setpoint(self.robot_velocity_max/4)
+                    self.set_path_to_setpoint(self.robot_velocity_max/2)
                     self.sc_ok_to_publish = True
                 else:
                     self.sc_ok_to_publish = False
