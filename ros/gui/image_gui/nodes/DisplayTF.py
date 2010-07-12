@@ -52,7 +52,7 @@ class ImageDisplay:
 
         self.axis_length = 15
         self.axis_line_width = 3
-        self.axis_head_dist = 12
+        self.axis_head_dist = 5
         self.axes_center = PointStamped()
         self.axes_center.point.x = 0
         self.axes_center.point.y = 0
@@ -180,9 +180,11 @@ class ImageDisplay:
                 else:
                     circle_color = cv.CV_RGB(self.color_max,0,0)
 
+                circle_radius = int(math.sqrt(axes_x_head_image.point.x**2 + axes_x_head_image.point.y**2))
+
                 cv.Circle(self.im_display,
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),
-                          self.axis_head_dist, circle_color,2)
+                          circle_radius, circle_color,2)
                 cv.Line(self.im_display,
                         (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
                         (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
