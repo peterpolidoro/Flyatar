@@ -230,13 +230,13 @@ class ImageDisplay:
                     cv.CV_RGB(self.color_max,0,self.color_max), 2)
             cv.Circle(self.im_display,
                       (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
-                      int(setpoint_image_radius), cv.CV_RGB(self.color_max,0,0),2)
+                      int(setpoint_image_radius), cv.CV_RGB(self.color_max,0,self.color_max),2)
             cv.Circle(self.im_display,
                       (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
-                      3, cv.CV_RGB(self.color_max,0,0), cv.CV_FILLED)
+                      3, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
             cv.Circle(self.im_display,
                       (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                      4, cv.CV_RGB(self.color_max,0,0), cv.CV_FILLED)
+                      4, cv.CV_RGB(0,0,0), cv.CV_FILLED)
 
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
