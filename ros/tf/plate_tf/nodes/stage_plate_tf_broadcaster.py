@@ -9,12 +9,16 @@ from geometry_msgs.msg import PointStamped
 # from plate_tf.srv import *
 import kalman_filter as kf
 import copy
+from plate_tf.msg import StopState
 
 class StagePlateTFBroadcaster:
     def __init__(self):
         self.initialized = False
         self.tf_listener = tf.TransformListener()
         self.tf_broadcaster = tf.TransformBroadcaster()
+
+        self.stop_state_sub = rospy.Subscriber('StopState',StopState,self.stop_state_callback)
+        self.stop_state = StopState()
 
         self.dt = 0.01
         self.rate = rospy.Rate(1/self.dt)
@@ -43,6 +47,8 @@ class StagePlateTFBroadcaster:
         self.dummy_point.point.y = 0
         self.dummy_point.point.z = 0
 
+        self.position_threshold = 0.01
+
         self.tries_limit = 4
 
         self.kf_stage_plate_offset = kf.KalmanFilter()
@@ -62,32 +68,39 @@ class StagePlateTFBroadcaster:
                 pass
         return point_plate
 
+    def stop_state_callback(self,data):
+        self.stop_state = copy.deepcopy(data)
+
     def broadcast(self):
         while not rospy.is_shutdown():
             if self.initialized:
                 # try:
-                robot_plate = self.convert_to_plate(self.robot_origin)
-                magnet_plate = self.convert_to_plate(self.magnet_origin)
-                # rospy.logwarn("robot_plate.point.x = \n%s" % (str(robot_plate.point.x)))
-                # rospy.logwarn("magnet_plate.point.x = \n%s" % (str(magnet_plate.point.x)))
-                # rospy.logwarn("robot_plate.point.y = \n%s" % (str(robot_plate.point.y)))
-                # rospy.logwarn("magnet_plate.point.y = \n%s" % (str(magnet_plate.point.y)))
-                self.stage_plate_offset_x_error = magnet_plate.point.x - robot_plate.point.x
-                self.stage_plate_offset_y_error = magnet_plate.point.y - robot_plate.point.y
-                # rospy.logwarn("self.stage_plate_offset_x_error = \n%s" % (str(self.stage_plate_offset_x_error)))
-                # rospy.logwarn("self.stage_plate_offset_y_error = \n%s" % (str(self.stage_plate_offset_y_error)))
+                if self.stop_state.RobotStopped:
+                    robot_plate = self.convert_to_plate(self.robot_origin)
+                    magnet_plate = self.convert_to_plate(self.magnet_origin)
+                    # rospy.logwarn("robot_plate.point.x = \n%s" % (str(robot_plate.point.x)))
+                    # rospy.logwarn("magnet_plate.point.x = \n%s" % (str(magnet_plate.point.x)))
+                    # rospy.logwarn("robot_plate.point.y = \n%s" % (str(robot_plate.point.y)))
+                    # rospy.logwarn("magnet_plate.point.y = \n%s" % (str(magnet_plate.point.y)))
+                    if (abs(magnet_plate.point.x) < self.position_threshold) and \
+                       (abs(magnet_plate.point.y) < self.position_threshold):
+                        self.stage_plate_offset_x_error = magnet_plate.point.x - robot_plate.point.x
+                        self.stage_plate_offset_y_error = magnet_plate.point.y - robot_plate.point.y
+                        # rospy.logwarn("self.stage_plate_offset_x_error = \n%s" % (str(self.stage_plate_offset_x_error)))
+                        # rospy.logwarn("self.stage_plate_offset_y_error = \n%s" % (str(self.stage_plate_offset_y_error)))
 
-                stage_plate_offset_x_adjusted = self.stage_plate_offset_x + self.stage_plate_offset_x_error
-                stage_plate_offset_y_adjusted = self.stage_plate_offset_y + self.stage_plate_offset_y_error
-                # rospy.logwarn("stage_plate_offset_x_adjusted = \n%s" % (str(stage_plate_offset_x_adjusted)))
-                # rospy.logwarn("stage_plate_offset_y_adjusted = \n%s" % (str(stage_plate_offset_y_adjusted)))
+                        stage_plate_offset_x_adjusted = self.stage_plate_offset_x + self.stage_plate_offset_x_error
+                        stage_plate_offset_y_adjusted = self.stage_plate_offset_y + self.stage_plate_offset_y_error
+                        # rospy.logwarn("stage_plate_offset_x_adjusted = \n%s" % (str(stage_plate_offset_x_adjusted)))
+                        # rospy.logwarn("stage_plate_offset_y_adjusted = \n%s" % (str(stage_plate_offset_y_adjusted)))
 
-                t = rospy.get_time()
-                (x,y,vx,vy) = self.kf_stage_plate_offset.update((stage_plate_offset_x_adjusted,stage_plate_offset_y_adjusted),t)
-                # rospy.logwarn("x = \n%s" % (str(x)))
-                # rospy.logwarn("y = \n%s" % (str(y)))
+                        t = rospy.get_time()
+                        (x,y,vx,vy) = self.kf_stage_plate_offset.update((stage_plate_offset_x_adjusted,stage_plate_offset_y_adjusted),t)
+                        rospy.logwarn("x = \n%s" % (str(x)))
+                        rospy.logwarn("y = \n%s" % (str(y)))
+                        self.stage_plate_offset_x = x
+                        self.stage_plate_offset_y = y
 
-                # self.tf_broadcaster.sendTransform((x, y, 0),
                 self.tf_broadcaster.sendTransform((self.stage_plate_offset_x, self.stage_plate_offset_y, 0),
                                                   (0, 0, self.stage_plate_quat_z, self.stage_plate_quat_w),
                                                   rospy.Time.now(),
