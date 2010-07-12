@@ -184,11 +184,11 @@ class ImageDisplay:
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),
                           int(self.axis_head_dist), circle_color,1)
                 cv.Line(self.im_display,
-                        (int(axes_head_image.point.x),int(axes_head_image.point.y)),
+                        (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
                         (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
                         cv.CV_RGB(self.color_max,0,0), self.axis_line_width)
                 cv.Line(self.im_display,
-                        (int(axes_head_image.point.x),int(axes_head_image.point.y)),
+                        (int(axes_y_head_image.point.x),int(axes_y_head_image.point.y)),
                         (int(axes_y_tail_image.point.x),int(axes_y_tail_image.point.y)),
                         cv.CV_RGB(0,self.color_max,0), self.axis_line_width)
 
