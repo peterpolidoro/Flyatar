@@ -136,6 +136,9 @@ class PoseTFConversion:
                             robot_plate_x = x
                             robot_plate_y = y
 
+                        if a is not None:
+                            quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
+
                         # Do not flip robot orientation
                         self.tf_broadcaster.sendTransform((robot_plate_x, robot_plate_y, 0),
                                               quat_plate,
@@ -178,12 +181,12 @@ class PoseTFConversion:
                     quat_plate = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
 
                     if quat_plate is not None:
-                        rospy.logwarn("fly_plate_a_unfiltered = %s" % (str(tf.transformations.euler_from_quaternion(quat_plate)[2])))
+                        # rospy.logwarn("fly_plate_a_unfiltered = %s" % (str(tf.transformations.euler_from_quaternion(quat_plate)[2])))
                         fly_plate_a = tf.transformations.euler_from_quaternion(quat_plate)[2]
                         t = msg.header.stamp.to_sec()
                         # (x,y,vx,vy) = self.kf_fly.update((fly_plate_x,fly_plate_y),t)
                         (x,y,a,vx,vy,va) = self.kf_fly.update((fly_plate_x,fly_plate_y,fly_plate_a),t)
-                        rospy.logwarn("fly_plate_a_filtered = %s" % (str(a)))
+                        # rospy.logwarn("fly_plate_a_filtered = %s" % (str(a)))
 
                         # rospy.logwarn("fly: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
                         if (vx is not None) and (vy is not None):
