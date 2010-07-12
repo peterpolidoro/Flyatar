@@ -227,10 +227,10 @@ class ImageDisplay:
             cv.Line(self.im_display,
                     (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
                     (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                    cv.CV_RGB(self.color_max,0,0), 1)
+                    cv.CV_RGB(self.color_max,0,0), 2)
             cv.Circle(self.im_display,
                       (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
-                      int(setpoint_image_radius), cv.CV_RGB(self.color_max,0,0),1)
+                      int(setpoint_image_radius), cv.CV_RGB(self.color_max,0,0),2)
             cv.Circle(self.im_display,
                       (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
                       3, cv.CV_RGB(self.color_max,0,0), cv.CV_FILLED)
