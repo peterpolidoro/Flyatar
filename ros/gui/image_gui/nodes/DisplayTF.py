@@ -89,6 +89,9 @@ class ImageDisplay:
 
         self.setpoint = Setpoint()
 
+        self.resize_published_image = True
+        self.resize_size = (640,480)
+
         rospy.wait_for_service('plate_to_camera')
         try:
             self.plate_to_camera = rospy.ServiceProxy('plate_to_camera', PlateCameraConversion)
@@ -100,6 +103,10 @@ class ImageDisplay:
     def initialize_images(self,cv_image):
         self.im_size = cv.GetSize(cv_image)
         self.im_display = cv.CreateImage(cv.GetSize(cv_image),cv.IPL_DEPTH_8U,3)
+        if self.resize_published_image:
+            self.im_display_pub = cv.CreateImage(self.resize_size,cv.IPL_DEPTH_8U,3)
+        else:
+            self.im_display_pub = cv.CreateImage(cv.GetSize(cv_image),cv.IPL_DEPTH_8U,3)
         self.images_initialized = True
 
     def setpoint_callback(self,data):
@@ -277,9 +284,10 @@ class ImageDisplay:
         # cv.PutText(self.im_display,display_text,(25,45),self.font,cv.CV_RGB(self.color_max,0,0))
 
         cv.ShowImage("Display", self.im_display)
+        cv.Resize(self.im_display,self.im_display_pub)
         # Publish processed image
         try:
-            self.image_pub.publish(self.bridge.cv_to_imgmsg(self.im_display,"passthrough"))
+            self.image_pub.publish(self.bridge.cv_to_imgmsg(self.im_display_pub,"passthrough"))
         except CvBridgeError, e:
             print e
         cv.WaitKey(3)
