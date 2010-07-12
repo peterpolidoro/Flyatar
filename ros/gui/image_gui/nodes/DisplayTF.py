@@ -182,7 +182,7 @@ class ImageDisplay:
 
                 cv.Circle(self.im_display,
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),
-                          int(self.axis_head_dist), circle_color,self.axis_line_width)
+                          self.axis_head_dist, circle_color,2)
                 cv.Line(self.im_display,
                         (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
                         (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
