@@ -23,7 +23,7 @@ class SaveImages:
         self.bridge = CvBridge()
         self.image_number = 0
         self.frame_rate = rospy.get_param("framerate","30")
-        self.image_format = rospy.get_param("save_image_format","png")
+        self.video_format = rospy.get_param("save_video_format","flv")
 
         # self.color_max = 255
         # self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
@@ -54,7 +54,7 @@ class SaveImages:
 
         self.save_png(cv_image)
 
-        # if self.image_format in "png":
+        # if self.video_format in "png":
         #     self.save_png(cv_image)
         # else:
         #     if not self.video_initialized:
@@ -75,24 +75,32 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         rospy.spin()
 
-    # os.chdir(os.path.expanduser("~/Videos"))
-    # if si.image_format in "flv":
-    #     subprocess.check_call(['ffmpeg','-f','image2',
-    #                            '-i',si.working_dir+'/%06d.png',
-    #                            '-sameq',
-    #                            '-ar','44100',
-    #                            '-ab','64k',
-    #                            '-ac','2',
-    #                            '-r',str(si.frame_rate),
-    #                            '-s','640x480',
-    #                            si.working_dir+'.flv'])
-    #     print 'Saved video ' + si.working_dir + '.flv'
-    # elif si.image_format in "gif":
-    #     subprocess.check_call(['ffmpeg','-f','image2',
-    #                            '-i',si.working_dir+'/%06d.png',
-    #                            '-sameq',
-    #                            '-r',str(si.frame_rate),
-    #                            '-s','640x480',
-    #                            '-pix_fmt','rgb24',
-    #                            si.working_dir+'.gif'])
-    #     print 'Saved video ' + si.working_dir + '.gif'
+    os.chdir(os.path.expanduser("~/Videos"))
+    if si.video_format in "flv":
+        subprocess.check_call(['ffmpeg','-f','image2',
+                               '-i',si.working_dir+'/%06d.png',
+                               '-sameq',
+                               '-ar','44100',
+                               '-ab','64k',
+                               '-ac','2',
+                               '-r',str(si.frame_rate),
+                               '-s','640x480',
+                               si.working_dir+'.flv'])
+        print 'Saved video ' + si.working_dir + '.flv'
+    elif si.video_format in "gif":
+        subprocess.check_call(['ffmpeg','-f','image2',
+                               '-i',si.working_dir+'/%06d.png',
+                               '-sameq',
+                               '-r',str(si.frame_rate),
+                               '-s','640x480',
+                               '-pix_fmt','rgb24',
+                               si.working_dir+'.gif'])
+        print 'Saved video ' + si.working_dir + '.gif'
+    elif si.video_format in "avi":
+        subprocess.check_call(['ffmpeg','-f','image2',
+                               '-i',si.working_dir+'/%06d.png',
+                               '-sameq',
+                               '-r',str(si.frame_rate),
+                               '-s','640x480',
+                               si.working_dir+'.avi'])
+        print 'Saved video ' + si.working_dir + '.avi'
