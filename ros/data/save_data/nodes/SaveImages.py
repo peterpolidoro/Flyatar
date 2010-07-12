@@ -104,3 +104,16 @@ if __name__ == '__main__':
                                '-s','640x480',
                                si.working_dir+'.avi'])
         print 'Saved video ' + si.working_dir + '.avi'
+    elif si.video_format in "mpeg1":
+        subprocess.check_call(['ffmpeg','-f','image2',
+                               '-i',si.working_dir+'/%06d.png',
+                               '-sameq',
+                               '-r',str(si.frame_rate),
+                               '-s','640x480',
+                               '-mbd','rd',
+                               '-trellis','2',
+                               '-cmp','2',
+                               '-subcmp','2',
+                               '-pass','1/2',
+                               si.working_dir+'.mpg'])
+        print 'Saved video ' + si.working_dir + '.mpg'
