@@ -80,7 +80,7 @@ class StagePlateTFBroadcaster:
                 stage_plate_offset_x_adjusted = self.stage_plate_offset_x + self.stage_plate_offset_x_error
                 stage_plate_offset_y_adjusted = self.stage_plate_offset_y + self.stage_plate_offset_y_error
                 rospy.logwarn("stage_plate_offset_x_adjusted = \n%s" % (str(stage_plate_offset_x_adjusted)))
-                rospy.logwarn("stage_plate_offset_x_adjusted = \n%s" % (str(stage_plate_offset_x_adjusted)))
+                rospy.logwarn("stage_plate_offset_y_adjusted = \n%s" % (str(stage_plate_offset_y_adjusted)))
 
                 t = rospy.get_time()
                 (x,y,vx,vy) = self.kf_stage_plate_offset.update((stage_plate_offset_x_adjusted,stage_plate_offset_y_adjusted),t)
