@@ -52,25 +52,40 @@ class ImageDisplay:
 
         self.axis_length = 15
         self.axis_line_width = 3
+        self.axis_head_dist = 4
         self.axes_center = PointStamped()
         self.axes_center.point.x = 0
         self.axes_center.point.y = 0
         self.axes_center.point.z = 0
-        self.axes_x = PointStamped()
-        self.axes_x.point.x = self.axis_length
-        self.axes_x.point.y = 0
-        self.axes_x.point.z = 0
-        self.axes_y = PointStamped()
-        self.axes_y.point.x = 0
-        self.axes_y.point.y = self.axis_length
-        self.axes_y.point.z = 0
+        self.axes_x_tail = PointStamped()
+        self.axes_x_tail.point.x = self.axis_length
+        self.axes_x_tail.point.y = 0
+        self.axes_x_tail.point.z = 0
+        self.axes_y_tail = PointStamped()
+        self.axes_y_tail.point.x = 0
+        self.axes_y_tail.point.y = self.axis_length
+        self.axes_y_tail.point.z = 0
+
+        self.axes_x_head = PointStamped()
+        self.axes_x_head.point.x = self.axis_head_dist
+        self.axes_x_head.point.y = 0
+        self.axes_x_head.point.z = 0
+        self.axes_y_head = PointStamped()
+        self.axes_y_head.point.x = 0
+        self.axes_y_head.point.y = self.axis_head_dist
+        self.axes_y_head.point.z = 0
 
         self.axes_center_camera = PointStamped()
         self.axes_center_camera.header.frame_id = "Camera"
-        self.axes_x_camera = PointStamped()
-        self.axes_x_camera.header.frame_id = "Camera"
-        self.axes_y_camera = PointStamped()
-        self.axes_y_camera.header.frame_id = "Camera"
+        self.axes_x_tail_camera = PointStamped()
+        self.axes_x_tail_camera.header.frame_id = "Camera"
+        self.axes_y_tail_camera = PointStamped()
+        self.axes_y_tail_camera.header.frame_id = "Camera"
+
+        self.axes_x_head_camera = PointStamped()
+        self.axes_x_head_camera.header.frame_id = "Camera"
+        self.axes_y_head_camera = PointStamped()
+        self.axes_y_head_camera.header.frame_id = "Camera"
 
         self.setpoint = Setpoint()
 
@@ -97,53 +112,84 @@ class ImageDisplay:
     def draw_axes(self,frame_id):
         try:
             self.axes_center.header.frame_id = frame_id
-            self.axes_x.header.frame_id = frame_id
-            self.axes_y.header.frame_id = frame_id
+            self.axes_x_tail.header.frame_id = frame_id
+            self.axes_y_tail.header.frame_id = frame_id
+            self.axes_x_head.header.frame_id = frame_id
+            self.axes_y_head.header.frame_id = frame_id
 
             axes_center_plate = self.tf_listener.transformPoint("Plate",self.axes_center)
-            axes_x_plate = self.tf_listener.transformPoint("Plate",self.axes_x)
-            axes_y_plate = self.tf_listener.transformPoint("Plate",self.axes_y)
+            axes_x_tail_plate = self.tf_listener.transformPoint("Plate",self.axes_x_tail)
+            axes_y_tail_plate = self.tf_listener.transformPoint("Plate",self.axes_y_tail)
+            axes_x_head_plate = self.tf_listener.transformPoint("Plate",self.axes_x_head)
+            axes_y_head_plate = self.tf_listener.transformPoint("Plate",self.axes_y_head)
 
-            Xsrc = [axes_center_plate.point.x,axes_x_plate.point.x,axes_y_plate.point.x]
-            Ysrc = [axes_center_plate.point.y,axes_x_plate.point.y,axes_y_plate.point.y]
+            Xsrc = [axes_center_plate.point.x,axes_x_tail_plate.point.x,axes_y_tail_plate.point.x,axes_x_head_plate.point.x,axes_y_head_plate.point.x]
+            Ysrc = [axes_center_plate.point.y,axes_x_tail_plate.point.y,axes_y_tail_plate.point.y,axes_x_head_plate.point.y,axes_y_head_plate.point.y]
             response = self.plate_to_camera(Xsrc,Ysrc)
             self.axes_center_camera.point.x = response.Xdst[0]
             self.axes_center_camera.point.y = response.Ydst[0]
-            self.axes_x_camera.point.x = response.Xdst[1]
-            self.axes_x_camera.point.y = response.Ydst[1]
-            self.axes_y_camera.point.x = response.Xdst[2]
-            self.axes_y_camera.point.y = response.Ydst[2]
+            self.axes_x_tail_camera.point.x = response.Xdst[1]
+            self.axes_x_tail_camera.point.y = response.Ydst[1]
+            self.axes_y_tail_camera.point.x = response.Xdst[2]
+            self.axes_y_tail_camera.point.y = response.Ydst[2]
+
+            self.axes_x_head_camera.point.x = response.Xdst[1]
+            self.axes_x_head_camera.point.y = response.Ydst[1]
+            self.axes_y_head_camera.point.x = response.Xdst[2]
+            self.axes_y_head_camera.point.y = response.Ydst[2]
+
             axes_center_image = self.tf_listener.transformPoint(self.image_frame,self.axes_center_camera)
-            axes_x_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_camera)
-            axes_y_image = self.tf_listener.transformPoint(self.image_frame,self.axes_y_camera)
+            axes_x_tail_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_tail_camera)
+            axes_y_tail_image = self.tf_listener.transformPoint(self.image_frame,self.axes_y_tail_camera)
+
+            axes_x_head_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_head_camera)
+            axes_y_head_image = self.tf_listener.transformPoint(self.image_frame,self.axes_y_head_camera)
 
             # rospy.logwarn("axes_center_image.point.x = %s" % (str(axes_center_image.point.x)))
             # rospy.logwarn("axes_center_image.point.y = %s" % (str(axes_center_image.point.y)))
-            # rospy.logwarn("axes_x_image.point.x = %s" % (str(axes_x_image.point.x)))
-            # rospy.logwarn("axes_x_image.point.y = %s" % (str(axes_x_image.point.y)))
-            # rospy.logwarn("axes_y_image.point.x = %s" % (str(axes_y_image.point.x)))
-            # rospy.logwarn("axes_y_image.point.y = %s" % (str(axes_y_image.point.y)))
+            # rospy.logwarn("axes_x_tail_image.point.x = %s" % (str(axes_x_tail_image.point.x)))
+            # rospy.logwarn("axes_x_tail_image.point.y = %s" % (str(axes_x_tail_image.point.y)))
+            # rospy.logwarn("axes_y_tail_image.point.x = %s" % (str(axes_y_tail_image.point.x)))
+            # rospy.logwarn("axes_y_tail_image.point.y = %s" % (str(axes_y_tail_image.point.y)))
             # Do not attempt to display lines when garbage values are calculated
             if (0 <= axes_center_image.point.x) and \
                (axes_center_image.point.x < self.im_size[0]) and \
                (0 <= axes_center_image.point.y) and \
                (axes_center_image.point.y < self.im_size[1]) and \
-               (0 <= axes_x_image.point.x) and \
-               (axes_x_image.point.x < self.im_size[0]) and \
-               (0 <= axes_x_image.point.y) and \
-               (axes_x_image.point.y < self.im_size[1]) and \
-               (0 <= axes_y_image.point.x) and \
-               (axes_y_image.point.x < self.im_size[0]) and \
-               (0 <= axes_y_image.point.y) and \
-               (axes_y_image.point.y < self.im_size[1]):
+               (0 <= axes_x_tail_image.point.x) and \
+               (axes_x_tail_image.point.x < self.im_size[0]) and \
+               (0 <= axes_x_tail_image.point.y) and \
+               (axes_x_tail_image.point.y < self.im_size[1]) and \
+               (0 <= axes_y_tail_image.point.x) and \
+               (axes_y_tail_image.point.x < self.im_size[0]) and \
+               (0 <= axes_y_tail_image.point.y) and \
+               (axes_y_tail_image.point.y < self.im_size[1]) and \
+               (0 <= axes_x_head_image.point.x) and \
+               (axes_x_head_image.point.x < self.im_size[0]) and \
+               (0 <= axes_x_head_image.point.y) and \
+               (axes_x_head_image.point.y < self.im_size[1]) and \
+               (0 <= axes_y_head_image.point.x) and \
+               (axes_y_head_image.point.x < self.im_size[0]) and \
+               (0 <= axes_y_head_image.point.y) and \
+               (axes_y_head_image.point.y < self.im_size[1]):
 
+                if "Fly" in frame_id:
+                    circle_color = cv.CV_RGB(0,self.color_max,0)
+                elif "Robot" in frame_id:
+                    circle_color = cv.CV_RGB(0,0,self.color_max)
+                else:
+                    circle_color = cv.CV_RGB(self.color_max,0,0)
+
+                cv.Circle(self.im_display,
+                          (int(axes_center_image.point.x),int(axes_center_image.point.y)),
+                          int(self.axis_head_dist), circle_color,1)
                 cv.Line(self.im_display,
-                        (int(axes_center_image.point.x),int(axes_center_image.point.y)),
-                        (int(axes_x_image.point.x),int(axes_x_image.point.y)),
+                        (int(axes_head_image.point.x),int(axes_head_image.point.y)),
+                        (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
                         cv.CV_RGB(self.color_max,0,0), self.axis_line_width)
                 cv.Line(self.im_display,
-                        (int(axes_center_image.point.x),int(axes_center_image.point.y)),
-                        (int(axes_y_image.point.x),int(axes_y_image.point.y)),
+                        (int(axes_head_image.point.x),int(axes_head_image.point.y)),
+                        (int(axes_y_tail_image.point.x),int(axes_y_tail_image.point.y)),
                         cv.CV_RGB(0,self.color_max,0), self.axis_line_width)
 
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
