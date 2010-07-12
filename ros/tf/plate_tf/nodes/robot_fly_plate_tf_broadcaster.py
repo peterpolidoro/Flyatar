@@ -112,7 +112,7 @@ class PoseTFConversion:
 
                     if quat_plate is not None:
                         # rospy.logwarn("robot_plate_a_unfiltered = %s" % (str(tf.transformations.euler_from_quaternion(quat_plate)[2])))
-                        robot_plate_a = str(tf.transformations.euler_from_quaternion(quat_plate)[2]
+                        robot_plate_a = tf.transformations.euler_from_quaternion(quat_plate)[2]
                         t = msg.header.stamp.to_sec()
                         # (x,y,vx,vy) = self.kf_robot.update((robot_plate_x,robot_plate_y),t)
                         (x,y,a,vx,vy,va) = self.kf_robot.update((robot_plate_x,robot_plate_y,robot_plate_a),t)
