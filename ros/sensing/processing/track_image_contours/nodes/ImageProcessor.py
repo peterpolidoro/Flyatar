@@ -50,6 +50,7 @@ class ImageProcessor:
       cv.NamedWindow("Processed Image", 1)
       cv.NamedWindow("Diff Image", 1)
       cv.NamedWindow("Foreground Image", 1)
+      cv.NamedWindow("Background Image", 1)
 
     # OpenCV
     self.max_8U = 255
@@ -60,7 +61,9 @@ class ImageProcessor:
 
     # Coordinate Systems
     CS_initialized = False
-    while not CS_initialized:
+    max_tries = 100
+    tries = 0
+    while (not CS_initialized) and (tries < max_tries):
       try:
         self.output_coordinates = rospy.get_param("ImageProcessor_OutputCoordinates","Camera")
         self.ROIPlateImage_origin = PointStamped()
@@ -78,6 +81,7 @@ class ImageProcessor:
         CS_initialized = True
       except (tf.LookupException, tf.ConnectivityException):
         pass
+      tries += 1
 
     # Mask Info
     self.mask_radius = int(rospy.get_param("mask_radius","225"))
@@ -122,10 +126,10 @@ class ImageProcessor:
     # First image is background unless one can be loaded
     cv.SetImageROI(cv_image,self.ROIPlateImage_cvrect)
     try:
-      self.im_background = cv.LoadImage("background.png",cv.CV_LOAD_IMAGE_GRAYSCALE)
+      self.im_background = cv.LoadImage("/cameras/background.png",cv.CV_LOAD_IMAGE_GRAYSCALE)
     except:
       cv.And(cv_image,self.im_mask,self.im_background)
-      cv.SaveImage("background.png",self.im_background)
+      cv.SaveImage("/cameras/background.png",self.im_background)
     self.images_initialized = True
 
   def find_slope_ecc(self,A,B,C,D):
@@ -344,6 +348,7 @@ class ImageProcessor:
     if self.display_images:
       cv.ShowImage("Processed Image", self.im_processed)
       cv.ShowImage("Foreground Image", self.im_foreground)
+      cv.ShowImage("Background Image", self.im_background)
       cv.WaitKey(3)
 
     # Publish foreground image
