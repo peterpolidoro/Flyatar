@@ -49,6 +49,8 @@ class StagePlateTFBroadcaster:
 
         self.position_threshold = 0.01
 
+        self.adjusted = False
+
         self.tries_limit = 4
 
         self.kf_stage_plate_offset = kf.KalmanFilter()
@@ -75,7 +77,7 @@ class StagePlateTFBroadcaster:
         while not rospy.is_shutdown():
             if self.initialized:
                 # try:
-                if self.stop_state.RobotStopped:
+                if self.stop_state.RobotStopped and (not self.adjusted):
                     robot_plate = self.convert_to_plate(self.robot_origin)
                     magnet_plate = self.convert_to_plate(self.magnet_origin)
                     # rospy.logwarn("robot_plate.point.x = \n%s" % (str(robot_plate.point.x)))
@@ -98,8 +100,11 @@ class StagePlateTFBroadcaster:
                         (x,y,vx,vy) = self.kf_stage_plate_offset.update((stage_plate_offset_x_adjusted,stage_plate_offset_y_adjusted),t)
                         rospy.logwarn("x = \n%s" % (str(x)))
                         rospy.logwarn("y = \n%s" % (str(y)))
+                        self.adjusted = True
                         # self.stage_plate_offset_x = x
                         # self.stage_plate_offset_y = y
+                elif self.adjusted:
+                    self.adjusted = False
 
                 self.tf_broadcaster.sendTransform((self.stage_plate_offset_x, self.stage_plate_offset_y, 0),
                                                   (0, 0, self.stage_plate_quat_z, self.stage_plate_quat_w),
