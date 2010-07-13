@@ -10,6 +10,7 @@ import kalman_filter as kf
 import stop_walk as sw
 import choose_orientation as co
 from plate_tf.msg import StopState, InBoundsState
+import Gnuplot
 
 class PoseTFConversion:
     def __init__(self):
@@ -34,6 +35,11 @@ class PoseTFConversion:
         self.co_robot = co.ChooseOrientation()
 
         self.in_bounds_radius = rospy.get_param('in_bounds_radius',100)
+
+        self.gp = Gnuplot.Gnuplot(persist = 1)
+        self.gp('set data style lines')
+        self.ang_data = []
+        self.ang_f_data = []
 
         rospy.wait_for_service('camera_to_plate')
         try:
@@ -218,8 +224,17 @@ class PoseTFConversion:
                             fly_plate_x = x
                             fly_plate_y = y
 
-                        if a is not None:
-                            quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
+                        t = rospy.get_time()
+                        self.ang_data.append([t,fly_plate_a])
+                        self.ang_f_data.append([t,a])
+
+                        plot1 = Gnuplot.PlotItems.Data(self.ang_data, with_="lines", title="Angle")
+                        plot2 = Gnuplot.PlotItems.Data(self.ang_f_data, with_="lines", title="FilteredAngle")
+
+                        self.gp.plot(plot1, plot2)
+
+                        # if a is not None:
+                        #     quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
 
                         if vel_ang is not None:
                             quat_chosen = self.co_fly.choose_orientation(quat_plate,vel_ang,fly_stopped)
