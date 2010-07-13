@@ -12,6 +12,8 @@ class ChooseOrientation:
     def __init__(self):
         self.zaxis = (0,0,1)
         self.orient_ang_previous = None
+        self.disagreement_count = 0
+        self.disagreement_count_limit = 10
 
     def angle_from_quaternion(self,quat):
         # Find and return angle of rotation about z-axis
@@ -26,6 +28,11 @@ class ChooseOrientation:
         qz = tf.transformations.quaternion_about_axis((ang + math.pi), self.zaxis)
         return qz
 
+    def condition_angle(self,angle):
+        if math.pi < angle:
+            angle = 2*math.pi - angle
+        return angle
+
     def choose_orientation(self,quat,vel_ang,stopped):
         # orient_ang is ambiguous modulo pi radians
 
@@ -39,14 +46,37 @@ class ChooseOrientation:
 
         orient_ang = self.angle_from_quaternion(quat)
         orient_ang_flipped = orient_ang + math.pi
-        diff_ang = abs(orient_ang - ref_ang)
-        if math.pi < diff_ang:
-            diff_ang = 2*math.pi - diff_ang
-        diff_ang_flipped = abs(orient_ang_flipped - ref_ang)
-        if math.pi < diff_ang_flipped:
-            diff_ang_flipped = 2*math.pi - diff_ang_flipped
-        # rospy.logwarn("ref_ang = %s, orient_ang = %s, orient_ang_flipped = %s, diff_ang = %s, diff_ang_flipped = %s" % (str(ref_ang),str(orient_ang*180/math.pi),str(orient_ang_flipped*180/math.pi),str(diff_ang*180/math.pi),str(diff_ang_flipped*180/math.pi)))
-        if diff_ang < diff_ang_flipped:
+        diff_vel_ang = self.condition_angle(abs(orient_ang - ref_ang))
+        diff_vel_ang_flipped = self.condition_angle(abs(orient_ang_flipped - ref_ang))
+
+        if diff_vel_ang < diff_vel_ang_flipped:
+            vel_ang_vote_on_flipped = False
+        else:
+            vel_ang_vote_on_flipped = True
+        # rospy.logwarn("ref_ang = %s, orient_ang = %s, orient_ang_flipped = %s, diff_vel_ang = %s, diff_vel_ang_flipped = %s" % (str(ref_ang),str(orient_ang*180/math.pi),str(orient_ang_flipped*180/math.pi),str(diff_vel_ang*180/math.pi),str(diff_vel_ang_flipped*180/math.pi)))
+
+        diff_prev_ang = self.condition_angle(abs(orient_ang - self.orient_ang_previous))
+        diff_prev_ang_flipped = self.condition_angle(abs(orient_ang_flipped - self.orient_ang_previous))
+
+        if diff_prev_ang < diff_prev_ang_flipped:
+            prev_ang_vote_on_flipped = False
+        else:
+            prev_ang_vote_on_flipped = True
+
+        if vel_ang_vote_on_flipped and prev_ang_vote_on_flipped:
+            flipped = True
+            self.disagreement_count = 0
+        elif (not vel_ang_vote_on_flipped) and (not prev_ang_vote_on_flipped):
+            flipped = False
+            self.disagreement_count = 0
+        else:
+            self.disagreement_count += 1
+            if self.disagreement_count < self.disagreement_count_limit:
+                flipped = prev_ang_vote_on_flipped
+            else:
+                flipped = vel_ang_vote_on_flipped
+
+        if not flipped:
             self.orient_ang_previous = orient_ang
             return quat
         else:
