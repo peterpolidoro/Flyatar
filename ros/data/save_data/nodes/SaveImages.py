@@ -28,6 +28,7 @@ class SaveImages:
         self.saving_images_started = False
         self.last_image_time = None
         self.rate = rospy.Rate(10)     # Hz
+        self.time_limit = 3
 
         # self.color_max = 255
         # self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
@@ -76,6 +77,7 @@ class SaveImages:
         # cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
 
     def save_video(self):
+        self.saving_images_started = False
         os.chdir(os.path.expanduser("~/Videos"))
         if self.video_format in "flv":
             subprocess.check_call(['ffmpeg','-f','image2',
@@ -121,11 +123,11 @@ class SaveImages:
 
     def main(self):
         while not rospy.is_shutdown():
-            t = rospy.get_time()
             if self.saving_images_started and (self.last_image_time is not None):
+                t = rospy.get_time()
                 dt = t - self.last_image_time
-                rospy.logwarn("dt = %s" % (str(dt)))
-                if 10 < dt:
+                # rospy.logwarn("dt = %s" % (str(dt)))
+                if self.time_limit < dt:
                     self.save_video()
             self.rate.sleep()
 
