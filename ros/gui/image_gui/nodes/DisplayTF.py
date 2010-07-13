@@ -142,14 +142,14 @@ class ImageDisplay:
         self.bounds_limit_camera.point.y = response.Ydst[1]
         rospy.logwarn("self.bounds_center_camera.point.x = %s" % (str(self.bounds_center_camera.point.x)))
         rospy.logwarn("self.bounds_center_camera.point.y = %s" % (str(self.bounds_center_camera.point.y)))
-        rospy.logwarn("self.bounds_limit_camera.point.x = %s" % (str(self.bounds_center_camera.point.x)))
-        rospy.logwarn("self.bounds_limit_camera.point.y = %s" % (str(self.bounds_center_camera.point.y)))
+        rospy.logwarn("self.bounds_limit_camera.point.x = %s" % (str(self.bounds_limit_camera.point.x)))
+        rospy.logwarn("self.bounds_limit_camera.point.y = %s" % (str(self.bounds_limit_camera.point.y)))
         self.bounds_center_image_frame = self.tf_listener.transformPoint(self.image_frame,self.bounds_center_camera)
         self.bounds_limit_image_frame = self.tf_listener.transformPoint(self.image_frame,self.bounds_limit_camera)
         rospy.logwarn("self.bounds_center_image_frame.point.x = %s" % (str(self.bounds_center_image_frame.point.x)))
         rospy.logwarn("self.bounds_center_image_frame.point.y = %s" % (str(self.bounds_center_image_frame.point.y)))
-        rospy.logwarn("self.bounds_limit_image_frame.point.x = %s" % (str(self.bounds_center_image_frame.point.x)))
-        rospy.logwarn("self.bounds_limit_image_frame.point.y = %s" % (str(self.bounds_center_image_frame.point.y)))
+        rospy.logwarn("self.bounds_limit_image_frame.point.x = %s" % (str(self.bounds_limit_image_frame.point.x)))
+        rospy.logwarn("self.bounds_limit_image_frame.point.y = %s" % (str(self.bounds_limit_image_frame.point.y)))
         self.bounds_radius = math.sqrt((self.bounds_center_image_frame.point.x - self.bounds_limit_image_frame.point.x)**2 + \
                                        (self.bounds_center_image_frame.point.y - self.bounds_limit_image_frame.point.y)**2)
 
