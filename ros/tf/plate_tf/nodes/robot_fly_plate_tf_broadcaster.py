@@ -10,7 +10,7 @@ import kalman_filter as kf
 import stop_walk as sw
 import choose_orientation as co
 from plate_tf.msg import StopState, InBoundsState
-import Gnuplot
+import matplotlib.pyplot as plt
 
 class PoseTFConversion:
     def __init__(self):
@@ -36,10 +36,12 @@ class PoseTFConversion:
 
         self.in_bounds_radius = rospy.get_param('in_bounds_radius',100)
 
-        # self.gp = Gnuplot.Gnuplot(persist = 1)
-        # self.gp('set data style lines')
-        # self.ang_data = []
-        # self.ang_f_data = []
+        self.time_0 = rospy.get_time()
+        self.plot_update_time = None
+        self.plot_update_dt = 2
+        self.time_array = numpy.array([])
+        self.ang_data = numpy.array([])
+        self.ang_f_data = numpy.array([])
 
         rospy.wait_for_service('camera_to_plate')
         try:
@@ -224,9 +226,10 @@ class PoseTFConversion:
                             fly_plate_x = x
                             fly_plate_y = y
 
-                        # t = rospy.get_time()
-                        # self.ang_data.append([t,fly_plate_a])
-                        # self.ang_f_data.append([t,a])
+                        t = rospy.get_time() - self.time_0
+                        self.time_array = numpy.append(self.time_array,t)
+                        self.ang_data = numpy.append(self.ang_data,fly_plate_a)
+                        self.ang_f_data = numpy.append(self.ang_f_data,a)
 
                         # if a is not None:
                         #     quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
@@ -260,9 +263,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         rospy.spin()
 
-    # plot1 = Gnuplot.PlotItems.Data(ptc.ang_data, with_="lines", title="Angle")
-    # plot2 = Gnuplot.PlotItems.Data(ptc.ang_f_data, with_="lines", title="FilteredAngle")
-    # ptc.gp.plot(plot1, plot2)
-    # ptc.gp.plot(ptc.ang_data)
+    plt.plot(ptc.time_array,ptc.ang_data,ptc.time_array,ptc.ang_f_data)
+    plt.show()
     # rospy.logwarn("ang_data = %s\n" % (str(ptc.ang_data)))
 
