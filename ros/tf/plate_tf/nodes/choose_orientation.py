@@ -12,6 +12,7 @@ class ChooseOrientation:
     def __init__(self):
         self.zaxis = (0,0,1)
         self.orient_ang_previous = None
+        self.flipped_previous = None
         self.disagreement_count = 0
         self.disagreement_count_limit = 10
 
@@ -46,6 +47,8 @@ class ChooseOrientation:
 
         orient_ang = self.angle_from_quaternion(quat)
         orient_ang_flipped = orient_ang + math.pi
+        rospy.logwarn("orient_ang = %s" % (str(orient_ang)))
+        rospy.logwarn("orient_ang_flipped = %s" % (str(orient_ang_flipped)))
         diff_vel_ang = self.condition_angle(abs(orient_ang - ref_ang))
         diff_vel_ang_flipped = self.condition_angle(abs(orient_ang_flipped - ref_ang))
 
@@ -77,10 +80,11 @@ class ChooseOrientation:
             self.disagreement_count += 1
             rospy.logwarn("disagreement_count = %s" % (str(self.disagreement_count)))
             if self.disagreement_count < self.disagreement_count_limit:
-                flipped = vel_ang_vote_on_flipped
+                flipped = self.flipped_previous
             else:
-                flipped = prev_ang_vote_on_flipped
+                flipped = vel_ang_vote_on_flipped
 
+        self.flipped_previous = flipped
         if not flipped:
             self.orient_ang_previous = orient_ang
             return quat
