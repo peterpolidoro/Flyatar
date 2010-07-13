@@ -224,9 +224,9 @@ class PoseTFConversion:
                             fly_plate_x = x
                             fly_plate_y = y
 
-                        t = rospy.get_time()
-                        self.ang_data.append([t,fly_plate_a])
-                        self.ang_f_data.append([t,a])
+                        # t = rospy.get_time()
+                        # self.ang_data.append([t,fly_plate_a])
+                        # self.ang_f_data.append([t,a])
 
                         # if a is not None:
                         #     quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
