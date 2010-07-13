@@ -260,7 +260,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         rospy.spin()
 
-    plot1 = Gnuplot.PlotItems.Data(self.ang_data, with_="lines", title="Angle")
-    plot2 = Gnuplot.PlotItems.Data(self.ang_f_data, with_="lines", title="FilteredAngle")
-    self.gp.plot(plot1, plot2)
+    plot1 = Gnuplot.PlotItems.Data(ptc.ang_data, with_="lines", title="Angle")
+    plot2 = Gnuplot.PlotItems.Data(ptc.ang_f_data, with_="lines", title="FilteredAngle")
+    ptc.gp.plot(plot1, plot2)
 
