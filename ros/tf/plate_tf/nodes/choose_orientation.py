@@ -55,13 +55,17 @@ class ChooseOrientation:
             vel_ang_vote_on_flipped = True
         # rospy.logwarn("ref_ang = %s, orient_ang = %s, orient_ang_flipped = %s, diff_vel_ang = %s, diff_vel_ang_flipped = %s" % (str(ref_ang),str(orient_ang*180/math.pi),str(orient_ang_flipped*180/math.pi),str(diff_vel_ang*180/math.pi),str(diff_vel_ang_flipped*180/math.pi)))
 
-        diff_prev_ang = self.condition_angle(abs(orient_ang - self.orient_ang_previous))
-        diff_prev_ang_flipped = self.condition_angle(abs(orient_ang_flipped - self.orient_ang_previous))
+        if self.orient_ang_previous is not None:
+            diff_prev_ang = self.condition_angle(abs(orient_ang - self.orient_ang_previous))
+            diff_prev_ang_flipped = self.condition_angle(abs(orient_ang_flipped - self.orient_ang_previous))
 
-        if diff_prev_ang < diff_prev_ang_flipped:
-            prev_ang_vote_on_flipped = False
+            if diff_prev_ang < diff_prev_ang_flipped:
+                prev_ang_vote_on_flipped = False
+            else:
+                prev_ang_vote_on_flipped = True
+
         else:
-            prev_ang_vote_on_flipped = True
+            prev_ang_vote_on_flipped = vel_ang_vote_on_flipped
 
         if vel_ang_vote_on_flipped and prev_ang_vote_on_flipped:
             flipped = True
