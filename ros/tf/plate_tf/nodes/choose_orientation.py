@@ -84,7 +84,7 @@ class ChooseOrientation:
             self.disagreement_count += 1
             # rospy.logwarn("orient_ang = %s" % (str(orient_ang)))
             # rospy.logwarn("orient_ang_flipped = %s" % (str(orient_ang_flipped)))
-            rospy.logwarn("disagreement_count = %s" % (str(self.disagreement_count)))
+            # rospy.logwarn("disagreement_count = %s" % (str(self.disagreement_count)))
             if self.disagreement_count < self.disagreement_count_limit:
                 flipped = prev_ang_vote_on_flipped
             else:
