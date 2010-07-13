@@ -36,10 +36,10 @@ class PoseTFConversion:
 
         self.in_bounds_radius = rospy.get_param('in_bounds_radius',100)
 
-        self.gp = Gnuplot.Gnuplot(persist = 1)
-        self.gp('set data style lines')
-        self.ang_data = []
-        self.ang_f_data = []
+        # self.gp = Gnuplot.Gnuplot(persist = 1)
+        # self.gp('set data style lines')
+        # self.ang_data = []
+        # self.ang_f_data = []
 
         rospy.wait_for_service('camera_to_plate')
         try:
@@ -263,6 +263,6 @@ if __name__ == '__main__':
     # plot1 = Gnuplot.PlotItems.Data(ptc.ang_data, with_="lines", title="Angle")
     # plot2 = Gnuplot.PlotItems.Data(ptc.ang_f_data, with_="lines", title="FilteredAngle")
     # ptc.gp.plot(plot1, plot2)
-    ptc.gp.plot(ptc.ang_data)
-    rospy.logwarn("ang_data = %s\n" % (str(ptc.ang_data)))
+    # ptc.gp.plot(ptc.ang_data)
+    # rospy.logwarn("ang_data = %s\n" % (str(ptc.ang_data)))
 
