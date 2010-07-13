@@ -131,25 +131,25 @@ class ImageDisplay:
 
         Xsrc = [self.bounds_center_plate.point.x,self.bounds_limit_plate.point.x]
         Ysrc = [self.bounds_center_plate.point.y,self.bounds_limit_plate.point.y]
-        rospy.logwarn("self.bounds_center_plate.point.x = %s" % (str(self.bounds_center_plate.point.x)))
-        rospy.logwarn("self.bounds_center_plate.point.y = %s" % (str(self.bounds_center_plate.point.y)))
-        rospy.logwarn("self.bounds_limit_plate.point.x = %s" % (str(self.bounds_limit_plate.point.x)))
-        rospy.logwarn("self.bounds_limit_plate.point.y = %s" % (str(self.bounds_limit_plate.point.y)))
+        # rospy.logwarn("self.bounds_center_plate.point.x = %s" % (str(self.bounds_center_plate.point.x)))
+        # rospy.logwarn("self.bounds_center_plate.point.y = %s" % (str(self.bounds_center_plate.point.y)))
+        # rospy.logwarn("self.bounds_limit_plate.point.x = %s" % (str(self.bounds_limit_plate.point.x)))
+        # rospy.logwarn("self.bounds_limit_plate.point.y = %s" % (str(self.bounds_limit_plate.point.y)))
         response = self.plate_to_camera(Xsrc,Ysrc)
         self.bounds_center_camera.point.x = response.Xdst[0]
         self.bounds_center_camera.point.y = response.Ydst[0]
         self.bounds_limit_camera.point.x = response.Xdst[1]
         self.bounds_limit_camera.point.y = response.Ydst[1]
-        rospy.logwarn("self.bounds_center_camera.point.x = %s" % (str(self.bounds_center_camera.point.x)))
-        rospy.logwarn("self.bounds_center_camera.point.y = %s" % (str(self.bounds_center_camera.point.y)))
-        rospy.logwarn("self.bounds_limit_camera.point.x = %s" % (str(self.bounds_limit_camera.point.x)))
-        rospy.logwarn("self.bounds_limit_camera.point.y = %s" % (str(self.bounds_limit_camera.point.y)))
+        # rospy.logwarn("self.bounds_center_camera.point.x = %s" % (str(self.bounds_center_camera.point.x)))
+        # rospy.logwarn("self.bounds_center_camera.point.y = %s" % (str(self.bounds_center_camera.point.y)))
+        # rospy.logwarn("self.bounds_limit_camera.point.x = %s" % (str(self.bounds_limit_camera.point.x)))
+        # rospy.logwarn("self.bounds_limit_camera.point.y = %s" % (str(self.bounds_limit_camera.point.y)))
         self.bounds_center_image_frame = self.tf_listener.transformPoint(self.image_frame,self.bounds_center_camera)
         self.bounds_limit_image_frame = self.tf_listener.transformPoint(self.image_frame,self.bounds_limit_camera)
-        rospy.logwarn("self.bounds_center_image_frame.point.x = %s" % (str(self.bounds_center_image_frame.point.x)))
-        rospy.logwarn("self.bounds_center_image_frame.point.y = %s" % (str(self.bounds_center_image_frame.point.y)))
-        rospy.logwarn("self.bounds_limit_image_frame.point.x = %s" % (str(self.bounds_limit_image_frame.point.x)))
-        rospy.logwarn("self.bounds_limit_image_frame.point.y = %s" % (str(self.bounds_limit_image_frame.point.y)))
+        # rospy.logwarn("self.bounds_center_image_frame.point.x = %s" % (str(self.bounds_center_image_frame.point.x)))
+        # rospy.logwarn("self.bounds_center_image_frame.point.y = %s" % (str(self.bounds_center_image_frame.point.y)))
+        # rospy.logwarn("self.bounds_limit_image_frame.point.x = %s" % (str(self.bounds_limit_image_frame.point.x)))
+        # rospy.logwarn("self.bounds_limit_image_frame.point.y = %s" % (str(self.bounds_limit_image_frame.point.y)))
         self.bounds_radius = math.sqrt((self.bounds_center_image_frame.point.x - self.bounds_limit_image_frame.point.x)**2 + \
                                        (self.bounds_center_image_frame.point.y - self.bounds_limit_image_frame.point.y)**2)
 
@@ -310,7 +310,7 @@ class ImageDisplay:
         cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
 
         cv.Circle(self.im_display,
-                  (int(self.bounds_limit_image_frame.point.x),int(self.bounds_limit_image_frame.point.x)),
+                  (int(self.bounds_center_image_frame.point.x),int(self.bounds_center_image_frame.point.y)),
                   self.bounds_radius, cv.CV_RGB(self.color_max,self.color_max,0), 1)
 
         try:
