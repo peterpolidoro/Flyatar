@@ -12,6 +12,7 @@ class ChooseOrientation:
     def __init__(self):
         self.zaxis = (0,0,1)
         self.orient_ang_previous = None
+        self.flipped_previous = None
         self.disagreement_count = 0
         self.disagreement_count_limit = 10
 
@@ -88,6 +89,11 @@ class ChooseOrientation:
                 flipped = prev_ang_vote_on_flipped
             else:
                 flipped = vel_ang_vote_on_flipped
+
+        if flipped != self.flipped_previous:
+            rospy.logwarn("Flipping!!")
+
+        self.flipped_previous = flipped
 
         if not flipped:
             self.orient_ang_previous = orient_ang
