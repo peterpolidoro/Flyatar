@@ -9,7 +9,7 @@ from plate_tf.srv import *
 import kalman_filter as kf
 import stop_walk as sw
 import choose_orientation as co
-from plate_tf.msg import StopState
+from plate_tf.msg import StopState, InBoundsState
 
 class PoseTFConversion:
     def __init__(self):
@@ -20,7 +20,9 @@ class PoseTFConversion:
         self.fly_image_pose_sub = rospy.Subscriber('FlyImagePose',PoseStamped,self.handle_fly_image_pose)
 
         self.stop_pub = rospy.Publisher('StopState',StopState)
+        self.in_bounds_pub = rospy.Publisher('InBoundsState',InBoundsState)
         self.stop_state = StopState()
+        self.in_bounds_state = InBoundsState()
 
         self.kf_fly = kf.KalmanFilter()
         self.kf_robot = kf.KalmanFilter()
@@ -30,6 +32,8 @@ class PoseTFConversion:
 
         self.co_fly = co.ChooseOrientation()
         self.co_robot = co.ChooseOrientation()
+
+        self.in_bounds_radius = rospy.get_param('in_bounds_radius',100)
 
         rospy.wait_for_service('camera_to_plate')
         try:
@@ -146,6 +150,13 @@ class PoseTFConversion:
                                               "Robot",
                                               "Plate")
 
+                        robot_dist = math.sqrt(robot_plate_x**2 + robot_plate_y**2)
+                        if robot_dist < self.in_bounds_radius:
+                            self.in_bounds_state.RobotInBounds = 1
+                        else:
+                            self.in_bounds_state.RobotInBounds = 0
+                        self.in_bounds_pub.publish(self.in_bounds_state)
+
                     # if vel_ang is not None:
                     #     quat_chosen = self.co_robot.choose_orientation(quat_plate,vel_ang,robot_stopped)
                     # else:
@@ -221,6 +232,14 @@ class PoseTFConversion:
                                                   rospy.Time.now(),
                                                   "Fly",
                                                   "Plate")
+
+                        fly_dist = math.sqrt(fly_plate_x**2 + fly_plate_y**2)
+                        if fly_dist < self.in_bounds_radius:
+                            self.in_bounds_state.FlyInBounds = 1
+                        else:
+                            self.in_bounds_state.FlyInBounds = 0
+                        self.in_bounds_pub.publish(self.in_bounds_state)
+
             except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
                 pass

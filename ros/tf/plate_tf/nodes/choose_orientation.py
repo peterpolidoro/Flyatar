@@ -13,7 +13,7 @@ class ChooseOrientation:
         self.zaxis = (0,0,1)
         self.orient_ang_previous = None
         self.disagreement_count = 0
-        self.disagreement_count_limit = 20
+        self.disagreement_count_limit = 8
 
     def angle_from_quaternion(self,quat):
         # Find and return angle of rotation about z-axis
