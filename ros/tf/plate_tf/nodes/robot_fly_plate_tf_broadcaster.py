@@ -228,6 +228,7 @@ class PoseTFConversion:
                         self.ang_data.append([t,fly_plate_a])
                         self.ang_f_data.append([t,a])
 
+                        rospy.logwarn("ang = %s\n" % (str(self.ang_data)))
                         plot1 = Gnuplot.PlotItems.Data(self.ang_data, with_="lines", title="Angle")
                         plot2 = Gnuplot.PlotItems.Data(self.ang_f_data, with_="lines", title="FilteredAngle")
 
