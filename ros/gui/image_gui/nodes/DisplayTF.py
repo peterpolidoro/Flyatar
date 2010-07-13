@@ -133,8 +133,8 @@ class ImageDisplay:
         Ysrc = [self.bounds_center_plate.point.y,self.bounds_limit_plate.point.y]
         rospy.logwarn("self.bounds_center_plate.point.x = %s" % (str(self.bounds_center_plate.point.x)))
         rospy.logwarn("self.bounds_center_plate.point.y = %s" % (str(self.bounds_center_plate.point.y)))
-        rospy.logwarn("self.bounds_limit_plate.point.x = %s" % (str(self.bounds_center_plate.point.x)))
-        rospy.logwarn("self.bounds_limit_plate.point.y = %s" % (str(self.bounds_center_plate.point.y)))
+        rospy.logwarn("self.bounds_limit_plate.point.x = %s" % (str(self.bounds_limit_plate.point.x)))
+        rospy.logwarn("self.bounds_limit_plate.point.y = %s" % (str(self.bounds_limit_plate.point.y)))
         response = self.plate_to_camera(Xsrc,Ysrc)
         self.bounds_center_camera.point.x = response.Xdst[0]
         self.bounds_center_camera.point.y = response.Ydst[0]
