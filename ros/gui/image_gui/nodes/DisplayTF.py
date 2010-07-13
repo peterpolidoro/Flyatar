@@ -309,9 +309,9 @@ class ImageDisplay:
 
         cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
 
-        cv.Circle(self.im_display,
-                  (int(self.bounds_center_image_frame.point.x),int(self.bounds_center_image_frame.point.y)),
-                  int(self.bounds_radius), cv.CV_RGB(self.color_max,self.color_max,0), 2)
+        # cv.Circle(self.im_display,
+        #           (int(self.bounds_center_image_frame.point.x),int(self.bounds_center_image_frame.point.y)),
+        #           int(self.bounds_radius), cv.CV_RGB(self.color_max,self.color_max,0), 2)
 
         try:
             plate_image_o = self.tf_listener.transformPoint(self.image_frame,self.plate_image_origin)
@@ -323,7 +323,7 @@ class ImageDisplay:
                 self.draw_setpoint()
             else:
                 self.setpoint_image_origin = fly_image_o
-                if self.in_bounds_stateFlyInBounds:
+                if self.in_bounds_state.FlyInBounds:
                     self.draw_setpoint()
 
             self.draw_axes("Plate")
