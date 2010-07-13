@@ -3,6 +3,7 @@ from __future__ import division
 import roslib
 roslib.load_manifest('plate_tf')
 import rospy
+from pythonmodules import CircleFunctions
 
 import cv
 from geometry_msgs.msg import PoseStamped
@@ -48,7 +49,7 @@ class KalmanFilter:
                 # self.measurement[3,0] = (z[1] - self.y_previous)/self.dt
                 self.measurement[3,0] = (z[0] - self.x_previous)/self.dt
                 self.measurement[4,0] = (z[1] - self.y_previous)/self.dt
-                self.measurement[5,0] = (z[2] - self.a_previous)/self.dt
+                self.measurement[5,0] = CircleFunctions.circle_dist(self.a_previous,z[2])/self.dt
                 # rospy.logwarn("x_velocity = %s, y_velocity = %s" % (str(self.measurement[2,0]),str(self.measurement[3,0])))
 
             # rospy.logwarn("measurement[0,0] = %s" % str(self.measurement[0,0]))

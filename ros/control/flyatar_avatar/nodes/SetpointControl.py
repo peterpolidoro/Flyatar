@@ -14,6 +14,8 @@ from stage.srv import *
 from stage.msg import StageCommands,Setpoint
 from joystick_commands.msg import JoystickCommands
 from geometry_msgs.msg import PointStamped
+from pythonmodules import CircleFunctions
+
 
 class SetpointControl:
 
@@ -154,26 +156,8 @@ class SetpointControl:
         #     self.setpoint_moved = False
         # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
-    def circle_dist(self,setpoint,angle):
-        diff1 = setpoint - angle
-        if angle < setpoint:
-            diff2 = setpoint - 2*math.pi - angle
-        else:
-            diff2 = 2*math.pi - angle + setpoint
-        abs_min = min(abs(diff1),abs(diff2))
-        if abs_min == abs(diff1):
-            return diff1
-        else:
-            return diff2
-
-    def angle_condition(self,angle):
-        angle_conditioned = angle%(2*math.pi)
-        return angle_conditioned
-
     def angle_divide(self,angle_start,angle_stop):
-        angle_start = self.angle_condition(angle_start)
-        angle_stop = self.angle_condition(angle_stop)
-        diff = self.circle_dist(angle_stop,angle_start)
+        diff = CircleFunctions.circle_dist(angle_start,angle_stop)
         if 0 < diff:
             if angle_stop < angle_start:
                 angle_start = angle_start - 2*math.pi

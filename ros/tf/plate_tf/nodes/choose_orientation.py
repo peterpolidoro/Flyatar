@@ -3,6 +3,7 @@ from __future__ import division
 import roslib
 roslib.load_manifest('plate_tf')
 import rospy
+from pythonmodules import CircleFunctions
 
 import math, tf
 # import numpy
@@ -12,7 +13,6 @@ class ChooseOrientation:
     def __init__(self):
         self.zaxis = (0,0,1)
         self.orient_ang_previous = None
-        self.flipped_previous = None
         self.disagreement_count = 0
         self.disagreement_count_limit = 10
 
@@ -29,19 +29,19 @@ class ChooseOrientation:
         qz = tf.transformations.quaternion_about_axis((ang + math.pi), self.zaxis)
         return qz
 
-    def mod_angle(self,angle):
-        angle = angle%2*math.pi
-        return angle
+    # def mod_angle(self,angle):
+    #     angle = angle%2*math.pi
+    #     return angle
 
-    def condition_angle(self,angle):
-        angle = self.mod_angle(angle)
-        if math.pi < angle:
-            angle = 2*math.pi - angle
-        return angle
+    # def condition_angle(self,angle):
+    #     angle = self.mod_angle(angle)
+    #     if math.pi < angle:
+    #         angle = 2*math.pi - angle
+    #     return angle
 
     def choose_orientation(self,quat,vel_ang,stopped):
         # orient_ang is ambiguous modulo pi radians
-        vel_ang = self.mod_angle(vel_ang)
+        vel_ang = CircleFunctions.mod_angle(vel_ang)
 
         # rospy.logwarn("orient_ang = %s, vel_ang = %s" % (str(orient_ang*180/math.pi),str(vel_ang*180/math.pi)))
         if not stopped:
@@ -51,10 +51,10 @@ class ChooseOrientation:
         else:
             return None
 
-        orient_ang = self.mod_angle(self.angle_from_quaternion(quat))
-        orient_ang_flipped = self.mod_angle(orient_ang + math.pi)
-        diff_vel_ang = self.condition_angle(abs(orient_ang - ref_ang))
-        diff_vel_ang_flipped = self.condition_angle(abs(orient_ang_flipped - ref_ang))
+        orient_ang = CircleFunctions.mod_angle(self.angle_from_quaternion(quat))
+        orient_ang_flipped = CircleFunctions.mod_angle(orient_ang + math.pi)
+        diff_vel_ang = abs(CircleFunctions.circle_dist(orient_ang,ref_ang))
+        diff_vel_ang_flipped = abs(CircleFunctions.circle_dist(orient_ang_flipped,ref_ang))
 
         if diff_vel_ang < diff_vel_ang_flipped:
             vel_ang_vote_on_flipped = False
@@ -63,8 +63,8 @@ class ChooseOrientation:
         # rospy.logwarn("ref_ang = %s, orient_ang = %s, orient_ang_flipped = %s, diff_vel_ang = %s, diff_vel_ang_flipped = %s" % (str(ref_ang),str(orient_ang*180/math.pi),str(orient_ang_flipped*180/math.pi),str(diff_vel_ang*180/math.pi),str(diff_vel_ang_flipped*180/math.pi)))
 
         if self.orient_ang_previous is not None:
-            diff_prev_ang = self.condition_angle(abs(orient_ang - self.orient_ang_previous))
-            diff_prev_ang_flipped = self.condition_angle(abs(orient_ang_flipped - self.orient_ang_previous))
+            diff_prev_ang = abs(CircleFunctions.circle_dist(orient_ang,self.orient_ang_previous))
+            diff_prev_ang_flipped = abs(CircleFunctions.circle_dist(orient_ang_flipped,self.orient_ang_previous))
 
             if diff_prev_ang < diff_prev_ang_flipped:
                 prev_ang_vote_on_flipped = False
@@ -90,13 +90,13 @@ class ChooseOrientation:
             else:
                 flipped = vel_ang_vote_on_flipped
 
-        if flipped != self.flipped_previous:
-            rospy.logwarn("Flipping!!")
-            rospy.logwarn("prev_ang_vote_on_flipped = %s" % (str(prev_ang_vote_on_flipped)))
-            rospy.logwarn("vel_ang_vote_on_flipped = %s" % (str(vel_ang_vote_on_flipped)))
-            rospy.logwarn("flipped = %s" % (str(flipped)))
+        # if flipped != self.flipped_previous:
+        #     rospy.logwarn("Flipping!!")
+        #     rospy.logwarn("prev_ang_vote_on_flipped = %s" % (str(prev_ang_vote_on_flipped)))
+        #     rospy.logwarn("vel_ang_vote_on_flipped = %s" % (str(vel_ang_vote_on_flipped)))
+        #     rospy.logwarn("flipped = %s" % (str(flipped)))
 
-        self.flipped_previous = flipped
+        # self.flipped_previous = flipped
 
         if not flipped:
             self.orient_ang_previous = orient_ang
