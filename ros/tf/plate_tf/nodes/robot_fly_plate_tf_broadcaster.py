@@ -228,12 +228,6 @@ class PoseTFConversion:
                         self.ang_data.append([t,fly_plate_a])
                         self.ang_f_data.append([t,a])
 
-                        # rospy.logwarn("ang = %s\n" % (str(self.ang_data)))
-                        # plot1 = Gnuplot.PlotItems.Data(self.ang_data, with_="lines", title="Angle")
-                        # plot2 = Gnuplot.PlotItems.Data(self.ang_f_data, with_="lines", title="FilteredAngle")
-
-                        self.gp.plot(self.ang_data, self.ang_f_data)
-
                         # if a is not None:
                         #     quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
 
@@ -265,3 +259,8 @@ if __name__ == '__main__':
     ptc = PoseTFConversion()
     while not rospy.is_shutdown():
         rospy.spin()
+
+    plot1 = Gnuplot.PlotItems.Data(self.ang_data, with_="lines", title="Angle")
+    plot2 = Gnuplot.PlotItems.Data(self.ang_f_data, with_="lines", title="FilteredAngle")
+    self.gp.plot(plot1, plot2)
+
