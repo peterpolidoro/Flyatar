@@ -12,7 +12,6 @@ class ChooseOrientation:
     def __init__(self):
         self.zaxis = (0,0,1)
         self.orient_ang_previous = None
-        self.flipped_previous = None
         self.disagreement_count = 0
         self.disagreement_count_limit = 10
 
@@ -29,14 +28,19 @@ class ChooseOrientation:
         qz = tf.transformations.quaternion_about_axis((ang + math.pi), self.zaxis)
         return qz
 
+    def mod_angle(self,angle):
+        angle = angle%2*math.pi
+        return angle
+
     def condition_angle(self,angle):
+        angle = self.mod_angle(angle)
         if math.pi < angle:
             angle = 2*math.pi - angle
         return angle
 
     def choose_orientation(self,quat,vel_ang,stopped):
         # orient_ang is ambiguous modulo pi radians
-        vel_ang = self.condition_angle(vel_ang)
+        vel_ang = self.mod_angle(vel_ang)
 
         # rospy.logwarn("orient_ang = %s, vel_ang = %s" % (str(orient_ang*180/math.pi),str(vel_ang*180/math.pi)))
         if not stopped:
@@ -46,8 +50,8 @@ class ChooseOrientation:
         else:
             return None
 
-        orient_ang = self.condition_angle(self.angle_from_quaternion(quat))
-        orient_ang_flipped = self.condition_angle(orient_ang + math.pi)
+        orient_ang = self.mod_angle(self.angle_from_quaternion(quat))
+        orient_ang_flipped = self.mod_angle(orient_ang + math.pi)
         diff_vel_ang = self.condition_angle(abs(orient_ang - ref_ang))
         diff_vel_ang_flipped = self.condition_angle(abs(orient_ang_flipped - ref_ang))
 
@@ -81,11 +85,10 @@ class ChooseOrientation:
             rospy.logwarn("orient_ang_flipped = %s" % (str(orient_ang_flipped)))
             rospy.logwarn("disagreement_count = %s" % (str(self.disagreement_count)))
             if self.disagreement_count < self.disagreement_count_limit:
-                flipped = self.flipped_previous
+                flipped = prev_ang_vote_on_flipped
             else:
                 flipped = vel_ang_vote_on_flipped
 
-        self.flipped_previous = flipped
         if not flipped:
             self.orient_ang_previous = orient_ang
             return quat
