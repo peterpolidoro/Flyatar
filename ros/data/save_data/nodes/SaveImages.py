@@ -27,7 +27,7 @@ class SaveImages:
 
         self.saving_images_started = False
         self.last_image_time = None
-        self.rate = 100
+        self.rate = rospy.Rate(10)     # Hz
 
         # self.color_max = 255
         # self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
