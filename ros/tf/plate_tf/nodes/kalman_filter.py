@@ -21,7 +21,7 @@ class KalmanFilter:
         self.kal.measurement_noise_cov[2,2] = 1000
         self.kal.measurement_noise_cov[3,3] = 40
         self.kal.measurement_noise_cov[4,4] = 40
-        self.kal.measurement_noise_cov[5,5] = 40
+        self.kal.measurement_noise_cov[5,5] = 1000
         # self.measurement = cv.CreateMat(2,1,cv.GetElemType(self.kal.state_pre))
         # self.measurement = cv.CreateMat(4,1,cv.GetElemType(self.kal.state_pre))
         self.measurement = cv.CreateMat(6,1,cv.GetElemType(self.kal.state_pre))

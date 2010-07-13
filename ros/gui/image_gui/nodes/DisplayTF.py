@@ -12,6 +12,7 @@ from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import PointStamped
 from stage.msg import Setpoint
 from plate_tf.srv import *
+from plate_tf.msg import StopState, InBoundsState
 
 class ImageDisplay:
 
@@ -24,6 +25,9 @@ class ImageDisplay:
         self.image_sub = rospy.Subscriber(self.image_name, Image, self.image_callback)
         self.image_pub = rospy.Publisher("/camera/image_display",Image)
         self.setpoint_sub = rospy.Subscriber("setpoint",Setpoint, self.setpoint_callback)
+        self.in_bounds_sub = rospy.Subscriber("InBoundsState",InBoundsState, self.in_bounds_callback)
+
+        self.in_bounds_state = InBoundsState()
 
         cv.NamedWindow("Display",1)
         self.bridge = CvBridge()
@@ -36,6 +40,23 @@ class ImageDisplay:
         self.plate_image_origin.point.x = 0
         self.plate_image_origin.point.y = 0
         self.plate_image_origin.point.z = 0
+
+        self.bounds_center_plate = PointStamped()
+        self.bounds_center_plate.header.frame_id = "Plate"
+        self.bounds_center_plate.point.x = 0
+        self.bounds_center_plate.point.y = 0
+        self.bounds_center_plate.point.z = 0
+        self.bounds_limit_plate = PointStamped()
+        self.bounds_limit_plate.header.frame_id = "Plate"
+        self.bounds_limit_plate.point.x = rospy.get_param('in_bounds_radius',100)
+        self.bounds_limit_plate.point.y = 0
+        self.bounds_limit_plate.point.z = 0
+
+        self.bounds_center_camera = PointStamped()
+        self.bounds_center_camera.header.frame_id = "Camera"
+        self.bounds_limit_camera = PointStamped()
+        self.bounds_limit_camera.header.frame_id = "Camera"
+
         self.fly_image_origin = PointStamped()
         self.fly_image_origin.header.frame_id = "FlyImage"
         self.fly_image_origin.point.x = 0
@@ -107,6 +128,19 @@ class ImageDisplay:
             self.im_display_pub = cv.CreateImage(self.resize_size,cv.IPL_DEPTH_8U,3)
         else:
             self.im_display_pub = cv.CreateImage(cv.GetSize(cv_image),cv.IPL_DEPTH_8U,3)
+
+        Xsrc = [self.bounds_center_plate.point.x,self.bounds_limit_plate.point.x]
+        Ysrc = [self.bounds_center_plate.point.y,self.bounds_limit_plate.point.y]
+        response = self.plate_to_camera(Xsrc,Ysrc)
+        self.bounds_center_camera.point.x = response.Xdst[0]
+        self.bounds_center_camera.point.y = response.Ydst[0]
+        self.bounds_limit_camera.point.x = response.Xdst[1]
+        self.bounds_limit_camera.point.y = response.Ydst[1]
+        self.bounds_center_image_frame = self.tf_listener.transformPoint(self.image_frame,self.bounds_center_camera)
+        self.bounds_limit_image_frame = self.tf_listener.transformPoint(self.image_frame,self.bounds_limit_camera)
+        self.bounds_radius = math.sqrt((self.bounds_center_image_frame.point.x - self.bounds_limit_image_frame.point.x)**2 + \
+                                       (self.bounds_center_image_frame.point.y - self.bounds_limit_image_frame.point.y)**2)
+
         self.images_initialized = True
 
     def setpoint_callback(self,data):
@@ -115,6 +149,11 @@ class ImageDisplay:
         self.setpoint.header.frame_id = data.header.frame_id
         self.setpoint.radius = data.radius
         self.setpoint.theta = data.theta
+
+    def in_bounds_callback(self,data):
+        if not self.initialized:
+            return
+        self.in_bounds_state = data
 
     def draw_axes(self,frame_id):
         try:
@@ -258,6 +297,10 @@ class ImageDisplay:
 
         cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
 
+        cv.Circle(self.im_display,
+                  (int(self.bounds_limit_image_frame.point.x),int(self.bounds_limit_image_frame.point.x)),
+                  self.bounds_radius, cv.CV_RGB(self.color_max,self.color_max,0), 1)
+
         try:
             plate_image_o = self.tf_listener.transformPoint(self.image_frame,self.plate_image_origin)
             fly_image_o = self.tf_listener.transformPoint(self.image_frame,self.fly_image_origin)
@@ -265,13 +308,17 @@ class ImageDisplay:
 
             if self.setpoint.header.frame_id in "Plate":
                 self.setpoint_image_origin = plate_image_o
+                self.draw_setpoint()
             else:
                 self.setpoint_image_origin = fly_image_o
+                if self.in_bounds_stateFlyInBounds:
+                    self.draw_setpoint()
 
-            self.draw_setpoint()
             self.draw_axes("Plate")
-            self.draw_axes("Fly")
-            self.draw_axes("Robot")
+            if self.in_bounds_state.FlyInBounds:
+                self.draw_axes("Fly")
+            if self.in_bounds_state.RobotInBounds:
+                self.draw_axes("Robot")
 
         except (tf.LookupException, tf.ConnectivityException):
             pass
