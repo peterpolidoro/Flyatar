@@ -311,7 +311,7 @@ class ImageDisplay:
 
         cv.Circle(self.im_display,
                   (int(self.bounds_center_image_frame.point.x),int(self.bounds_center_image_frame.point.y)),
-                  int(self.bounds_radius), cv.CV_RGB(self.color_max,self.color_max,0), 1)
+                  int(self.bounds_radius), cv.CV_RGB(self.color_max,self.color_max,0), 2)
 
         try:
             plate_image_o = self.tf_listener.transformPoint(self.image_frame,self.plate_image_origin)
