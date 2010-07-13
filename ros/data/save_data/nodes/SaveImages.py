@@ -125,8 +125,8 @@ class SaveImages:
             if self.saving_images_started and (self.last_image_time is not None):
                 dt = t - self.last_image_time
                 rospy.logwarn("dt = %s" % (str(dt)))
-            if 10 < dt:
-                self.save_video()
+                if 10 < dt:
+                    self.save_video()
             self.rate.sleep()
 
 if __name__ == '__main__':
