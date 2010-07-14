@@ -212,6 +212,9 @@ class PoseTFConversion:
                     else:
                         quat_chosen = None
 
+                    if "Robot" in object_name:
+                        quat_chosen = quat_plate
+
                     if quat_chosen is not None:
                         a_plate = CircleFunctions.mod_angle(tf.transformations.euler_from_quaternion(quat_chosen)[2])
                     else:
