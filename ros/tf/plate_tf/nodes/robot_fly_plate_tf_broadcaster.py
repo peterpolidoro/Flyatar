@@ -40,6 +40,8 @@ class PoseTFConversion:
         self.angles_pub = rospy.Publisher('Angles',Angles)
         self.angle_threshold = 0.2
 
+        self.position_threshold = 2
+
         rospy.wait_for_service('camera_to_plate')
         try:
             self.camera_to_plate = rospy.ServiceProxy('camera_to_plate', PlateCameraConversion)
@@ -141,7 +143,9 @@ class PoseTFConversion:
 
                         self.stop_pub.publish(self.stop_state)
 
-                        if (x is not None) and (y is not None):
+                        if (x is not None) and (y is not None) and \
+                               (abs(robot_plate_x - x) < self.position_threshold) and \
+                               (abs(robot_plate_y - y) < self.position_threshold):
                             robot_plate_x = x
                             robot_plate_y = y
 
@@ -220,7 +224,9 @@ class PoseTFConversion:
 
                         self.stop_pub.publish(self.stop_state)
 
-                        if (x is not None) and (y is not None):
+                        if (x is not None) and (y is not None) and \
+                               (abs(robot_plate_x - x) < self.position_threshold) and \
+                               (abs(robot_plate_y - y) < self.position_threshold):
                             fly_plate_x = x
                             fly_plate_y = y
 
