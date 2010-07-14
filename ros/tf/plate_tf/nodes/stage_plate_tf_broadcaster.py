@@ -17,8 +17,8 @@ class StagePlateTFBroadcaster:
         self.tf_listener = tf.TransformListener()
         self.tf_broadcaster = tf.TransformBroadcaster()
 
-        self.stop_state_sub = rospy.Subscriber('StopState',StopState,self.stop_state_callback)
-        self.stop_state = StopState()
+        self.robot_stop_state_sub = rospy.Subscriber('StopState/Robot',StopState,self.robot_stop_state_callback)
+        self.robot_stop_state = StopState()
 
         self.dt = 0.01
         self.rate = rospy.Rate(1/self.dt)
@@ -70,14 +70,14 @@ class StagePlateTFBroadcaster:
                 pass
         return point_plate
 
-    def stop_state_callback(self,data):
-        self.stop_state = copy.deepcopy(data)
+    def robot_stop_state_callback(self,data):
+        self.robot_stop_state = copy.deepcopy(data)
 
     def broadcast(self):
         while not rospy.is_shutdown():
             if self.initialized:
                 # try:
-                if self.stop_state.RobotStopped and (not self.adjusted):
+                if self.robot_stop_state.Stopped and (not self.adjusted):
                     robot_plate = self.convert_to_plate(self.robot_origin)
                     magnet_plate = self.convert_to_plate(self.magnet_origin)
                     # rospy.logwarn("robot_plate.point.x = \n%s" % (str(robot_plate.point.x)))
@@ -93,8 +93,8 @@ class StagePlateTFBroadcaster:
 
                         stage_plate_offset_x_adjusted = self.stage_plate_offset_x + self.stage_plate_offset_x_error
                         stage_plate_offset_y_adjusted = self.stage_plate_offset_y + self.stage_plate_offset_y_error
-                        rospy.logwarn("stage_plate_offset_x_adjusted = \n%s" % (str(stage_plate_offset_x_adjusted)))
-                        rospy.logwarn("stage_plate_offset_y_adjusted = \n%s" % (str(stage_plate_offset_y_adjusted)))
+                        # rospy.logwarn("stage_plate_offset_x_adjusted = \n%s" % (str(stage_plate_offset_x_adjusted)))
+                        # rospy.logwarn("stage_plate_offset_y_adjusted = \n%s" % (str(stage_plate_offset_y_adjusted)))
 
                         # t = rospy.get_time()
                         # (x,y,vx,vy) = self.kf_stage_plate_offset.update((stage_plate_offset_x_adjusted,stage_plate_offset_y_adjusted),t)
@@ -103,7 +103,7 @@ class StagePlateTFBroadcaster:
                         self.adjusted = True
                         # self.stage_plate_offset_x = stage_plate_offset_x_adjusted
                         # self.stage_plate_offset_y = stage_plate_offset_y_adjusted
-                elif (not self.stop_state.RobotStopped) and self.adjusted:
+                elif (not self.robot_stop_state.Stopped) and self.adjusted:
                     self.adjusted = False
 
                 self.tf_broadcaster.sendTransform((self.stage_plate_offset_x, self.stage_plate_offset_y, 0),
