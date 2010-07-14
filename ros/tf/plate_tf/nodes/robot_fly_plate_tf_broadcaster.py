@@ -179,7 +179,10 @@ class PoseTFConversion:
 
                 if quat_plate is not None:
                     a_plate = CircleFunctions.mod_angle(tf.transformations.euler_from_quaternion(quat_plate)[2])
+                    rospy.logwarn("a_prev = %s" % (str(a_prev)))
+                    rospy.logwarn("a_plate = %s" % (str(a_plate)))
                     a_plate = CircleFunctions.unwrap_angle(a_plate,a_prev)
+                    rospy.logwarn("a_plate_unwrapped = %s" % (str(a_plate)))
                     t = msg.header.stamp.to_sec()
                     (x,y,vx,vy) = kf.update((x_plate,y_plate),t)
 
@@ -217,9 +220,7 @@ class PoseTFConversion:
                     a = lpf_angle.update(a_plate,t)
                     a_prev = a
 
-                    rospy.logwarn("a_plate = %s" % (str(a_plate)))
                     rospy.logwarn("a = %s" % (str(a)))
-                    rospy.logwarn("a_prev = %s" % (str(a_prev)))
 
                     a_filtered_data.UsingFiltered = 0
 
