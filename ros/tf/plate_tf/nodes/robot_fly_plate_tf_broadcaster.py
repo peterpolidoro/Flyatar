@@ -41,17 +41,17 @@ class PoseTFConversion:
 
         self.in_bounds_radius = rospy.get_param('in_bounds_radius',100)
 
-        self.robot_x_filtered_data = FilteredData()
-        self.robot_x_filtered_data_pub = rospy.Publisher('FilteredData/RobotX',FilteredData)
-        self.robot_y_filtered_data = FilteredData()
-        self.robot_y_filtered_data_pub = rospy.Publisher('FilteredData/RobotY',FilteredData)
+        self.robot_vx_filtered_data = FilteredData()
+        self.robot_vx_filtered_data_pub = rospy.Publisher('FilteredData/RobotVX',FilteredData)
+        self.robot_vy_filtered_data = FilteredData()
+        self.robot_vy_filtered_data_pub = rospy.Publisher('FilteredData/RobotVY',FilteredData)
         self.robot_a_filtered_data = FilteredData()
         self.robot_a_filtered_data_pub = rospy.Publisher('FilteredData/RobotAngle',FilteredData)
 
-        self.fly_x_filtered_data = FilteredData()
-        self.fly_x_filtered_data_pub = rospy.Publisher('FilteredData/FlyX',FilteredData)
-        self.fly_y_filtered_data = FilteredData()
-        self.fly_y_filtered_data_pub = rospy.Publisher('FilteredData/FlyY',FilteredData)
+        self.fly_vx_filtered_data = FilteredData()
+        self.fly_vx_filtered_data_pub = rospy.Publisher('FilteredData/FlyVX',FilteredData)
+        self.fly_vy_filtered_data = FilteredData()
+        self.fly_vy_filtered_data_pub = rospy.Publisher('FilteredData/FlyVY',FilteredData)
         self.fly_a_filtered_data = FilteredData()
         self.fly_a_filtered_data_pub = rospy.Publisher('FilteredData/FlyAngle',FilteredData)
 
@@ -130,10 +130,10 @@ class PoseTFConversion:
             in_bounds_pub = self.fly_in_bounds_pub
             stop_state = self.fly_stop_state
             in_bounds_state = self.fly_in_bounds_state
-            x_filtered_data = self.fly_x_filtered_data
-            x_filtered_data_pub = self.fly_x_filtered_data_pub
-            y_filtered_data = self.fly_y_filtered_data
-            y_filtered_data_pub = self.fly_y_filtered_data_pub
+            vx_filtered_data = self.fly_vx_filtered_data
+            vx_filtered_data_pub = self.fly_vx_filtered_data_pub
+            vy_filtered_data = self.fly_vy_filtered_data
+            vy_filtered_data_pub = self.fly_vy_filtered_data_pub
             a_filtered_data = self.fly_a_filtered_data
             a_filtered_data_pub = self.fly_a_filtered_data_pub
         else:
@@ -146,10 +146,10 @@ class PoseTFConversion:
             in_bounds_pub = self.robot_in_bounds_pub
             stop_state = self.robot_stop_state
             in_bounds_state = self.robot_in_bounds_state
-            x_filtered_data = self.robot_x_filtered_data
-            x_filtered_data_pub = self.robot_x_filtered_data_pub
-            y_filtered_data = self.robot_y_filtered_data
-            y_filtered_data_pub = self.robot_y_filtered_data_pub
+            vx_filtered_data = self.robot_vx_filtered_data
+            vx_filtered_data_pub = self.robot_vx_filtered_data_pub
+            vy_filtered_data = self.robot_vy_filtered_data
+            vy_filtered_data_pub = self.robot_vy_filtered_data_pub
             a_filtered_data = self.robot_a_filtered_data
             a_filtered_data_pub = self.robot_a_filtered_data_pub
 
@@ -177,6 +177,8 @@ class PoseTFConversion:
                     if (vx is not None) and (vy is not None):
                         vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
                         stopped = sw.classify(vel_mag)
+                        vx_filtered_data.Filtered = vx
+                        vy_filtered_data.Filtered = vy
                     else:
                         vel_mag = vel_ang = stopped = None
 
@@ -187,20 +189,16 @@ class PoseTFConversion:
 
                     stop_pub.publish(stop_state)
 
-                    x_filtered_data.Unfiltered = x_plate
-                    y_filtered_data.Unfiltered = y_plate
-                    x_filtered_data.UsingFiltered = 0
-                    y_filtered_data.UsingFiltered = 0
+                    vx_filtered_data.Unfiltered = 0
+                    vy_filtered_data.Unfiltered = 0
+                    vx_filtered_data.UsingFiltered = 1
+                    vy_filtered_data.UsingFiltered = 1
 
                     if (x is not None) and (y is not None) and \
                            (abs(x_plate - x) < self.position_threshold) and \
                            (abs(y_plate - y) < self.position_threshold):
                         x_plate = x
                         y_plate = y
-                        x_filtered_data.UsingFiltered = 1
-                        y_filtered_data.UsingFiltered = 1
-                        x_filtered_data.Filtered = x
-                        y_filtered_data.Filtered = y
 
                     a_filtered_data.Unfiltered = a_plate
                     # a_filtered_data.Filtered = a
@@ -211,8 +209,8 @@ class PoseTFConversion:
                     #         quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
                     #         a_filtered_data.UsingFiltered = 1
 
-                    x_filtered_data_pub.publish(x_filtered_data)
-                    y_filtered_data_pub.publish(y_filtered_data)
+                    vx_filtered_data_pub.publish(vx_filtered_data)
+                    vy_filtered_data_pub.publish(vy_filtered_data)
                     a_filtered_data_pub.publish(a_filtered_data)
 
                     if vel_ang is not None:
