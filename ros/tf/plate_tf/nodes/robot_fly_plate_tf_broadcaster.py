@@ -231,7 +231,6 @@ class PoseTFConversion:
                         a_filtered_data.Unfiltered = 0
 
                     a = lpf_angle.update(a_plate,t)
-                    a_prev[0] = a
 
                     if "Fly" in object_name:
                         rospy.logwarn("a = %s" % (str(a)))
@@ -254,9 +253,11 @@ class PoseTFConversion:
                     a_filtered_data_pub.publish(a_filtered_data)
 
                     if vel_ang is not None:
-                        quat_chosen = co.choose_orientation(quat_plate,vel_ang,stopped)
+                        quat_chosen = co.choose_orientation(quat_plate,vel_ang,stopped,a_prev[0])
                     else:
                         quat_chosen = None
+
+                    a_prev[0] = a
 
                     if "Robot" in object_name:
                         quat_chosen = quat_plate
