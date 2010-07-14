@@ -38,6 +38,7 @@ class PoseTFConversion:
 
         self.angles = Angles()
         self.angles_pub = rospy.Publisher('Angles',Angles)
+        self.angle_threshold = 0.4
 
         rospy.wait_for_service('camera_to_plate')
         try:
@@ -228,7 +229,8 @@ class PoseTFConversion:
                         self.angles_pub.publish(self.angles)
 
                         if a is not None:
-                            quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
+                            if abs(CircleFunctions.circle_dist(fly_plate_a,a)) < self.angle_threshold:
+                                quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
 
                         if vel_ang is not None:
                             quat_chosen = self.co_fly.choose_orientation(quat_plate,vel_ang,fly_stopped)
