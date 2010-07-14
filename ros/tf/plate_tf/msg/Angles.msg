@@ -1,2 +1,3 @@
 float32 Angle
 float32 AngleFiltered
+int8 UsingFilteredAngle
