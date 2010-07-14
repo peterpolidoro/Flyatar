@@ -220,6 +220,9 @@ class PoseTFConversion:
                     else:
                         quat_chosen = None
 
+                    if "Robot" in object_name:
+                        quat_chosen = quat_plate
+
                     if quat_chosen is not None:
                         self.tf_broadcaster.sendTransform((x_plate, y_plate, 0),
                                               quat_chosen,
