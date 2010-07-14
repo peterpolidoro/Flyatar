@@ -87,20 +87,20 @@ class ChooseOrientation:
             # rospy.logwarn("orient_ang_flipped = %s" % (str(orient_ang_flipped)))
             rospy.logwarn("disagreement_count = %s" % (str(self.disagreement_count)))
 
-            if vel_ang_vote_on_flipped:
-                rospy.logwarn("diff_vel_ang_flipped = %s" % (str(diff_vel_ang_flipped)))
-            else:
-                rospy.logwarn("diff_vel_ang = %s" % (str(diff_vel_ang)))
+            # if vel_ang_vote_on_flipped:
+            #     rospy.logwarn("diff_vel_ang_flipped = %s" % (str(diff_vel_ang_flipped)))
+            # else:
+            #     rospy.logwarn("diff_vel_ang = %s" % (str(diff_vel_ang)))
 
-            if prev_ang_vote_on_flipped:
-                rospy.logwarn("diff_prev_ang_flipped = %s" % (str(diff_prev_ang_flipped)))
-            else:
-                rospy.logwarn("diff_prev_ang = %s" % (str(diff_prev_ang)))
+            # if prev_ang_vote_on_flipped:
+            #     rospy.logwarn("diff_prev_ang_flipped = %s" % (str(diff_prev_ang_flipped)))
+            # else:
+            #     rospy.logwarn("diff_prev_ang = %s" % (str(diff_prev_ang)))
 
             if self.disagreement_count < self.disagreement_count_limit:
-                flipped = vel_ang_vote_on_flipped
-            else:
                 flipped = prev_ang_vote_on_flipped
+            else:
+                flipped = vel_ang_vote_on_flipped
             rospy.logwarn("flipped = %s" % (str(flipped)))
             if self.flipped_previous is not None:
                 rospy.logwarn("flipped_previous = %s" % (str(self.flipped_previous)))
