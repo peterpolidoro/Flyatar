@@ -187,8 +187,8 @@ class PoseTFConversion:
 
                     stop_pub.publish(stop_state)
 
-                    x_filtered_data.UnFiltered = x_plate
-                    y_filtered_data.UnFiltered = y_plate
+                    x_filtered_data.Unfiltered = x_plate
+                    y_filtered_data.Unfiltered = y_plate
                     x_filtered_data.UsingFiltered = 0
                     y_filtered_data.UsingFiltered = 0
 
