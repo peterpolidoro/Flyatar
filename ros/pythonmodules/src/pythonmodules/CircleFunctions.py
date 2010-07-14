@@ -5,26 +5,30 @@ import math
 pi = math.pi
 
 def mod_angle(angle):
-    angle = angle%(2*pi)
+    if angle is not None:
+        angle = angle%(2*pi)
     return angle
 
 def circle_dist(start_angle,stop_angle):
-    diff1 = mod_angle(stop_angle) - mod_angle(start_angle)
-    if start_angle < stop_angle:
-        diff2 = stop_angle - 2*math.pi - start_angle
-    else:
-        diff2 = 2*math.pi - start_angle + stop_angle
-    abs_min = min(abs(diff1),abs(diff2))
-    if abs_min == abs(diff1):
-        return diff1
-    else:
-        return diff2
+    if (start_angle is not None) and (stop_angle is not None):
+        diff1 = mod_angle(stop_angle) - mod_angle(start_angle)
+        if start_angle < stop_angle:
+            diff2 = stop_angle - 2*math.pi - start_angle
+        else:
+            diff2 = 2*math.pi - start_angle + stop_angle
+        abs_min = min(abs(diff1),abs(diff2))
+        if abs_min == abs(diff1):
+            return diff1
+        else:
+            return diff2
 
 def radians_to_degrees(angle):
-    return angle*180/pi
+    if angle is not None:
+        return angle*180/pi
 
 def degrees_to_radians(angle):
-    return angle*pi/180
+    if angle is not None:
+        return angle*pi/180
 
 if __name__ == '__main__':
     pi = math.pi
