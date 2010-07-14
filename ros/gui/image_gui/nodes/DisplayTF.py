@@ -25,9 +25,10 @@ class ImageDisplay:
         self.image_sub = rospy.Subscriber(self.image_name, Image, self.image_callback)
         self.image_pub = rospy.Publisher("/camera/image_display",Image)
         self.setpoint_sub = rospy.Subscriber("setpoint",Setpoint, self.setpoint_callback)
-        self.in_bounds_sub = rospy.Subscriber("InBoundsState",InBoundsState, self.in_bounds_callback)
-
-        self.in_bounds_state = InBoundsState()
+        self.fly_in_bounds_sub = rospy.Subscriber("InBoundsState/Fly",InBoundsState, self.fly_in_bounds_callback)
+        self.fly_in_bounds_state = InBoundsState()
+        self.robot_in_bounds_sub = rospy.Subscriber("InBoundsState/Robot",InBoundsState, self.robot_in_bounds_callback)
+        self.robot_in_bounds_state = InBoundsState()
 
         cv.NamedWindow("Display",1)
         self.bridge = CvBridge()
@@ -162,10 +163,15 @@ class ImageDisplay:
         self.setpoint.radius = data.radius
         self.setpoint.theta = data.theta
 
-    def in_bounds_callback(self,data):
+    def fly_in_bounds_callback(self,data):
         if not self.initialized:
             return
-        self.in_bounds_state = data
+        self.fly_in_bounds_state = data
+
+    def robot_in_bounds_callback(self,data):
+        if not self.initialized:
+            return
+        self.robot_in_bounds_state = data
 
     def draw_axes(self,frame_id):
         try:
@@ -323,13 +329,13 @@ class ImageDisplay:
                 self.draw_setpoint()
             else:
                 self.setpoint_image_origin = fly_image_o
-                if self.in_bounds_state.FlyInBounds:
+                if self.fly_in_bounds_state.InBounds:
                     self.draw_setpoint()
 
             self.draw_axes("Plate")
-            if self.in_bounds_state.FlyInBounds:
+            if self.fly_in_bounds_state.InBounds:
                 self.draw_axes("Fly")
-            if self.in_bounds_state.RobotInBounds:
+            if self.robot_in_bounds_state.InBounds:
                 self.draw_axes("Robot")
 
         except (tf.LookupException, tf.ConnectivityException):
