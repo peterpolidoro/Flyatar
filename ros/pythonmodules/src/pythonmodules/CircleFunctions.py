@@ -9,6 +9,11 @@ def mod_angle(angle):
         angle = angle%(2*pi)
     return angle
 
+def unwrap_angle(angle,angle_prev):
+    delta_angle = circle_dist(angle_prev,angle)
+    unwrapped_angle = angle_prev + delta_angle
+    return unwrapped_angle
+
 def circle_dist(start_angle,stop_angle):
     if (start_angle is not None) and (stop_angle is not None):
         diff1 = mod_angle(stop_angle) - mod_angle(start_angle)
@@ -42,3 +47,9 @@ if __name__ == '__main__':
         print "stop_angle = %s" % (str(radians_to_degrees(stop_ang)))
         print "diff = %s" % (str(radians_to_degrees(diff)))
 
+        ang = stop_ang
+        ang_prev = start_ang
+        unwrapped_ang = unwrap_angle(ang,ang_prev)
+        print "ang_prev = %s" % (str(radians_to_degrees(ang_prev)))
+        print "ang = %s" % (str(radians_to_degrees(ang)))
+        print "unwrapped_ang = %s" % (str(radians_to_degrees(unwrapped_ang)))

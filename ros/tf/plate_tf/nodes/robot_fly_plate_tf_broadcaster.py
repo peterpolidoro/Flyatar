@@ -34,6 +34,8 @@ class PoseTFConversion:
         self.kf_robot = filters.KalmanFilter()
         self.lpf_fly_angle = filters.LowPassFilter()
         self.lpf_robot_angle = filters.LowPassFilter()
+        self.fly_angle_previous = None
+        self.robot_angle_previous = None
 
         self.sw_fly = sw.StopWalk()
         self.sw_robot = sw.StopWalk()
@@ -139,6 +141,7 @@ class PoseTFConversion:
             a_filtered_data = self.fly_a_filtered_data
             a_filtered_data_pub = self.fly_a_filtered_data_pub
             lpf_angle = self.lpf_fly_angle
+            a_prev = self.fly_angle_previous
         else:
             image_frame_name = "RobotImage"
             frame_name = "Robot"
@@ -156,6 +159,7 @@ class PoseTFConversion:
             a_filtered_data = self.robot_a_filtered_data
             a_filtered_data_pub = self.robot_a_filtered_data_pub
             lpf_angle = self.lpf_robot_angle
+            a_prev = self.robot_angle_previous
 
         try:
             Xsrc = [msg.pose.position.x]
@@ -175,6 +179,7 @@ class PoseTFConversion:
 
                 if quat_plate is not None:
                     a_plate = CircleFunctions.mod_angle(tf.transformations.euler_from_quaternion(quat_plate)[2])
+                    a_plate = CircleFunctions.unwrap_angle(a_plate,a_prev)
                     t = msg.header.stamp.to_sec()
                     (x,y,vx,vy) = kf.update((x_plate,y_plate),t)
 
@@ -211,12 +216,12 @@ class PoseTFConversion:
                     a_filtered_data.Filtered = a
 
                     if a is not None:
+                        a = CircleFunctions.mod_angle(a)
+                        quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
+                        a_filtered_data.UsingFiltered = 1
                         # if abs(CircleFunctions.circle_dist(a_plate,a)) < self.angle_threshold:
                             # quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
                             # a_filtered_data.UsingFiltered = 1
-                        # quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
-                        # a_filtered_data.UsingFiltered = 1
-                        pass
 
                     vx_filtered_data_pub.publish(vx_filtered_data)
                     vy_filtered_data_pub.publish(vy_filtered_data)
