@@ -217,6 +217,10 @@ class PoseTFConversion:
                     a = lpf_angle.update(a_plate,t)
                     a_prev = a
 
+                    rospy.logwarn("a_plate = %s" % (str(a_plate)))
+                    rospy.logwarn("a = %s" % (str(a)))
+                    rospy.logwarn("a_prev = %s" % (str(a_prev)))
+
                     a_filtered_data.UsingFiltered = 0
 
                     if a is not None:
