@@ -19,7 +19,9 @@ def unwrap_angle(angle,angle_prev):
 
 def circle_dist(start_angle,stop_angle):
     if (start_angle is not None) and (stop_angle is not None):
-        diff1 = mod_angle(stop_angle) - mod_angle(start_angle)
+        start_angle = mod_angle(start_angle)
+        stop_angle = mod_angle(stop_angle)
+        diff1 = stop_angle - start_angle
         if start_angle < stop_angle:
             diff2 = stop_angle - 2*math.pi - start_angle
         else:
