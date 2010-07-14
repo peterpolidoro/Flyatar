@@ -10,6 +10,7 @@ import kalman_filter as kf
 import stop_walk as sw
 import choose_orientation as co
 from plate_tf.msg import StopState, InBoundsState
+from pythonmodules import CircleFunctions
 import matplotlib.pyplot as plt
 
 class PoseTFConversion:
@@ -201,10 +202,11 @@ class PoseTFConversion:
 
                     if quat_plate is not None:
                         # rospy.logwarn("fly_plate_a_unfiltered = %s" % (str(tf.transformations.euler_from_quaternion(quat_plate)[2])))
-                        fly_plate_a = tf.transformations.euler_from_quaternion(quat_plate)[2]
+                        fly_plate_a = CircleFunctions.mod_angle(tf.transformations.euler_from_quaternion(quat_plate)[2])
                         t = msg.header.stamp.to_sec()
                         # (x,y,vx,vy) = self.kf_fly.update((fly_plate_x,fly_plate_y),t)
                         (x,y,a,vx,vy,va) = self.kf_fly.update((fly_plate_x,fly_plate_y,fly_plate_a),t)
+                        a = CircleFunctions.mod_angle(a)
                         # rospy.logwarn("fly_plate_a_filtered = %s" % (str(a)))
 
                         # rospy.logwarn("fly: x = %s, y = %s, vx = %s, vy = %s" % (x,y,vx,vy))
