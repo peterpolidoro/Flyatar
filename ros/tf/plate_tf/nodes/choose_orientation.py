@@ -98,9 +98,9 @@ class ChooseOrientation:
                 rospy.logwarn("diff_prev_ang = %s" % (str(diff_prev_ang)))
 
             if self.disagreement_count < self.disagreement_count_limit:
-                flipped = prev_ang_vote_on_flipped
-            else:
                 flipped = vel_ang_vote_on_flipped
+            else:
+                flipped = prev_ang_vote_on_flipped
             rospy.logwarn("flipped = %s" % (str(flipped)))
             if self.flipped_previous is not None:
                 rospy.logwarn("flipped_previous = %s" % (str(self.flipped_previous)))
