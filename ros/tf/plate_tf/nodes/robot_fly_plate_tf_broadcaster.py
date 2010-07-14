@@ -36,7 +36,6 @@ class PoseTFConversion:
 
         self.in_bounds_radius = rospy.get_param('in_bounds_radius',100)
 
-        self.time_0 = rospy.get_time()
         self.angles = Angles()
         self.angles_pub = rospy.Publisher('Angles',Angles)
 
@@ -224,14 +223,12 @@ class PoseTFConversion:
                             fly_plate_x = x
                             fly_plate_y = y
 
-                        t = rospy.get_time() - self.time_0
-                        self.angles.Time = t
                         self.angles.Angle = fly_plate_a
                         self.angles.AngleFiltered = a
                         self.angles_pub.publish(self.angles)
 
-                        # if a is not None:
-                        #     quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
+                        if a is not None:
+                            quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
 
                         if vel_ang is not None:
                             quat_chosen = self.co_fly.choose_orientation(quat_plate,vel_ang,fly_stopped)
