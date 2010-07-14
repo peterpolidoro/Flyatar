@@ -207,7 +207,7 @@ class PoseTFConversion:
                     a_filtered_data.Unfiltered = a_plate
                     a_filtered_data.UsingFiltered = 0
 
-                    a = self.lpf_angle.update(a_plate,t)
+                    a = lpf_angle.update(a_plate,t)
                     a_filtered_data.Filtered = a
 
                     if a is not None:
