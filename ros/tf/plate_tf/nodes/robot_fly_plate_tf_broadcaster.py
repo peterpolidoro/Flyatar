@@ -6,7 +6,7 @@ import rospy
 import tf, numpy, math
 from geometry_msgs.msg import PoseStamped
 from plate_tf.srv import *
-import kalman_filter as kf
+import filters
 import stop_walk as sw
 import choose_orientation as co
 from plate_tf.msg import StopState, InBoundsState, FilteredData
@@ -30,8 +30,10 @@ class PoseTFConversion:
         self.robot_stop_state = StopState()
         self.robot_in_bounds_state = InBoundsState()
 
-        self.kf_fly = kf.KalmanFilter()
-        self.kf_robot = kf.KalmanFilter()
+        self.kf_fly = filters.KalmanFilter()
+        self.kf_robot = filters.KalmanFilter()
+        self.lpf_fly_angle = filters.LowPassFilter()
+        self.lpf_robot_angle = filters.LowPassFilter()
 
         self.sw_fly = sw.StopWalk()
         self.sw_robot = sw.StopWalk()
@@ -136,6 +138,7 @@ class PoseTFConversion:
             vy_filtered_data_pub = self.fly_vy_filtered_data_pub
             a_filtered_data = self.fly_a_filtered_data
             a_filtered_data_pub = self.fly_a_filtered_data_pub
+            lpf_angle = self.lpf_fly_angle
         else:
             image_frame_name = "RobotImage"
             frame_name = "Robot"
@@ -152,6 +155,7 @@ class PoseTFConversion:
             vy_filtered_data_pub = self.robot_vy_filtered_data_pub
             a_filtered_data = self.robot_a_filtered_data
             a_filtered_data_pub = self.robot_a_filtered_data_pub
+            lpf_angle = self.lpf_robot_angle
 
         try:
             Xsrc = [msg.pose.position.x]
@@ -201,13 +205,15 @@ class PoseTFConversion:
                         y_plate = y
 
                     a_filtered_data.Unfiltered = a_plate
-                    # a_filtered_data.Filtered = a
                     a_filtered_data.UsingFiltered = 0
 
-                    # if a is not None:
-                    #     if abs(CircleFunctions.circle_dist(a_plate,a)) < self.angle_threshold:
-                    #         quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
-                    #         a_filtered_data.UsingFiltered = 1
+                    a = self.lpf_angle.update(a_plate,t)
+                    a_filtered_data.Filtered = a
+
+                    if a is not None:
+                        if abs(CircleFunctions.circle_dist(a_plate,a)) < self.angle_threshold:
+                            quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
+                            a_filtered_data.UsingFiltered = 1
 
                     vx_filtered_data_pub.publish(vx_filtered_data)
                     vy_filtered_data_pub.publish(vy_filtered_data)

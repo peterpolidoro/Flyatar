@@ -8,6 +8,26 @@ import rospy
 import cv
 from geometry_msgs.msg import PoseStamped
 
+class LowPassFilter:
+    def __init__(self):
+        self.t_previous = None
+        self.zf_previous = None
+
+    def update(self,z,t):
+        if self.t_previous is not None:
+            dt = t - self.t_previous
+            RC = rospy.get_param('RC',0.5)
+            alpha = dt/(RC + dt)
+            zf = alpha*z + (1 - alpha)*self.zf_previous
+        else:
+            zf = z
+
+        self.t_previous = t
+        self.zf_previous = zf
+
+        return zf
+
+
 class KalmanFilter:
     def __init__(self):
         # self.kal = cv.CreateKalman(4,2,0)
