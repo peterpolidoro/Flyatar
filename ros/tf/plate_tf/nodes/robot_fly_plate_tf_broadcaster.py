@@ -216,6 +216,7 @@ class PoseTFConversion:
                             # a_filtered_data.UsingFiltered = 1
                         # quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
                         # a_filtered_data.UsingFiltered = 1
+                        pass
 
                     vx_filtered_data_pub.publish(vx_filtered_data)
                     vy_filtered_data_pub.publish(vy_filtered_data)
