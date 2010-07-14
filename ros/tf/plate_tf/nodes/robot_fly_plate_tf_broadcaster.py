@@ -225,8 +225,8 @@ class PoseTFConversion:
                         self.stop_pub.publish(self.stop_state)
 
                         if (x is not None) and (y is not None) and \
-                               (abs(robot_plate_x - x) < self.position_threshold) and \
-                               (abs(robot_plate_y - y) < self.position_threshold):
+                               (abs(fly_plate_x - x) < self.position_threshold) and \
+                               (abs(fly_plate_y - y) < self.position_threshold):
                             fly_plate_x = x
                             fly_plate_y = y
 
