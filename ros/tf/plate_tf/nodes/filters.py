@@ -16,7 +16,7 @@ class LowPassFilter:
     def update(self,z,t):
         if self.t_previous is not None:
             dt = t - self.t_previous
-            RC = rospy.get_param('RC',0.5)
+            RC = rospy.get_param('RC',0.1)
             alpha = dt/(RC + dt)
             zf = alpha*z + (1 - alpha)*self.zf_previous
         else:

@@ -15,6 +15,7 @@ class ChooseOrientation:
         self.orient_ang_previous = None
         self.disagreement_count = 0
         self.disagreement_count_limit = 10
+        self.flipped_previous = None
 
     def angle_from_quaternion(self,quat):
         # Find and return angle of rotation about z-axis
@@ -100,6 +101,9 @@ class ChooseOrientation:
                 flipped = prev_ang_vote_on_flipped
             else:
                 flipped = vel_ang_vote_on_flipped
+            rospy.logwarn("flipped = %s" % (str(flipped)))
+            if self.flipped_previous is not None:
+                rospy.logwarn("flipped_previous = %s" % (str(self.flipped_previous)))
 
         # if flipped != self.flipped_previous:
         #     rospy.logwarn("Flipping!!")
@@ -107,7 +111,7 @@ class ChooseOrientation:
         #     rospy.logwarn("vel_ang_vote_on_flipped = %s" % (str(vel_ang_vote_on_flipped)))
         #     rospy.logwarn("flipped = %s" % (str(flipped)))
 
-        # self.flipped_previous = flipped
+        self.flipped_previous = flipped
 
         if not flipped:
             self.orient_ang_previous = orient_ang
