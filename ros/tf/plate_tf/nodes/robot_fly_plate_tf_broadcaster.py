@@ -206,10 +206,10 @@ class PoseTFConversion:
                     # a_filtered_data.Filtered = a
                     a_filtered_data.UsingFiltered = 0
 
-                    if a is not None:
-                        if abs(CircleFunctions.circle_dist(a_plate,a)) < self.angle_threshold:
-                            quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
-                            a_filtered_data.UsingFiltered = 1
+                    # if a is not None:
+                    #     if abs(CircleFunctions.circle_dist(a_plate,a)) < self.angle_threshold:
+                    #         quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
+                    #         a_filtered_data.UsingFiltered = 1
 
                     x_filtered_data_pub.publish(x_filtered_data)
                     y_filtered_data_pub.publish(y_filtered_data)
