@@ -133,7 +133,7 @@ class PoseTFConversion:
             x_filtered_data = self.fly_x_filtered_data
             x_filtered_data_pub = self.fly_x_filtered_data_pub
             y_filtered_data = self.fly_y_filtered_data
-            y_filterd_data_pub = self.fly_y_filtered_data_pub
+            y_filtered_data_pub = self.fly_y_filtered_data_pub
             a_filtered_data = self.fly_a_filtered_data
             a_filtered_data_pub = self.fly_a_filtered_data_pub
         else:
@@ -149,7 +149,7 @@ class PoseTFConversion:
             x_filtered_data = self.robot_x_filtered_data
             x_filtered_data_pub = self.robot_x_filtered_data_pub
             y_filtered_data = self.robot_y_filtered_data
-            y_filterd_data_pub = self.robot_y_filtered_data_pub
+            y_filtered_data_pub = self.robot_y_filtered_data_pub
             a_filtered_data = self.robot_a_filtered_data
             a_filtered_data_pub = self.robot_a_filtered_data_pub
 
