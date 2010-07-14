@@ -15,8 +15,8 @@ class ContourIdentifier:
     self.contour_info_sub = rospy.Subscriber("ContourInfo",ContourInfo,self.contour_callback)
 
     # Broadcaster/Publishers
-    self.robot_image_pose_pub = rospy.Publisher("RobotImagePose",PoseStamped)
-    self.fly_image_pose_pub = rospy.Publisher("FlyImagePose",PoseStamped)
+    self.robot_image_pose_pub = rospy.Publisher("ImagePose/Robot",PoseStamped)
+    self.fly_image_pose_pub = rospy.Publisher("ImagePose/Fly",PoseStamped)
 
     # Pose
     self.robot_image_pose = PoseStamped()

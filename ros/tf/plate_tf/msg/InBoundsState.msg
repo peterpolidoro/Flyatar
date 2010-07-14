@@ -1,2 +1,1 @@
-int8 FlyInBounds
-int8 RobotInBounds
+int8 InBounds

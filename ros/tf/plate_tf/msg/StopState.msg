@@ -1,2 +1,1 @@
-int8 FlyStopped
-int8 RobotStopped
+int8 Stopped
