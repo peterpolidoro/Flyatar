@@ -58,8 +58,10 @@ class ChooseOrientation:
 
         if diff_vel_ang < diff_vel_ang_flipped:
             vel_ang_vote_on_flipped = False
+            # rospy.logwarn("diff_vel_ang = %s" % (str(diff_vel_ang)))
         else:
             vel_ang_vote_on_flipped = True
+            # rospy.logwarn("diff_vel_ang_flipped = %s" % (str(diff_vel_ang_flipped)))
         # rospy.logwarn("ref_ang = %s, orient_ang = %s, orient_ang_flipped = %s, diff_vel_ang = %s, diff_vel_ang_flipped = %s" % (str(ref_ang),str(orient_ang*180/math.pi),str(orient_ang_flipped*180/math.pi),str(diff_vel_ang*180/math.pi),str(diff_vel_ang_flipped*180/math.pi)))
 
         if self.orient_ang_previous is not None:
@@ -84,7 +86,7 @@ class ChooseOrientation:
             self.disagreement_count += 1
             # rospy.logwarn("orient_ang = %s" % (str(orient_ang)))
             # rospy.logwarn("orient_ang_flipped = %s" % (str(orient_ang_flipped)))
-            # rospy.logwarn("disagreement_count = %s" % (str(self.disagreement_count)))
+            rospy.logwarn("disagreement_count = %s" % (str(self.disagreement_count)))
             if self.disagreement_count < self.disagreement_count_limit:
                 flipped = prev_ang_vote_on_flipped
             else:
