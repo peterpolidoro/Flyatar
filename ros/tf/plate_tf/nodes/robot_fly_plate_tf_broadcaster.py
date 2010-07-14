@@ -185,7 +185,7 @@ class PoseTFConversion:
                     else:
                         stop_state.Stopped = 0
 
-                    self.stop_pub.publish(stop_state)
+                    stop_pub.publish(stop_state)
 
                     x_filtered_data.UnFiltered = x_plate
                     y_filtered_data.UnFiltered = y_plate
