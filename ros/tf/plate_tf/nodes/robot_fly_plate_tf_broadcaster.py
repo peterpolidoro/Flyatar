@@ -178,13 +178,6 @@ class PoseTFConversion:
                 quat_plate = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
 
                 if quat_plate is not None:
-                    a_plate = CircleFunctions.mod_angle(tf.transformations.euler_from_quaternion(quat_plate)[2])
-                    if "Fly" in object_name:
-                        rospy.logwarn("a_prev = %s" % (str(a_prev[0])))
-                        rospy.logwarn("a_plate = %s" % (str(a_plate)))
-                    a_plate = CircleFunctions.unwrap_angle(a_plate,a_prev[0])
-                    if "Fly" in object_name:
-                        rospy.logwarn("a_plate_unwrapped = %s" % (str(a_plate)))
                     t = msg.header.stamp.to_sec()
                     (x,y,vx,vy) = kf.update((x_plate,y_plate),t)
 
@@ -213,6 +206,24 @@ class PoseTFConversion:
                            (abs(y_plate - y) < self.position_threshold):
                         x_plate = x
                         y_plate = y
+
+                    if vel_ang is not None:
+                        quat_chosen = co.choose_orientation(quat_plate,vel_ang,stopped,a_prev[0])
+                    else:
+                        quat_chosen = None
+
+                    if quat_chosen is not None:
+                        a_plate = CircleFunctions.mod_angle(tf.transformations.euler_from_quaternion(quat_chosen)[2])
+                    else:
+                        a_plate = CircleFunctions.mod_angle(tf.transformations.euler_from_quaternion(quat_plate)[2])
+
+                    if "Fly" in object_name:
+                        rospy.logwarn("a_prev = %s" % (str(a_prev[0])))
+                        rospy.logwarn("a_plate = %s" % (str(a_plate)))
+                    a_plate = CircleFunctions.unwrap_angle(a_plate,a_prev[0])
+                    if "Fly" in object_name:
+                        rospy.logwarn("a_plate_unwrapped = %s" % (str(a_plate)))
+
 
                     if a_plate is not None:
                         a_filtered_data.Unfiltered = a_plate

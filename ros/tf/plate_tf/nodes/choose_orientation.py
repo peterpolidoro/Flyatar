@@ -12,7 +12,7 @@ import math, tf
 class ChooseOrientation:
     def __init__(self):
         self.zaxis = (0,0,1)
-        self.orient_ang_previous = None
+        # self.orient_ang_previous = None
         self.disagreement_count = 0
         self.disagreement_count_limit = 10
         self.flipped_previous = None
@@ -40,15 +40,16 @@ class ChooseOrientation:
     #         angle = 2*math.pi - angle
     #     return angle
 
-    def choose_orientation(self,quat,vel_ang,stopped):
+    def choose_orientation(self,quat,vel_ang,stopped,orient_ang_prev):
         # orient_ang is ambiguous modulo pi radians
         vel_ang = CircleFunctions.mod_angle(vel_ang)
+        orient_ang_prev = CircleFunctions.mod_angle(orient_ang_prev)
 
         # rospy.logwarn("orient_ang = %s, vel_ang = %s" % (str(orient_ang*180/math.pi),str(vel_ang*180/math.pi)))
         if not stopped:
             ref_ang = vel_ang
-        elif self.orient_ang_previous is not None:
-            ref_ang = self.orient_ang_previous
+        elif orient_ang_prev is not None:
+            ref_ang = orient_ang_prev
         else:
             return None
 
@@ -63,9 +64,9 @@ class ChooseOrientation:
             vel_ang_vote_on_flipped = True
         # rospy.logwarn("ref_ang = %s, orient_ang = %s, orient_ang_flipped = %s, diff_vel_ang = %s, diff_vel_ang_flipped = %s" % (str(ref_ang),str(orient_ang*180/math.pi),str(orient_ang_flipped*180/math.pi),str(diff_vel_ang*180/math.pi),str(diff_vel_ang_flipped*180/math.pi)))
 
-        if self.orient_ang_previous is not None:
-            diff_prev_ang = abs(CircleFunctions.circle_dist(orient_ang,self.orient_ang_previous))
-            diff_prev_ang_flipped = abs(CircleFunctions.circle_dist(orient_ang_flipped,self.orient_ang_previous))
+        if orient_ang_prev is not None:
+            diff_prev_ang = abs(CircleFunctions.circle_dist(orient_ang,orient_ang_prev))
+            diff_prev_ang_flipped = abs(CircleFunctions.circle_dist(orient_ang_flipped,orient_ang_prev))
 
             if diff_prev_ang < diff_prev_ang_flipped:
                 prev_ang_vote_on_flipped = False
@@ -115,10 +116,8 @@ class ChooseOrientation:
         self.flipped_previous = flipped
 
         if not flipped:
-            self.orient_ang_previous = orient_ang
             return quat
         else:
-            self.orient_ang_previous = orient_ang_flipped
             quat_flipped = self.flip_quaternion(quat)
             return quat_flipped
 
