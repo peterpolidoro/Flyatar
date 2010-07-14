@@ -213,15 +213,17 @@ class PoseTFConversion:
                     a_filtered_data.UsingFiltered = 0
 
                     a = lpf_angle.update(a_plate,t)
-                    a_filtered_data.Filtered = a
 
                     if a is not None:
+                        a_filtered_data.Filtered = a
                         a = CircleFunctions.mod_angle(a)
                         quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
                         a_filtered_data.UsingFiltered = 1
                         # if abs(CircleFunctions.circle_dist(a_plate,a)) < self.angle_threshold:
                             # quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
                             # a_filtered_data.UsingFiltered = 1
+                    else:
+                        a_filtered_data.Filtered = 0
 
                     vx_filtered_data_pub.publish(vx_filtered_data)
                     vy_filtered_data_pub.publish(vy_filtered_data)
