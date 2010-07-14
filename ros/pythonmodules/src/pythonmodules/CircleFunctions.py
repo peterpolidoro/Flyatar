@@ -10,9 +10,10 @@ def mod_angle(angle):
     return angle
 
 def unwrap_angle(angle,angle_prev):
-    delta_angle = circle_dist(angle_prev,angle)
-    unwrapped_angle = angle_prev + delta_angle
-    return unwrapped_angle
+    if (angle is not None) and (angle_prev is not None):
+        delta_angle = circle_dist(angle_prev,angle)
+        unwrapped_angle = angle_prev + delta_angle
+        return unwrapped_angle
 
 def circle_dist(start_angle,stop_angle):
     if (start_angle is not None) and (stop_angle is not None):
