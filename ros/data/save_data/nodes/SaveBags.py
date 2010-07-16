@@ -94,9 +94,9 @@ class SaveBags:
         elif data.stop and (not data.start):
             self.rs.set_status(2)
 
-        if data.R1 and (not data.L1):
+        if data.yes and (not data.no):
             self.save = True
-        elif data.L1 and (not data.R1):
+        elif data.no and (not data.yes):
             self.save = False
         else:
             self.save = None
