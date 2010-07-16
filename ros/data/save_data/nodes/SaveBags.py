@@ -31,7 +31,7 @@ class RecordingStatus:
         elif status_number == 2:
             self.status_number = status_number
             self.status_string = "Waiting"
-            self._status_color = cv.CV_RGB(self.color_max,self.color_max,0)
+            self.status_color = cv.CV_RGB(self.color_max,self.color_max,0)
         else:
             self.status_number = status_number
             self.status_string = "Unknown"
@@ -74,8 +74,6 @@ class SaveBags:
 
         if self.status_number == self.status_number_previous:
             if self.status_number == 2:
-                rospy.logwarn("status_string = %s" % (str(self.status_string)))
-                rospy.logwarn("status_color = %s" % (str(self.status_color)))
                 if self.save is not None:
                     if self.save:
                         pass
