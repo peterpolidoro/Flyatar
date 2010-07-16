@@ -6,4 +6,8 @@ float32 tangent_velocity
 float32 radius_inc
 float32 theta_inc
 bool tracking
+bool goto_start
 bool start
+bool stop
+bool yes
+bool no

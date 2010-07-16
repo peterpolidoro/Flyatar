@@ -116,6 +116,7 @@ class SetpointControl:
         self.moving_to_start = False
         self.moving_to_setpoint = False
         self.setpoint_moved = False
+        self.goto_start = False
 
         self.rate = rospy.Rate(1/self.control_dt)
         self.gain_radius = rospy.get_param("gain_radius","4")
@@ -403,7 +404,14 @@ class SetpointControl:
             self.setpoint.theta = math.fmod(self.setpoint.theta,2*math.pi)
             if self.setpoint.theta < 0:
                 self.setpoint.theta = 2*math.pi - self.setpoint.theta
-            self.tracking = data.tracking
+            if data.tracking and (not self.tracking):
+                self.tracking = True
+            if data.goto_start and (not self.goto_start):
+                self.goto_start = True
+                self.tracking = False
+            if data.stop:
+                self.goto_start = False
+                self.tracking = False
             self.setpoint_pub.publish(self.setpoint)
             self.setpoint_int.radius = self.setpoint.radius
             self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
@@ -414,12 +422,13 @@ class SetpointControl:
             # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
 
             if not self.tracking:
-                if data.start:
+                if self.goto_start:
                     if not self.moving_to_start:
                         self.moving_to_start = True
                         self.stage_commands.position_control = True
                         self.set_path_to_start(self.robot_velocity_max)
                         self.sc_ok_to_publish = True
+                        self.goto_start = False
                     else:
                         self.sc_ok_to_publish = False
                 else:
