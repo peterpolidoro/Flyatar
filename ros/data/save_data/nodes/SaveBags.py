@@ -55,7 +55,7 @@ class SaveBags:
         self.im_size = (100,100)
         self.im_status = cv.CreateImage(self.im_size,cv.IPL_DEPTH_8U,3)
 
-        self.circle_size = min(self.im_size[0],self.im_size[1])/2
+        self.circle_size = min(self.im_size[0],self.im_size[1])/4
         self.rs = RecordingStatus()
 
         self.status_number_previous = 0
@@ -65,15 +65,12 @@ class SaveBags:
 
     def status_update(self):
         self.status_number, self.status_string, self.status_color = self.rs.get_status()
-        rospy.logwarn("status_number = %s" % (str(self.status_number)))
-        rospy.logwarn("status_string = %s" % (str(self.status_string)))
-        rospy.logwarn("status_color = %s" % (str(self.status_color)))
-        # cv.Circle(self.im_status,
-        #           (int(self.im_size[0]/2), int(self.im_size[1]/2)),
-        #           int(self.circle_size), self.status_color, cv.CV_FILLED)
+        # rospy.logwarn("status_number = %s" % (str(self.status_number)))
+        # rospy.logwarn("status_string = %s" % (str(self.status_string)))
+        # rospy.logwarn("status_color = %s" % (str(self.status_color)))
         cv.Circle(self.im_status,
-                  (int(50), int(50)),
-                  int(50), self.status_color, cv.CV_FILLED)
+                  (int(self.im_size[0]/2), int(self.im_size[1]/2)),
+                  int(self.circle_size), self.status_color, cv.CV_FILLED)
 
         if self.status_number == self.status_number_previous:
             if self.status_number == 2:
@@ -87,10 +84,12 @@ class SaveBags:
              (self.status_number == 1):
             call_list = ['rosbag','record','-o','~/Bags/video','-b','0']
             call_list.extend(self.topic_record_list)
-            self.process = subprocess.Popen(call_list)
+            rospy.logwarn("call_list = \n%s" % (str(call_list)))
+            # self.process = subprocess.Popen(call_list)
         elif (self.status_number_previous == 1) and \
              (self.status_number == 2):
-            self.process.terminate()
+            pass
+            # self.process.terminate()
 
         self.status_number_previous = self.status_number
 
