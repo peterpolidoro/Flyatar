@@ -72,7 +72,7 @@ class SaveBags:
         #           (int(self.im_size[0]/2), int(self.im_size[1]/2)),
         #           int(self.circle_size), self.status_color, cv.CV_FILLED)
         cv.Circle(self.im_status,
-                  (int(50), int(50),
+                  (int(50), int(50)),
                   int(50), self.status_color, cv.CV_FILLED)
 
         if self.status_number == self.status_number_previous:
