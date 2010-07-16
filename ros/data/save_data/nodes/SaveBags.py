@@ -74,6 +74,7 @@ class SaveBags:
 
         if self.status_number == self.status_number_previous:
             if self.status_number == 2:
+                rospy.logwarn("status_color = %s" % (str(self.status_color)))
                 if self.save is not None:
                     if self.save:
                         pass
