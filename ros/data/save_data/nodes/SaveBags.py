@@ -52,7 +52,7 @@ class SaveBags:
         self.topic_record_list = ["/camera/image_display"]
 
         cv.NamedWindow("Recording Status",1)
-        self.im_size = (40,40)
+        self.im_size = (100,100)
         self.im_status = cv.CreateImage(self.im_size,cv.IPL_DEPTH_8U,3)
 
         self.circle_size = min(self.im_size[0],self.im_size[1])/2
@@ -67,7 +67,7 @@ class SaveBags:
         self.status_number, self.status_string, self.status_color = self.rs.get_status()
         cv.Circle(self.im_status,
                   (int(self.im_size[0]/2), int(self.im_size[1]/2)),
-                  self.circle_size, self.status_color, cv.CV_FILLED)
+                  int(self.circle_size), self.status_color, cv.CV_FILLED)
 
         if self.status_number == self.status_number_previous:
             if self.status_number == 2:
