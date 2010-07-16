@@ -64,7 +64,7 @@ class SaveBags:
         self.initialized = True
 
     def status_update(self):
-        self.status_number, self.status_string, self.status_color = self.rs.get_state()
+        self.status_number, self.status_string, self.status_color = self.rs.get_status()
         cv.Circle(self.im_status,
                   (int(self.im_size[0]/2), int(self.im_size[1]/2)),
                   self.circle_size, self.status_color, cv.CV_FILLED)
@@ -76,7 +76,7 @@ class SaveBags:
                         pass
                     else:
                         pass
-                    self.rs.set_state(0)
+                    self.rs.set_status(0)
         elif (self.status_number_previous == 0) and \
              (self.status_number == 1):
             call_list = ['rosbag','record','-o','~/Bags/video','-b','0']
@@ -90,9 +90,9 @@ class SaveBags:
 
     def joystick_commands_callback(self,data):
         if data.start and (not data.stop):
-            self.rs.set_state(1)
+            self.rs.set_status(1)
         elif data.stop and (not data.start):
-            self.rs.set_state(2)
+            self.rs.set_status(2)
 
         if data.R1 and (not data.L1):
             self.save = True
