@@ -11,6 +11,7 @@
   <depend package="rospy"/>
   <depend package="opencv2"/>
   <depend package="cv_bridge"/>
+  <depend package="joystick_commands"/>
 
 </package>
 
