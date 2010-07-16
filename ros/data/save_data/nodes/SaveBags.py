@@ -89,6 +89,7 @@ class SaveBags:
             self.process = subprocess.Popen(call_string,shell=True)
         elif (self.status_number_previous == 1) and \
              (self.status_number == 2):
+            rospy.logwarn("sending terminate...")
             self.process.terminate()
 
         self.status_number_previous = self.status_number
