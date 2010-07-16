@@ -86,7 +86,7 @@ class SaveBags:
             for s in self.topic_record_list:
                 call_string = call_string + " " + s
             # rospy.logwarn("call_string = \n%s" % (str(call_string)))
-            self.process = subprocess.Popen(call_string,shell=True,creation_flags=CREATE_NEW_PROCESS_GROUP)
+            self.process = subprocess.Popen(call_string,shell=True)
         elif (self.status_number_previous == 1) and \
              (self.status_number == 2):
             # rospy.logwarn("sending ctrl-c...")
