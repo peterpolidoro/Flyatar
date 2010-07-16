@@ -65,6 +65,9 @@ class SaveBags:
 
     def status_update(self):
         self.status_number, self.status_string, self.status_color = self.rs.get_status()
+        rospy.logwarn("status_number = %s" % (str(self.status_number)))
+        rospy.logwarn("status_string = %s" % (str(self.status_string)))
+        rospy.logwarn("status_color = %s" % (str(self.status_color)))
         cv.Circle(self.im_status,
                   (int(self.im_size[0]/2), int(self.im_size[1]/2)),
                   int(self.circle_size), self.status_color, cv.CV_FILLED)
