@@ -215,7 +215,6 @@ class SaveBags:
             self.status_update()
             cv.ShowImage("Recording Status",self.im_status)
             cv.WaitKey(3)
-            rospy.spin()
 
             # if self.saving_images_started and (self.last_image_time is not None):
             #     t = rospy.get_time()
