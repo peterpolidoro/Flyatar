@@ -68,9 +68,12 @@ class SaveBags:
         rospy.logwarn("status_number = %s" % (str(self.status_number)))
         rospy.logwarn("status_string = %s" % (str(self.status_string)))
         rospy.logwarn("status_color = %s" % (str(self.status_color)))
+        # cv.Circle(self.im_status,
+        #           (int(self.im_size[0]/2), int(self.im_size[1]/2)),
+        #           int(self.circle_size), self.status_color, cv.CV_FILLED)
         cv.Circle(self.im_status,
-                  (int(self.im_size[0]/2), int(self.im_size[1]/2)),
-                  int(self.circle_size), self.status_color, cv.CV_FILLED)
+                  (int(50), int(50),
+                  int(50), self.status_color, cv.CV_FILLED)
 
         if self.status_number == self.status_number_previous:
             if self.status_number == 2:
