@@ -85,12 +85,11 @@ class SaveBags:
             call_string = 'rosbag record -o ~/Bags/video -b 0'
             for s in self.topic_record_list:
                 call_string = call_string + " " + s
-            rospy.logwarn("call_string = \n%s" % (str(call_string)))
-            # self.process = subprocess.Popen(call_list)
+            # rospy.logwarn("call_string = \n%s" % (str(call_string)))
+            self.process = subprocess.Popen(call_list)
         elif (self.status_number_previous == 1) and \
              (self.status_number == 2):
-            pass
-            # self.process.terminate()
+            self.process.terminate()
 
         self.status_number_previous = self.status_number
 
