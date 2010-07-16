@@ -225,8 +225,8 @@ class PoseTFConversion:
                     if (x is not None) and (y is not None) and \
                            (abs(x_plate - x) < self.position_threshold) and \
                            (abs(y_plate - y) < self.position_threshold):
-                        x_filtered_data.Unfiltered = x
-                        y_filtered_data.Unfiltered = y
+                        x_filtered_data.Filtered = x
+                        y_filtered_data.Filtered = y
                         x_filtered_data.UsingFiltered = 1
                         y_filtered_data.UsingFiltered = 1
                         x_plate = x
