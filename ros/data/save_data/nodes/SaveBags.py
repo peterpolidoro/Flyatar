@@ -87,6 +87,7 @@ class SaveBags:
                 call_string = call_string + " " + s
             # rospy.logwarn("call_string = \n%s" % (str(call_string)))
             self.process = subprocess.Popen(call_string,shell=True)
+            time.sleep(2)
             p_pid = subprocess.Popen('pidof record',shell=True,stdout=subprocess.PIPE)
             out = p_pid.stdout.readlines()
             rospy.logwarn("out = %s" % (str(out)))
