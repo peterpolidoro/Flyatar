@@ -91,7 +91,12 @@ class SaveBags:
             p_pid = subprocess.Popen('pidof record',shell=True,stdout=subprocess.PIPE)
             out = p_pid.stdout.readlines()
             rospy.logwarn("out = %s" % (str(out)))
-            self.pid = [int(out[n].strip()) for n in range(len(out))]
+            if 0 < len(out):
+                p_list_str = out[0].rsplit()
+                self.pid = [int(s) for s in p_list_str]
+                rospy.logwarn("pid_list = %s" % (str(self.pid)))
+            else:
+                self.pid = None
         elif (self.status_number_previous == 1) and \
              (self.status_number == 2):
             # rospy.logwarn("sending ctrl-c...")
@@ -103,8 +108,9 @@ class SaveBags:
             # rospy.logwarn("os.kill...")
 
             # Kill all processes name 'record'
-            for p in range(len(self.pid)):
-                os.kill(self.pid[p],signal.SIGNINT)
+            if self.pid is not None:
+                for p in range(len(self.pid)):
+                    os.kill(self.pid[p],signal.SIGNINT)
 
         self.status_number_previous = self.status_number
 
