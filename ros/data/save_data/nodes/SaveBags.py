@@ -7,7 +7,7 @@ import rospy
 import cv
 # from sensor_msgs.msg import Image
 # from cv_bridge import CvBridge, CvBridgeError
-import time,os,subprocess
+import time,os,subprocess,signal
 from joystick_commands.msg import JoystickCommands
 
 
@@ -86,15 +86,20 @@ class SaveBags:
             for s in self.topic_record_list:
                 call_string = call_string + " " + s
             # rospy.logwarn("call_string = \n%s" % (str(call_string)))
-            self.process = subprocess.Popen(call_string,shell=True)
+            self.process = subprocess.Popen(call_string,shell=True,creation_flags=)
+            p_pid = subprocess.Popen('pidof record',shell=True,stdout=subprocess.PIPE)
+            out = p_pid.stdout.readlines()
+            self.pid = int(out[0].strip())
         elif (self.status_number_previous == 1) and \
              (self.status_number == 2):
             # rospy.logwarn("sending ctrl-c...")
             # self.process.signal(CTRL_C_EVENT)
             # rospy.logwarn("sending terminate...")
             # self.process.terminate()
-            rospy.logwarn("sending kill...")
-            self.process.kill()
+            # rospy.logwarn("sending kill...")
+            # self.process.kill()
+            # rospy.logwarn("os.kill...")
+            os.kill(self.pid,signal.SIGNINT)
 
         self.status_number_previous = self.status_number
 
