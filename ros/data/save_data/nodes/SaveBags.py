@@ -87,7 +87,7 @@ class SaveBags:
                 call_string = call_string + " " + s
             # rospy.logwarn("call_string = \n%s" % (str(call_string)))
             self.process = subprocess.Popen(call_string,shell=True)
-            time.sleep(2)
+            time.sleep(0.5)
             p_pid = subprocess.Popen('pidof record',shell=True,stdout=subprocess.PIPE)
             out = p_pid.stdout.readlines()
             rospy.logwarn("out = %s" % (str(out)))
@@ -110,7 +110,7 @@ class SaveBags:
             # Kill all processes name 'record'
             if self.pid is not None:
                 for p in range(len(self.pid)):
-                    os.kill(self.pid[p],signal.SIGNINT)
+                    os.kill(self.pid[p],signal.SIGINT)
 
         self.status_number_previous = self.status_number
 
