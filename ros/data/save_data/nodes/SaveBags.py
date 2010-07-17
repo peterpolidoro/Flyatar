@@ -90,7 +90,7 @@ class SaveBags:
             time.sleep(2)
             p_pid = subprocess.Popen('pidof record',shell=True,stdout=subprocess.PIPE)
             out = p_pid.stdout.readlines()
-            # rospy.logwarn("out = %s" % (str(out)))
+            rospy.logwarn("out = %s" % (str(out)))
             self.pid = [int(out[n].strip()) for n in range(len(out))]
         elif (self.status_number_previous == 1) and \
              (self.status_number == 2):
