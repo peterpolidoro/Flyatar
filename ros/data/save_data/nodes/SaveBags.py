@@ -86,7 +86,7 @@ class SaveBags:
             for s in self.topic_record_list:
                 call_string = call_string + " " + s
             # rospy.logwarn("call_string = \n%s" % (str(call_string)))
-            self.process = subprocess.Popen(call_string,shell=True,creation_flags=)
+            self.process = subprocess.Popen(call_string,shell=True)
             p_pid = subprocess.Popen('pidof record',shell=True,stdout=subprocess.PIPE)
             out = p_pid.stdout.readlines()
             self.pid = int(out[0].strip())
