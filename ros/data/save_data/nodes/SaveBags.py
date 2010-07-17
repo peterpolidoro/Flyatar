@@ -89,7 +89,8 @@ class SaveBags:
             self.process = subprocess.Popen(call_string,shell=True)
             p_pid = subprocess.Popen('pidof record',shell=True,stdout=subprocess.PIPE)
             out = p_pid.stdout.readlines()
-            self.pid = int(out[0].strip())
+            rospy.logwarn("out = %s" % (str(out)))
+            # self.pid = int(out[0].strip())
         elif (self.status_number_previous == 1) and \
              (self.status_number == 2):
             # rospy.logwarn("sending ctrl-c...")
@@ -99,8 +100,8 @@ class SaveBags:
             # rospy.logwarn("sending kill...")
             # self.process.kill()
             # rospy.logwarn("os.kill...")
-            os.kill(self.pid,signal.SIGNINT)
-
+            # os.kill(self.pid,signal.SIGNINT)
+            pass
         self.status_number_previous = self.status_number
 
     def joystick_commands_callback(self,data):
