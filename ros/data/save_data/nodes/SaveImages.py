@@ -9,13 +9,17 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import time,os,subprocess
 
-class SaveImages:
+def chdir(dir):
+    try:
+        os.chdir(dir)
+    except (OSError):
+        os.mkdir(dir)
+        os.chdir(dir)
 
+class SaveImages:
     def __init__(self):
-        os.chdir(os.path.expanduser("~/Videos"))
-        self.working_dir = time.strftime("%Y-%m-%d-%H-%M-%S")
-        os.mkdir(self.working_dir)
-        os.chdir(self.working_dir)
+        self.working_dir_base = os.path.expanduser("~/Videos")
+        chdir(self.working_dir_base)
 
         self.image_frame = rospy.get_param("save_image_frame")
         self.image_sub = rospy.Subscriber(self.image_frame, Image, self.image_callback)
@@ -52,7 +56,10 @@ class SaveImages:
 
     def image_callback(self,data):
         if not self.saving_images_started:
+            self.working_dir = self.working_dir_base + "/" + time.strftime("%Y-%m-%d-%H-%M-%S")
+            chdir(self.working_dir)
             self.saving_images_started = True
+
         self.last_image_time = rospy.get_time()
         # Convert ROS image to OpenCV image
         try:
@@ -78,7 +85,8 @@ class SaveImages:
 
     def save_video(self):
         self.saving_images_started = False
-        os.chdir(os.path.expanduser("~/Videos"))
+        chdir(self.working_dir_base)
+        saved_video_str = 'Saved video ' + self.working_dir
         if self.video_format in "flv":
             subprocess.check_call(['ffmpeg','-f','image2',
                                    '-i',self.working_dir+'/%06d.png',
@@ -89,7 +97,7 @@ class SaveImages:
                                    '-r',str(self.frame_rate),
                                    '-s','640x480',
                                    self.working_dir+'.flv'])
-            print 'Saved video ' + self.working_dir + '.flv'
+            saved_video_str = saved_video_str + '.flv'
         elif self.video_format in "gif":
             subprocess.check_call(['ffmpeg','-f','image2',
                                    '-i',self.working_dir+'/%06d.png',
@@ -98,7 +106,7 @@ class SaveImages:
                                    '-s','640x480',
                                    '-pix_fmt','rgb24',
                                    self.working_dir+'.gif'])
-            print 'Saved video ' + self.working_dir + '.gif'
+            saved_video_str = saved_video_str + '.gif'
         elif self.video_format in "avi":
             subprocess.check_call(['ffmpeg','-f','image2',
                                    '-i',self.working_dir+'/%06d.png',
@@ -106,7 +114,7 @@ class SaveImages:
                                    '-r',str(self.frame_rate),
                                    '-s','640x480',
                                    self.working_dir+'.avi'])
-            print 'Saved video ' + self.working_dir + '.avi'
+            saved_video_str = saved_video_str + '.avi'
         elif self.video_format in "mpeg1":
             subprocess.check_call(['ffmpeg','-f','image2',
                                    '-i',self.working_dir+'/%06d.png',
@@ -119,7 +127,9 @@ class SaveImages:
                                    '-subcmp','2',
                                    '-pass','1/2',
                                    self.working_dir+'.mpg'])
-            print 'Saved video ' + self.working_dir + '.mpg'
+            saved_video_str = saved_video_str + '.mpg'
+
+        rospy.logwarn(saved_video_str)
 
     def main(self):
         while not rospy.is_shutdown():

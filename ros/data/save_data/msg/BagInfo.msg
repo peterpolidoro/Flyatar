@@ -1,1 +1,2 @@
 string bag_name
+bool end_of_bag_files
