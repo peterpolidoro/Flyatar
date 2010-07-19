@@ -58,6 +58,8 @@ class SaveBags:
         self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joystick_commands_callback)
         self.topic_record_list = ["/camera/image_display"]
 
+        self.NULL = open('/dev/null', 'w')
+
         cv.NamedWindow("Recording Status",1)
         self.im_size = (100,100)
         self.im_status = cv.CreateImage(self.im_size,cv.IPL_DEPTH_8U,3)
@@ -79,7 +81,7 @@ class SaveBags:
         self.initialized = True
 
     def find_bag_set(self):
-        p_ls_bag = subprocess.Popen('ls *.bag',shell=True,stdout=subprocess.PIPE)
+        p_ls_bag = subprocess.Popen('ls *.bag',shell=True,stdout=subprocess.PIPE,stderr=self.NULL)
         out = p_ls_bag.stdout.readlines()
         bag_set = set([s.rstrip() for s in out])
         return bag_set
@@ -134,7 +136,7 @@ class SaveBags:
                     self.rs.set_status(0)
         elif (self.status_number_previous == 0) and \
              (self.status_number == 1):
-            call_string = 'rosbag record -b 0' + '-o ' + self.working_dir
+            call_string = 'rosbag record -b 0 ' + '-o ' + self.working_dir
             for s in self.topic_record_list:
                 call_string = call_string + " " + s
             # rospy.logwarn("call_string = \n%s" % (str(call_string)))
