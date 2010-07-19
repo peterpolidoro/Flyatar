@@ -136,7 +136,7 @@ class SaveBags:
                     self.rs.set_status(0)
         elif (self.status_number_previous == 0) and \
              (self.status_number == 1):
-            call_string = 'rosbag record -b 0 ' + '-o ' + self.working_dir + '/video'
+            call_string = 'rosbag record -b 0 ' + '-o ' + self.working_dir + '/image_display'
             for s in self.topic_record_list:
                 call_string = call_string + " " + s
             # rospy.logwarn("call_string = \n%s" % (str(call_string)))
