@@ -73,7 +73,7 @@ class SaveBags:
 
     def find_bag_set(self):
         p_ls_bag = subprocess.Popen('ls *.bag',shell=True,stdout=subprocess.PIPE)
-        out = p_pid.stdout.readlines()
+        out = p_ls_bag.stdout.readlines()
         bag_set = set([s.rstrip() for s in out])
         return bag_set
 

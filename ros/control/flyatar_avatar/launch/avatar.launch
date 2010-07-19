@@ -8,6 +8,8 @@
   <include file="$(find plate_tf)/launch/plate_tf.launch" />
   <include file="$(find stage_tf)/launch/stage_tf.launch" />
 
+  <node pkg="save_data" type="SaveBags.py" name="SaveBags" />
+
   <param name="robot_velocity_max" type="double" value="60"/>
   <node pkg="flyatar_avatar" type="SetpointControl.py" name="SetpointControl" />
 
