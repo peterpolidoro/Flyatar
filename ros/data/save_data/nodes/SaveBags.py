@@ -139,7 +139,7 @@ class SaveBags:
             call_string = 'rosbag record -b 0 ' + '-o ' + self.working_dir
             for s in self.topic_record_list:
                 call_string = call_string + " " + s
-            # rospy.logwarn("call_string = \n%s" % (str(call_string)))
+            rospy.logwarn("call_string = \n%s" % (str(call_string)))
             self.process = subprocess.Popen(call_string,shell=True)
             # time.sleep(0.5)
             # self.find_record_pids()
