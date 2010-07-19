@@ -37,16 +37,23 @@ class RecordingStatus:
             self.status_string = "Unknown"
             self.status_color = cv.CV_RGB(0,0,0)
 
+def chdir(dir):
+    try:
+        os.chdir(dir)
+    except (OSError):
+        os.mkdir(dir)
+        os.chdir(dir)
+
 class SaveBags:
     def __init__(self):
         self.initialized = False
         self.working_dir = os.path.expanduser("~/Bags")
+        chdir(self.working_dir)
         # time.strftime("%Y-%m-%d-%H-%M-%S")
-        try:
-            os.chdir(self.working_dir)
-        except (OSError):
-            os.mkdir(self.working_dir)
-            os.chdir(self.working_dir)
+
+        # Create new directory each day
+        self.working_dir = self.working_dir + "/" + time.strftime("%Y-%m-%d")
+        chdir(self.working_dir)
 
         self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joystick_commands_callback)
         self.topic_record_list = ["/camera/image_display"]
