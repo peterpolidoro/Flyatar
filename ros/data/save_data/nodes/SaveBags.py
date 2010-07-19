@@ -61,7 +61,52 @@ class SaveBags:
         self.status_number_previous = 0
         self.save = None
 
+        # Find all processes named 'record'
+        self.find_record_pids()
+        # Kill all processes name 'record'
+        self.kill_record_pids()
+
+        # Find set of bag files
+        self.bag_set = self.find_bag_set()
+
         self.initialized = True
+
+    def find_bag_set(self):
+        p_ls_bag = subprocess.Popen('ls *.bag',shell=True,stdout=subprocess.PIPE)
+        out = p_pid.stdout.readlines()
+        bag_set = set([s.rstrip() for s in out])
+        return bag_set
+
+    def rm_bag_set_diff(self):
+        bag_set_new = self.find_bag_set()
+        diff = bag_set_new - self.bag_set
+        rm_str = "rm "
+        for bag_file in diff:
+            p_rm = subprocess.Popen(rm_str + bag_file,shell=True)
+            rospy.logwarn("removing = %s" % (str(bag_file)))
+
+    def add_bag_set_diff(self):
+        bag_set_new = self.find_bag_set()
+        diff = bag_set_new - self.bag_set
+        for bag_file in diff:
+            rospy.logwarn("adding = %s" % (str(bag_file)))
+        self.bag_set = self.find_bag_set()
+
+    def find_record_pids(self):
+        p_pid = subprocess.Popen('pidof record',shell=True,stdout=subprocess.PIPE)
+        out = p_pid.stdout.readlines()
+        # rospy.logwarn("out = %s" % (str(out)))
+        if 0 < len(out):
+            p_list_str = out[0].rsplit()
+            self.pid = [int(s) for s in p_list_str]
+            # rospy.logwarn("pid_list = %s" % (str(self.pid)))
+        else:
+            self.pid = None
+
+    def kill_record_pids(self):
+        if self.pid is not None:
+            for p in range(len(self.pid)):
+                os.kill(self.pid[p],signal.SIGINT)
 
     def status_update(self):
         self.status_number, self.status_string, self.status_color = self.rs.get_status()
@@ -76,9 +121,9 @@ class SaveBags:
             if self.status_number == 2:
                 if self.save is not None:
                     if self.save:
-                        pass
+                        self.add_bag_set_diff()
                     else:
-                        pass
+                        self.rm_bag_set_diff()
                     self.rs.set_status(0)
         elif (self.status_number_previous == 0) and \
              (self.status_number == 1):
@@ -87,16 +132,8 @@ class SaveBags:
                 call_string = call_string + " " + s
             # rospy.logwarn("call_string = \n%s" % (str(call_string)))
             self.process = subprocess.Popen(call_string,shell=True)
-            time.sleep(0.5)
-            p_pid = subprocess.Popen('pidof record',shell=True,stdout=subprocess.PIPE)
-            out = p_pid.stdout.readlines()
-            rospy.logwarn("out = %s" % (str(out)))
-            if 0 < len(out):
-                p_list_str = out[0].rsplit()
-                self.pid = [int(s) for s in p_list_str]
-                rospy.logwarn("pid_list = %s" % (str(self.pid)))
-            else:
-                self.pid = None
+            # time.sleep(0.5)
+            # self.find_record_pids()
         elif (self.status_number_previous == 1) and \
              (self.status_number == 2):
             # rospy.logwarn("sending ctrl-c...")
@@ -107,10 +144,10 @@ class SaveBags:
             # self.process.kill()
             # rospy.logwarn("os.kill...")
 
+            # Find all processes named 'record'
+            self.find_record_pids()
             # Kill all processes name 'record'
-            if self.pid is not None:
-                for p in range(len(self.pid)):
-                    os.kill(self.pid[p],signal.SIGINT)
+            self.kill_record_pids()
 
         self.status_number_previous = self.status_number
 
