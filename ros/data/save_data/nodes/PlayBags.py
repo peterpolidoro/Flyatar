@@ -7,7 +7,6 @@ import rospy
 import time,os,subprocess
 from save_data.msg import BagInfo
 
-
 def chdir(dir):
     try:
         os.chdir(dir)
@@ -23,7 +22,7 @@ class PlayBags:
         self.working_dir = self.working_dir + "/Play"
         chdir(self.working_dir)
 
-        self.bag_info_pub = rospy.Publisher("bag_file_name",BagInfo)
+        self.bag_info_pub = rospy.Publisher("bag_info",BagInfo)
         self.bag_info = BagInfo()
 
         self.NULL = open('/dev/null', 'w')
@@ -39,6 +38,7 @@ class PlayBags:
         return bag_set
 
     def play_bag_file(self,bag_file):
+        rospy.loginfo("Playing %s" % (bag_file))
         subprocess.check_call('rosbag play ' + bag_file,shell=True)
 
     def main(self):
