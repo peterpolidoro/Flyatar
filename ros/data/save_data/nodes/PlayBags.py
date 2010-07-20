@@ -40,6 +40,7 @@ class PlayBags:
 
         self.bag_list = self.find_bag_list()
         self.bag_count = len(self.bag_list)
+        self.bag_n = 0
 
         self.initialized = True
 
@@ -59,18 +60,18 @@ class PlayBags:
 
     def main(self):
         while not rospy.is_shutdown():
-            if 0 < self.bag_count:
+            if self.bag_n < self.bag_count:
                 self.bag_info.end_of_bag_files = False
                 if self.video_info.ready_for_bag_info and (not self.video_info.ready_to_record):
                     rospy.logwarn("Ready to play and ready for bag info...")
-                    self.bag_file = self.bag_list[self.bag_count]
+                    self.bag_file = self.bag_list[self.bag_n]
                     bag_name,bag_ext = os.path.splitext(self.bag_file)
                     self.bag_info.bag_name = bag_name
                 elif (not self.video_info.ready_for_bag_info) and self.video_info.ready_to_record:
                     rospy.logwarn("Playing bag file...")
-                    self.play_bag_file(bag_file)
+                    self.play_bag_file(self.bag_file)
                     self.bag_info.finished_playing = True
-                    self.bag_count -= 1
+                    self.bag_n += 1
                     # if 0 < self.bag_count:
                     #     self.bag_info.end_of_bag_files = False
                     #     for bag_file in self.bag_set:
