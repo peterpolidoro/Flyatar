@@ -33,6 +33,7 @@ class SaveVideo:
         self.saving_images = False
         self.saving_video = False
         self.ready_to_save_video = False
+        self.saved_video = False
 
         self.video_info_pub = rospy.Publisher("video_info",VideoInfo)
         self.video_info = VideoInfo()
@@ -81,8 +82,9 @@ class SaveVideo:
                 self.working_dir = self.working_dir_base + "/" + bag_name
                 chdir(self.working_dir)
                 self.saving_images = True
+                self.saved_video = False
                 rospy.logwarn("Saving images.")
-            elif finished_playing:
+            elif finished_playing and (not self.saved_video):
                 self.video_info.ready_for_bag_info = False
                 self.video_info.ready_to_record = False
                 self.saving_images = False
@@ -129,10 +131,11 @@ class SaveVideo:
                                bag_name + '.mpg',shell=True)
         rospy.logwarn('Saved video %s' % (bag_name + '.mpg'))
         self.saving_video = False
+        self.saved_video = True
 
     def main(self):
         while not rospy.is_shutdown():
-            if self.ready_to_save_video:
+            if self.ready_to_save_video and (not self.saving_video):
                 self.save_video()
             # if self.saving_images_started and (self.last_image_time is not None):
             #     t = rospy.get_time()
