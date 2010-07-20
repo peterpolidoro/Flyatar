@@ -40,6 +40,7 @@ class PlayBags:
         self.rate = rospy.Rate(10)
 
         self.bag_list = self.find_bag_list()
+        rospy.logwarn("bag_list = %s" % (str(self.bag_list)))
         self.bag_count = len(self.bag_list)
         self.bag_n = 0
 
