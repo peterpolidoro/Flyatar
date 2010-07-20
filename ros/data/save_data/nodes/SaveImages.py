@@ -56,7 +56,8 @@ class SaveImages:
 
     def image_callback(self,data):
         if not self.saving_images_started:
-            self.working_dir = self.working_dir_base + "/" + time.strftime("%Y-%m-%d-%H-%M-%S")
+            self.images_dir = time.strftime("%Y-%m-%d-%H-%M-%S")
+            self.working_dir = self.working_dir_base + "/" + self.images_dir
             chdir(self.working_dir)
             self.saving_images_started = True
 
@@ -86,38 +87,38 @@ class SaveImages:
     def save_video(self):
         self.saving_images_started = False
         chdir(self.working_dir_base)
-        saved_video_str = 'Saved video ' + self.working_dir
+        saved_video_str = 'Saved video ' + self.images_dir
         if self.video_format in "flv":
             subprocess.check_call(['ffmpeg','-f','image2',
-                                   '-i',self.working_dir+'/%06d.png',
+                                   '-i',self.images_dir+'/%06d.png',
                                    '-sameq',
                                    '-ar','44100',
                                    '-ab','64k',
                                    '-ac','2',
                                    '-r',str(self.frame_rate),
                                    '-s','640x480',
-                                   self.working_dir+'.flv'])
+                                   self.images_dir+'.flv'])
             saved_video_str = saved_video_str + '.flv'
         elif self.video_format in "gif":
             subprocess.check_call(['ffmpeg','-f','image2',
-                                   '-i',self.working_dir+'/%06d.png',
+                                   '-i',self.images_dir+'/%06d.png',
                                    '-sameq',
                                    '-r',str(self.frame_rate),
                                    '-s','640x480',
                                    '-pix_fmt','rgb24',
-                                   self.working_dir+'.gif'])
+                                   self.images_dir+'.gif'])
             saved_video_str = saved_video_str + '.gif'
         elif self.video_format in "avi":
             subprocess.check_call(['ffmpeg','-f','image2',
-                                   '-i',self.working_dir+'/%06d.png',
+                                   '-i',self.images_dir+'/%06d.png',
                                    '-sameq',
                                    '-r',str(self.frame_rate),
                                    '-s','640x480',
-                                   self.working_dir+'.avi'])
+                                   self.images_dir+'.avi'])
             saved_video_str = saved_video_str + '.avi'
         elif self.video_format in "mpeg1":
             subprocess.check_call(['ffmpeg','-f','image2',
-                                   '-i',self.working_dir+'/%06d.png',
+                                   '-i',self.images_dir+'/%06d.png',
                                    '-sameq',
                                    '-r',str(self.frame_rate),
                                    '-s','640x480',
@@ -126,7 +127,7 @@ class SaveImages:
                                    '-cmp','2',
                                    '-subcmp','2',
                                    '-pass','1/2',
-                                   self.working_dir+'.mpg'])
+                                   self.images_dir+'.mpg'])
             saved_video_str = saved_video_str + '.mpg'
 
         rospy.logwarn(saved_video_str)
