@@ -38,8 +38,8 @@ class PlayBags:
 
         self.rate = rospy.Rate(10)
 
-        self.bag_set = self.find_bag_set()
-        self.bag_count = len(self.bag_set)
+        self.bag_list = self.find_bag_list()
+        self.bag_count = len(self.bag_list)
 
         self.initialized = True
 
@@ -47,11 +47,11 @@ class PlayBags:
         if self.initialized:
             self.video_info = data
 
-    def find_bag_set(self):
+    def find_bag_list(self):
         p_ls_bag = subprocess.Popen('ls *.bag',shell=True,stdout=subprocess.PIPE,stderr=self.NULL)
         out = p_ls_bag.stdout.readlines()
-        bag_set = set([s.rstrip() for s in out])
-        return bag_set
+        bag_list = [s.rstrip() for s in out]
+        return bag_list
 
     def play_bag_file(self,bag_file):
         # rospy.loginfo("Playing %s" % (bag_file))
@@ -63,7 +63,7 @@ class PlayBags:
                 self.bag_info.end_of_bag_files = False
                 if self.video_info.ready_for_bag_info and (not self.video_info.ready_to_record):
                     rospy.logwarn("Ready to play and ready for bag info...")
-                    self.bag_file = self.bag_set[self.bag_count]
+                    self.bag_file = self.bag_list[self.bag_count]
                     bag_name,bag_ext = os.path.splitext(self.bag_file)
                     self.bag_info.bag_name = bag_name
                 elif (not self.video_info.ready_for_bag_info) and self.video_info.ready_to_record:
