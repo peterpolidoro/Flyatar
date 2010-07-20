@@ -89,7 +89,7 @@ class SaveVideo:
         cv.SaveImage(image_name,cv_image)
 
     def image_callback(self,data):
-        if (self.working_dir is not None) and (not self.saving_video):
+        if (self.working_dir is not None) and (not self.saving_video) and (not self.ready_to_save_video):
             # Convert ROS image to OpenCV image
             try:
               cv_image = cv.GetImage(self.bridge.imgmsg_to_cv(data, "passthrough"))
