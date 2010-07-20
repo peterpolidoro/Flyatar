@@ -73,6 +73,8 @@ class PlayBags:
                     self.bag_info.finished_playing = True
                     self.bag_n += 1
                     self.bag_info.bag_name = ""
+                elif (not self.video_info.ready_for_bag_info) and (not self.video_info.ready_to_record) and self.video_info.saved_video:
+                    self.bag_info.finished_playing = False
                     # if 0 < self.bag_count:
                     #     self.bag_info.end_of_bag_files = False
                     #     for bag_file in self.bag_set:

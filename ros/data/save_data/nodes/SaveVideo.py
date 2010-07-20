@@ -39,6 +39,7 @@ class SaveVideo:
         self.video_info = VideoInfo()
         self.video_info.ready_for_bag_info = True
         self.video_info.ready_to_record = False
+        self.video_info.saved_video = False
 
         self.image_frame = rospy.get_param("save_image_frame")
         self.image_sub = rospy.Subscriber(self.image_frame, Image, self.image_callback)
@@ -84,6 +85,7 @@ class SaveVideo:
                 chdir(self.working_dir)
                 self.saving_images = True
                 self.saved_video = False
+                self.video_info.saved_video = False
                 rospy.logwarn("Saving images.")
             elif finished_playing and (not self.saved_video):
                 self.video_info.ready_for_bag_info = False
@@ -91,6 +93,8 @@ class SaveVideo:
                 self.saving_images = False
                 self.ready_to_save_video = True
                 rospy.logwarn("Saving video.")
+            elif finished_playing and self.saved_video:
+                self.video_info.saved_video = True
 
     def save_png(self,cv_image):
         image_name = "{num:06d}.png".format(num=self.image_number)
