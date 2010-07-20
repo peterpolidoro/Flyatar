@@ -22,8 +22,8 @@ class SaveVideo:
         self.initialized = False
         self.working_dir_base = os.path.expanduser("~/Videos")
         chdir(self.working_dir_base)
-        self.working_dir_base = self.working_dir_base + "/" + time.strftime("%Y-%m-%d")
-        chdir(self.working_dir_base)
+        # self.working_dir_base = self.working_dir_base + "/" + time.strftime("%Y-%m-%d")
+        # chdir(self.working_dir_base)
 
         self.working_dir = None
 
