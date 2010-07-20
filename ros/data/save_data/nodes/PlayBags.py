@@ -63,6 +63,7 @@ class PlayBags:
     def main(self):
         while not rospy.is_shutdown():
             if self.bag_n < self.bag_count:
+                rospy.logwarn("bag_n = %s" % (str(self.bag_n)))
                 self.bag_info.end_of_bag_files = False
                 if self.video_info.ready_for_bag_info and (not self.video_info.ready_to_record):
                     rospy.logwarn("Ready to play and ready for bag info...")

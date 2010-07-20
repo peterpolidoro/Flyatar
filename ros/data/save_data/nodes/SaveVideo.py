@@ -86,6 +86,7 @@ class SaveVideo:
                 self.saving_images = True
                 self.saved_video = False
                 self.video_info.saved_video = False
+                self.image_number = 0
                 rospy.logwarn("Saving images.")
             elif finished_playing and (not self.saved_video):
                 self.video_info.ready_for_bag_info = False
