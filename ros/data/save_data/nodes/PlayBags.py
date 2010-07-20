@@ -68,6 +68,7 @@ class PlayBags:
                     self.bag_file = self.bag_list[self.bag_n]
                     bag_name,bag_ext = os.path.splitext(self.bag_file)
                     self.bag_info.bag_name = bag_name
+                    rospy.logwarn("bag name = %s" % (bag_name))
                 elif (not self.video_info.ready_for_bag_info) and self.video_info.ready_to_record and (not self.video_info.saved_video):
                     rospy.logwarn("Playing bag file...")
                     self.play_bag_file(self.bag_file)
