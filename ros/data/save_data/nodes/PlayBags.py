@@ -24,9 +24,14 @@ class PlayBags:
 
         self.bag_info_pub = rospy.Publisher("bag_info",BagInfo)
         self.bag_info = BagInfo()
+        self.bag_info.bag_name = ""
+        self.bag_info.ready_to_play = True
+        self.bag_info.finished_playing = False
+        self.bag_info.end_of_bag_files = False
 
         self.video_info_sub = rospy.Subscriber("video_info",VideoInfo,self.video_info_callback)
         self.video_info = VideoInfo()
+        self.video_info.ready_for_bag_info = False
         self.video_info.ready_to_record = False
 
         self.NULL = open('/dev/null', 'w')
@@ -34,6 +39,7 @@ class PlayBags:
         self.rate = rospy.Rate(10)
 
         self.bag_set = self.find_bag_set()
+        self.bag_count = len(self.bag_set)
 
         self.initilized = True
 
@@ -52,33 +58,52 @@ class PlayBags:
         subprocess.check_call('rosbag play ' + bag_file,shell=True)
 
     def main(self):
-        if 0 < len(self.bag_set):
-            self.bag_info.end_of_bag_files = False
-            for bag_file in self.bag_set:
-                bag_name,bag_ext = os.path.splitext(bag_file)
-                self.bag_info.bag_name = bag_name
-                self.bag_info.ready_to_play = True
-                self.bag_info.finished_playing = False
-                rospy.logwarn("about to spin")
-                while (not rospy.is_shutdown()) and (not self.video_info.ready_to_record):
-                    rospy.logwarn("spinning...")
-                    self.bag_info_pub.publish(self.bag_info)
-                    rospy.wait_for_message("video_info",VideoInfo)
+        while not rospy.is_shutdown():
+            if 0 < self.bag_count:
+                self.bag_info.end_of_bag_files = False
+                if self.video_info.ready_for_bag_info and (not self.video_info.ready_to_record):
+                    rospy.logwarn("Ready to play and ready for bag info...")
+                    self.bag_file = self.bag_set[self.bag_count]
+                    bag_name,bag_ext = os.path.splitext(self.bag_file)
+                    self.bag_info.bag_name = bag_name
+                elif (not self.video_info.ready_for_bag_info) and self.video_info.ready_to_record:
+                    rospy.logwarn("Playing bag file...")
+                    self.play_bag_file(bag_file)
+                    self.bag_info.finished_playing = True
+                    self.bag_count -= 1
+                    # if 0 < self.bag_count:
+                    #     self.bag_info.end_of_bag_files = False
+                    #     for bag_file in self.bag_set:
+                    #         bag_name,bag_ext = os.path.splitext(bag_file)
+                    #         self.bag_info.bag_name = bag_name
+                    #         self.bag_info.ready_to_play = True
+                    #         self.bag_info.finished_playing = False
+                    #         rospy.logwarn("about to spin")
+                    #         while (not rospy.is_shutdown()) and (not self.video_info.ready_to_record):
+                    #             rospy.logwarn("spinning...")
+                    #             self.bag_info_pub.publish(self.bag_info)
+                    #             rospy.wait_for_message("video_info",VideoInfo)
 
-                self.video_info.ready_to_record = False
-                rospy.logwarn("Playing bag file...")
-                self.play_bag_file(bag_file)
-                self.bag_info.finished_playing = True
-                self.bag_info_pub.publish(self.bag_info)
-        else:
-            rospy.logwarn("No bag files in %s" % (self.working_dir))
+                    #         self.video_info.ready_to_record = False
+                    #         rospy.logwarn("Playing bag file...")
+                    #         self.play_bag_file(bag_file)
+                    #         self.bag_info.finished_playing = True
+                    #         self.bag_info_pub.publish(self.bag_info)
+                    # else:
+                    #     rospy.logwarn("No bag files in %s" % (self.working_dir))
 
-        self.bag_info.end_of_bag_files = True
-        self.bag_info_pub.publish(self.bag_info)
+                    # self.bag_info.end_of_bag_files = True
+            else:
+                self.bag_info.end_of_bag_files = True
+
+            self.bag_info_pub.publish(self.bag_info)
+
+            self.rate.sleep()
 
 if __name__ == '__main__':
     rospy.init_node('PlayBags',log_level=rospy.INFO)
     pb = PlayBags()
+    pb.main()
     # s_bi = rospy.Service('bag_info', BagInfo, pb.bag_info)
     # s_pb = rospy.Service('play_bag', BagInfo, pb.play_bag)
     # while not rospy.is_shutdown():

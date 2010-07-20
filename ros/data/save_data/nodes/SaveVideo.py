@@ -29,7 +29,6 @@ class SaveVideo:
 
         self.bag_info_sub = rospy.Subscriber("bag_info",BagInfo,self.bag_info_callback)
         self.bag_info = BagInfo()
-        self.bag_info.bag_name = "None"
 
         self.saving_images = False
         self.saving_video = False
@@ -37,6 +36,7 @@ class SaveVideo:
 
         self.video_info_pub = rospy.Publisher("video_info",VideoInfo)
         self.video_info = VideoInfo()
+        self.video_info.ready_for_bag_info = True
         self.video_info.ready_to_record = False
 
         self.image_frame = rospy.get_param("save_image_frame")
@@ -49,7 +49,7 @@ class SaveVideo:
 
         # self.saving_images_started = False
         # self.last_image_time = None
-        # self.rate = rospy.Rate(10)     # Hz
+        self.rate = rospy.Rate(10)     # Hz
         # self.time_limit = 3
 
         self.initialized = True
@@ -70,26 +70,31 @@ class SaveVideo:
                 rospy.logwarn("End of bag files.")
                 return
             elif self.saving_video:
+                self.video_info.ready_for_bag_info = False
+                self.video_info.ready_to_record = False
+            elif (bag_name == "") and ready_to_play and (not finished_playing) and (not self.saving_images):
+                self.video_info.ready_for_bag_info = True
                 self.video_info.ready_to_record = False
             elif (bag_name != "") and ready_to_play and (not finished_playing) and (not self.saving_images):
+                self.video_info.ready_for_bag_info = False
+                self.video_info.ready_to_record = True
                 self.working_dir = self.working_dir_base + "/" + bag_name
                 chdir(self.working_dir)
                 self.saving_images = True
-                self.video_info.ready_to_record = True
                 rospy.logwarn("Saving images.")
             elif finished_playing:
+                self.video_info.ready_for_bag_info = False
+                self.video_info.ready_to_record = False
                 self.saving_images = False
                 self.ready_to_save_video = True
-                self.video_info.ready_to_record = False
                 rospy.logwarn("Saving video.")
-            self.video_info_pub.publish(self.video_info)
 
     def save_png(self,cv_image):
         image_name = "{num:06d}.png".format(num=self.image_number)
         cv.SaveImage(image_name,cv_image)
 
     def image_callback(self,data):
-        if (self.working_dir is not None) and (not self.saving_video) and (not self.ready_to_save_video):
+        if (self.working_dir is not None) and (self.saving_images):
             # Convert ROS image to OpenCV image
             try:
               cv_image = cv.GetImage(self.bridge.imgmsg_to_cv(data, "passthrough"))
@@ -113,6 +118,7 @@ class SaveVideo:
             # cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
 
     def save_video(self):
+        self.ready_to_save_video = False
         self.saving_video = True
         chdir(self.working_dir_base)
         bag_name = self.bag_info.bag_name
@@ -123,7 +129,6 @@ class SaveVideo:
                                bag_name + '.mpg',shell=True)
         rospy.logwarn('Saved video %s' % + (bag_name + '.mpg'))
         self.saving_video = False
-        self.ready_to_save_video = False
 
     def main(self):
         while not rospy.is_shutdown():
@@ -135,7 +140,9 @@ class SaveVideo:
             #     # rospy.logwarn("dt = %s" % (str(dt)))
             #     if self.time_limit < dt:
             #         self.save_video()
-            # self.rate.sleep()
+            self.video_info_pub.publish(self.video_info)
+
+            self.rate.sleep()
 
 if __name__ == '__main__':
     rospy.init_node('SaveVideo',log_level=rospy.INFO)
