@@ -77,6 +77,7 @@ class SaveVideo:
                 self.video_info.ready_for_bag_info = True
                 self.video_info.ready_to_record = False
             elif (bag_name != "") and ready_to_play and (not finished_playing) and (not self.saving_images):
+                self.bag_name = bag_name
                 self.video_info.ready_for_bag_info = False
                 self.video_info.ready_to_record = True
                 self.working_dir = self.working_dir_base + "/" + bag_name
@@ -123,7 +124,7 @@ class SaveVideo:
         self.ready_to_save_video = False
         self.saving_video = True
         chdir(self.working_dir_base)
-        bag_name = self.bag_info.bag_name
+        bag_name = self.bag_name
         subprocess.check_call('ffmpeg -f image2 -i ' + \
                                bag_name + '/%06d.png ' + \
                                '-r ' + str(self.frame_rate) + ' ' + \
