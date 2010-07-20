@@ -73,6 +73,7 @@ class PlayBags:
                     rospy.logwarn("bag name = %s" % (bag_name))
                 elif (not self.video_info.ready_for_bag_info) and self.video_info.ready_to_record and (not self.video_info.saved_video):
                     rospy.logwarn("Playing bag file...")
+                    time.sleep(3)
                     self.play_bag_file(self.bag_file)
                     self.bag_info.finished_playing = True
                     self.bag_n += 1
