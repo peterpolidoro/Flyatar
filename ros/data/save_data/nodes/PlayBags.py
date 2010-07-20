@@ -61,9 +61,9 @@ class PlayBags:
                 self.bag_info.finished_playing = False
                 rospy.logwarn("about to spin")
                 while (not rospy.is_shutdown()) and (not self.video_info.ready_to_record):
+                    rospy.logwarn("spinning...")
                     self.bag_info_pub.publish(self.bag_info)
                     rospy.wait_for_message("video_info",VideoInfo)
-                    rospy.logwarn("spinning...")
 
                 self.video_info.ready_to_record = False
                 rospy.logwarn("Playing bag file...")
@@ -79,4 +79,7 @@ class PlayBags:
 if __name__ == '__main__':
     rospy.init_node('PlayBags',log_level=rospy.INFO)
     pb = PlayBags()
-    pb.main()
+    # s_bi = rospy.Service('bag_info', BagInfo, pb.bag_info)
+    # s_pb = rospy.Service('play_bag', BagInfo, pb.play_bag)
+    # while not rospy.is_shutdown():
+    #     rospy.spin()
