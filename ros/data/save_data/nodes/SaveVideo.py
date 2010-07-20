@@ -75,7 +75,7 @@ class SaveVideo:
 
             if end_of_bag_files:
                 rospy.logwarn("End of bag files.")
-                if self.cat and not (self.saved_cat_video):
+                if self.cat and not (self.saved_cat_video) and (self.bag_name != ""):
                     self.ready_to_save_video = True
                     self.saved_cat_video = True
                     rospy.logwarn("Saving video.")
