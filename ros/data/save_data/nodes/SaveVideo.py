@@ -67,7 +67,7 @@ class SaveVideo:
             end_of_bag_files = data.end_of_bag_files
 
             if end_of_bag_files:
-                rospy.loginfo("End of bag files.")
+                rospy.logwarn("End of bag files.")
                 return
             elif self.saving_video:
                 self.video_info.ready_to_record = False
@@ -76,12 +76,12 @@ class SaveVideo:
                 chdir(self.working_dir)
                 self.saving_images = True
                 self.video_info.ready_to_record = True
-                rospy.loginfo("Saving images.")
+                rospy.logwarn("Saving images.")
             elif finished_playing:
                 self.saving_images = False
                 self.ready_to_save_video = True
                 self.video_info.ready_to_record = False
-                rospy.loginfo("Saving video.")
+                rospy.logwarn("Saving video.")
             self.video_info_pub.publish(self.video_info)
 
     def save_png(self,cv_image):

@@ -53,7 +53,8 @@ class PlayBags:
         if 0 < len(self.bag_set):
             self.bag_info.end_of_bag_files = False
             for bag_file in self.bag_set:
-                self.bag_info.bag_name = bag_file
+                bag_name,bag_ext = os.path.splitext(bag_file)
+                self.bag_info.bag_name = bag_name
                 self.bag_info.ready_to_play = True
                 self.bag_info.finished_playing = False
                 while (not rospy.is_shutdown()) and (not self.video_info.ready_to_record):
@@ -62,6 +63,7 @@ class PlayBags:
 
                 while (not rospy.is_shutdown()) and (self.video_info.ready_to_record):
                     self.video_info.ready_to_record = False
+                    rospy.logwarn("Playing bag file...")
                     self.play_bag_file(bag_file)
                     self.bag_info.finished_playing = True
                     self.bag_info_pub.publish(self.bag_info)
