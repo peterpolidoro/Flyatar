@@ -34,12 +34,15 @@ class SaveVideo:
         self.saving_video = False
         self.ready_to_save_video = False
         self.saved_video = False
+        self.saved_cat_video = False
 
         self.video_info_pub = rospy.Publisher("video_info",VideoInfo)
         self.video_info = VideoInfo()
         self.video_info.ready_for_bag_info = True
         self.video_info.ready_to_record = False
         self.video_info.saved_video = False
+
+        self.bag_name = ""
 
         self.image_frame = rospy.get_param("save_image_frame")
         self.image_sub = rospy.Subscriber(self.image_frame, Image, self.image_callback)
@@ -53,6 +56,8 @@ class SaveVideo:
         # self.last_image_time = None
         self.rate = rospy.Rate(10)     # Hz
         # self.time_limit = 3
+
+        self.cat = True
 
         self.initialized = True
 
@@ -70,6 +75,10 @@ class SaveVideo:
 
             if end_of_bag_files:
                 rospy.logwarn("End of bag files.")
+                if self.cat and not (self.saved_cat_video):
+                    self.ready_to_save_video = True
+                    self.saved_cat_video = True
+                    rospy.logwarn("Saving video.")
                 return
             elif self.saving_video:
                 self.video_info.ready_for_bag_info = False
@@ -78,22 +87,28 @@ class SaveVideo:
                 self.video_info.ready_for_bag_info = True
                 self.video_info.ready_to_record = False
             elif (bag_name != "") and ready_to_play and (not finished_playing) and (not self.saving_images):
-                self.bag_name = bag_name
                 self.video_info.ready_for_bag_info = False
                 self.video_info.ready_to_record = True
-                self.working_dir = self.working_dir_base + "/" + bag_name
-                chdir(self.working_dir)
                 self.saving_images = True
                 self.saved_video = False
                 self.video_info.saved_video = False
-                self.image_number = 0
                 rospy.logwarn("Saving images.")
+                if not self.cat or (self.bag_name == ""):
+                    self.bag_name = bag_name
+                    self.image_number = 0
+                    self.working_dir = self.working_dir_base + "/" + bag_name
+                    chdir(self.working_dir)
             elif finished_playing and (not self.saved_video):
                 self.video_info.ready_for_bag_info = False
                 self.video_info.ready_to_record = False
                 self.saving_images = False
-                self.ready_to_save_video = True
-                rospy.logwarn("Saving video.")
+                if not self.cat:
+                    self.ready_to_save_video = True
+                    rospy.logwarn("Saving video.")
+                else:
+                    self.ready_to_save_video = False
+                    self.video_info.saved_video = True
+                    self.saved_cat_video = False
             elif finished_playing and self.saved_video:
                 self.video_info.saved_video = True
 
