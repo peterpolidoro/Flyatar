@@ -57,8 +57,10 @@ class PlayBags:
                 self.bag_info.bag_name = bag_name
                 self.bag_info.ready_to_play = True
                 self.bag_info.finished_playing = False
+                rospy.logwarn("about to spin")
                 while (not rospy.is_shutdown()) and (not self.video_info.ready_to_record):
                     self.bag_info_pub.publish(self.bag_info)
+                    rospy.logwarn("Spinning....")
                     rospy.spin()
 
                 self.video_info.ready_to_record = False
