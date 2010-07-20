@@ -510,6 +510,6 @@ class SetpointControl:
             self.rate.sleep()
 
 if __name__ == '__main__':
-    rospy.init_node('SetpointControl')
+    rospy.init_node('SetpointPositionControl')
     sc = SetpointControl()
     sc.control_loop()

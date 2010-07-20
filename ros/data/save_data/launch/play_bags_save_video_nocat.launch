@@ -1,0 +1,4 @@
+<launch>
+  <param name="video_cat" type="boolean" value="false"/>
+  <include file="$(find save_data)/launch/play_bags_save_video.launch" />
+</launch>

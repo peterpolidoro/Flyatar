@@ -47,6 +47,8 @@ class SaveVideo:
         self.image_frame = rospy.get_param("save_image_frame")
         self.image_sub = rospy.Subscriber(self.image_frame, Image, self.image_callback)
 
+        self.cat = rospy.get_param("video_cat",False)
+
         self.bridge = CvBridge()
         self.image_number = 0
         self.frame_rate = rospy.get_param("framerate",30)
@@ -56,8 +58,6 @@ class SaveVideo:
         # self.last_image_time = None
         self.rate = rospy.Rate(10)     # Hz
         # self.time_limit = 3
-
-        self.cat = True
 
         self.initialized = True
 
@@ -152,7 +152,7 @@ class SaveVideo:
         subprocess.check_call('ffmpeg -f image2 -i ' + \
                                bag_name + '/%06d.png ' + \
                                '-r ' + str(self.frame_rate) + ' ' + \
-                               '-s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -pass 1/2 ' + \
+                               '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -bf 2 -pass 1/2 ' + \
                                bag_name + '.mpg',shell=True)
         rospy.logwarn('Saved video %s' % (bag_name + '.mpg'))
         self.saving_video = False
