@@ -74,11 +74,15 @@ class SaveVideo:
             end_of_bag_files = data.end_of_bag_files
 
             if end_of_bag_files:
-                rospy.logwarn("End of bag files.")
-                if self.cat and not (self.saved_cat_video) and (self.bag_name != ""):
+                if self.cat and (not self.saved_cat_video) and (self.bag_name != ""):
                     self.ready_to_save_video = True
                     self.saved_cat_video = True
+                    self.saved_video = False
                     rospy.logwarn("Saving video.")
+                elif self.cat and self.saved_cat_video and self.saved_video:
+                    rospy.logwarn("Saved video.")
+                if not self.cat:
+                    rospy.logwarn("End of bag files.")
                 return
             elif self.saving_video:
                 self.video_info.ready_for_bag_info = False
