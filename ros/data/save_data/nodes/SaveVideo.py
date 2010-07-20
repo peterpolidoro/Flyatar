@@ -127,7 +127,7 @@ class SaveVideo:
                                '-r ' + str(self.frame_rate) + ' ' + \
                                '-s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -pass 1/2 ' + \
                                bag_name + '.mpg',shell=True)
-        rospy.logwarn('Saved video %s' % + (bag_name + '.mpg'))
+        rospy.logwarn('Saved video %s' % (bag_name + '.mpg'))
         self.saving_video = False
 
     def main(self):
