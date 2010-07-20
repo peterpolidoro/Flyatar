@@ -53,13 +53,18 @@ class PlayBags:
         if 0 < len(self.bag_set):
             self.bag_info.end_of_bag_files = False
             for bag_file in self.bag_set:
-                self.bag_info.bag_name = ""
-                self.bag_info_pub.publish(self.bag_info)
+                self.bag_info.bag_name = bag_file
+                self.bag_info.ready_to_play = True
+                self.bag_info.finished_playing = False
                 while (not rospy.is_shutdown()) and (not self.video_info.ready_to_record):
-                    self.bag_info.bag_name = bag_file
                     self.bag_info_pub.publish(self.bag_info)
-                    time.sleep(1)
+                    time.sleep(0.1)
+
+                while (not rospy.is_shutdown()) and (self.video_info.ready_to_record):
+                    self.video_info.ready_to_record = False
                     self.play_bag_file(bag_file)
+                    self.bag_info.finished_playing = True
+                    self.bag_info_pub.publish(self.bag_info)
         else:
             rospy.logwarn("No bag files in %s" % (self.working_dir))
 
