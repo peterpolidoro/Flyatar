@@ -31,6 +31,8 @@ class PlayBags:
 
         self.NULL = open('/dev/null', 'w')
 
+        self.rate = rospy.Rate(10)
+
         self.bag_set = self.find_bag_set()
 
         self.initilized = True
@@ -60,8 +62,8 @@ class PlayBags:
                 rospy.logwarn("about to spin")
                 while (not rospy.is_shutdown()) and (not self.video_info.ready_to_record):
                     self.bag_info_pub.publish(self.bag_info)
-                    rospy.logwarn("Spinning....")
-                    rospy.spin()
+                    rospy.wait_for_message("video_info",VideoInfo)
+                    rospy.logwarn("spinning...")
 
                 self.video_info.ready_to_record = False
                 rospy.logwarn("Playing bag file...")
