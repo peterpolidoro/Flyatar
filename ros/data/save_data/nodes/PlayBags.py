@@ -44,6 +44,7 @@ class PlayBags:
         self.initilized = True
 
     def video_info_callback(self,data):
+        rospy.logwarn("in video_info_callback")
         if self.initialized:
             self.video_info = data
 
