@@ -41,10 +41,9 @@ class PlayBags:
         self.bag_set = self.find_bag_set()
         self.bag_count = len(self.bag_set)
 
-        self.initilized = True
+        self.initialized = True
 
     def video_info_callback(self,data):
-        rospy.logwarn("in video_info_callback")
         if self.initialized:
             self.video_info = data
 
