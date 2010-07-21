@@ -252,7 +252,8 @@ class ImageDisplay:
                (axes_y_head_image.point.y < self.im_size[1]):
 
                 if "Fly" in frame_id:
-                    circle_color = cv.CV_RGB(0,self.color_max,0)
+                    # circle_color = cv.CV_RGB(0,self.color_max,0)
+                    circle_color = cv.CV_RGB(self.color_max,0,0)
                 elif "Robot" in frame_id:
                     circle_color = cv.CV_RGB(0,0,self.color_max)
                 else:
