@@ -114,6 +114,9 @@ class ImageDisplay:
         self.resize_published_image = True
         self.resize_size = (640,480)
 
+        self.display_y_axis = False
+        self.display_plate_axes = False
+
         rospy.wait_for_service('plate_to_camera')
         try:
             self.plate_to_camera = rospy.ServiceProxy('plate_to_camera', PlateCameraConversion)
@@ -250,10 +253,11 @@ class ImageDisplay:
                         (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
                         (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
                         cv.CV_RGB(self.color_max,0,0), self.axis_line_width)
-                cv.Line(self.im_display,
-                        (int(axes_y_head_image.point.x),int(axes_y_head_image.point.y)),
-                        (int(axes_y_tail_image.point.x),int(axes_y_tail_image.point.y)),
-                        cv.CV_RGB(0,self.color_max,0), self.axis_line_width)
+                if self.display_y_axis:
+                    cv.Line(self.im_display,
+                            (int(axes_y_head_image.point.x),int(axes_y_head_image.point.y)),
+                            (int(axes_y_tail_image.point.x),int(axes_y_tail_image.point.y)),
+                            cv.CV_RGB(0,self.color_max,0), self.axis_line_width)
                 cv.Circle(self.im_display,
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),
                           circle_radius, circle_color,2)
@@ -332,7 +336,8 @@ class ImageDisplay:
                 if self.fly_in_bounds_state.InBounds:
                     self.draw_setpoint()
 
-            self.draw_axes("Plate")
+            if self.display_plate_axes:
+                self.draw_axes("Plate")
             if self.fly_in_bounds_state.InBounds:
                 self.draw_axes("Fly")
             if self.robot_in_bounds_state.InBounds:
