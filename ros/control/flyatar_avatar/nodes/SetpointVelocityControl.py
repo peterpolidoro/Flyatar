@@ -257,10 +257,10 @@ class SetpointControl:
         vel_mag = abs(vel_mag)          # Just to be sure
         for point_n in range(point_count):
             if point_n != 0:
-                # rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
-                # rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
-                # rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
-                # rospy.logwarn("pos_y[point_n - 1] = %s" % (str(pos_y[point_n -1])))
+                rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
+                rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
+                rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
+                rospy.logwarn("pos_y[point_n - 1] = %s" % (str(pos_y[point_n -1])))
                 delta_x = abs(pos_x[point_n] - pos_x[point_n - 1])
                 delta_y = abs(pos_y[point_n] - pos_y[point_n - 1])
                 # try:
