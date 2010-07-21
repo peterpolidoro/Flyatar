@@ -229,11 +229,11 @@ class StageDevice(USBDevice.USB_Device):
         y_vel_steps = abs(y_vel_steps)
 
         if self.frequency_max < x_vel_steps:
-            y_vel_steps = (y_vel_steps/x_velocity_steps)*self.frequency_max
+            y_vel_steps = (y_vel_steps/x_vel_steps)*self.frequency_max
             x_vel_steps = self.frequency_max
 
         if self.frequency_max < y_vel_steps:
-            x_vel_steps = (x_vel_steps/y_velocity_steps)*self.frequency_max
+            x_vel_steps = (x_vel_steps/y_vel_steps)*self.frequency_max
             y_vel_steps = self.frequency_max
 
         return x_pos_steps,x_vel_steps,y_pos_steps,y_vel_steps
