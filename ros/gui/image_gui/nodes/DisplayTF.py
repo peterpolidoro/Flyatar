@@ -58,6 +58,9 @@ class ImageDisplay:
         self.bounds_limit_camera = PointStamped()
         self.bounds_limit_camera.header.frame_id = "Camera"
 
+        self.display_y_axis = False
+        self.display_plate_axes = False
+
         self.fly_image_origin = PointStamped()
         self.fly_image_origin.header.frame_id = "FlyImage"
         self.fly_image_origin.point.x = 0
@@ -72,7 +75,10 @@ class ImageDisplay:
         self.setpoint_camera.header.frame_id = "Camera"
         self.setpoint_frame = PointStamped()
 
-        self.axis_length = 15
+        if self.display_y_axis:
+            self.axis_length = 15
+        else:
+            self.axis_length = 10
         self.axis_line_width = 3
         self.axis_head_dist = 4
         self.axes_center = PointStamped()
@@ -113,9 +119,6 @@ class ImageDisplay:
 
         self.resize_published_image = True
         self.resize_size = (640,480)
-
-        self.display_y_axis = False
-        self.display_plate_axes = False
 
         rospy.wait_for_service('plate_to_camera')
         try:
@@ -249,15 +252,21 @@ class ImageDisplay:
 
                 circle_radius = int(math.sqrt((axes_x_head_image.point.x - axes_center_image.point.x)**2 + (axes_x_head_image.point.y - axes_center_image.point.y)**2))
 
-                cv.Line(self.im_display,
-                        (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
-                        (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
-                        cv.CV_RGB(self.color_max,0,0), self.axis_line_width)
                 if self.display_y_axis:
+                    cv.Line(self.im_display,
+                            (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
+                            (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
+                            cv.CV_RGB(self.color_max,0,0), self.axis_line_width)
                     cv.Line(self.im_display,
                             (int(axes_y_head_image.point.x),int(axes_y_head_image.point.y)),
                             (int(axes_y_tail_image.point.x),int(axes_y_tail_image.point.y)),
                             cv.CV_RGB(0,self.color_max,0), self.axis_line_width)
+                else:
+                    cv.Line(self.im_display,
+                            (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
+                            (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
+                            circle_color, self.axis_line_width)
+
                 cv.Circle(self.im_display,
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),
                           circle_radius, circle_color,2)
