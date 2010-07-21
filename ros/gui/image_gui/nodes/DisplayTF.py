@@ -84,18 +84,18 @@ class ImageDisplay:
             self.axis_length = 10
         self.axis_line_width = 3
         self.circle_line_width = 2
-        self.axis_head_dist = 4
+        self.axis_tail_dist = 4
         self.axes_center = PointStamped()
         self.axes_center.point.x = 0
         self.axes_center.point.y = 0
         self.axes_center.point.z = 0
         self.axes_x_tail = PointStamped()
-        self.axes_x_tail.point.x = self.axis_head_dist
+        self.axes_x_tail.point.x = self.axis_tail_dist
         self.axes_x_tail.point.y = 0
         self.axes_x_tail.point.z = 0
         self.axes_y_tail = PointStamped()
         self.axes_y_tail.point.x = 0
-        self.axes_y_tail.point.y = self.axis_head_dist
+        self.axes_y_tail.point.y = self.axis_tail_dist
         self.axes_y_tail.point.z = 0
 
         self.axes_x_head = PointStamped()
@@ -284,37 +284,37 @@ class ImageDisplay:
 
     def draw_setpoint(self):
         try:
-            self.setpoint_frame.header.frame_id = self.setpoint.header.frame_id
-            self.setpoint_frame.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
-            self.setpoint_frame.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
+            if self.axis_tail_dist < self.setpoint.radius:
+                self.setpoint_frame.header.frame_id = self.setpoint.header.frame_id
+                self.setpoint_frame.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
+                self.setpoint_frame.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
 
-            self.setpoint_line_tail_frame.header.frame_id = self.setpoint.header.frame_id
-            self.setpoint_line_tail_frame.point.x = (self.axis_head_dist/self.setpoint.radius)*self.setpoint_frame.point.x
-            self.setpoint_line_tail_frame.point.y = (self.axis_head_dist/self.setpoint.radius)*self.setpoint_frame.point.y
+                setpoint_plate = self.tf_listener.transformPoint("Plate",self.setpoint_frame)
+                # rospy.logwarn("setpoint_plate.point.x = \n%s", str(setpoint_plate.point.x))
+                # rospy.logwarn("setpoint_plate.point.y = \n%s", str(setpoint_plate.point.y))
+                Xsrc = [setpoint_plate.point.x]
+                Ysrc = [setpoint_plate.point.y]
+                response = self.plate_to_camera(Xsrc,Ysrc)
+                self.setpoint_camera.point.x = response.Xdst[0]
+                self.setpoint_camera.point.y = response.Ydst[0]
+                setpoint_image = self.tf_listener.transformPoint(self.image_frame,self.setpoint_camera)
+                setpoint_image_radius = math.sqrt((setpoint_image.point.x - self.setpoint_image_origin.point.x)**2 +
+                                                  (setpoint_image.point.y - self.setpoint_image_origin.point.y)**2 )
 
-            setpoint_plate = self.tf_listener.transformPoint("Plate",self.setpoint_frame)
-            # rospy.logwarn("setpoint_plate.point.x = \n%s", str(setpoint_plate.point.x))
-            # rospy.logwarn("setpoint_plate.point.y = \n%s", str(setpoint_plate.point.y))
-            Xsrc = [setpoint_plate.point.x]
-            Ysrc = [setpoint_plate.point.y]
-            response = self.plate_to_camera(Xsrc,Ysrc)
-            self.setpoint_camera.point.x = response.Xdst[0]
-            self.setpoint_camera.point.y = response.Ydst[0]
-            setpoint_image = self.tf_listener.transformPoint(self.image_frame,self.setpoint_camera)
-            setpoint_image_radius = math.sqrt((setpoint_image.point.x - self.setpoint_image_origin.point.x)**2 +
-                                              (setpoint_image.point.y - self.setpoint_image_origin.point.y)**2 )
+                self.setpoint_line_tail_frame.header.frame_id = self.setpoint.header.frame_id
+                self.setpoint_line_tail_frame.point.x = (self.axis_tail_dist/self.setpoint.radius)*self.setpoint_frame.point.x
+                self.setpoint_line_tail_frame.point.y = (self.axis_tail_dist/self.setpoint.radius)*self.setpoint_frame.point.y
 
-            setpoint_line_tail_plate = self.tf_listener.transformPoint("Plate",self.setpoint_line_tail_frame)
-            # rospy.logwarn("setpoint_plate.point.x = \n%s", str(setpoint_plate.point.x))
-            # rospy.logwarn("setpoint_plate.point.y = \n%s", str(setpoint_plate.point.y))
-            Xsrc = [setpoint_line_tail_plate.point.x]
-            Ysrc = [setpoint_line_tail_plate.point.y]
-            response = self.plate_to_camera(Xsrc,Ysrc)
-            self.setpoint_line_tail_camera.point.x = response.Xdst[0]
-            self.setpoint_line_tail_camera.point.y = response.Ydst[0]
-            setpoint_line_tail_image = self.tf_listener.transformPoint(self.image_frame,self.setpoint_line_tail_camera)
+                setpoint_line_tail_plate = self.tf_listener.transformPoint("Plate",self.setpoint_line_tail_frame)
+                # rospy.logwarn("setpoint_plate.point.x = \n%s", str(setpoint_plate.point.x))
+                # rospy.logwarn("setpoint_plate.point.y = \n%s", str(setpoint_plate.point.y))
+                Xsrc = [setpoint_line_tail_plate.point.x]
+                Ysrc = [setpoint_line_tail_plate.point.y]
+                response = self.plate_to_camera(Xsrc,Ysrc)
+                self.setpoint_line_tail_camera.point.x = response.Xdst[0]
+                self.setpoint_line_tail_camera.point.y = response.Ydst[0]
+                setpoint_line_tail_image = self.tf_listener.transformPoint(self.image_frame,self.setpoint_line_tail_camera)
 
-            if 2 < setpoint_image_radius:
                 # cv.Line(self.im_display,
                 #         (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
                 #         (int(setpoint_image.point.x),int(setpoint_image.point.y)),
