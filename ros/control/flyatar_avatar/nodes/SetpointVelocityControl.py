@@ -264,7 +264,10 @@ class SetpointControl:
                 delta_x = abs(pos_x[point_n] - pos_x[point_n - 1])
                 delta_y = abs(pos_y[point_n] - pos_y[point_n - 1])
                 # try:
-                alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
+                if (self.setpoint_move_threshold < delta_x) and (self.setpoint_move_threshold < delta_y):
+                    alpha = 0
+                else:
+                    alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
                 # except:
                 #     alpha = 1
                 vel_x.append(alpha*delta_x)
@@ -334,9 +337,11 @@ class SetpointControl:
         start_theta = math.atan2(dy,dx)
 
         if self.on_setpoint_radius:
-            angle_list = self.angle_divide(start_theta,self.setpoint.theta)
-            for angle_n in range(len(angle_list)):
-                self.append_int_setpoint_to_plate_points(angle_list[angle_n])
+            # angle_list = self.angle_divide(start_theta,self.setpoint.theta)
+            # for angle_n in range(len(angle_list)):
+            #     self.append_int_setpoint_to_plate_points(angle_list[angle_n])
+            self.plate_points_x.append(self.plate_points_x[0])
+            self.plate_points_y.append(self.plate_points_y[0])
         else:
             self.append_int_setpoint_to_plate_points(start_theta)
         self.set_stage_commands_from_plate_points(vel_mag)
