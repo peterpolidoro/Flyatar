@@ -288,7 +288,8 @@ class SetpointControl:
         self.stage_commands.x_velocity = stage_velocity_x
         self.stage_commands.y_velocity = stage_velocity_y
 
-        # rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+        rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+        rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
 
         # rospy.logwarn("self.plate_points_x = %s" % (str(self.plate_points_x)))
         # rospy.logwarn("self.plate_points_y = %s" % (str(self.plate_points_y)))
@@ -348,7 +349,8 @@ class SetpointControl:
         else:
             self.append_int_setpoint_to_plate_points(start_theta)
             # rospy.logwarn("off setpoint radius")
-        # rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
+        rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
+        rospy.logwarn("plate points y = \n%s" % (str(self.plate_points_y)))
         self.set_stage_commands_from_plate_points(vel_mag)
 
     def joystick_commands_callback(self,data):
@@ -419,7 +421,7 @@ class SetpointControl:
                 self.stage_commands.position_control = False
                 self.radius_error,self.theta_error = self.find_robot_setpoint_error()
                 if not self.on_setpoint_radius:
-                    self.set_path_to_setpoint(self.robot_velocity_max/2)
+                    self.set_path_to_setpoint(self.robot_velocity_max/4)
                     self.sc_ok_to_publish = True
                 else:
                     self.sc_ok_to_publish = False
