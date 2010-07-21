@@ -104,6 +104,8 @@ class SetpointControl:
         self.plate_points_y = []
 
         self.setpoint_move_threshold = 0.75   # mm
+        self.on_setpoint_radius_dist = 1
+        self.on_setpoint_theta_dist = CircleFunctions.degrees_to_radians(5)
 
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
@@ -316,8 +318,12 @@ class SetpointControl:
         robot_theta = math.atan2(dy,dx)
         radius_error = self.setpoint.radius - robot_radius
         theta_error = CircleFunctions.circle_dist(robot_theta,self.setpoint.theta)
-        rospy.logwarn("radius_error = %s" % (str(radius_error)))
-        rospy.logwarn("theta_error = %s" % (str(theta_error)))
+        # rospy.logwarn("radius_error = %s" % (str(radius_error)))
+        # rospy.logwarn("theta_error = %s" % (str(theta_error)))
+        self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
+        self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_theta_dist
+
+        return radius_error,theta_error
 
     def set_path_to_setpoint(self,vel_mag):
         self.robot_control_frame = self.convert_to_control_frame(self.robot_origin)
@@ -463,8 +469,12 @@ class SetpointControl:
 
     def control_loop(self):
         while not rospy.is_shutdown():
-            self.find_robot_setpoint_error()
             if self.tracking:
+                self.radius_error,self.theta_error = self.find_robot_setpoint_error()
+                if not self.on_setpoint_radius:
+                    rospy.logwarn("Not at correct radius")
+                if not self.on_setpoint_theta:
+                    rospy.logwarn("Not at correct angle")
                 # if not self.moving_to_setpoint:
                 if (not self.moving_to_setpoint) or self.setpoint_moved:
                     self.setpoint_moved = False
