@@ -121,8 +121,8 @@ class SetpointControl:
         self.goto_start = False
 
         self.rate = rospy.Rate(1/self.control_dt)
-        self.gain_radius = rospy.get_param("gain_radius","4")
-        self.gain_theta = rospy.get_param("gain_theta","40")
+        self.gain_radius = rospy.get_param("gain_radius",4)
+        self.gain_theta = rospy.get_param("gain_theta",40)
 
         self.radius_velocity = 0
         self.tangent_velocity = 0
@@ -257,22 +257,22 @@ class SetpointControl:
         vel_mag = abs(vel_mag)          # Just to be sure
         for point_n in range(point_count):
             if point_n != 0:
-                rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
-                rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
-                rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
-                rospy.logwarn("pos_y[point_n - 1] = %s" % (str(pos_y[point_n -1])))
+                # rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
+                # rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
+                # rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
+                # rospy.logwarn("pos_y[point_n - 1] = %s" % (str(pos_y[point_n -1])))
                 delta_x = pos_x[point_n] - pos_x[point_n - 1]
                 delta_y = pos_y[point_n] - pos_y[point_n - 1]
                 # try:
-                if (delta_x < self.setpoint_move_threshold) and (delta_y < self.setpoint_move_threshold):
+                if (abs(delta_x) < self.setpoint_move_threshold) and (abs(delta_y) < self.setpoint_move_threshold):
                     alpha = 0
                 else:
                     alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
                 # except:
                 #     alpha = 1
-                rospy.logwarn("delta_x = %s" % (str(delta_x)))
-                rospy.logwarn("delta_y = %s" % (str(delta_y)))
-                rospy.logwarn("alpha = %s" % (str(alpha)))
+                # rospy.logwarn("delta_x = %s" % (str(delta_x)))
+                # rospy.logwarn("delta_y = %s" % (str(delta_y)))
+                # rospy.logwarn("alpha = %s" % (str(alpha)))
                 vel_x.append(alpha*delta_x)
                 vel_y.append(alpha*delta_y)
         return vel_x,vel_y
@@ -291,8 +291,8 @@ class SetpointControl:
         self.stage_commands.x_velocity = stage_velocity_x
         self.stage_commands.y_velocity = stage_velocity_y
 
-        rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
-        rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
+        # rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+        # rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
 
         # rospy.logwarn("self.plate_points_x = %s" % (str(self.plate_points_x)))
         # rospy.logwarn("self.plate_points_y = %s" % (str(self.plate_points_y)))
@@ -352,8 +352,8 @@ class SetpointControl:
         else:
             self.append_int_setpoint_to_plate_points(start_theta)
             # rospy.logwarn("off setpoint radius")
-        rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
-        rospy.logwarn("plate points y = \n%s" % (str(self.plate_points_y)))
+        # rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
+        # rospy.logwarn("plate points y = \n%s" % (str(self.plate_points_y)))
         self.set_stage_commands_from_plate_points(vel_mag)
 
     def joystick_commands_callback(self,data):
@@ -418,13 +418,23 @@ class SetpointControl:
                 if self.sc_ok_to_publish:
                     self.sc_pub.publish(self.stage_commands)
 
+    def find_radius_vel_mag(self):
+        self.gain_radius = rospy.get_param("gain_radius")
+        vel_mag = self.gain_radius*self.radius_error
+        if self.robot_velocity_max < vel_mag:
+            vel_mag = self.robot_velocity_max
+        return vel_mag
+
     def control_loop(self):
         while not rospy.is_shutdown():
             if self.tracking:
                 self.stage_commands.position_control = False
+                self.gain_theta = rospy.get_param("gain_theta")
+
                 self.radius_error,self.theta_error = self.find_robot_setpoint_error()
                 if not self.on_setpoint_radius:
-                    self.set_path_to_setpoint(self.robot_velocity_max/4)
+                    vel_mag = self.find_radius_vel_mag()
+                    self.set_path_to_setpoint(vel_mag)
                     self.sc_ok_to_publish = True
                 else:
                     self.sc_ok_to_publish = False
