@@ -471,10 +471,10 @@ class SetpointControl:
         while not rospy.is_shutdown():
             if self.tracking:
                 self.radius_error,self.theta_error = self.find_robot_setpoint_error()
-                if not self.on_setpoint_radius:
-                    rospy.logwarn("Not at correct radius")
-                if not self.on_setpoint_theta:
-                    rospy.logwarn("Not at correct angle")
+                if self.on_setpoint_radius:
+                    rospy.logwarn("At correct radius!")
+                if self.on_setpoint_theta:
+                    rospy.logwarn("At correct angle!")
                 # if not self.moving_to_setpoint:
                 if (not self.moving_to_setpoint) or self.setpoint_moved:
                     self.setpoint_moved = False
