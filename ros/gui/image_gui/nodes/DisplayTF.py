@@ -80,6 +80,7 @@ class ImageDisplay:
         else:
             self.axis_length = 10
         self.axis_line_width = 3
+        self.circle_line_width = 2
         self.axis_head_dist = 4
         self.axes_center = PointStamped()
         self.axes_center.point.x = 0
@@ -265,7 +266,7 @@ class ImageDisplay:
                     cv.Line(self.im_display,
                             (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
                             (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
-                            circle_color, self.axis_line_width)
+                            circle_color, self.circle_line_width)
 
                 cv.Circle(self.im_display,
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),
