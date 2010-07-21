@@ -256,10 +256,7 @@ class SetpointControl:
         vel_y = []
         vel_mag = abs(vel_mag)          # Just to be sure
         for point_n in range(point_count):
-            if point_n == 0:
-                vel_x.append(math.sqrt(2)*vel_mag)
-                vel_y.append(math.sqrt(2)*vel_mag)
-            else:
+            if point_n != 0:
                 # rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
                 # rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
                 # rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
@@ -283,8 +280,8 @@ class SetpointControl:
         # rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
         # rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
         stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag)
-        self.stage_commands.x_position = stage_points_x
-        self.stage_commands.y_position = stage_points_y
+        # self.stage_commands.x_position = stage_points_x
+        # self.stage_commands.y_position = stage_points_y
         self.stage_commands.x_velocity = stage_velocity_x
         self.stage_commands.y_velocity = stage_velocity_y
 
@@ -328,82 +325,21 @@ class SetpointControl:
     def set_path_to_setpoint(self,vel_mag):
         self.robot_control_frame = self.convert_to_control_frame(self.robot_origin)
         self.robot_plate = self.convert_to_plate(self.robot_origin)
-        # self.setpoint_center_plate = self.convert_to_plate(self.setpoint_center_origin)
-        # self.find_setpoint_center_plate()
         x_rp = self.robot_plate.point.x
         y_rp = self.robot_plate.point.y
         self.plate_points_x = [x_rp]
         self.plate_points_y = [y_rp]
-        # x_scp =  self.setpoint_center_plate.point.x
-        # y_scp =  self.setpoint_center_plate.point.y
-        # dx = x_ro - x_so
-        # dy = y_ro - y_so
         dx = self.robot_control_frame.point.x
         dy = self.robot_control_frame.point.y
-        # self.append_int_setpoint_to_plate_points(math.atan2(dy,dx))
-        # self.setpoint_int.theta = math.atan2(dy,dx)
-        # self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
-        # self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
-        # self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
-        # xi = self.setpoint_int_plate.point.x
-        # yi = self.setpoint_int_plate.point.y
         start_theta = math.atan2(dy,dx)
 
-        # angle_list = self.angle_divide(self.setpoint_int.theta,self.setpoint.theta)
-        angle_list = self.angle_divide(start_theta,self.setpoint.theta)
-        # rospy.logwarn("angle_list = %s" % (str(angle_list)))
-        # rospy.logwarn("len(angle_list) = %s" % (str(len(angle_list))))
-        for angle_n in range(len(angle_list)):
-            self.append_int_setpoint_to_plate_points(angle_list[angle_n])
-            # self.setpoint_int.theta = angle_list(angle_n)
-            # self.setpoint_int_origin.point.x = self.setpoint_int.radius*math.cos(self.setpoint_int.theta)
-            # self.setpoint_int_origin.point.y = self.setpoint_int.radius*math.sin(self.setpoint_int.theta)
-            # self.setpoint_int_plate = self.convert_to_plate(self.setpoint_int_origin)
-            # xi = self.setpoint_int_plate.point.x
-            # yi = self.setpoint_int_plate.point.y
-            # self.plate_points_x.append(xi)
-            # self.plate_points_y.append(yi)
-        # rospy.logwarn("plate_points_y = %s" % (str(self.plate_points_y)))
-
-        # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
-        # dr = math.sqrt(dx**2 + dy**2)
-        # dx_norm = dx/dr
-        # dy_norm = dy/dr
-        # xi = x_so + dx_norm*self.setpoint.radius
-        # yi = y_so + dy_norm*self.setpoint.radius
-        # rospy.logwarn("xi = %s, yi = %s" % (str(xi),str(yi)))
-
-        # self.setpoint_plate = self.convert_to_plate(self.setpoint_origin)
-        # self.find_setpoint_plate()
-        # self.plate_points_x.append(self.setpoint_plate.point.x)
-        # self.plate_points_y.append(self.setpoint_plate.point.y)
+        if self.on_setpoint_radius:
+            angle_list = self.angle_divide(start_theta,self.setpoint.theta)
+            for angle_n in range(len(angle_list)):
+                self.append_int_setpoint_to_plate_points(angle_list[angle_n])
+        else:
+            self.append_int_setpoint_to_plate_points(start_theta)
         self.set_stage_commands_from_plate_points(vel_mag)
-        # rospy.logwarn("self.stage_commands.x_position = %s" % (str(self.stage_commands.x_position)))
-        # rospy.logwarn("self.stage_commands.y_position = %s" % (str(self.stage_commands.y_position)))
-        # rospy.logwarn("self.stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
-        # rospy.logwarn("self.stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
-
-    # def set_position_velocity_point(self,x_target,y_target,frame_target,vel_mag):
-    #     self.setpoint_plate.header.frame_id = frame_target
-    #     self.setpoint_plate.point.x = x_target
-    #     self.setpoint_plate.point.y = y_target
-
-    #     target_acquired = False
-    #     while not target_acquired:
-    #         try:
-    #             setpoint_plate_stage = self.tf_listener.transformPoint("Stage",self.setpoint_plate)
-    #             target_acquired = True
-    #         except (tf.LookupException, tf.ConnectivityException):
-    #             rospy.logwarn("Error finding setpoint_plate_stage!")
-
-    #     self.stage_commands.x_position = [robot_plate_stage.point.x,setpoint_plate_stage.point.x]
-    #     self.stage_commands.y_position = [robot_plate_stage.point.y,setpoint_plate_stage.point.y]
-
-    #     delta_x = abs(setpoint_plate_stage.point.x - robot_plate_stage.point.x)
-    #     delta_y = abs(setpoint_plate_stage.point.y - robot_plate_stage.point.y)
-    #     alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
-    #     self.stage_commands.x_velocity = [vel_mag,alpha*delta_x]
-    #     self.stage_commands.y_velocity = [vel_mag,alpha*delta_y]
 
     def joystick_commands_callback(self,data):
         if self.initialized:
@@ -470,20 +406,27 @@ class SetpointControl:
     def control_loop(self):
         while not rospy.is_shutdown():
             if self.tracking:
+                self.stage_commands.position_control = False
                 self.radius_error,self.theta_error = self.find_robot_setpoint_error()
-                if self.on_setpoint_radius:
-                    rospy.logwarn("At correct radius!")
-                if self.on_setpoint_theta:
-                    rospy.logwarn("At correct angle!")
-                # if not self.moving_to_setpoint:
-                if (not self.moving_to_setpoint) or self.setpoint_moved:
-                    self.setpoint_moved = False
-                    self.moving_to_setpoint = True
-                    self.stage_commands.position_control = True
+                if not self.on_setpoint_radius:
                     self.set_path_to_setpoint(self.robot_velocity_max/2)
                     self.sc_ok_to_publish = True
                 else:
                     self.sc_ok_to_publish = False
+                    rospy.logwarn("At correct radius!")
+                if not self.on_setpoint_theta:
+                    pass
+                else:
+                    rospy.logwarn("At correct angle!")
+                # if not self.moving_to_setpoint:
+                # if (not self.moving_to_setpoint) or self.setpoint_moved:
+                #     self.setpoint_moved = False
+                #     self.moving_to_setpoint = True
+                #     self.stage_commands.position_control = True
+                #     self.set_path_to_setpoint(self.robot_velocity_max/2)
+                #     self.sc_ok_to_publish = True
+                # else:
+                #     self.sc_ok_to_publish = False
 
                 if self.sc_ok_to_publish:
                     self.sc_pub.publish(self.stage_commands)
