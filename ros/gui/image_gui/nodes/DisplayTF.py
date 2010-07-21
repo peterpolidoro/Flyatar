@@ -87,21 +87,21 @@ class ImageDisplay:
         self.axes_center.point.y = 0
         self.axes_center.point.z = 0
         self.axes_x_tail = PointStamped()
-        self.axes_x_tail.point.x = self.axis_length
+        self.axes_x_tail.point.x = self.axis_head_dist
         self.axes_x_tail.point.y = 0
         self.axes_x_tail.point.z = 0
         self.axes_y_tail = PointStamped()
         self.axes_y_tail.point.x = 0
-        self.axes_y_tail.point.y = self.axis_length
+        self.axes_y_tail.point.y = self.axis_head_dist
         self.axes_y_tail.point.z = 0
 
         self.axes_x_head = PointStamped()
-        self.axes_x_head.point.x = self.axis_head_dist
+        self.axes_x_head.point.x = self.axis_length
         self.axes_x_head.point.y = 0
         self.axes_x_head.point.z = 0
         self.axes_y_head = PointStamped()
         self.axes_y_head.point.x = 0
-        self.axes_y_head.point.y = self.axis_head_dist
+        self.axes_y_head.point.y = self.axis_length
         self.axes_y_head.point.z = 0
 
         self.axes_center_camera = PointStamped()
