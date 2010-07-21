@@ -308,6 +308,17 @@ class SetpointControl:
         self.plate_points_x.append(xi)
         self.plate_points_y.append(yi)
 
+    def find_robot_setpoint_error(self):
+        self.robot_control_frame = self.convert_to_control_frame(self.robot_origin)
+        dx = self.robot_control_frame.point.x
+        dy = self.robot_control_frame.point.y
+        robot_radius = math.sqrt(dx**2 + dy**2)
+        robot_theta = math.atan2(dy,dx)
+        radius_error = self.setpoint.radius - robot_radius
+        theta_error = CircleFunctions.circle_dist(robot_theta,self.setpoint.theta)
+        rospy.logwarn("radius_error = %s" % (str(radius_error)))
+        rospy.logwarn("theta_error = %s" % (str(theta_error)))
+
     def set_path_to_setpoint(self,vel_mag):
         self.robot_control_frame = self.convert_to_control_frame(self.robot_origin)
         self.robot_plate = self.convert_to_plate(self.robot_origin)
@@ -452,6 +463,7 @@ class SetpointControl:
 
     def control_loop(self):
         while not rospy.is_shutdown():
+            self.find_robot_setpoint_error()
             if self.tracking:
                 # if not self.moving_to_setpoint:
                 if (not self.moving_to_setpoint) or self.setpoint_moved:
