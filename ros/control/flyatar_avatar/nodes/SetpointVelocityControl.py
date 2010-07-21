@@ -342,8 +342,12 @@ class SetpointControl:
             #     self.append_int_setpoint_to_plate_points(angle_list[angle_n])
             self.plate_points_x.append(self.plate_points_x[0])
             self.plate_points_y.append(self.plate_points_y[0])
+            rospy.logwarn("on setpoint radius")
         else:
             self.append_int_setpoint_to_plate_points(start_theta)
+            rospy.logwarn("off setpoint radius")
+
+        rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
         self.set_stage_commands_from_plate_points(vel_mag)
 
     def joystick_commands_callback(self,data):
