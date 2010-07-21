@@ -264,7 +264,7 @@ class SetpointControl:
                 delta_x = abs(pos_x[point_n] - pos_x[point_n - 1])
                 delta_y = abs(pos_y[point_n] - pos_y[point_n - 1])
                 # try:
-                if (self.setpoint_move_threshold < delta_x) and (self.setpoint_move_threshold < delta_y):
+                if (delta_x < self.setpoint_move_threshold) and (delta_y < self.setpoint_move_threshold):
                     alpha = 0
                 else:
                     alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
@@ -288,7 +288,7 @@ class SetpointControl:
         self.stage_commands.x_velocity = stage_velocity_x
         self.stage_commands.y_velocity = stage_velocity_y
 
-        rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+        # rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
 
         # rospy.logwarn("self.plate_points_x = %s" % (str(self.plate_points_x)))
         # rospy.logwarn("self.plate_points_y = %s" % (str(self.plate_points_y)))
