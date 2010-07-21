@@ -74,6 +74,9 @@ class ImageDisplay:
         self.setpoint_camera = PointStamped()
         self.setpoint_camera.header.frame_id = "Camera"
         self.setpoint_frame = PointStamped()
+        self.setpoint_line_tail_frame = PointStamped()
+        self.setpoint_line_tail_camera = PointStamped()
+        self.setpoint_line_tail_camera.header.frame_id = "Camera"
 
         if self.display_y_axis:
             self.axis_length = 15
@@ -120,6 +123,10 @@ class ImageDisplay:
 
         self.resize_published_image = True
         self.resize_size = (640,480)
+
+        self.setpoint_color = cv.CV_RGB(self.color_max,0,self.color_max)
+        self.setpoint_line_width = 2
+        self.setpoint_size = 4
 
         rospy.wait_for_service('plate_to_camera')
         try:
@@ -281,6 +288,10 @@ class ImageDisplay:
             self.setpoint_frame.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
             self.setpoint_frame.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
 
+            self.setpoint_line_tail_frame.header.frame_id = self.setpoint.header.frame_id
+            self.setpoint_line_tail_frame.point.x = (self.axis_head_dist/self.setpoint.radius)*self.setpoint_frame.point.x
+            self.setpoint_line_tail_frame.point.y = (self.axis_head_dist/self.setpoint.radius)*self.setpoint_frame.point.y
+
             setpoint_plate = self.tf_listener.transformPoint("Plate",self.setpoint_frame)
             # rospy.logwarn("setpoint_plate.point.x = \n%s", str(setpoint_plate.point.x))
             # rospy.logwarn("setpoint_plate.point.y = \n%s", str(setpoint_plate.point.y))
@@ -292,20 +303,35 @@ class ImageDisplay:
             setpoint_image = self.tf_listener.transformPoint(self.image_frame,self.setpoint_camera)
             setpoint_image_radius = math.sqrt((setpoint_image.point.x - self.setpoint_image_origin.point.x)**2 +
                                               (setpoint_image.point.y - self.setpoint_image_origin.point.y)**2 )
+
+            setpoint_line_tail_plate = self.tf_listener.transformPoint("Plate",self.setpoint_line_tail_frame)
+            # rospy.logwarn("setpoint_plate.point.x = \n%s", str(setpoint_plate.point.x))
+            # rospy.logwarn("setpoint_plate.point.y = \n%s", str(setpoint_plate.point.y))
+            Xsrc = [setpoint_line_tail_plate.point.x]
+            Ysrc = [setpoint_line_tail_plate.point.y]
+            response = self.plate_to_camera(Xsrc,Ysrc)
+            self.setpoint_line_tail_camera.point.x = response.Xdst[0]
+            self.setpoint_line_tail_camera.point.y = response.Ydst[0]
+            setpoint_line_tail_image = self.tf_listener.transformPoint(self.image_frame,self.setpoint_line_tail_camera)
+
             if 2 < setpoint_image_radius:
+                # cv.Line(self.im_display,
+                #         (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
+                #         (int(setpoint_image.point.x),int(setpoint_image.point.y)),
+                #         cv.CV_RGB(self.color_max,0,self.color_max), 2)
                 cv.Line(self.im_display,
-                        (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
+                        (int(setpoint_line_tail_image.point.x),int(setpoint_line_tail_image.point.y)),
                         (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                        cv.CV_RGB(self.color_max,0,self.color_max), 2)
+                        self.setpoint_color, self.setpoint_line_width)
                 cv.Circle(self.im_display,
                           (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
-                          int(setpoint_image_radius), cv.CV_RGB(self.color_max,0,self.color_max),2)
-                cv.Circle(self.im_display,
-                          (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
-                          3, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
+                          int(setpoint_image_radius), self.setpoint_color, self.setpoint_line_width)
+                # cv.Circle(self.im_display,
+                #           (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
+                #           3, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
                 cv.Circle(self.im_display,
                           (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                          4, cv.CV_RGB(0,0,0), cv.CV_FILLED)
+                          self.setpoint_size, self.setpoint_color, cv.CV_FILLED)
 
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
