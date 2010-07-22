@@ -153,6 +153,7 @@ class StageDevice(USBDevice.USB_Device):
             x_pos_list = [None]*point_count
             y_pos_list = [None]*point_count
             vel_move = True
+            self.vel_move = True
 
         if point_count == 1:
             x_pos_mm = x_pos_list[0]
@@ -182,8 +183,6 @@ class StageDevice(USBDevice.USB_Device):
                 # rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
                 if not vel_move:
                     self._lookup_table_fill()
-                else:
-                    rospy.logwarn("USBPacketOut = \n%s" % (str(self.USBPacketOut)))
 
             if vel_move:
                 self._lookup_table_vel_move()
@@ -301,6 +300,8 @@ class StageDevice(USBDevice.USB_Device):
         return quantity_steps/self.steps_per_mm
 
     def _set_frequency(self,axis,freq,entry_n=0):
+        if self.vel_move:
+            rospy.logwarn("entry_n = %s, motor = %s, freq = %s" % (str(entry_n),str(axis),str(int(freq))))
         self.USBPacketOut.Entry[entry_n].Motor[axis].Frequency = int(freq)
 
     def _set_position(self,axis,pos,entry_n=0):
