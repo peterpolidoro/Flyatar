@@ -471,7 +471,7 @@ static void Timer_Init(void)
   /* Set Timer 0 to 125 Hz */
   Timer_Off(0);
   Timer[0].TOPValue = (uint16_t)250;
-  Timer[0].Prescaler_N = 4;
+  Timer[0].Prescaler_N = 3;
   *Timer[0].Address.TOP = (uint8_t)Timer[0].TOPValue;
   Timer_On(0);
 }
