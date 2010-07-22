@@ -401,6 +401,7 @@ static void Timer_Init(void)
   TCCR3B = (1<<WGM33);
 
   /* Enable Timer Interrupts */
+  TIMSK0 = (1<<TOIE0);
   TIMSK1 = (1<<TOIE1);
   TIMSK2 = (1<<TOIE2);
   TIMSK3 = (1<<TOIE3);
@@ -467,6 +468,13 @@ static void Timer_Init(void)
   Timer[1].ScaleFactor = 4;
   Timer[2].ScaleFactor = 4;
   Timer[3].ScaleFactor = 4;
+
+  /* Set Timer 0 to 125 Hz */
+  Timer_Off(0);
+  Timer[0].TOPValue = (uint16_t)250;
+  Timer[0].Prescaler_N = PrescalerArray8[4];
+  *Timer[Timer_N].Address.TOP = (uint8_t)Timer[0].TOPValue;
+  Timer_On(0);
 }
 
 static void Motor_Init(void)

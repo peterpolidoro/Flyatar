@@ -113,8 +113,6 @@ class SetpointControl:
             except (KeyError):
                 tries += 1
 
-        rospy.logwarn("lookup_table_update_freq = %s" % (str(self.lookup_table_update_freq)))
-
         self.setpoint_move_threshold = 0.75   # mm
         self.on_setpoint_radius_dist = 1
         self.on_setpoint_theta_dist = CircleFunctions.degrees_to_radians(5)
