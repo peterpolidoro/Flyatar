@@ -234,7 +234,7 @@ TASK(USB_ProcessPacket)
                       }
                   }
                   break;
-                case USB_CMD_LOOKUP_TABLE_MOVE:
+                case USB_CMD_LOOKUP_TABLE_POS_MOVE:
                   {
                     if (!IO_Enabled)
                       {
@@ -581,13 +581,13 @@ static void Motor_Update(uint8_t Motor_N)
       while ((TOPValue > Timer[Timer_N].TOPMax) && (Prescaler_N < (PRESCALER_NUM-1)))
         {
           Prescaler_N++;
-          if (Timer_N == 2)
+          if ((Timer_N == 1) || (Timer_N == 3))
             {
-              Prescaler = PrescalerArray8[Prescaler_N];
+              Prescaler = PrescalerArray16[Prescaler_N];
             }
           else
             {
-              Prescaler = PrescalerArray16[Prescaler_N];
+              Prescaler = PrescalerArray8[Prescaler_N];
             }
           TOPValue = (uint32_t)F_CLOCK/((uint32_t)Freq*(uint32_t)ScaleFactor*Prescaler);
           if ((Prescaler_N == (PRESCALER_NUM-1)) && (TOPValue > Timer[Timer_N].TOPMax))

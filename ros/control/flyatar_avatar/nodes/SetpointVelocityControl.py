@@ -103,7 +103,17 @@ class SetpointControl:
         self.plate_points_x = []
         self.plate_points_y = []
 
-        self.lookup_table_update_freq = 60
+        lookup_freq_not_set = True
+        tries = 0
+        tries_limit = 20
+        while lookup_freq_not_set and (tries < tries_limit):
+            try:
+                self.lookup_table_update_freq = rospy.get_param('lookup_table_update_freq')
+                lookup_freq_not_set = False
+            except (KeyError):
+                tries += 1
+
+        rospy.logwarn("lookup_table_update_freq = %s" % (str(self.lookup_table_update_freq)))
 
         self.setpoint_move_threshold = 0.75   # mm
         self.on_setpoint_radius_dist = 1

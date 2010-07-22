@@ -25,6 +25,8 @@ import math
 _motor_num = 3
 _entries_max = 5
 _lookup_table_size = 100
+_lookup_table_update_freq = 125
+rospy.set_param('lookup_table_update_freq',125)
 
 # Input/Output Structures
 class MotorState_t(ctypes.LittleEndianStructure):
@@ -153,7 +155,6 @@ class StageDevice(USBDevice.USB_Device):
             x_pos_list = [None]*point_count
             y_pos_list = [None]*point_count
             vel_move = True
-            self.vel_move = True
 
         if point_count == 1:
             x_pos_mm = x_pos_list[0]
@@ -181,8 +182,7 @@ class StageDevice(USBDevice.USB_Device):
                 self.USBPacketOut.EntryCount = packet_point_n
                 self.USBPacketOut.EntryLocation = point_n - packet_point_n
                 # rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
-                if not vel_move:
-                    self._lookup_table_fill()
+                self._lookup_table_fill()
 
             if vel_move:
                 self._lookup_table_vel_move()
@@ -300,8 +300,6 @@ class StageDevice(USBDevice.USB_Device):
         return quantity_steps/self.steps_per_mm
 
     def _set_frequency(self,axis,freq,entry_n=0):
-        if self.vel_move:
-            rospy.logwarn("entry_n = %s, motor = %s, freq = %s" % (str(entry_n),str(axis),str(int(freq))))
         self.USBPacketOut.Entry[entry_n].Motor[axis].Frequency = int(freq)
 
     def _set_position(self,axis,pos,entry_n=0):
@@ -333,9 +331,8 @@ class StageDevice(USBDevice.USB_Device):
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_POS_MOVE,True)
 
     def _lookup_table_vel_move(self):
-        rospy.logwarn("Velocity lookup table move!")
-        # self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
-        # self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_MOVE,True)
+        self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
+        self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_MOVE,True)
 
     def _print_motor_state(self):
         print '*'*20

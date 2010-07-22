@@ -54,12 +54,13 @@
 
 /* Macros: */
 /* USB Commands */
-#define USB_CMD_GET_STATE       1
-#define USB_CMD_SET_STATE       2
-#define USB_CMD_LOOKUP_TABLE_FILL 3
-#define USB_CMD_LOOKUP_TABLE_MOVE 4
-#define USB_CMD_AVR_RESET       200
-#define USB_CMD_AVR_DFU_MODE    201
+#define USB_CMD_GET_STATE             1
+#define USB_CMD_SET_STATE             2
+#define USB_CMD_LOOKUP_TABLE_FILL     3
+#define USB_CMD_LOOKUP_TABLE_POS_MOVE 4
+#define USB_CMD_LOOKUP_TABLE_VEL_MOVE 5
+#define USB_CMD_AVR_RESET             200
+#define USB_CMD_AVR_DFU_MODE          201
 
 /* Motor Parameter Values */
 #define MOTOR_0_POSITION_HOME 1000
