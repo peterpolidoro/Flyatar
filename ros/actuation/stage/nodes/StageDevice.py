@@ -25,8 +25,8 @@ import math
 _motor_num = 3
 _entries_max = 5
 _lookup_table_size = 100
-_lookup_table_update_freq = 125
-rospy.set_param('lookup_table_update_freq',125)
+_lookup_table_update_freq = 62.5
+rospy.set_param('lookup_table_update_freq',_lookup_table_update_freq)
 
 # Input/Output Structures
 class MotorState_t(ctypes.LittleEndianStructure):
