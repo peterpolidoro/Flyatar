@@ -349,7 +349,8 @@ class SetpointControl:
         if self.on_setpoint_radius:
             angle_list = self.angle_divide(start_theta,self.setpoint.theta)
             for angle_n in range(len(angle_list)):
-                self.append_int_setpoint_to_plate_points(angle_list[angle_n])
+                if angle_n != 0:
+                    self.append_int_setpoint_to_plate_points(angle_list[angle_n])
             # self.plate_points_x.append(self.plate_points_x[0])
             # self.plate_points_y.append(self.plate_points_y[0])
             # rospy.logwarn("on setpoint radius")
