@@ -74,7 +74,8 @@ class StageDevice(USBDevice.USB_Device):
         self.USB_CMD_GET_STATE = ctypes.c_uint8(1)
         self.USB_CMD_SET_STATE = ctypes.c_uint8(2)
         self.USB_CMD_LOOKUP_TABLE_FILL = ctypes.c_uint8(3)
-        self.USB_CMD_LOOKUP_TABLE_MOVE = ctypes.c_uint8(4)
+        self.USB_CMD_LOOKUP_TABLE_POS_MOVE = ctypes.c_uint8(4)
+        self.USB_CMD_LOOKUP_TABLE_VEL_MOVE = ctypes.c_uint8(5)
 
         self.USBPacketOut = USBPacketOut_t()
         self.USBPacketIn = USBPacketIn_t()
@@ -93,17 +94,65 @@ class StageDevice(USBDevice.USB_Device):
         self.axis_theta = 2
 
     def update_velocity(self,x_vel_list,y_vel_list):
-        x_vel_mm = x_vel_list[0]
-        y_vel_mm = y_vel_list[0]
-        self._convert_and_set_setpoint(None,x_vel_mm,None,y_vel_mm,0)
-        self._set_motor_state()
-        x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
+        # x_vel_mm = x_vel_list[0]
+        # y_vel_mm = y_vel_list[0]
+        # self._convert_and_set_setpoint(None,x_vel_mm,None,y_vel_mm,0)
+        # self._set_motor_state()
+        # x,y,theta,x_velocity,y_velocity,theta_velocity = self._return_state()
+        # return x,y,theta,x_velocity,y_velocity,theta_velocity
+        x,y,theta,x_velocity,y_velocity,theta_velocity = self._send_cmds_receive_status(None,x_vel_list,None,y_vel_list)
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def update_position(self,x_pos_list,x_vel_list,y_pos_list,y_vel_list):
-        point_count = min(len(x_pos_list),len(x_vel_list),len(y_pos_list),len(y_vel_list))
+        x,y,theta,x_velocity,y_velocity,theta_velocity = self._send_cmds_receive_status(x_pos_list,x_vel_list,y_pos_list,y_vel_list)
+        return x,y,theta,x_velocity,y_velocity,theta_velocity
+
+        # point_count = min(len(x_pos_list),len(x_vel_list),len(y_pos_list),len(y_vel_list))
+        # if _lookup_table_size < point_count:
+        #     point_count = _lookup_table_size
+
+        # if point_count == 1:
+        #     x_pos_mm = x_pos_list[0]
+        #     x_vel_mm = x_vel_list[0]
+        #     y_pos_mm = y_pos_list[0]
+        #     y_vel_mm = y_vel_list[0]
+        #     self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,0)
+        #     self._set_motor_state()
+        # else:
+        #     packet_count = int(math.ceil(point_count/_entries_max))
+        #     point_n = 0
+        #     for packet_n in range(packet_count):
+        #         packet_point_n = 0
+        #         while (packet_point_n < _entries_max) and (point_n < point_count):
+        #             x_pos_mm = x_pos_list[point_n]
+        #             x_vel_mm = x_vel_list[point_n]
+        #             y_pos_mm = y_pos_list[point_n]
+        #             y_vel_mm = y_vel_list[point_n]
+
+        #             self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,packet_point_n)
+
+        #             packet_point_n += 1
+        #             point_n += 1
+
+        #         self.USBPacketOut.EntryCount = packet_point_n
+        #         self.USBPacketOut.EntryLocation = point_n - packet_point_n
+        #         # rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
+        #         self._lookup_table_fill()
+
+        #     self._lookup_table_move()
+
+        # x,y,theta,x_velocity,y_velocity,theta_velocity = self._return_state()
+        # return x,y,theta,x_velocity,y_velocity,theta_velocity
+
+    def _send_cmds_receive_status(self,x_pos_list,x_vel_list,y_pos_list,y_vel_list):
+        point_count = min(len(x_vel_list),len(y_vel_list))
         if _lookup_table_size < point_count:
             point_count = _lookup_table_size
+
+        if (x_pos_list is None) or (y_pos_list is None):
+            x_pos_list = [None]*point_count
+            y_pos_list = [None]*point_count
+            vel_move = True
 
         if point_count == 1:
             x_pos_mm = x_pos_list[0]
@@ -131,12 +180,19 @@ class StageDevice(USBDevice.USB_Device):
                 self.USBPacketOut.EntryCount = packet_point_n
                 self.USBPacketOut.EntryLocation = point_n - packet_point_n
                 # rospy.logwarn("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
-                self._lookup_table_fill()
+                if not vel_move:
+                    self._lookup_table_fill()
+                else:
+                    rospy.logwarn("USBPacketOut = \n%s" % (str(self.USBPacketOut)))
 
-            self._lookup_table_move()
+            if vel_move:
+                self._lookup_table_vel_move()
+            else:
+                self._lookup_table_pos_move()
 
-        x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
+        x,y,theta,x_velocity,y_velocity,theta_velocity = self._return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
+
 
     # def lookup_table_move(self,x_pos_list,x_vel_list,y_pos_list,y_vel_list):
     #     point_count = min(len(x_pos_list),len(x_vel_list),len(y_pos_list),len(y_vel_list))
@@ -164,15 +220,15 @@ class StageDevice(USBDevice.USB_Device):
     #         self._lookup_table_fill()
 
     #     self._lookup_table_move()
-    #     x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
+    #     x,y,theta,x_velocity,y_velocity,theta_velocity = self._return_state()
     #     return x,y,theta,x_velocity,y_velocity,theta_velocity
 
     def get_state(self):
         self._get_motor_state()
-        x,y,theta,x_velocity,y_velocity,theta_velocity = self.return_state()
+        x,y,theta,x_velocity,y_velocity,theta_velocity = self._return_state()
         return x,y,theta,x_velocity,y_velocity,theta_velocity
 
-    def return_state(self):
+    def _return_state(self):
         x_velocity = self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_x].Frequency)
         x = self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_x].Position)
         y_velocity =  self._steps_to_mm(self.USBPacketIn.State.Motor[self.axis_y].Frequency)
@@ -271,9 +327,14 @@ class StageDevice(USBDevice.USB_Device):
     def _lookup_table_fill(self):
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_FILL,True)
 
-    def _lookup_table_move(self):
+    def _lookup_table_pos_move(self):
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
-        self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_MOVE,True)
+        self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_POS_MOVE,True)
+
+    def _lookup_table_vel_move(self):
+        rospy.logwarn("Velocity lookup table move!")
+        # self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
+        # self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_MOVE,True)
 
     def _print_motor_state(self):
         print '*'*20
