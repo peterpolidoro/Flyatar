@@ -103,6 +103,8 @@ class SetpointControl:
         self.plate_points_x = []
         self.plate_points_y = []
 
+        self.lookup_table_update_freq = 60
+
         self.setpoint_move_threshold = 0.75   # mm
         self.on_setpoint_radius_dist = 1
         self.on_setpoint_theta_dist = CircleFunctions.degrees_to_radians(5)
@@ -159,7 +161,7 @@ class SetpointControl:
         #     self.setpoint_moved = False
         # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
-    def angle_divide(self,angle_start,angle_stop):
+    def angle_divide(self,angle_start,angle_stop,vel_mag):
         diff = CircleFunctions.circle_dist(angle_start,angle_stop)
         if 0 < diff:
             if angle_stop < angle_start:
@@ -171,8 +173,10 @@ class SetpointControl:
         # rospy.logwarn("angle_stop = \n%s" % (str(angle_stop)))
         # rospy.logwarn("diff = \n%s" % (str(diff)))
         r = self.setpoint.radius
+        chord_length = vel_mag/self.lookup_table_update_freq
+        rospy.logwarn("chord_length = %s" % (str(chord_length)))
         if 0 < r:
-            angle_inc = self.chord_length/r
+            angle_inc = chord_length/r
             point_count = math.ceil(abs(diff)/angle_inc)
             if self.point_count_max < point_count:
                 point_count = self.point_count_max
@@ -347,7 +351,7 @@ class SetpointControl:
         start_theta = math.atan2(dy,dx)
 
         if self.on_setpoint_radius:
-            angle_list = self.angle_divide(start_theta,self.setpoint.theta)
+            angle_list = self.angle_divide(start_theta,self.setpoint.theta,vel_mag)
             for angle_n in range(len(angle_list)):
                 if angle_n != 0:
                     self.append_int_setpoint_to_plate_points(angle_list[angle_n])
@@ -432,7 +436,7 @@ class SetpointControl:
 
     def find_theta_vel_mag(self):
         self.gain_theta = rospy.get_param("gain_theta")
-        vel_mag = self.gain_theta*self.theta_error
+        vel_mag = self.gain_theta*self.theta_error*self.setpoint.radius
         if self.robot_velocity_max < abs(vel_mag):
             vel_mag = math.copysign(self.robot_velocity_max,vel_mag)
         return vel_mag
