@@ -473,7 +473,7 @@ static void Timer_Init(void)
   Timer_Off(0);
   Timer[0].TOPValue = (uint16_t)250;
   Timer[0].Prescaler_N = PrescalerArray8[4];
-  *Timer[Timer_N].Address.TOP = (uint8_t)Timer[0].TOPValue;
+  *Timer[0].Address.TOP = (uint8_t)Timer[0].TOPValue;
   Timer_On(0);
 }
 
