@@ -165,6 +165,7 @@ enum USB_StatusCodes_t
 
 /* Global Variables: */
 const  uint16_t         PrescalerArray16[PRESCALER_NUM] = {1, 8, 64, 256, 1024};
+/* Probably a mistake with using the PrescalerArray8!!! */
 const  uint16_t         PrescalerArray8[PRESCALER_NUM] = {1, 8, 32, 64, 128};
 MotorWrapper_t          Motor[MOTOR_NUM];
 TimerWrapper_t          Timer[TIMER_NUM];
