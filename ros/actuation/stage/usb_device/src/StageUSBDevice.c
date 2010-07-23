@@ -661,7 +661,7 @@ static void Motor_Update(uint8_t Motor_N)
 static void Motor_Update_All(void)
 {
   /* Set InPositionPin low (PORTE pin 5) */
-  PORTE &= ~(1<<PE5);
+  /* PORTE &= ~(1<<PE5); */
   AllMotorsInPosition = 0;
 
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
@@ -896,8 +896,15 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
 
   if (LookupTablePosMove || LookupTableVelMove)
     {
-      /* Set InPositionPin high (PORTE pin 5) for testing */
-      PORTE |= (1<<PE5);
+      /* Toggle InPositionPin high (PORTE pin 5) for testing */
+      if (PORTE & (1<<PE5))
+        {
+          PORTE &= ~(1<<PE5);
+        }
+      else
+        {
+          PORTE |= (1<<PE5);
+        }
 
       if (TableEntry < TableEnd)
         {
