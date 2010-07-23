@@ -336,6 +336,23 @@ class StageDevice(USBDevice.USB_Device):
     def _lookup_table_vel_move(self):
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_MOVE,True)
+        self._usb_packet_out()
+
+    def _usb_packet_out(self):
+        # _fields_ =[('MotorUpdate', ctypes.c_uint8),
+        #            ('EntryCount', ctypes.c_uint8),
+        #            ('EntryLocation', ctypes.c_uint8),
+        #            ('Entry', LookupTableRow_t * _entries_max)]
+        # self.USBPacketOut.Entry[entry_n].Motor[axis].Frequency = int(freq)
+        rospy.logwarn('*'*20)
+        rospy.logwarn("MotorUpdate = %s" % (str(self.USBPacketOut.MotorUpdate)))
+        rospy.logwarn("EntryCount = %s" % (str(self.USBPacketOut.EntryCount)))
+        rospy.logwarn("EntryLocation = %s" % (str(self.USBPacketOut.EntryLocation)))
+        rospy.logwarn("Entry 0 Motor 0 Freq = %s" % (str(self.USBPacketOut.Entry[0].Motor[0].Frequency)))
+        rospy.logwarn("Entry 0 Motor 0 Pos = %s" % (str(self.USBPacketOut.Entry[0].Motor[0].Position)))
+        rospy.logwarn("Entry 0 Motor 1 Freq = %s" % (str(self.USBPacketOut.Entry[0].Motor[0].Frequency)))
+        rospy.logwarn("Entry 0 Motor 1 Pos = %s" % (str(self.USBPacketOut.Entry[0].Motor[0].Position)))
+        rospy.logwarn('*'*20)
 
     def _print_motor_state(self):
         print '*'*20

@@ -42,7 +42,7 @@ import time
 import math
 import struct
 
-DEBUG = True
+DEBUG = False
 
 # USB Command IDs
 USB_CMD_AVR_RESET = ctypes.c_uint8(200)
