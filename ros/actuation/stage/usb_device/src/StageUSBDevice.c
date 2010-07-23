@@ -787,7 +787,7 @@ ISR(MOTOR_0_INTERRUPT)
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
               /* Set InPositionPin high (PORTE pin 5) */
-              PORTE |= (1<<PE5);
+              /* PORTE |= (1<<PE5); */
               AllMotorsInPosition = 1;
 
               if (LookupTablePosMove)
@@ -830,7 +830,7 @@ ISR(MOTOR_1_INTERRUPT)
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
               /* Set InPositionPin high (PORTE pin 5) */
-              PORTE |= (1<<PE5);
+              /* PORTE |= (1<<PE5); */
               AllMotorsInPosition = 1;
 
               if (LookupTablePosMove)
@@ -870,7 +870,7 @@ ISR(MOTOR_2_INTERRUPT)
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
               /* Set InPositionPin high (PORTE pin 5) */
-              PORTE |= (1<<PE5);
+              /* PORTE |= (1<<PE5); */
               AllMotorsInPosition = 1;
 
               if (LookupTablePosMove)
@@ -892,6 +892,9 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
 {
   /* Set interrupt 4 high to disable interrupt (PORTE pin 4) */
   PORTE |= (1<<PE4);
+
+  /* Set InPositionPin high (PORTE pin 5) for testing */
+  PORTE |= (1<<PE5);
 
   if (LookupTablePosMove || LookupTableVelMove)
     {
@@ -919,9 +922,6 @@ ISR(TIMER0_OVF_vect)
     {
       if (LookupTableVelMove)
         {
-          /* Set InPositionPin high (PORTE pin 5) for testing */
-          PORTE |= (1<<PE5);
-
           /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
           PORTE &= ~(1<<PE4);
         }
