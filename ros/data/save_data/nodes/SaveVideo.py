@@ -61,6 +61,8 @@ class SaveVideo:
 
         self.NULL = open('/dev/null', 'w')
 
+        self.repeat_count = 3
+
         self.initialized = True
 
         # self.color_max = 255
@@ -158,7 +160,16 @@ class SaveVideo:
         chdir(self.working_dir_base)
         bag_name = self.bag_name
         png_list = self.find_png_list(bag_name)
-        rospy.logwarn("png_list = %s" % (str(png_list)))
+        # rospy.logwarn("png_list = %s" % (str(png_list)))
+        os.mkdir(self.working_dir_base + "/" + bag_name + "_")
+        image_number = 0
+        for png_file in png_list:
+            im = cv.LoadImage(png_file)
+            for repeat in range(self.repeat_count):
+                image_name = "{num:06d}.png".format(num=image_number)
+                cv.SaveImage(image_name,im)
+                image_number += 1
+
         time.sleep(2)
         # subprocess.check_call('ffmpeg -f image2 -i ' + \
         #                        bag_name + '/%06d.png ' + \
