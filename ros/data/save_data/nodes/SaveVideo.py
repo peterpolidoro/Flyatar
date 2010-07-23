@@ -146,11 +146,19 @@ class SaveVideo:
 
             # cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
 
+    def find_png_list(self,bag_name):
+        p_ls_png = subprocess.Popen('ls ' + bag_name + '/*.bag',shell=True,stdout=subprocess.PIPE,stderr=self.NULL)
+        out = p_ls_png.stdout.readlines()
+        png_list = [s.rstrip() for s in out]
+        return png_list
+
     def save_video(self):
         self.ready_to_save_video = False
         self.saving_video = True
         chdir(self.working_dir_base)
         bag_name = self.bag_name
+        png_list = self.find_png_list(bag_name)
+        rospy.logwarn("png_list = %s" % (str(png_list)))
         time.sleep(2)
         # subprocess.check_call('ffmpeg -f image2 -i ' + \
         #                        bag_name + '/%06d.png ' + \
