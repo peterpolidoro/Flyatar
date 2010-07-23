@@ -893,11 +893,11 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
   /* Set interrupt 4 high to disable interrupt (PORTE pin 4) */
   PORTE |= (1<<PE4);
 
-  /* Set InPositionPin high (PORTE pin 5) for testing */
-  PORTE |= (1<<PE5);
-
   if (LookupTablePosMove || LookupTableVelMove)
     {
+      /* Set InPositionPin high (PORTE pin 5) for testing */
+      PORTE |= (1<<PE5);
+
       if (TableEntry < TableEnd)
         {
           Motor_Set_Values(LookupTable[TableEntry]);

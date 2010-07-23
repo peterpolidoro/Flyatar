@@ -32,6 +32,9 @@ Author: William Dickson
 
 ------------------------------------------------------------------------
 """
+import roslib; roslib.load_manifest('stage')
+import rospy
+
 from pythonmodules import pylibusb as usb
 import ctypes
 import sys
@@ -39,7 +42,7 @@ import time
 import math
 import struct
 
-DEBUG = False
+DEBUG = True
 
 # USB Command IDs
 USB_CMD_AVR_RESET = ctypes.c_uint8(200)
@@ -366,11 +369,12 @@ class USB_Device:
 
 def debug_print(msg, comma=False):
     if DEBUG==True:
-        if comma==True:
-            print >> sys.stderr, msg,
-        else:
-            print >> sys.stderr, msg
-        sys.stdout.flush()
+        rospy.logwarn(msg)
+        # if comma==True:
+        #     # print >> sys.stderr, msg,
+        # else:
+        # #     print >> sys.stderr, msg
+        # # sys.stdout.flush()
 
 def pointer_incr(ptr,offset):
     """
