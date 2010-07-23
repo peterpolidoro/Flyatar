@@ -59,6 +59,8 @@ class SaveVideo:
         self.rate = rospy.Rate(10)     # Hz
         # self.time_limit = 3
 
+        self.NULL = open('/dev/null', 'w')
+
         self.initialized = True
 
         # self.color_max = 255
