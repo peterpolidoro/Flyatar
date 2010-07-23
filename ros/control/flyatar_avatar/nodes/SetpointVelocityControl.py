@@ -114,6 +114,7 @@ class SetpointControl:
                 tries += 1
 
         self.setpoint_move_threshold = 0.75   # mm
+        self.delta_position_threshold = 0.01   # mm
         self.on_setpoint_radius_dist = 1
         self.on_setpoint_theta_dist = CircleFunctions.degrees_to_radians(5)
 
@@ -276,7 +277,7 @@ class SetpointControl:
                 delta_x = pos_x[point_n] - pos_x[point_n - 1]
                 delta_y = pos_y[point_n] - pos_y[point_n - 1]
                 # try:
-                if (abs(delta_x) < self.setpoint_move_threshold) and (abs(delta_y) < self.setpoint_move_threshold):
+                if (abs(delta_x) < self.delta_position_threshold) and (abs(delta_y) < self.delta_position_threshold):
                     alpha = 0
                 else:
                     alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
