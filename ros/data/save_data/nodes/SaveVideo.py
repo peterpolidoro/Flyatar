@@ -161,7 +161,7 @@ class SaveVideo:
         bag_name = self.bag_name
         png_list = self.find_png_list(bag_name)
         # rospy.logwarn("png_list = %s" % (str(png_list)))
-        os.mkdir(self.working_dir_base + "/" + bag_name + "_")
+        chdir(self.working_dir_base + "/" + bag_name + "_")
         image_number = 0
         for png_file in png_list:
             im = cv.LoadImage(png_file)
@@ -170,13 +170,14 @@ class SaveVideo:
                 cv.SaveImage(image_name,im)
                 image_number += 1
 
+        chdir(self.working_dir_base)
         time.sleep(2)
-        # subprocess.check_call('ffmpeg -f image2 -i ' + \
-        #                        bag_name + '/%06d.png ' + \
-        #                        '-r ' + str(self.frame_rate) + ' ' + \
-        #                        # '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -bf 2 -pass 1/2 ' + \
-        #                        '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + \
-        #                        bag_name + '.mpg',shell=True)
+        subprocess.check_call('ffmpeg -f image2 -i ' + \
+                               bag_name + '_/%06d.png ' + \
+                               '-r ' + str(self.frame_rate) + ' ' + \
+                               # '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -bf 2 -pass 1/2 ' + \
+                               '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + \
+                               bag_name + '.mpg',shell=True)
 
         # call_string = 'ffmpeg -f image2 -i ' + bag_name + '/%06d.png ' + '-r ' + str(self.frame_rate) + ' ' + '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + bag_name + '.mpg'
         # time.sleep(3)
