@@ -152,15 +152,15 @@ class SaveVideo:
         chdir(self.working_dir_base)
         bag_name = self.bag_name
         time.sleep(2)
-        subprocess.check_call('ffmpeg -f image2 -i ' + \
-                               bag_name + '/%06d.png ' + \
-                               '-r ' + str(self.frame_rate) + ' ' + \
-                               # '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -bf 2 -pass 1/2 ' + \
-                               '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + \
-                               bag_name + '.mpg',shell=True)
+        # subprocess.check_call('ffmpeg -f image2 -i ' + \
+        #                        bag_name + '/%06d.png ' + \
+        #                        '-r ' + str(self.frame_rate) + ' ' + \
+        #                        # '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -bf 2 -pass 1/2 ' + \
+        #                        '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + \
+        #                        bag_name + '.mpg',shell=True)
 
         # call_string = 'ffmpeg -f image2 -i ' + bag_name + '/%06d.png ' + '-r ' + str(self.frame_rate) + ' ' + '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + bag_name + '.mpg'
-        time.sleep(3)
+        # time.sleep(3)
         rospy.logwarn('Saved video %s' % (bag_name + '.mpg'))
         self.saving_video = False
         self.saved_video = True
