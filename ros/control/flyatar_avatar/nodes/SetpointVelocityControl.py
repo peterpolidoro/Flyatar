@@ -465,7 +465,6 @@ class SetpointControl:
 
                 self.radius_error,self.theta_error = self.find_robot_setpoint_error()
                 if not self.on_setpoint_radius:
-                    self.moving_to_setpoint = False
                     vel_mag = self.find_radius_vel_mag()
                     self.set_path_to_setpoint(vel_mag)
                     self.sc_ok_to_publish = True
