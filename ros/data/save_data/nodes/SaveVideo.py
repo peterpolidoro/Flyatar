@@ -117,8 +117,11 @@ class SaveVideo:
                 self.video_info.saved_video = True
 
     def save_png(self,cv_image):
-        image_name = "{num:06d}.png".format(num=self.image_number)
-        cv.SaveImage(image_name,cv_image)
+        repeat_count = 3
+        for count in range(repeat_count):
+            image_name = "{num:06d}.png".format(num=self.image_number)
+            cv.SaveImage(image_name,cv_image)
+            self.image_number += 1
 
     def image_callback(self,data):
         if (self.working_dir is not None) and (self.saving_images):
@@ -138,7 +141,6 @@ class SaveVideo:
             #     self.write_frame(cv_image)
 
             # rospy.loginfo("Saved image {num:06d}\n".format(num=self.image_number))
-            self.image_number += 1
             # if not self.images_initialized:
             #     self.initialize_images(cv_image)
 
@@ -153,9 +155,12 @@ class SaveVideo:
         subprocess.check_call('ffmpeg -f image2 -i ' + \
                                bag_name + '/%06d.png ' + \
                                '-r ' + str(self.frame_rate) + ' ' + \
-                               '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -bf 2 -pass 1/2 ' + \
+                               # '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -bf 2 -pass 1/2 ' + \
+                               '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + \
                                bag_name + '.mpg',shell=True)
-        time.sleep(2)
+
+        # call_string = 'ffmpeg -f image2 -i ' + bag_name + '/%06d.png ' + '-r ' + str(self.frame_rate) + ' ' + '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + bag_name + '.mpg'
+        time.sleep(3)
         rospy.logwarn('Saved video %s' % (bag_name + '.mpg'))
         self.saving_video = False
         self.saved_video = True
