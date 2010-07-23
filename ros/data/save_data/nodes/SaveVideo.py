@@ -61,7 +61,7 @@ class SaveVideo:
 
         self.NULL = open('/dev/null', 'w')
 
-        self.repeat_count = 3
+        self.repeat_count = 2
 
         self.initialized = True
 
