@@ -81,7 +81,7 @@ class SaveVideo:
                     rospy.logwarn("Saving video.")
                 elif self.cat and self.saved_cat_video and self.saved_video:
                     rospy.logwarn("Saved video.")
-                if not self.cat:
+                if (not self.cat) and self.saved_video:
                     rospy.logwarn("End of bag files.")
                 return
             elif self.saving_video:
@@ -117,7 +117,7 @@ class SaveVideo:
                 self.video_info.saved_video = True
 
     def save_png(self,cv_image):
-        repeat_count = 3
+        repeat_count = 1
         for count in range(repeat_count):
             image_name = "{num:06d}.png".format(num=self.image_number)
             cv.SaveImage(image_name,cv_image)
