@@ -164,7 +164,8 @@ class SaveVideo:
         png_list = self.find_png_list(bag_name)
         # rospy.logwarn("png_list = %s" % (str(png_list)))
         if 1 < self.repeat_count:
-            dir_new = self.working_dir_base + "/" + bag_name + "_"
+            dir_bag = bag_name + "_"
+            dir_new = self.working_dir_base + "/" + dir_bag
             image_number = 0
             for png_file in png_list:
                 chdir(dir_base)
@@ -174,11 +175,13 @@ class SaveVideo:
                     image_name = "{num:06d}.png".format(num=image_number)
                     cv.SaveImage(image_name,im)
                     image_number += 1
+        else:
+            dir_bag = bag_name
 
         chdir(self.working_dir_base)
         time.sleep(2)
         subprocess.check_call('ffmpeg -f image2 -i ' + \
-                               bag_name + '_/%06d.png ' + \
+                               dir_bag + '/%06d.png ' + \
                                '-r ' + str(self.frame_rate) + ' ' + \
                                # '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -bf 2 -pass 1/2 ' + \
                                '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + \
