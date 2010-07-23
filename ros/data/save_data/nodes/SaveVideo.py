@@ -157,14 +157,17 @@ class SaveVideo:
     def save_video(self):
         self.ready_to_save_video = False
         self.saving_video = True
-        chdir(self.working_dir_base)
+        dir_base = self.working_dir_base
+        chdir(dir_base)
         bag_name = self.bag_name
         png_list = self.find_png_list(bag_name)
         # rospy.logwarn("png_list = %s" % (str(png_list)))
-        chdir(self.working_dir_base + "/" + bag_name + "_")
+        dir_new = self.working_dir_base + "/" + bag_name + "_"
         image_number = 0
         for png_file in png_list:
+            chdir(dir_base)
             im = cv.LoadImage(png_file)
+            chdir(dir_new)
             for repeat in range(self.repeat_count):
                 image_name = "{num:06d}.png".format(num=image_number)
                 cv.SaveImage(image_name,im)
