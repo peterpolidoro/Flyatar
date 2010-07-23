@@ -183,8 +183,8 @@ class SaveVideo:
         subprocess.check_call('ffmpeg -f image2 -i ' + \
                                dir_bag + '/%06d.png ' + \
                                '-r ' + str(self.frame_rate) + ' ' + \
-                               # '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -bf 2 -pass 1/2 ' + \
-                               '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + \
+                               '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -g 100 -bf 2 -pass 1/2 ' + \
+                               # '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + \
                                bag_name + '.mpg',shell=True)
 
         # call_string = 'ffmpeg -f image2 -i ' + bag_name + '/%06d.png ' + '-r ' + str(self.frame_rate) + ' ' + '-sameq -s 640x480 -mbd rd -trellis 2 -cmp 2 -subcmp 2 -bf 2 -pass 1/2 ' + bag_name + '.mpg'
