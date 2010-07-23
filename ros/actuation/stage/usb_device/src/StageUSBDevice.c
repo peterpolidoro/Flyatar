@@ -220,14 +220,16 @@ TASK(USB_ProcessPacket)
                         IO_Init();
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
-                    LookupTableMove = 0;
+                    LookupTablePosMove = 0;
+                    LookupTableVelMove = 0;
                     Motor_Set_Values(USBPacketOut.Setpoint[0]);
                     Motor_Update_All();
                   }
                   break;
                 case USB_CMD_LOOKUP_TABLE_FILL:
                   {
-                    LookupTableMove = 0;
+                    LookupTablePosMove = 0;
+                    LookupTableVelMove = 0;
                     if (USBPacketOut.EntryLocation < LOOKUP_TABLE_SIZE)
                       {
                         Lookup_Table_Fill(USBPacketOut.Setpoint,USBPacketOut.EntryCount,USBPacketOut.EntryLocation);
@@ -241,7 +243,7 @@ TASK(USB_ProcessPacket)
                         IO_Init();
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
-                    LookupTableMove = 1;
+                    LookupTablePosMove = 1;
                     LookupTableMoveComplete = 0;
 
                     TableEntry = 0;
@@ -253,7 +255,30 @@ TASK(USB_ProcessPacket)
                       }
                     else
                       {
-                        LookupTableMove = 0;
+                        LookupTablePosMove = 0;
+                      }
+                  }
+                  break;
+                case USB_CMD_LOOKUP_TABLE_VEL_MOVE:
+                  {
+                    if (!IO_Enabled)
+                      {
+                        IO_Init();
+                      }
+                    MotorUpdateBits = USBPacketOut.MotorUpdate;
+                    LookupTableVelMove = 1;
+                    LookupTableMoveComplete = 0;
+
+                    TableEntry = 0;
+                    if (TableEntry < TableEnd)
+                      {
+                        Motor_Set_Values(LookupTable[TableEntry]);
+                        TableEntry++;
+                        Motor_Update_All();
+                      }
+                    else
+                      {
+                        LookupTableVelMove = 0;
                       }
                   }
                   break;
@@ -340,19 +365,19 @@ static void IO_Init(void)
   PORTC &= ~((1<<PC0) | (1<<PC1) | (1<<PC2) | (1<<PC6));
 
   /* Set data direction of interrupt 4 to output (PORTE pin 4) */
-  DDRE |= (1<<DDB4);
+  DDRE |= (1<<DDE4);
 
   /* Set interrupt 4 high to start (PORTE pin 4) */
-  PORTE |= (1<<PB4);
+  PORTE |= (1<<PE4);
 
   /* Set data direction of InPositionPin to output (PORTE pin 5) */
-  DDRE |= (1<<DDB5);
+  DDRE |= (1<<DDE5);
 
   /* /\* Set InPositionPin low to start (PORTE pin 5) *\/ */
-  /* PORTE &= ~(1<<PB5); */
+  /* PORTE &= ~(1<<PE5); */
 
   /* Set InPositionPin high (PORTE pin 5) */
-  PORTE |= (1<<PB5);
+  PORTE |= (1<<PE5);
 
   IO_Enabled = 1;
 }
@@ -401,6 +426,7 @@ static void Timer_Init(void)
   TCCR3B = (1<<WGM33);
 
   /* Enable Timer Interrupts */
+  TIMSK0 = (1<<TOIE0);
   TIMSK1 = (1<<TOIE1);
   TIMSK2 = (1<<TOIE2);
   TIMSK3 = (1<<TOIE3);
@@ -534,7 +560,7 @@ static void IO_Disconnect(void)
   EIMSK &= ~(1<<INT4);
 
   /* Set data direction of PORTE pin 4 to input to reduce current draw */
-  DDRE &= ~(1<<DDC4);
+  DDRE &= ~(1<<DDE4);
 }
 
 static void Timer_On(uint8_t Timer_N)
@@ -646,7 +672,7 @@ static void Motor_Update(uint8_t Motor_N)
 static void Motor_Update_All(void)
 {
   /* Set InPositionPin low (PORTE pin 5) */
-  PORTE &= ~(1<<PB5);
+  PORTE &= ~(1<<PE5);
   AllMotorsInPosition = 0;
 
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
@@ -772,8 +798,15 @@ ISR(MOTOR_0_INTERRUPT)
           /* If all motors are in position, set InPosition interrupt */
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
-              /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
-              PORTE &= ~(1<<PB4);
+              /* Set InPositionPin high (PORTE pin 5) */
+              PORTE |= (1<<PE5);
+              AllMotorsInPosition = 1;
+
+              if (LookupTablePosMove)
+                {
+                  /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+                  PORTE &= ~(1<<PE4);
+                }
             }
         }
       else if (Motor[0].InPosition)
@@ -808,8 +841,15 @@ ISR(MOTOR_1_INTERRUPT)
           /* If all motors are in position, set InPosition interrupt */
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
-              /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
-              PORTE &= ~(1<<PB4);
+              /* Set InPositionPin high (PORTE pin 5) */
+              PORTE |= (1<<PE5);
+              AllMotorsInPosition = 1;
+
+              if (LookupTablePosMove)
+                {
+                  /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+                  PORTE &= ~(1<<PE4);
+                }
             }
         }
       else if (Motor[1].InPosition)
@@ -841,8 +881,15 @@ ISR(MOTOR_2_INTERRUPT)
           /* If all motors are in position, set InPosition interrupt */
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
-              /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
-              PORTE &= ~(1<<PB4);
+              /* Set InPositionPin high (PORTE pin 5) */
+              PORTE |= (1<<PE5);
+              AllMotorsInPosition = 1;
+
+              if (LookupTablePosMove)
+                {
+                  /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+                  PORTE &= ~(1<<PE4);
+                }
             }
         }
       else if (Motor[2].InPosition)
@@ -853,16 +900,12 @@ ISR(MOTOR_2_INTERRUPT)
   return;
 }
 
-ISR(INPOSITION_INTERRUPT)
+ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
 {
-  /* Set InPositionPin high (PORTE pin 5) */
-  PORTE |= (1<<PB5);
-  AllMotorsInPosition = 1;
-
   /* Set interrupt 4 high to disable interrupt (PORTE pin 4) */
-  PORTE |= (1<<PB4);
+  PORTE |= (1<<PE4);
 
-  if (LookupTableMove)
+  if (LookupTablePosMove || LookupTableVelMove)
     {
       if (TableEntry < TableEnd)
         {
@@ -873,10 +916,23 @@ ISR(INPOSITION_INTERRUPT)
       else
         {
           LookupTableMoveComplete = 1;
-          LookupTableMove = 0;
+          LookupTablePosMove = 0;
+          LookupTableVelMove = 0;
         }
     }
 
   return;
 }
 
+ISR(TIMER2_OVF_vect)
+{
+  if (PINB & (1<<DDB7))
+    {
+      if (LookupTableVelMove)
+        {
+          /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+          PORTE &= ~(1<<PE4);
+        }
+    }
+  return;
+}

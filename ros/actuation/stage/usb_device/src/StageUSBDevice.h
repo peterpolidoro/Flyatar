@@ -82,7 +82,7 @@
 #define MOTOR_1_INTERRUPT     TIMER3_OVF_vect
 #define MOTOR_2_INTERRUPT     TIMER2_OVF_vect
 
-#define INPOSITION_INTERRUPT  INT4_vect
+#define LOOKUP_TABLE_JUMP_INTERRUPT  INT4_vect
 
 /* Software reset */
 #define AVR_RESET() wdt_enable(WDTO_30MS); while(1) {}
@@ -176,7 +176,8 @@ uint8_t                 Interrupt_Enabled=0;
 LookupTableRow_t        LookupTable[LOOKUP_TABLE_SIZE];
 uint8_t                 TableEnd=0;
 uint8_t                 TableEntry=0;
-uint8_t                 LookupTableMove=0;
+uint8_t                 LookupTablePosMove=0;
+uint8_t                 LookupTableVelMove=0;
 uint8_t                 MotorUpdateBits;
 uint8_t                 AllMotorsInPosition=0;
 uint8_t                 LookupTableMoveComplete=0;
