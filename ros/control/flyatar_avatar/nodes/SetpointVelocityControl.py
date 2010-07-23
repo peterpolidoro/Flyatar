@@ -389,9 +389,10 @@ class SetpointControl:
             elif self.setpoint_radius_max < self.setpoint.radius:
                 self.setpoint.radius = self.setpoint_radius_max
             self.setpoint.theta += self.inc_theta*data.theta_inc
-            self.setpoint.theta = math.fmod(self.setpoint.theta,2*math.pi)
-            if self.setpoint.theta < 0:
-                self.setpoint.theta = 2*math.pi - self.setpoint.theta
+            self.setpoint.theta = CircleFunctions.mod_angle(self.setpoint.theta)
+            # self.setpoint.theta = math.fmod(self.setpoint.theta,2*math.pi)
+            # if self.setpoint.theta < 0:
+            #     self.setpoint.theta = 2*math.pi - self.setpoint.theta
             if data.tracking and (not self.tracking):
                 self.tracking = True
             if data.goto_start and (not self.goto_start):
