@@ -271,10 +271,11 @@ class ImageDisplay:
                             (int(axes_y_tail_image.point.x),int(axes_y_tail_image.point.y)),
                             cv.CV_RGB(0,self.color_max,0), self.axis_line_width)
                 else:
-                    cv.Line(self.im_display,
-                            (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
-                            (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
-                            circle_color, self.circle_line_width)
+                    if "Fly" in frame_id:
+                        cv.Line(self.im_display,
+                                (int(axes_x_head_image.point.x),int(axes_x_head_image.point.y)),
+                                (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
+                                circle_color, self.circle_line_width)
 
                 cv.Circle(self.im_display,
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),

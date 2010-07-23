@@ -12,6 +12,7 @@
   <depend package="track_image_contours"/>
   <depend package="stage"/>
   <depend package="plate_tf"/>
+  <depend package="rosbag"/>
 
 </package>
 
