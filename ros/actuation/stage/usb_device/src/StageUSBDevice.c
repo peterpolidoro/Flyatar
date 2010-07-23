@@ -924,7 +924,7 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
   return;
 }
 
-ISR(TIMER2_OVF_vect)
+ISR(TIMER0_OVF_vect)
 {
   if (PINB & (1<<DDB7))
     {
