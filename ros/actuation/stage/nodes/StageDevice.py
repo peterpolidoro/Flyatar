@@ -336,7 +336,7 @@ class StageDevice(USBDevice.USB_Device):
     def _lookup_table_vel_move(self):
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_MOVE,True)
-        self._usb_packet_out()
+        # self._usb_packet_out()
 
     def _usb_packet_out(self):
         # _fields_ =[('MotorUpdate', ctypes.c_uint8),

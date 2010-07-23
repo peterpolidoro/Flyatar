@@ -268,6 +268,7 @@ TASK(USB_ProcessPacket)
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableVelMove = 1;
                     LookupTableMoveComplete = 0;
+                    TableEntry = 0;
                     Timer_On(0);
                   }
                   break;
