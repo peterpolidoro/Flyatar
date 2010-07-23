@@ -119,11 +119,9 @@ class SaveVideo:
                 self.video_info.saved_video = True
 
     def save_png(self,cv_image):
-        repeat_count = 1
-        for count in range(repeat_count):
-            image_name = "{num:06d}.png".format(num=self.image_number)
-            cv.SaveImage(image_name,cv_image)
-            self.image_number += 1
+        image_name = "{num:06d}.png".format(num=self.image_number)
+        cv.SaveImage(image_name,cv_image)
+        self.image_number += 1
 
     def image_callback(self,data):
         if (self.working_dir is not None) and (self.saving_images):
@@ -149,7 +147,7 @@ class SaveVideo:
             # cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
 
     def find_png_list(self,bag_name):
-        p_ls_png = subprocess.Popen('ls ' + bag_name + '/*.bag',shell=True,stdout=subprocess.PIPE,stderr=self.NULL)
+        p_ls_png = subprocess.Popen('ls ' + bag_name + '/*.png',shell=True,stdout=subprocess.PIPE,stderr=self.NULL)
         out = p_ls_png.stdout.readlines()
         png_list = [s.rstrip() for s in out]
         return png_list
