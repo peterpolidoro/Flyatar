@@ -268,18 +268,7 @@ TASK(USB_ProcessPacket)
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableVelMove = 1;
                     LookupTableMoveComplete = 0;
-
-                    TableEntry = 0;
-                    if (TableEntry < TableEnd)
-                      {
-                        Motor_Set_Values(LookupTable[TableEntry]);
-                        TableEntry++;
-                        Motor_Update_All();
-                      }
-                    else
-                      {
-                        LookupTableVelMove = 0;
-                      }
+                    Timer_On(0);
                   }
                   break;
                 default:
@@ -499,7 +488,6 @@ static void Timer_Init(void)
   Timer[0].TOPValue = (uint16_t)250;
   Timer[0].Prescaler_N = 3;
   *Timer[0].Address.TOP = (uint8_t)Timer[0].TOPValue;
-  Timer_On(0);
 }
 
 static void Motor_Init(void)
@@ -918,6 +906,7 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
           LookupTableMoveComplete = 1;
           LookupTablePosMove = 0;
           LookupTableVelMove = 0;
+          Timer_Off(0);
         }
     }
 
@@ -930,6 +919,9 @@ ISR(TIMER0_OVF_vect)
     {
       if (LookupTableVelMove)
         {
+          /* Set InPositionPin high (PORTE pin 5) for testing */
+          PORTE |= (1<<PE5);
+
           /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
           PORTE &= ~(1<<PE4);
         }
