@@ -163,16 +163,17 @@ class SaveVideo:
         bag_name = self.bag_name
         png_list = self.find_png_list(bag_name)
         # rospy.logwarn("png_list = %s" % (str(png_list)))
-        dir_new = self.working_dir_base + "/" + bag_name + "_"
-        image_number = 0
-        for png_file in png_list:
-            chdir(dir_base)
-            im = cv.LoadImage(png_file)
-            chdir(dir_new)
-            for repeat in range(self.repeat_count):
-                image_name = "{num:06d}.png".format(num=image_number)
-                cv.SaveImage(image_name,im)
-                image_number += 1
+        if 1 < self.repeat_count:
+            dir_new = self.working_dir_base + "/" + bag_name + "_"
+            image_number = 0
+            for png_file in png_list:
+                chdir(dir_base)
+                im = cv.LoadImage(png_file)
+                chdir(dir_new)
+                for repeat in range(self.repeat_count):
+                    image_name = "{num:06d}.png".format(num=image_number)
+                    cv.SaveImage(image_name,im)
+                    image_number += 1
 
         chdir(self.working_dir_base)
         time.sleep(2)
