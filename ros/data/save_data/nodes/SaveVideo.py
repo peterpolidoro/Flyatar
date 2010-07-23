@@ -61,8 +61,8 @@ class SaveVideo:
 
         self.NULL = open('/dev/null', 'w')
 
-        self.repeat_count = rospy.get_param('video_image_repeat_count')
-        rospy.logwarn("repeat count = %s" % (str(self.repeat_count)))
+        self.repeat_count = int(rospy.get_param('video_image_repeat_count'))
+        # rospy.logwarn("repeat count = %s" % (str(self.repeat_count)))
 
         self.initialized = True
 
