@@ -103,6 +103,9 @@ class SetpointControl:
         self.plate_points_x = []
         self.plate_points_y = []
 
+        self.gain_theta = rospy.get_param("gain_theta")
+        self.gain_radius = rospy.get_param("gain_radius")
+
         lookup_freq_not_set = True
         tries = 0
         tries_limit = 20
@@ -170,9 +173,9 @@ class SetpointControl:
         #     self.setpoint_moved = False
         # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
-    def angle_divide(self,angle_start,angle_stop,vel_mag):
-        diff = CircleFunctions.circle_dist(angle_start,angle_stop)
-        if 0 < diff:
+    def angle_divide(self,angle_start,angle_stop):
+        theta_diff = CircleFunctions.circle_dist(angle_start,angle_stop)
+        if 0 < theta_diff:
             if angle_stop < angle_start:
                 angle_start = angle_start - 2*math.pi
         else:
@@ -181,19 +184,29 @@ class SetpointControl:
         # rospy.logwarn("angle_start = \n%s" % (str(angle_start)))
         # rospy.logwarn("angle_stop = \n%s" % (str(angle_stop)))
         # rospy.logwarn("diff = \n%s" % (str(diff)))
+        angle_list = []
+        vel_mag_list = []
+        point_count = 0
         r = self.setpoint.radius
-        chord_length = vel_mag/self.lookup_table_update_freq
-        rospy.logwarn("chord_length = %s" % (str(chord_length)))
         if 0 < r:
-            angle_inc = chord_length/r
-            point_count = math.ceil(abs(diff)/angle_inc)
-            if self.point_count_max < point_count:
-                point_count = self.point_count_max
-            angle_list = list(numpy.linspace(angle_start,angle_stop,num=point_count,endpoint=True))
-        else:
-            angle_list = []
+            vel_mag_list = [1]              # Use dummy first value...
+            angle = angle_start
+            while (angle <= angle_stop) and (point_count <= self.point_count_max):
+                vel_mag = self.find_theta_vel_mag(theta_diff,r)
+                angle_list.append(angle)
+                vel_mag_list.append(vel_mag)
+                point_count += 1
+                chord_length = vel_mag/self.lookup_table_update_freq
+                # rospy.logwarn("chord_length = %s" % (str(chord_length)))
+                angle_inc = chord_length/r
+                angle += angle_inc
+                theta_diff = CircleFunctions.circle_dist(angle,angle_stop)
+            # point_count = math.ceil(abs(diff)/angle_inc)
+            # if self.point_count_max < point_count:
+            #     point_count = self.point_count_max
+            # angle_list = list(numpy.linspace(angle_start,angle_stop,num=point_count,endpoint=True))
         # rospy.logwarn("angle_list = \n%s" % (str(angle_list)))
-        return angle_list
+        return angle_list,vel_mag_list
 
     def vel_vector_convert(self,vel_vector,frame):
         (trans,q) = self.tf_listener.lookupTransform("Stage",frame,rospy.Time(0))
@@ -263,13 +276,20 @@ class SetpointControl:
     #         except (tf.LookupException, tf.ConnectivityException):
     #             pass
 
-    def find_velocity_from_position(self,pos_x,pos_y,vel_mag):
+    def find_velocity_from_position(self,pos_x,pos_y,vel_mag_list):
         point_count = min(len(pos_x),len(pos_y))
         vel_x = []
         vel_y = []
-        vel_mag = abs(vel_mag)          # Just to be sure
+        vel_mag_count = len(vel_mag_list)
+        if vel_mag_count < point_count:
+            vel_mag_count = 1
+        # vel_mag = abs(vel_mag)          # Just to be sure
         for point_n in range(point_count):
             if point_n != 0:
+                if vel_mag_count == 1:
+                    vel_mag = abs(vel_mag_list[0])
+                else:
+                    vel_mag = abs(vel_mag_list[point_n])
                 # rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
                 # rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
                 # rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
@@ -290,7 +310,7 @@ class SetpointControl:
                 vel_y.append(alpha*delta_y)
         return vel_x,vel_y
 
-    def set_stage_commands_from_plate_points(self,vel_mag):
+    def set_stage_commands_from_plate_points(self,vel_mag_list):
         response = self.plate_to_stage(self.plate_points_x,self.plate_points_y)
         # rospy.logwarn("self.plate_points_x = %s" % (str(self.plate_points_x)))
         # rospy.logwarn("self.plate_points_y = %s" % (str(self.plate_points_y)))
@@ -298,7 +318,7 @@ class SetpointControl:
         stage_points_y = response.Ydst
         # rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
         # rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
-        stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag)
+        stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag_list)
         # self.stage_commands.x_position = stage_points_x
         # self.stage_commands.y_position = stage_points_y
         if (len(stage_velocity_x) == 1) and (len(stage_velocity_y) == 1):
@@ -350,7 +370,9 @@ class SetpointControl:
 
         return radius_error,theta_error
 
-    def set_path_to_setpoint(self,vel_mag):
+    def set_path_to_setpoint(self):
+        self.radius_error,self.theta_error = self.find_robot_setpoint_error()
+
         self.robot_control_frame = self.convert_to_control_frame(self.robot_origin)
         self.robot_plate = self.convert_to_plate(self.robot_origin)
         x_rp = self.robot_plate.point.x
@@ -362,7 +384,7 @@ class SetpointControl:
         start_theta = math.atan2(dy,dx)
 
         if self.on_setpoint_radius:
-            angle_list = self.angle_divide(start_theta,self.setpoint.theta,vel_mag)
+            angle_list,vel_mag_list = self.angle_divide(start_theta,self.setpoint.theta)
             for angle_n in range(len(angle_list)):
                 if angle_n != 0:
                     self.append_int_setpoint_to_plate_points(angle_list[angle_n])
@@ -371,10 +393,11 @@ class SetpointControl:
             # rospy.logwarn("on setpoint radius")
         else:
             self.append_int_setpoint_to_plate_points(start_theta)
+            vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
             # rospy.logwarn("off setpoint radius")
         # rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
         # rospy.logwarn("plate points y = \n%s" % (str(self.plate_points_y)))
-        self.set_stage_commands_from_plate_points(vel_mag)
+        self.set_stage_commands_from_plate_points(vel_mag_list)
 
     def joystick_commands_callback(self,data):
         if self.initialized:
@@ -439,19 +462,17 @@ class SetpointControl:
                 if self.sc_ok_to_publish:
                     self.sc_pub.publish(self.stage_commands)
 
-    def find_radius_vel_mag(self):
-        self.gain_radius = rospy.get_param("gain_radius")
-        vel_mag = self.gain_radius*self.radius_error
-        if self.robot_velocity_max < abs(vel_mag):
-            vel_mag = math.copysign(self.robot_velocity_max,vel_mag)
-        return vel_mag
-
-    def find_theta_vel_mag(self):
-        self.gain_theta = rospy.get_param("gain_theta")
-        vel_mag = abs(self.gain_theta*self.theta_error*self.setpoint.radius)
+    def find_radius_vel_mag(self,radius_error):
+        vel_mag = abs(self.gain_radius*radius_error)
         if self.robot_velocity_max < vel_mag:
             vel_mag = self.robot_velocity_max
-        rospy.logwarn("theta_vel_mag = %s" % (str(vel_mag)))
+        return vel_mag
+
+    def find_theta_vel_mag(self,theta_error,radius):
+        vel_mag = abs(self.gain_theta*theta_error*radius)
+        if self.robot_velocity_max < vel_mag:
+            vel_mag = self.robot_velocity_max
+        # rospy.logwarn("theta_vel_mag = %s" % (str(vel_mag)))
         return vel_mag
 
     def set_zero_velocity(self):
@@ -465,18 +486,17 @@ class SetpointControl:
                 self.stage_commands.position_control = False
                 self.gain_theta = rospy.get_param("gain_theta")
 
-                self.radius_error,self.theta_error = self.find_robot_setpoint_error()
                 if not self.on_setpoint_radius:
                     self.moving_to_setpoint = False
-                    vel_mag = self.find_radius_vel_mag()
-                    self.set_path_to_setpoint(vel_mag)
+                    # vel_mag = self.find_radius_vel_mag()
+                    self.set_path_to_setpoint()
                     self.sc_ok_to_publish = True
                 else:
                     if (not self.moving_to_setpoint):
                         rospy.logwarn("Moving to setpoint!!")
                         self.moving_to_setpoint = True
-                        vel_mag = self.find_theta_vel_mag()
-                        self.set_path_to_setpoint(vel_mag)
+                        # vel_mag = self.find_theta_vel_mag(self.theta_error)
+                        self.set_path_to_setpoint()
                         self.sc_ok_to_publish = True
                     else:
                         self.sc_ok_to_publish = False
