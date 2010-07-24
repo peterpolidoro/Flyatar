@@ -485,7 +485,7 @@ class SetpointControl:
             if self.tracking:
                 self.stage_commands.position_control = False
                 self.gain_theta = rospy.get_param("gain_theta")
-
+                self.find_robot_setpoint_error()
                 if not self.on_setpoint_radius:
                     self.moving_to_setpoint = False
                     # vel_mag = self.find_radius_vel_mag()
