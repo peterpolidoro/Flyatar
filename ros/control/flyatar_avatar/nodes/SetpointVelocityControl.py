@@ -178,6 +178,8 @@ class SetpointControl:
 
     def angle_divide(self,angle_start,angle_stop):
         theta_diff = CircleFunctions.circle_dist(angle_start,angle_stop)
+        if abs(theta_diff) < self.on_setpoint_theta_dist:
+            return
         if 0 < theta_diff:
             if angle_stop < angle_start:
                 angle_start = angle_start - 2*math.pi
@@ -191,10 +193,13 @@ class SetpointControl:
         vel_mag_list = []
         point_count = 0
         r = self.setpoint.radius
+        if 0 < theta_diff:
+            theta_diff_positive = True
+        finished = False
         if 0 < r:
             vel_mag_list = [1]              # Use dummy first value...
             angle = angle_start
-            while (angle <= angle_stop) and (point_count <= self.point_count_max):
+            while (not finished) and (point_count <= self.point_count_max):
                 vel_mag = self.find_theta_vel_mag(theta_diff,r)
                 angle_list.append(angle)
                 vel_mag_list.append(vel_mag)
@@ -202,8 +207,15 @@ class SetpointControl:
                 chord_length = vel_mag/self.lookup_table_update_freq
                 # rospy.logwarn("chord_length = %s" % (str(chord_length)))
                 angle_inc = chord_length/r
+                if not theta_diff_pos:
+                    angle_inc = - angle_inc
                 angle += angle_inc
                 theta_diff = CircleFunctions.circle_dist(angle,angle_stop)
+                if (abs(theta_diff) < self.on_setpoint_theta_dist) or \
+                   ((theta_diff < 0) and theta_diff_positive) or \
+                   ((0 < theta_diff) and (not theta_diff_positive)):
+                    finished = True
+
             # point_count = math.ceil(abs(diff)/angle_inc)
             # if self.point_count_max < point_count:
             #     point_count = self.point_count_max
