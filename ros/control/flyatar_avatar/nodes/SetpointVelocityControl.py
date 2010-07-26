@@ -373,9 +373,13 @@ class SetpointControl:
         # self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_theta_dist
 
         if (not self.on_setpoint_radius) and (not self.on_setpoint_theta):
-            self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
+            if abs(radius_error) < self.on_setpoint_radius_dist:
+                self.on_setpoint_radius = True
+                rospy.logwarn("on setpoint radius")
         elif self.on_setpoint_radius and (not self.on_setpoint_theta):
-            self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_theta_dist
+            if abs(theta_error) < self.on_setpoint_theta_dist:
+                self.on_setpoint_theta = True
+                rospy.logwarn("on setpoint theta")
         elif self.on_setpoint_theta:
             self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
 
@@ -534,6 +538,9 @@ class SetpointControl:
                 # self.set_path_to_setpoint(self.robot_velocity_max/4)
                 # self.sc_pub.publish(self.stage_commands)
             else:
+                self.on_setpoint_radius = False
+                self.on_setpoint_theta = False
+
                 self.moving_to_setpoint = False
 
                 # try:
