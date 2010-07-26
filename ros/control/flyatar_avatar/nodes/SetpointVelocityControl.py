@@ -519,10 +519,10 @@ class SetpointControl:
                 self.stage_commands.position_control = False
                 self.gain_theta = rospy.get_param("gain_theta")
                 self.update_setpoint_moved()
-                if self.setpoint_moved:
-                    self.on_setpoint_radius = False
-                    self.on_setpoint_theta = False
-                    self.moving_to_setpoint = False
+                # if self.setpoint_moved:
+                #     self.on_setpoint_radius = False
+                #     self.on_setpoint_theta = False
+                #     self.moving_to_setpoint = False
                 self.find_robot_setpoint_error()
                 if not self.on_setpoint_radius:
                     self.moving_to_setpoint = False
