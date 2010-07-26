@@ -417,7 +417,12 @@ class SetpointControl:
         start_theta = math.atan2(dy,dx)
 
         if self.on_setpoint_radius:
-            angle_list,vel_mag_list = self.angle_divide(start_theta,self.setpoint.theta)
+            try:
+                angle_list,vel_mag_list = self.angle_divide(start_theta,self.setpoint.theta)
+            except (TypeError):
+                rospy.logwarn("TypeError!")
+                rospy.logwarn("start_theta = %s" % (str(start_theta)))
+                rospy.logwarn("setpoint_theta = %s" % (str(self.setpoint.theta)))
             for angle_n in range(len(angle_list)):
                 if angle_n != 0:
                     self.append_int_setpoint_to_plate_points(angle_list[angle_n])
