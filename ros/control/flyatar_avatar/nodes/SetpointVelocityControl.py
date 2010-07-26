@@ -496,6 +496,9 @@ class SetpointControl:
         self.stage_commands.x_velocity = [0]
         self.stage_commands.y_velocity = [0]
         self.sc_pub.publish(self.stage_commands)
+        self.moving_to_setpoint = False
+        self.on_setpoint_radius = False
+        self.on_setpoint_theta = False
 
     def find_radius_vel_mag(self,radius_error):
         vel_mag = abs(self.gain_radius*radius_error)
@@ -509,14 +512,6 @@ class SetpointControl:
             vel_mag = self.robot_velocity_max
         # rospy.logwarn("theta_vel_mag = %s" % (str(vel_mag)))
         return vel_mag
-
-    def set_zero_velocity(self):
-        self.stage_commands.x_velocity = 0
-        self.stage_commands.y_velocity = 0
-        self.moving_to_setpoint = False
-        self.on_setpoint_radius = False
-        self.on_setpoint_theta = False
-
 
     def control_loop(self):
         while not rospy.is_shutdown():
