@@ -172,8 +172,8 @@ class SetpointControl:
            self.setpoint_move_threshold < abs(self.setpoint_plate_previous.point.y - self.setpoint_plate.point.y):
             self.setpoint_moved = True
             self.setpoint_plate_previous = copy.deepcopy(self.setpoint_plate)
-        # else:
-        #     self.setpoint_moved = False
+        else:
+            self.setpoint_moved = False
         # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
     def angle_divide(self,angle_start,angle_stop):
