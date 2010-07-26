@@ -519,7 +519,12 @@ class SetpointControl:
                 self.stage_commands.position_control = False
                 self.gain_theta = rospy.get_param("gain_theta")
                 self.update_setpoint_moved()
-                # if self.setpoint_moved:
+                if self.setpoint_moved:
+                    rospy.logwarn("setpoint moved")
+                    rospy.logwarn("self.setpoint_plate_previous.point.x = %s" % (str(self.setpoint_plate_previous.point.x)))
+                    rospy.logwarn("self.setpoint_plate.point.x = %s" % (str(self.setpoint_plate.point.x)))
+                    rospy.logwarn("self.setpoint_plate_previous.point.y = %s" % (str(self.setpoint_plate_previous.point.y)))
+                    rospy.logwarn("self.setpoint_plate.point.y = %s" % (str(self.setpoint_plate.point.y)))
                 #     self.on_setpoint_radius = False
                 #     self.on_setpoint_theta = False
                 #     self.moving_to_setpoint = False
