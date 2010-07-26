@@ -177,9 +177,11 @@ class SetpointControl:
         # rospy.logwarn("setpoint_moved = %s" % (str(self.setpoint_moved)))
 
     def angle_divide(self,angle_start,angle_stop):
+        angle_list = []
+        vel_mag_list = []
         theta_diff = CircleFunctions.circle_dist(angle_start,angle_stop)
         if abs(theta_diff) < self.on_setpoint_theta_dist:
-            return
+            return angle_list,vel_mag_list
         if 0 < theta_diff:
             if angle_stop < angle_start:
                 angle_start = angle_start - 2*math.pi
@@ -189,8 +191,6 @@ class SetpointControl:
         # rospy.logwarn("angle_start = \n%s" % (str(angle_start)))
         # rospy.logwarn("angle_stop = \n%s" % (str(angle_stop)))
         # rospy.logwarn("diff = \n%s" % (str(diff)))
-        angle_list = []
-        vel_mag_list = []
         point_count = 0
         r = self.setpoint.radius
         theta_diff_positive = 0 < theta_diff
@@ -214,13 +214,6 @@ class SetpointControl:
                    ((theta_diff < 0) and theta_diff_positive) or \
                    ((0 < theta_diff) and (not theta_diff_positive)):
                     finished = True
-
-        if angle_list is None:
-            rospy.logwarn("angle_list is None???")
-            angle_list = []
-        if vel_mag_list is None:
-            rospy.logwarn("vel_mag_list is None???")
-            vel_mag_list = []
 
             # point_count = math.ceil(abs(diff)/angle_inc)
             # if self.point_count_max < point_count:
@@ -332,24 +325,27 @@ class SetpointControl:
         return vel_x,vel_y
 
     def set_stage_commands_from_plate_points(self,vel_mag_list):
-        response = self.plate_to_stage(self.plate_points_x,self.plate_points_y)
-        # rospy.logwarn("self.plate_points_x = %s" % (str(self.plate_points_x)))
-        # rospy.logwarn("self.plate_points_y = %s" % (str(self.plate_points_y)))
-        stage_points_x = response.Xdst
-        stage_points_y = response.Ydst
-        # rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
-        # rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
-        stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag_list)
-        # self.stage_commands.x_position = stage_points_x
-        # self.stage_commands.y_position = stage_points_y
-        if (len(stage_velocity_x) == 1) and (len(stage_velocity_y) == 1):
-            self.stage_commands.x_velocity = stage_velocity_x
-            self.stage_commands.y_velocity = stage_velocity_y
+        if (len(vel_mag_list) == 0) or (len(self.plate_points_x) == 1) or (len(self.plate_points_y) == 1):
+            self.set_zero_velocity()
         else:
-            self.stage_commands.x_velocity = stage_velocity_x
-            self.stage_commands.y_velocity = stage_velocity_y
-            # rospy.logwarn("stage_velocity_x = %s" % (str(stage_velocity_x)))
-            # rospy.logwarn("stage_velocity_y = %s" % (str(stage_velocity_y)))
+            response = self.plate_to_stage(self.plate_points_x,self.plate_points_y)
+            # rospy.logwarn("self.plate_points_x = %s" % (str(self.plate_points_x)))
+            # rospy.logwarn("self.plate_points_y = %s" % (str(self.plate_points_y)))
+            stage_points_x = response.Xdst
+            stage_points_y = response.Ydst
+            # rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
+            # rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
+            stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag_list)
+            # self.stage_commands.x_position = stage_points_x
+            # self.stage_commands.y_position = stage_points_y
+            if (len(stage_velocity_x) == 1) and (len(stage_velocity_y) == 1):
+                self.stage_commands.x_velocity = stage_velocity_x
+                self.stage_commands.y_velocity = stage_velocity_y
+            else:
+                self.stage_commands.x_velocity = stage_velocity_x
+                self.stage_commands.y_velocity = stage_velocity_y
+                # rospy.logwarn("stage_velocity_x = %s" % (str(stage_velocity_x)))
+                # rospy.logwarn("stage_velocity_y = %s" % (str(stage_velocity_y)))
 
         # rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
         # rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
@@ -417,12 +413,7 @@ class SetpointControl:
         start_theta = math.atan2(dy,dx)
 
         if self.on_setpoint_radius:
-            try:
-                angle_list,vel_mag_list = self.angle_divide(start_theta,self.setpoint.theta)
-            except (TypeError):
-                rospy.logwarn("TypeError!")
-                rospy.logwarn("start_theta = %s" % (str(start_theta)))
-                rospy.logwarn("setpoint_theta = %s" % (str(self.setpoint.theta)))
+            angle_list,vel_mag_list = self.angle_divide(start_theta,self.setpoint.theta)
             for angle_n in range(len(angle_list)):
                 if angle_n != 0:
                     self.append_int_setpoint_to_plate_points(angle_list[angle_n])
@@ -522,6 +513,9 @@ class SetpointControl:
     def set_zero_velocity(self):
         self.stage_commands.x_velocity = 0
         self.stage_commands.y_velocity = 0
+        self.moving_to_setpoint = False
+        self.on_setpoint_radius = False
+        self.on_setpoint_theta = False
 
 
     def control_loop(self):
@@ -535,12 +529,9 @@ class SetpointControl:
                     # vel_mag = self.find_radius_vel_mag()
                     self.set_path_to_setpoint()
                     self.sc_ok_to_publish = True
-                elif self.on_setpoint_theta:
-                    if self.moving_to_setpoint:
-                        self.set_zero_velocity()
-                        self.moving_to_setpoint = False
-                        self.on_setpoint_radius = False
-                        self.on_setpoint_theta = False
+                # elif self.on_setpoint_theta:
+                #     if self.moving_to_setpoint:
+                #         self.set_zero_velocity()
                 else:
                     if (not self.moving_to_setpoint):
                         rospy.logwarn("Moving to setpoint!!")
