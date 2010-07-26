@@ -524,9 +524,10 @@ class SetpointControl:
                     # vel_mag = self.find_radius_vel_mag()
                     self.set_path_to_setpoint()
                     self.sc_ok_to_publish = True
-                # elif self.on_setpoint_theta:
-                #     if self.moving_to_setpoint:
-                #         self.set_zero_velocity()
+                elif self.on_setpoint_theta:
+                    if self.moving_to_setpoint:
+                        self.set_zero_velocity()
+                        self.sc_ok_to_publish = False
                 else:
                     if (not self.moving_to_setpoint):
                         rospy.logwarn("Moving to setpoint!!")
