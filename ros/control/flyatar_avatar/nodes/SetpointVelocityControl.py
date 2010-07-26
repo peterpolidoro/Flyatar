@@ -193,8 +193,7 @@ class SetpointControl:
         vel_mag_list = []
         point_count = 0
         r = self.setpoint.radius
-        if 0 < theta_diff:
-            theta_diff_positive = True
+        theta_diff_positive = 0 < theta_diff
         finished = False
         if 0 < r:
             vel_mag_list = [1]              # Use dummy first value...
