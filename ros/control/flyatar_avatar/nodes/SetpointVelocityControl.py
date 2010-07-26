@@ -106,6 +106,9 @@ class SetpointControl:
         self.gain_theta = rospy.get_param("gain_theta")
         self.gain_radius = rospy.get_param("gain_radius")
 
+        self.on_setpoint_radius = False
+        self.on_setpoint_theta = False
+
         lookup_freq_not_set = True
         tries = 0
         tries_limit = 20
@@ -365,8 +368,16 @@ class SetpointControl:
         theta_error = CircleFunctions.circle_dist(robot_theta,self.setpoint.theta)
         # rospy.logwarn("radius_error = %s" % (str(radius_error)))
         # rospy.logwarn("theta_error = %s" % (str(theta_error)))
-        self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
-        self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_theta_dist
+
+        # self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
+        # self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_theta_dist
+
+        if (not self.on_setpoint_radius) and (not self.on_setpoint_theta):
+            self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
+        elif self.on_setpoint_radius and (not self.on_setpoint_theta):
+            self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_theta_dist
+        elif self.on_setpoint_theta:
+            self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
 
         return radius_error,theta_error
 
