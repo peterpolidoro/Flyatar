@@ -206,7 +206,7 @@ class SetpointControl:
                 chord_length = vel_mag/self.lookup_table_update_freq
                 # rospy.logwarn("chord_length = %s" % (str(chord_length)))
                 angle_inc = chord_length/r
-                if not theta_diff_pos:
+                if not theta_diff_positive:
                     angle_inc = - angle_inc
                 angle += angle_inc
                 theta_diff = CircleFunctions.circle_dist(angle,angle_stop)
