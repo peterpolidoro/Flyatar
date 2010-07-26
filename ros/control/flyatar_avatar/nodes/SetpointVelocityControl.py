@@ -215,6 +215,13 @@ class SetpointControl:
                    ((0 < theta_diff) and (not theta_diff_positive)):
                     finished = True
 
+        if angle_list is None:
+            rospy.logwarn("angle_list is None???")
+            angle_list = []
+        if vel_mag_list is None:
+            rospy.logwarn("vel_mag_list is None???")
+            vel_mag_list = []
+
             # point_count = math.ceil(abs(diff)/angle_inc)
             # if self.point_count_max < point_count:
             #     point_count = self.point_count_max
@@ -488,6 +495,12 @@ class SetpointControl:
                 if self.sc_ok_to_publish:
                     self.sc_pub.publish(self.stage_commands)
 
+    def set_zero_velocity(self):
+        self.stage_commands.position_control = False
+        self.stage_commands.x_velocity = [0]
+        self.stage_commands.y_velocity = [0]
+        self.sc_pub.publish(self.stage_commands)
+
     def find_radius_vel_mag(self,radius_error):
         vel_mag = abs(self.gain_radius*radius_error)
         if self.robot_velocity_max < vel_mag:
@@ -517,6 +530,12 @@ class SetpointControl:
                     # vel_mag = self.find_radius_vel_mag()
                     self.set_path_to_setpoint()
                     self.sc_ok_to_publish = True
+                elif self.on_setpoint_theta:
+                    if self.moving_to_setpoint:
+                        self.set_zero_velocity()
+                        self.moving_to_setpoint = False
+                        self.on_setpoint_radius = False
+                        self.on_setpoint_theta = False
                 else:
                     if (not self.moving_to_setpoint):
                         rospy.logwarn("Moving to setpoint!!")
