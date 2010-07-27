@@ -21,8 +21,8 @@ class StageUpdate:
     self.update_position = False
     self.update_velocity = False
 
-    self.sc_sub = rospy.Subscriber("StageCommands", StageCommands, self.stage_commands_callback)
-    self.ss_pub = rospy.Publisher("StageState",StageState)
+    self.sc_sub = rospy.Subscriber("Stage/Commands", StageCommands, self.stage_commands_callback)
+    self.ss_pub = rospy.Publisher("Stage/State",StageState)
     self.ss = StageState()
 
     rospy.wait_for_service('get_stage_state')

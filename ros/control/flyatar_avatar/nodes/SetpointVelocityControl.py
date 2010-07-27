@@ -61,7 +61,7 @@ class SetpointControl:
         self.tf_listener = tf.TransformListener()
 
         self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joystick_commands_callback)
-        self.sc_pub = rospy.Publisher("StageCommands",StageCommands)
+        self.sc_pub = rospy.Publisher("Stage/Commands",StageCommands)
         self.setpoint_pub = rospy.Publisher("setpoint",Setpoint)
 
         self.sc_ok_to_publish = False
