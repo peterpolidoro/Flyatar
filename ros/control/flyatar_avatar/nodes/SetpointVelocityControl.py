@@ -389,11 +389,11 @@ class SetpointControl:
         if (not self.on_setpoint_radius) and (not self.on_setpoint_theta):
             if abs(radius_error) < self.on_setpoint_radius_dist:
                 self.on_setpoint_radius = True
-                rospy.logwarn("on setpoint radius")
+                # rospy.logwarn("on setpoint radius")
         elif self.on_setpoint_radius and (not self.on_setpoint_theta):
             if abs(theta_error) < self.on_setpoint_theta_dist:
                 self.on_setpoint_theta = True
-                rospy.logwarn("on setpoint theta")
+                # rospy.logwarn("on setpoint theta")
         elif self.on_setpoint_theta:
             self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
 
@@ -412,7 +412,7 @@ class SetpointControl:
         dy = self.robot_control_frame.point.y
         start_theta = math.atan2(dy,dx)
 
-        if self.on_setpoint_radius:
+        if self.on_setpoint_radius and (not self.on_setpoint_theta):
             angle_list,vel_mag_list = self.angle_divide(start_theta,self.setpoint.theta)
             for angle_n in range(len(angle_list)):
                 if angle_n != 0:
@@ -420,7 +420,7 @@ class SetpointControl:
             # self.plate_points_x.append(self.plate_points_x[0])
             # self.plate_points_y.append(self.plate_points_y[0])
             # rospy.logwarn("on setpoint radius")
-        else:
+        elif not self.on_setpoint_radius:
             self.append_int_setpoint_to_plate_points(start_theta)
             vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
             # rospy.logwarn("off setpoint radius")
@@ -540,10 +540,12 @@ class SetpointControl:
                         self.sc_ok_to_publish = False
                 else:
                     if (not self.moving_to_setpoint):
-                        rospy.logwarn("Moving to setpoint!!")
+                        # rospy.logwarn("Moving to setpoint!!")
                         self.moving_to_setpoint = True
                         # vel_mag = self.find_theta_vel_mag(self.theta_error)
                         self.set_path_to_setpoint()
+                        rospy.logwarn("self.stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+                        rospy.logwarn("self.stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
                         self.sc_ok_to_publish = True
                     else:
                         self.sc_ok_to_publish = False
