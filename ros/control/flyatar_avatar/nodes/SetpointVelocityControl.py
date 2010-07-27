@@ -417,11 +417,11 @@ class SetpointControl:
         if (not self.on_setpoint_radius) and (not self.on_setpoint_theta):
             if abs(radius_error) < self.on_setpoint_radius_dist:
                 self.on_setpoint_radius = True
-                rospy.logwarn("on setpoint radius, not on setpoint theta")
+                # rospy.logwarn("on setpoint radius, not on setpoint theta")
         elif self.on_setpoint_radius and (not self.on_setpoint_theta):
             if abs(theta_error) < self.on_setpoint_theta_dist:
                 self.on_setpoint_theta = True
-                rospy.logwarn("on setpoint radius, on setpoint theta")
+                # rospy.logwarn("on setpoint radius, on setpoint theta")
         elif self.on_setpoint_theta:
             self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
 
@@ -548,10 +548,9 @@ class SetpointControl:
             if self.tracking:
                 self.stage_commands.position_control = False
                 self.gain_theta = rospy.get_param("gain_theta")
-                # self.update_setpoint_moved()
                 self.ltm.check_progress()
                 if self.setpoint_moved:
-                    rospy.logwarn("setpoint moved")
+                    # rospy.logwarn("setpoint moved")
                     # rospy.logwarn("self.setpoint_plate_previous.point.x = %s" % (str(self.setpoint_plate_previous.point.x)))
                     # rospy.logwarn("self.setpoint_plate.point.x = %s" % (str(self.setpoint_plate.point.x)))
                     # rospy.logwarn("self.setpoint_plate_previous.point.y = %s" % (str(self.setpoint_plate_previous.point.y)))
