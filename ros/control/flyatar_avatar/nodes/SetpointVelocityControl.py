@@ -368,14 +368,14 @@ class SetpointControl:
             stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag_list)
             # self.stage_commands.x_position = stage_points_x
             # self.stage_commands.y_position = stage_points_y
-            if (not self.ltm.in_progress):
-                if (len(stage_velocity_x) == 1) and (len(stage_velocity_y) == 1):
-                    self.stage_commands.x_velocity = stage_velocity_x
-                    self.stage_commands.y_velocity = stage_velocity_y
-                else:
-                    self.stage_commands.x_velocity = stage_velocity_x
-                    self.stage_commands.y_velocity = stage_velocity_y
+            if (len(stage_velocity_x) == 1) and (len(stage_velocity_y) == 1):
+                self.stage_commands.x_velocity = stage_velocity_x
+                self.stage_commands.y_velocity = stage_velocity_y
             else:
+                self.stage_commands.x_velocity = stage_velocity_x
+                self.stage_commands.y_velocity = stage_velocity_y
+
+            if self.ltm.in_progress:
                 rospy.logwarn("stage_velocity_x_correction = %s" % (str(stage_velocity_x)))
                 rospy.logwarn("stage_velocity_y_correction = %s" % (str(stage_velocity_y)))
 
