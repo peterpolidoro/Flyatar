@@ -42,7 +42,7 @@ class LookupTableMove:
                 dt = t - self.t0
                 if self.duration < dt:
                     self.in_progress = False
-                    # rospy.logwarn("in_progress timed out!")
+                    rospy.logwarn("in_progress timed out!")
                 # else:
                 #     rospy.logwarn("lookup table move in progress")
 
@@ -218,8 +218,8 @@ class SetpointControl:
         else:
             if angle_start < angle_stop:
                 angle_stop = angle_stop - 2*math.pi
-        # rospy.logwarn("angle_start = \n%s" % (str(angle_start)))
-        # rospy.logwarn("angle_stop = \n%s" % (str(angle_stop)))
+        rospy.logwarn("angle_start = \n%s" % (str(angle_start)))
+        rospy.logwarn("angle_stop = \n%s" % (str(angle_stop)))
         # rospy.logwarn("diff = \n%s" % (str(diff)))
         point_count = 0
         r = self.setpoint.radius
@@ -374,6 +374,8 @@ class SetpointControl:
             else:
                 self.stage_commands.x_velocity = stage_velocity_x
                 self.stage_commands.y_velocity = stage_velocity_y
+                rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+                rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
 
             if self.ltm.in_progress:
                 rospy.logwarn("stage_velocity_x_correction = %s" % (str(stage_velocity_x)))
@@ -452,12 +454,12 @@ class SetpointControl:
                         self.append_int_setpoint_to_plate_points(angle_list[angle_n])
                 # self.plate_points_x.append(self.plate_points_x[0])
                 # self.plate_points_y.append(self.plate_points_y[0])
-                rospy.logwarn("theta move...")
+                # rospy.logwarn("theta move...")
             elif not self.on_setpoint_radius:
                 self.append_int_setpoint_to_plate_points(start_theta)
                 vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
                 # rospy.logwarn("off setpoint radius")
-                rospy.logwarn("radius move...")
+                # rospy.logwarn("radius move...")
             else:
                 vel_mag_list = []
         else:
