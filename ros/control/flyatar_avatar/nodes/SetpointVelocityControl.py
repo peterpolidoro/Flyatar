@@ -548,7 +548,7 @@ class SetpointControl:
             if self.tracking:
                 self.stage_commands.position_control = False
                 self.gain_theta = rospy.get_param("gain_theta")
-                self.update_setpoint_moved()
+                # self.update_setpoint_moved()
                 self.ltm.check_progress()
                 if self.setpoint_moved:
                     rospy.logwarn("setpoint moved")
