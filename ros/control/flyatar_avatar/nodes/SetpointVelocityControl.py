@@ -551,7 +551,7 @@ class SetpointControl:
                 self.update_setpoint_moved()
                 self.ltm.check_progress()
                 if self.setpoint_moved:
-                    # rospy.logwarn("setpoint moved")
+                    rospy.logwarn("setpoint moved")
                     # rospy.logwarn("self.setpoint_plate_previous.point.x = %s" % (str(self.setpoint_plate_previous.point.x)))
                     # rospy.logwarn("self.setpoint_plate.point.x = %s" % (str(self.setpoint_plate.point.x)))
                     # rospy.logwarn("self.setpoint_plate_previous.point.y = %s" % (str(self.setpoint_plate_previous.point.y)))
