@@ -16,6 +16,37 @@ from joystick_commands.msg import JoystickCommands
 from geometry_msgs.msg import PointStamped
 from pythonmodules import CircleFunctions
 
+class LookupTableMove:
+    def __init__(self):
+        self.in_progress = False
+        self.t0 = 0
+        self.duration = 0
+
+        freq_not_set = True
+        tries = 0
+        tries_limit = 20
+        while freq_not_set and (tries < tries_limit):
+            try:
+                self.freq = rospy.get_param('lookup_table_update_freq')
+                freq_not_set = False
+            except (KeyError):
+                tries += 1
+        self.period = 1/self.freq
+
+    def check_progress(self):
+        if self.in_progess:
+            t = rospy.get_time()
+            dt = t - self.t0
+            if self.duration < dt:
+                self.in_progress = False
+
+    def start_move(self,stage_commands):
+        # rospy.logwarn("stage_commands.x_velocity = %s" % (str(stage_commands.x_velocity)))
+        # rospy.logwarn("stage_commands.y_velocity = %s" % (str(stage_commands.y_velocity)))
+
+        point_count = min(len(stage_commands.x_velocity,stage_commands.y_velocity))
+        self.t0 = rospy.get_time()
+        self.duration = point_count*self.period
 
 class SetpointControl:
 
@@ -109,16 +140,6 @@ class SetpointControl:
         self.on_setpoint_radius = False
         self.on_setpoint_theta = False
 
-        lookup_freq_not_set = True
-        tries = 0
-        tries_limit = 20
-        while lookup_freq_not_set and (tries < tries_limit):
-            try:
-                self.lookup_table_update_freq = rospy.get_param('lookup_table_update_freq')
-                lookup_freq_not_set = False
-            except (KeyError):
-                tries += 1
-
         self.setpoint_move_threshold = 0.75   # mm
         self.delta_position_threshold = 0.01   # mm
         self.on_setpoint_radius_dist = 1
@@ -136,6 +157,8 @@ class SetpointControl:
         self.moving_to_setpoint = False
         self.setpoint_moved = False
         self.goto_start = False
+
+        self.ltm = LookupTableMove()
 
         self.rate = rospy.Rate(1/self.control_dt)
         self.gain_radius = rospy.get_param("gain_radius",4)
@@ -203,7 +226,7 @@ class SetpointControl:
                 angle_list.append(angle)
                 vel_mag_list.append(vel_mag)
                 point_count += 1
-                chord_length = vel_mag/self.lookup_table_update_freq
+                chord_length = vel_mag/self.ltm.freq
                 # rospy.logwarn("chord_length = %s" % (str(chord_length)))
                 angle_inc = chord_length/r
                 if not theta_diff_positive:
@@ -498,7 +521,7 @@ class SetpointControl:
         self.stage_commands.x_velocity = [0]
         self.stage_commands.y_velocity = [0]
         self.sc_pub.publish(self.stage_commands)
-        self.moving_to_setpoint = False
+        self.ltm.in_progress = False
         self.on_setpoint_radius = False
         self.on_setpoint_theta = False
 
@@ -521,6 +544,7 @@ class SetpointControl:
                 self.stage_commands.position_control = False
                 self.gain_theta = rospy.get_param("gain_theta")
                 self.update_setpoint_moved()
+                self.ltm.check_progress()
                 if self.setpoint_moved:
                     # rospy.logwarn("setpoint moved")
                     # rospy.logwarn("self.setpoint_plate_previous.point.x = %s" % (str(self.setpoint_plate_previous.point.x)))
@@ -529,25 +553,24 @@ class SetpointControl:
                     # rospy.logwarn("self.setpoint_plate.point.y = %s" % (str(self.setpoint_plate.point.y)))
                     self.on_setpoint_radius = False
                     self.on_setpoint_theta = False
-                    self.moving_to_setpoint = False
+                    self.ltm.in_progress = False
                 self.find_robot_setpoint_error()
                 if not self.on_setpoint_radius:
-                    self.moving_to_setpoint = False
+                    self.ltm.in_progress = False
                     # vel_mag = self.find_radius_vel_mag()
                     self.set_path_to_setpoint()
                     self.sc_ok_to_publish = True
                 elif self.on_setpoint_theta:
-                    if self.moving_to_setpoint:
+                    if self.ltm.in_progress:
                         self.set_zero_velocity()
                         self.sc_ok_to_publish = False
                 else:
-                    if (not self.moving_to_setpoint):
+                    if (not self.ltm.in_progress):
                         # rospy.logwarn("Moving to setpoint!!")
-                        self.moving_to_setpoint = True
+                        self.ltm.in_progress = True
                         # vel_mag = self.find_theta_vel_mag(self.theta_error)
                         self.set_path_to_setpoint()
-                        rospy.logwarn("self.stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
-                        rospy.logwarn("self.stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
+                        self.ltm.start_move(self.stage_commands)
                         self.sc_ok_to_publish = True
                     else:
                         self.sc_ok_to_publish = False
@@ -557,10 +580,10 @@ class SetpointControl:
                 #     pass
                 # else:
                 #     rospy.logwarn("At correct angle!")
-                # if not self.moving_to_setpoint:
-                # if (not self.moving_to_setpoint) or self.setpoint_moved:
+                # if not self.ltm.in_progress:
+                # if (not self.ltm.in_progress) or self.setpoint_moved:
                 #     self.setpoint_moved = False
-                #     self.moving_to_setpoint = True
+                #     self.ltm.in_progress = True
                 #     self.stage_commands.position_control = True
                 #     self.set_path_to_setpoint(self.robot_velocity_max/2)
                 #     self.sc_ok_to_publish = True
@@ -577,7 +600,7 @@ class SetpointControl:
                 self.on_setpoint_radius = False
                 self.on_setpoint_theta = False
 
-                self.moving_to_setpoint = False
+                self.ltm.in_progress = False
 
                 # try:
                     # self.gain_radius = rospy.get_param("gain_radius")
