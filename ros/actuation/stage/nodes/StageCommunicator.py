@@ -21,8 +21,8 @@ class StageCommunicator():
         self.response.x_velocity = x_velocity
         self.response.y_velocity = y_velocity
         self.response.theta_velocity = theta_velocity
-        self.response.all_motors_in_position = bool(return_state.all_motors_in_position)
-        self.response.lookup_table_move_complete = bool(return_state.lookup_table_move_complete)
+        self.response.all_motors_in_position = bool(all_motors_in_position)
+        self.response.lookup_table_move_complete = bool(lookup_table_move_complete)
 
     def close(self):
         self.dev.close()
