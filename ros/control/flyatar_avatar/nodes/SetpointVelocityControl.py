@@ -18,6 +18,7 @@ from pythonmodules import CircleFunctions
 
 class LookupTableMove:
     def __init__(self):
+        self.initialized = False
         self.in_progress = False
         self.t0 = 0
         self.duration = 0
@@ -32,21 +33,24 @@ class LookupTableMove:
             except (KeyError):
                 tries += 1
         self.period = 1/self.freq
+        self.initialized = True
 
     def check_progress(self):
-        if self.in_progess:
-            t = rospy.get_time()
-            dt = t - self.t0
-            if self.duration < dt:
-                self.in_progress = False
+        if self.initialized:
+            if self.in_progress:
+                t = rospy.get_time()
+                dt = t - self.t0
+                if self.duration < dt:
+                    self.in_progress = False
 
     def start_move(self,stage_commands):
-        # rospy.logwarn("stage_commands.x_velocity = %s" % (str(stage_commands.x_velocity)))
-        # rospy.logwarn("stage_commands.y_velocity = %s" % (str(stage_commands.y_velocity)))
+        if self.initialized:
+            # rospy.logwarn("stage_commands.x_velocity = %s" % (str(stage_commands.x_velocity)))
+            # rospy.logwarn("stage_commands.y_velocity = %s" % (str(stage_commands.y_velocity)))
 
-        point_count = min(len(stage_commands.x_velocity,stage_commands.y_velocity))
-        self.t0 = rospy.get_time()
-        self.duration = point_count*self.period
+            point_count = min(len(stage_commands.x_velocity,stage_commands.y_velocity))
+            self.t0 = rospy.get_time()
+            self.duration = point_count*self.period
 
 class SetpointControl:
 
