@@ -452,11 +452,12 @@ class SetpointControl:
                         self.append_int_setpoint_to_plate_points(angle_list[angle_n])
                 # self.plate_points_x.append(self.plate_points_x[0])
                 # self.plate_points_y.append(self.plate_points_y[0])
-                # rospy.logwarn("on setpoint radius")
+                rospy.logwarn("theta move...")
             elif not self.on_setpoint_radius:
                 self.append_int_setpoint_to_plate_points(start_theta)
                 vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
                 # rospy.logwarn("off setpoint radius")
+                rospy.logwarn("radius move...")
             else:
                 vel_mag_list = []
         else:
