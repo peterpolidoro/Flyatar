@@ -590,7 +590,7 @@ class SetpointControl:
                         self.sc_ok_to_publish = True
                         self.ltm.in_progress = True
                     else:
-                        self.set_path_to_setpoint()
+                        # self.set_path_to_setpoint()
                         self.sc_ok_to_publish = False
                     # self.sc_ok_to_publish = False
                     # rospy.logwarn("At correct radius!")
