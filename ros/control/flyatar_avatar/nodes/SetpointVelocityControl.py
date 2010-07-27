@@ -43,8 +43,8 @@ class LookupTableMove:
                 if self.duration < dt:
                     self.in_progress = False
                     # rospy.logwarn("in_progress timed out!")
-                else:
-                    rospy.logwarn("lookup table move in progress")
+                # else:
+                #     rospy.logwarn("lookup table move in progress")
 
     def start_move(self,stage_commands):
         if self.initialized:
@@ -368,14 +368,16 @@ class SetpointControl:
             stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag_list)
             # self.stage_commands.x_position = stage_points_x
             # self.stage_commands.y_position = stage_points_y
-            if (len(stage_velocity_x) == 1) and (len(stage_velocity_y) == 1):
-                self.stage_commands.x_velocity = stage_velocity_x
-                self.stage_commands.y_velocity = stage_velocity_y
+            if (not self.ltm.in_progress):
+                if (len(stage_velocity_x) == 1) and (len(stage_velocity_y) == 1):
+                    self.stage_commands.x_velocity = stage_velocity_x
+                    self.stage_commands.y_velocity = stage_velocity_y
+                else:
+                    self.stage_commands.x_velocity = stage_velocity_x
+                    self.stage_commands.y_velocity = stage_velocity_y
             else:
-                self.stage_commands.x_velocity = stage_velocity_x
-                self.stage_commands.y_velocity = stage_velocity_y
-                # rospy.logwarn("stage_velocity_x = %s" % (str(stage_velocity_x)))
-                # rospy.logwarn("stage_velocity_y = %s" % (str(stage_velocity_y)))
+                rospy.logwarn("stage_velocity_x_correction = %s" % (str(stage_velocity_x)))
+                rospy.logwarn("stage_velocity_y_correction = %s" % (str(stage_velocity_y)))
 
         # rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
         # rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
@@ -442,20 +444,29 @@ class SetpointControl:
         dy = self.robot_control_frame.point.y
         start_theta = math.atan2(dy,dx)
 
-        if self.on_setpoint_radius and (not self.on_setpoint_theta):
-            angle_list,vel_mag_list = self.angle_divide(start_theta,self.setpoint.theta)
-            for angle_n in range(len(angle_list)):
-                if angle_n != 0:
-                    self.append_int_setpoint_to_plate_points(angle_list[angle_n])
-            # self.plate_points_x.append(self.plate_points_x[0])
-            # self.plate_points_y.append(self.plate_points_y[0])
-            # rospy.logwarn("on setpoint radius")
-        elif not self.on_setpoint_radius:
-            self.append_int_setpoint_to_plate_points(start_theta)
-            vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
-            # rospy.logwarn("off setpoint radius")
+        if (not self.ltm.in_progress):
+            if self.on_setpoint_radius and (not self.on_setpoint_theta):
+                angle_list,vel_mag_list = self.angle_divide(start_theta,self.setpoint.theta)
+                for angle_n in range(len(angle_list)):
+                    if angle_n != 0:
+                        self.append_int_setpoint_to_plate_points(angle_list[angle_n])
+                # self.plate_points_x.append(self.plate_points_x[0])
+                # self.plate_points_y.append(self.plate_points_y[0])
+                # rospy.logwarn("on setpoint radius")
+            elif not self.on_setpoint_radius:
+                self.append_int_setpoint_to_plate_points(start_theta)
+                vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
+                # rospy.logwarn("off setpoint radius")
+            else:
+                vel_mag_list = []
         else:
-            vel_mag_list = []
+            if not self.on_setpoint_radius:
+                self.append_int_setpoint_to_plate_points(start_theta)
+                vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
+                # rospy.logwarn("off setpoint radius")
+            else:
+                vel_mag_list = []
+
         # rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
         # rospy.logwarn("plate points y = \n%s" % (str(self.plate_points_y)))
         self.set_stage_commands_from_plate_points(vel_mag_list)
@@ -579,6 +590,7 @@ class SetpointControl:
                         self.ltm.start_move(self.stage_commands)
                         self.sc_ok_to_publish = True
                     else:
+                        self.set_path_to_setpoint()
                         self.sc_ok_to_publish = False
                     # self.sc_ok_to_publish = False
                     # rospy.logwarn("At correct radius!")
