@@ -13,7 +13,7 @@ class StageCommunicator():
         self.response = Stage_StateResponse()
 
     def _fill_response(self,return_state):
-        x,y,theta,x_velocity,y_velocity,theta_velocity = return_state
+        x,y,theta,x_velocity,y_velocity,theta_velocity,all_motors_in_position,lookup_table_move_complete = return_state
         self.response.header.stamp = rospy.Time.now()
         self.response.x = x
         self.response.y = y
