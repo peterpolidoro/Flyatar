@@ -48,7 +48,7 @@ class LookupTableMove:
             # rospy.logwarn("stage_commands.x_velocity = %s" % (str(stage_commands.x_velocity)))
             # rospy.logwarn("stage_commands.y_velocity = %s" % (str(stage_commands.y_velocity)))
 
-            point_count = min(len(stage_commands.x_velocity,stage_commands.y_velocity))
+            point_count = min(len(stage_commands.x_velocity),len(stage_commands.y_velocity))
             self.t0 = rospy.get_time()
             self.duration = point_count*self.period
 
