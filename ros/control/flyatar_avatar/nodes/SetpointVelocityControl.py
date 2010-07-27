@@ -584,11 +584,11 @@ class SetpointControl:
                 else:
                     if (not self.ltm.in_progress):
                         # rospy.logwarn("Moving to setpoint!!")
-                        self.ltm.in_progress = True
                         # vel_mag = self.find_theta_vel_mag(self.theta_error)
                         self.set_path_to_setpoint()
                         self.ltm.start_move(self.stage_commands)
                         self.sc_ok_to_publish = True
+                        self.ltm.in_progress = True
                     else:
                         self.set_path_to_setpoint()
                         self.sc_ok_to_publish = False
