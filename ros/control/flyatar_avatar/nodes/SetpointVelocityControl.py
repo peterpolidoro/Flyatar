@@ -546,8 +546,8 @@ class SetpointControl:
                         self.moving_to_setpoint = True
                         # vel_mag = self.find_theta_vel_mag(self.theta_error)
                         self.set_path_to_setpoint()
-                        # rospy.logwarn("self.stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
-                        # rospy.logwarn("self.stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
+                        rospy.logwarn("self.stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+                        rospy.logwarn("self.stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
                         self.sc_ok_to_publish = True
                     else:
                         self.sc_ok_to_publish = False
