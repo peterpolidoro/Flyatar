@@ -42,6 +42,7 @@ class LookupTableMove:
                 dt = t - self.t0
                 if self.duration < dt:
                     self.in_progress = False
+                    rospy.logwarn("in_progress timed out!")
 
     def start_move(self,stage_commands):
         if self.initialized:
@@ -416,11 +417,11 @@ class SetpointControl:
         if (not self.on_setpoint_radius) and (not self.on_setpoint_theta):
             if abs(radius_error) < self.on_setpoint_radius_dist:
                 self.on_setpoint_radius = True
-                # rospy.logwarn("on setpoint radius")
+                rospy.logwarn("on setpoint radius, not on setpoint theta")
         elif self.on_setpoint_radius and (not self.on_setpoint_theta):
             if abs(theta_error) < self.on_setpoint_theta_dist:
                 self.on_setpoint_theta = True
-                # rospy.logwarn("on setpoint theta")
+                rospy.logwarn("on setpoint radius, on setpoint theta")
         elif self.on_setpoint_theta:
             self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
 
