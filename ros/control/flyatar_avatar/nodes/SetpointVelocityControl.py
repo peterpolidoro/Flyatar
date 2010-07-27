@@ -10,7 +10,7 @@ import cv
 import numpy
 import copy
 from plate_tf.srv import *
-from stage.srv import *
+# from stage.srv import *
 from stage.msg import StageCommands,Setpoint
 from joystick_commands.msg import JoystickCommands
 from geometry_msgs.msg import PointStamped

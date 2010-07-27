@@ -4,7 +4,7 @@ import roslib
 roslib.load_manifest('stage_tf')
 import rospy
 import tf
-from stage.msg import StageCommands
+from stage.msg import StageCommands,StageState
 from stage.srv import *
 
 class StageUpdate:
@@ -22,6 +22,8 @@ class StageUpdate:
     self.update_velocity = False
 
     self.sc_sub = rospy.Subscriber("StageCommands", StageCommands, self.stage_commands_callback)
+    self.ss_pub = rospy.Publisher("StageState",StageState)
+    self.ss = StageState()
 
     rospy.wait_for_service('get_stage_state')
     try:
@@ -72,19 +74,26 @@ class StageUpdate:
             # rospy.logwarn("set_stage_position()")
             x = response.x
             y = response.y
+            self.ss.all_motors_in_position = response.all_motors_in_position
+            self.ss.lookup_table_move_complete = response.lookup_table_move_complete
             self.update_position = False
           elif self.update_velocity:
             response = self.set_stage_velocity(self.stage_commands)
             # rospy.logwarn("set_stage_velocity()")
             x = response.x
             y = response.y
+            self.ss.all_motors_in_position = response.all_motors_in_position
+            self.ss.lookup_table_move_complete = response.lookup_table_move_complete
             self.update_velocity = False
           else:
             response = self.get_stage_state()
             # rospy.logwarn("get_stage_state()")
             x = response.x
             y = response.y
+            self.ss.all_motors_in_position = response.all_motors_in_position
+            self.ss.lookup_table_move_complete = response.lookup_table_move_complete
 
+          self.ss_pub.publish(self.ss)
           self.tf_broadcaster.sendTransform((x, y, 0),
                                             tf.transformations.quaternion_from_euler(0, 0, 0),
                                             rospy.Time.now(),
