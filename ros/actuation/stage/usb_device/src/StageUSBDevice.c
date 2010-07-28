@@ -266,7 +266,12 @@ TASK(USB_ProcessPacket)
                   {
                     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
                     {
-                      LookupTableCorrection = (LookupTableRow_t)USBPacketOut.Setpoint[0];
+                      /* LookupTableCorrection = USBPacketOut.Setpoint[0]; */
+                      /* Cannot save an entire LookupTableRow? */
+                      for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
+                        {
+                          LookupTableCorrection[Motor_N] = USBPacketOut.Setpoint[0][Motor_N];
+                        }
                     }
                       LookupTableCorrectionOn = TRUE;
                   }
