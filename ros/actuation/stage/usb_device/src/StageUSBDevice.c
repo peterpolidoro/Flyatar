@@ -266,7 +266,7 @@ TASK(USB_ProcessPacket)
                   {
                     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
                     {
-                      LookupTableCorrection = USBPacketOut.Setpoint[0];
+                      LookupTableCorrection = (LookupTableRow_t)USBPacketOut.Setpoint[0];
                     }
                       LookupTableCorrectionOn = TRUE;
                   }
