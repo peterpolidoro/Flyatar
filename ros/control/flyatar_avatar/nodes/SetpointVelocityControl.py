@@ -352,9 +352,10 @@ class SetpointControl:
                     alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
                 # except:
                 #     alpha = 1
-                rospy.logwarn("delta_x = %s" % (str(delta_x)))
-                rospy.logwarn("delta_y = %s" % (str(delta_y)))
-                rospy.logwarn("alpha = %s" % (str(alpha)))
+                if (point_n == 1) or (point_n ==2):
+                    rospy.logwarn("delta_x = %s" % (str(delta_x)))
+                    rospy.logwarn("delta_y = %s" % (str(delta_y)))
+                    rospy.logwarn("alpha = %s" % (str(alpha)))
                 vel_x.append(alpha*delta_x)
                 vel_y.append(alpha*delta_y)
         return vel_x,vel_y
