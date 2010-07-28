@@ -336,10 +336,10 @@ class SetpointControl:
                     vel_mag = abs(vel_mag_list[0])
                 else:
                     vel_mag = abs(vel_mag_list[point_n])
-                # rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
-                # rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
-                # rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
-                # rospy.logwarn("pos_y[point_n - 1] = %s" % (str(pos_y[point_n -1])))
+                rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
+                rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
+                rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
+                rospy.logwarn("pos_y[point_n - 1] = %s" % (str(pos_y[point_n -1])))
                 delta_x = pos_x[point_n] - pos_x[point_n - 1]
                 delta_y = pos_y[point_n] - pos_y[point_n - 1]
                 # try:
@@ -349,9 +349,9 @@ class SetpointControl:
                     alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
                 # except:
                 #     alpha = 1
-                # rospy.logwarn("delta_x = %s" % (str(delta_x)))
-                # rospy.logwarn("delta_y = %s" % (str(delta_y)))
-                # rospy.logwarn("alpha = %s" % (str(alpha)))
+                rospy.logwarn("delta_x = %s" % (str(delta_x)))
+                rospy.logwarn("delta_y = %s" % (str(delta_y)))
+                rospy.logwarn("alpha = %s" % (str(alpha)))
                 vel_x.append(alpha*delta_x)
                 vel_y.append(alpha*delta_y)
         return vel_x,vel_y
