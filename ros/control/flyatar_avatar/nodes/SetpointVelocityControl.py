@@ -71,6 +71,7 @@ class SetpointControl:
 
         self.stage_commands = StageCommands()
         self.stage_commands.position_control = False
+        self.stage_commands.lookup_table_correct = False
         self.robot_velocity_max = rospy.get_param("robot_velocity_max",100) # mm/s
         self.vel_vector_plate = numpy.array([[0],[0],[0],[1]])
         self.vel_vector_robot = numpy.array([[0],[0],[0],[1]])
@@ -427,6 +428,16 @@ class SetpointControl:
         # self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
         # self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_theta_dist
 
+        # if (not self.on_setpoint_radius) and (not self.on_setpoint_theta):
+        #     if abs(radius_error) < self.on_setpoint_radius_dist:
+        #         self.on_setpoint_radius = True
+        #         # rospy.logwarn("on setpoint radius, not on setpoint theta")
+        # elif self.on_setpoint_radius and (not self.on_setpoint_theta):
+        #     if abs(theta_error) < self.on_setpoint_theta_dist:
+        #         self.on_setpoint_theta = True
+        #         # rospy.logwarn("on setpoint radius, on setpoint theta")
+        # elif self.on_setpoint_theta:
+        #     self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
         if (not self.on_setpoint_radius) and (not self.on_setpoint_theta):
             if abs(radius_error) < self.on_setpoint_radius_dist:
                 self.on_setpoint_radius = True
@@ -524,6 +535,7 @@ class SetpointControl:
                     if not self.moving_to_start:
                         self.moving_to_start = True
                         self.stage_commands.position_control = True
+                        self.stage_commands.lookup_table_correct = False
                         self.set_path_to_start(self.robot_velocity_max)
                         self.sc_ok_to_publish = True
                         self.goto_start = False
@@ -534,6 +546,7 @@ class SetpointControl:
                     if self.moving_to_start:
                         self.moving_to_start = False
                     self.stage_commands.position_control = False
+                    self.stage_commands.lookup_table_correct = False
                     self.radius_velocity = data.radius_velocity*self.robot_velocity_max
                     self.tangent_velocity = data.tangent_velocity*self.robot_velocity_max
                     self.vel_vector_plate[0,0] = data.x_velocity*self.robot_velocity_max
@@ -550,6 +563,7 @@ class SetpointControl:
 
     def set_zero_velocity(self):
         self.stage_commands.position_control = False
+        self.stage_commands.lookup_table_correct = False
         self.stage_commands.x_velocity = [0]
         self.stage_commands.y_velocity = [0]
         self.sc_pub.publish(self.stage_commands)
@@ -574,6 +588,7 @@ class SetpointControl:
         while not rospy.is_shutdown():
             if self.tracking:
                 self.stage_commands.position_control = False
+                self.stage_commands.lookup_table_correct = False
                 self.gain_theta = rospy.get_param("gain_theta")
                 self.ltm.check_progress()
                 if self.setpoint_moved:
@@ -604,8 +619,9 @@ class SetpointControl:
                         self.sc_ok_to_publish = True
                         self.ltm.in_progress = True
                     else:
+                        self.stage_commands.lookup_table_correct = True
                         self.set_path_to_setpoint()
-                        self.sc_ok_to_publish = False
+                        self.sc_ok_to_publish = True
                     # self.sc_ok_to_publish = False
                     # rospy.logwarn("At correct radius!")
                 # if not self.on_setpoint_theta:

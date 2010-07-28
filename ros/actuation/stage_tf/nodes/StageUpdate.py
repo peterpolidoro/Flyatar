@@ -20,6 +20,7 @@ class StageUpdate:
     self.stage_commands = Stage_StateRequest()
     self.update_position = False
     self.update_velocity = False
+    self.lookup_table_correct = False
 
     self.sc_sub = rospy.Subscriber("Stage/Commands", StageCommands, self.stage_commands_callback)
     self.ss_pub = rospy.Publisher("Stage/State",StageState)
@@ -43,6 +44,12 @@ class StageUpdate:
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
+    rospy.wait_for_service('stage_lookup_table_correct')
+    try:
+      self.set_stage_position = rospy.ServiceProxy('stage_lookup_table_correct', Stage_State)
+    except rospy.ServiceException, e:
+      print "Service call failed: %s"%e
+
     # rospy.wait_for_service('stage_lookup_table_move')
     # try:
     #   self.stage_lookup_table_move = rospy.ServiceProxy('stage_lookup_table_move', Stage_State)
@@ -56,9 +63,16 @@ class StageUpdate:
       if data.position_control:
         self.update_position = True
         self.update_velocity = False
+        self.lookup_table_correct = False
+      elif data.lookup_table_correct:
+        self.update_position = False
+        self.update_velocity = False
+        self.lookup_table_correct = True
       else:
         self.update_position = False
         self.update_velocity = True
+        self.lookup_table_correct = False
+
       self.stage_commands.x_position = data.x_position
       self.stage_commands.y_position = data.y_position
       self.stage_commands.x_velocity = data.x_velocity
@@ -85,6 +99,12 @@ class StageUpdate:
             self.ss.all_motors_in_position = response.all_motors_in_position
             self.ss.lookup_table_move_complete = response.lookup_table_move_complete
             self.update_velocity = False
+          elif self.lookup_table_correct:
+            response = self.stage_lookup_table_correct(self.stage_commands)
+            x = response.x
+            y = response.y
+            self.ss.all_motors_in_position = response.all_motors_in_position
+            self.ss.lookup_table_move_complete = response.lookup_table_move_complete
           else:
             response = self.get_stage_state()
             # rospy.logwarn("get_stage_state()")
