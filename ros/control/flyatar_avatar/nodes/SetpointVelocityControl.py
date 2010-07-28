@@ -469,6 +469,8 @@ class SetpointControl:
                 # rospy.logwarn("radius move...")
             else:
                 vel_mag_list = []
+
+            self.set_stage_commands_from_plate_points(vel_mag_list)
         else:
             rospy.logwarn("set_path_to_setpoint and in_progress")
             # if not self.on_setpoint_radius:
@@ -480,7 +482,6 @@ class SetpointControl:
 
         # rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
         # rospy.logwarn("plate points y = \n%s" % (str(self.plate_points_y)))
-        self.set_stage_commands_from_plate_points(vel_mag_list)
 
     def joystick_commands_callback(self,data):
         if self.initialized:
