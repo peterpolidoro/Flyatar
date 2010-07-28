@@ -53,14 +53,17 @@
 #include <LUFA/Drivers/Board/LEDs.h>         // LEDs driver
 
 /* Macros: */
+#define TRUE  1
+#define FALSE 0
 /* USB Commands */
-#define USB_CMD_GET_STATE             1
-#define USB_CMD_SET_STATE             2
-#define USB_CMD_LOOKUP_TABLE_FILL     3
-#define USB_CMD_LOOKUP_TABLE_POS_MOVE 4
-#define USB_CMD_LOOKUP_TABLE_VEL_MOVE 5
-#define USB_CMD_AVR_RESET             200
-#define USB_CMD_AVR_DFU_MODE          201
+#define USB_CMD_GET_STATE                1
+#define USB_CMD_SET_STATE                2
+#define USB_CMD_LOOKUP_TABLE_FILL        3
+#define USB_CMD_LOOKUP_TABLE_POS_MOVE    4
+#define USB_CMD_LOOKUP_TABLE_VEL_MOVE    5
+#define USB_CMD_LOOKUP_TABLE_VEL_CORRECT 6
+#define USB_CMD_AVR_RESET                200
+#define USB_CMD_AVR_DFU_MODE             201
 
 /* Motor Parameter Values */
 #define MOTOR_0_POSITION_HOME 1000
@@ -83,10 +86,11 @@
 #define MOTOR_2_INTERRUPT     TIMER2_OVF_vect
 
 #define LOOKUP_TABLE_JUMP_INTERRUPT  INT4_vect
+#define LOOKUP_TABLE_VEL_TIMER_INTERRUPT  TIMER0_OVF_vect
 
 /* Software reset */
-#define AVR_RESET() wdt_enable(WDTO_30MS); while(1) {}
-#define AVR_IS_WDT_RESET()  ((MCUSR&(1<<WDRF)) ? 1:0)
+#define AVR_RESET() wdt_enable(WDTO_30MS); while(TRUE) {}
+#define AVR_IS_WDT_RESET()  ((MCUSR&(1<<WDRF)) ? TRUE:FALSE)
 #define DFU_BOOT_KEY_VAL 0xAA55AA55
 #define MOTOR_NUM 3
 #define TIMER_NUM 4
@@ -125,7 +129,7 @@ typedef struct
   uint8_t     ScaleFactor;
   uint16_t    TOPValue;
   uint16_t    TOPMax;
-  uint8_t     OnOff;
+  uint8_t     On;
 } TimerWrapper_t;
 
 typedef struct
@@ -171,16 +175,19 @@ MotorWrapper_t          Motor[MOTOR_NUM];
 TimerWrapper_t          Timer[TIMER_NUM];
 USBPacketOutWrapper_t   USBPacketOut;
 USBPacketInWrapper_t    USBPacketIn;
-uint8_t                 IO_Enabled=0;
-uint8_t                 Interrupt_Enabled=0;
+uint8_t                 IO_Enabled=FALSE;
+uint8_t                 Interrupt_Enabled=FALSE;
 LookupTableRow_t        LookupTable[LOOKUP_TABLE_SIZE];
 uint8_t                 TableEnd=0;
 uint8_t                 TableEntry=0;
-uint8_t                 LookupTablePosMove=0;
-uint8_t                 LookupTableVelMove=0;
+uint8_t                 LookupTablePosMove=FALSE;
+uint8_t                 LookupTableVelMove=FALSE;
 uint8_t                 MotorUpdateBits;
-uint8_t                 AllMotorsInPosition=0;
-uint8_t                 LookupTableMoveComplete=0;
+uint8_t                 AllMotorsInPosition=FALSE;
+uint8_t                 LookupTableMoveComplete=FALSE;
+LookupTableRow_t        LookupTableCorrection;
+uint8_t                 LookupTableCorrectionOn=FALSE;
+LookupTableRow_t        LookupTableRowCorrected;
 
 /* Task Definitions: */
 TASK(USB_ProcessPacket);
@@ -207,6 +214,7 @@ static void Motor_Update(uint8_t Motor_N);
 static void Motor_Update_All(void);
 static void Motor_Set_Values(LookupTableRow_t MotorSetpoint);
 static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t EntryCount,uint8_t EntryLocation);
+static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected);
 //static void Position_Update(volatile uint8_t Motor_N);
 #endif
 
