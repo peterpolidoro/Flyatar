@@ -397,7 +397,7 @@ static void Interrupt_Init(void)
   /* Enable external interrupt pins 4 */
   EIMSK |= (1<<INT4);
 
-  Interrupt_Enabled = TRUE
+  Interrupt_Enabled = TRUE;
 }
 
 static void Timer_Init(void)
