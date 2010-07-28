@@ -258,7 +258,7 @@ TASK(USB_ProcessPacket)
                       }
                     else
                       {
-                        LookupTablePosMove = FALSE
+                        LookupTablePosMove = FALSE;
                       }
                   }
                   break;
@@ -382,7 +382,7 @@ static void IO_Init(void)
   /* Set InPositionPin high (PORTE pin 5) */
   PORTE |= (1<<PE5);
 
-  IO_Enabled = TRUE
+  IO_Enabled = TRUE;
 }
 
 static void Interrupt_Init(void)
