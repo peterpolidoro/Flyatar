@@ -68,6 +68,13 @@ class StageCommunicator():
         self._fill_response(return_state)
         return self.response
 
+    def stage_lookup_table_correct(self,req):
+        x_vel_list = req.x_velocity
+        y_vel_list = req.y_velocity
+        return_state = self.dev.lookup_table_vel_correct(x_vel_list,y_vel_list)
+        self._fill_response(return_state)
+        return self.response
+
     # def stage_lookup_table_move(self,req):
     #     x_pos_list = [120,140,120,100,120,100,100,140,140]*3
     #     x_vel_list = [20]*len(x_pos_list)
@@ -89,6 +96,7 @@ if __name__ == '__main__':
     s_gss = rospy.Service('get_stage_state', Stage_State, sc.get_stage_state)
     s_ssv = rospy.Service('set_stage_velocity', Stage_State, sc.set_stage_velocity)
     s_ssp = rospy.Service('set_stage_position', Stage_State, sc.set_stage_position)
+    s_sltc = rospy.Service('stage_lookup_table_correction', Stage_State, sc.stage_lookup_table_correction)
     # s_sltm = rospy.Service('stage_lookup_table_move', Stage_State, sc.stage_lookup_table_move)
 
     while not rospy.is_shutdown():

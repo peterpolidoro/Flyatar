@@ -197,6 +197,16 @@ class StageDevice(USBDevice.USB_Device):
         return state
 
 
+    def lookup_table_vel_correct(self,x_vel_list,y_vel_list):
+        x_pos_mm = None
+        x_vel_mm = x_vel_list[0]
+        y_pos_mm = None
+        y_vel_mm = y_vel_list[0]
+        self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,0)
+        self._lookup_table_vel_correct()
+        state = self._return_state()
+        return state
+
     # def lookup_table_move(self,x_pos_list,x_vel_list,y_pos_list,y_vel_list):
     #     point_count = min(len(x_pos_list),len(x_vel_list),len(y_pos_list),len(y_vel_list))
     #     if _lookup_table_size < point_count:
@@ -337,6 +347,11 @@ class StageDevice(USBDevice.USB_Device):
     def _lookup_table_vel_move(self):
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_MOVE,True)
+        # self._usb_packet_out()
+
+    def _lookup_table_vel_correct(self):
+        self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
+        self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_CORRECT,True)
         # self._usb_packet_out()
 
     def _usb_packet_out(self):
