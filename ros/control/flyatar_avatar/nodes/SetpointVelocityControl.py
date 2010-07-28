@@ -381,8 +381,8 @@ class SetpointControl:
             else:
                 self.stage_commands.x_velocity = stage_velocity_x[1:]
                 self.stage_commands.y_velocity = stage_velocity_y[1:]
-                rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
-                rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
+                # rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+                # rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
 
             if self.ltm.in_progress:
                 rospy.logwarn("stage_velocity_x_correction = %s" % (str(stage_velocity_x)))
@@ -470,12 +470,13 @@ class SetpointControl:
             else:
                 vel_mag_list = []
         else:
-            if not self.on_setpoint_radius:
-                self.append_int_setpoint_to_plate_points(start_theta)
-                vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
-                # rospy.logwarn("off setpoint radius")
-            else:
-                vel_mag_list = []
+            rospy.logwarn("set_path_to_setpoint and in_progress")
+            # if not self.on_setpoint_radius:
+            #     self.append_int_setpoint_to_plate_points(start_theta)
+            #     vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
+            #     # rospy.logwarn("off setpoint radius")
+            # else:
+            #     vel_mag_list = []
 
         # rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
         # rospy.logwarn("plate points y = \n%s" % (str(self.plate_points_y)))
@@ -600,7 +601,7 @@ class SetpointControl:
                         self.sc_ok_to_publish = True
                         self.ltm.in_progress = True
                     else:
-                        # self.set_path_to_setpoint()
+                        self.set_path_to_setpoint()
                         self.sc_ok_to_publish = False
                     # self.sc_ok_to_publish = False
                     # rospy.logwarn("At correct radius!")
