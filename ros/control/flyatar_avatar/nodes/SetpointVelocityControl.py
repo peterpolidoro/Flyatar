@@ -381,8 +381,8 @@ class SetpointControl:
             else:
                 self.stage_commands.x_velocity = stage_velocity_x[1:]
                 self.stage_commands.y_velocity = stage_velocity_y[1:]
-                # rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
-                # rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
+                rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+                rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
 
             if self.ltm.in_progress:
                 rospy.logwarn("stage_velocity_x_correction = %s" % (str(stage_velocity_x)))
