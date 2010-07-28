@@ -476,9 +476,10 @@ class SetpointControl:
             # if not self.on_setpoint_radius:
             self.append_int_setpoint_to_plate_points(start_theta)
             vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
-            rospy.logwarn("vel_mag_list = %s" % (str(vel_mag_list)))
-            rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
-            rospy.logwarn("plate points y = \n%s" % (str(self.plate_points_y)))
+            self.set_stage_commands_from_plate_points(vel_mag_list)
+            # rospy.logwarn("vel_mag_list = %s" % (str(vel_mag_list)))
+            # rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
+            # rospy.logwarn("plate points y = \n%s" % (str(self.plate_points_y)))
             #     # rospy.logwarn("off setpoint radius")
             # else:
             #     vel_mag_list = []
