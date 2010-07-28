@@ -325,6 +325,8 @@ class SetpointControl:
         vel_x = []
         vel_y = []
         vel_mag_count = len(vel_mag_list)
+        rospy.logwarn("point_count = %s" % (str(point_count)))
+        rospy.logwarn("vel_mag_count = %s" % (str(vel_mag_count)))
         if vel_mag_count < point_count:
             vel_mag_count = 1
         # vel_mag = abs(vel_mag)          # Just to be sure
