@@ -218,8 +218,8 @@ class SetpointControl:
         else:
             if angle_start < angle_stop:
                 angle_stop = angle_stop - 2*math.pi
-        rospy.logwarn("angle_start = \n%s" % (str(angle_start)))
-        rospy.logwarn("angle_stop = \n%s" % (str(angle_stop)))
+        # rospy.logwarn("angle_start = \n%s" % (str(angle_start)))
+        # rospy.logwarn("angle_stop = \n%s" % (str(angle_stop)))
         # rospy.logwarn("diff = \n%s" % (str(diff)))
         point_count = 0
         r = self.setpoint.radius
@@ -365,6 +365,7 @@ class SetpointControl:
             stage_points_y = response.Ydst
             rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
             rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
+            rospy.logwarn("vel_mag_list = %s" % (str(vel_mag_list)))
             stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag_list)
             # self.stage_commands.x_position = stage_points_x
             # self.stage_commands.y_position = stage_points_y
