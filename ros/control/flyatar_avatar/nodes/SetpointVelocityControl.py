@@ -325,24 +325,24 @@ class SetpointControl:
         vel_x = []
         vel_y = []
         vel_mag_count = len(vel_mag_list)
-        rospy.logwarn("point_count = %s" % (str(point_count)))
-        rospy.logwarn("vel_mag_count = %s" % (str(vel_mag_count)))
+        # rospy.logwarn("point_count = %s" % (str(point_count)))
+        # rospy.logwarn("vel_mag_count = %s" % (str(vel_mag_count)))
         if vel_mag_count < point_count:
             vel_mag_count = 1
         # vel_mag = abs(vel_mag)          # Just to be sure
         for point_n in range(point_count):
-            if point_n != 0:
+            if 0 < point_n:
                 if vel_mag_count == 1:
                     vel_mag = abs(vel_mag_list[0])
                 else:
                     vel_mag = abs(vel_mag_list[point_n])
-                if (1 < vel_mag_count) and (point_n == 1) or (point_n ==2):
-                    rospy.logwarn("point_n = %s" % (str(point_n)))
-                    rospy.logwarn("vel_mag = %s" % (str(vel_mag)))
-                    rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
-                    rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
-                    rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
-                    rospy.logwarn("pos_y[point_n - 1] = %s" % (str(pos_y[point_n -1])))
+                # if (1 < vel_mag_count) and (point_n == 1) or (point_n ==2):
+                #     rospy.logwarn("point_n = %s" % (str(point_n)))
+                #     rospy.logwarn("vel_mag = %s" % (str(vel_mag)))
+                #     rospy.logwarn("pos_x[point_n] = %s" % (str(pos_x[point_n])))
+                #     rospy.logwarn("pos_x[point_n - 1] = %s" % (str(pos_x[point_n - 1])))
+                #     rospy.logwarn("pos_y[point_n] = %s" % (str(pos_y[point_n])))
+                #     rospy.logwarn("pos_y[point_n - 1] = %s" % (str(pos_y[point_n -1])))
                 delta_x = pos_x[point_n] - pos_x[point_n - 1]
                 delta_y = pos_y[point_n] - pos_y[point_n - 1]
                 # try:
@@ -352,10 +352,10 @@ class SetpointControl:
                     alpha = math.sqrt((vel_mag**2)/(delta_x**2 + delta_y**2))
                 # except:
                 #     alpha = 1
-                if (1 < vel_mag_count) and (point_n == 1) or (point_n ==2):
-                    rospy.logwarn("delta_x = %s" % (str(delta_x)))
-                    rospy.logwarn("delta_y = %s" % (str(delta_y)))
-                    rospy.logwarn("alpha = %s" % (str(alpha)))
+                # if (1 < vel_mag_count) and (point_n == 1) or (point_n ==2):
+                #     rospy.logwarn("delta_x = %s" % (str(delta_x)))
+                #     rospy.logwarn("delta_y = %s" % (str(delta_y)))
+                #     rospy.logwarn("alpha = %s" % (str(alpha)))
                 vel_x.append(alpha*delta_x)
                 vel_y.append(alpha*delta_y)
         return vel_x,vel_y
@@ -369,9 +369,9 @@ class SetpointControl:
             # rospy.logwarn("self.plate_points_y = %s" % (str(self.plate_points_y)))
             stage_points_x = response.Xdst
             stage_points_y = response.Ydst
-            rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
-            rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
-            rospy.logwarn("vel_mag_list = %s" % (str(vel_mag_list)))
+            # rospy.logwarn("stage_points_x = %s" % (str(stage_points_x)))
+            # rospy.logwarn("stage_points_y = %s" % (str(stage_points_y)))
+            # rospy.logwarn("vel_mag_list = %s" % (str(vel_mag_list)))
             stage_velocity_x,stage_velocity_y = self.find_velocity_from_position(stage_points_x,stage_points_y,vel_mag_list)
             # self.stage_commands.x_position = stage_points_x
             # self.stage_commands.y_position = stage_points_y
@@ -379,8 +379,10 @@ class SetpointControl:
                 self.stage_commands.x_velocity = stage_velocity_x
                 self.stage_commands.y_velocity = stage_velocity_y
             else:
-                self.stage_commands.x_velocity = stage_velocity_x
-                self.stage_commands.y_velocity = stage_velocity_y
+                rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+                rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
+                self.stage_commands.x_velocity = stage_velocity_x[1:]
+                self.stage_commands.y_velocity = stage_velocity_y[1:]
                 rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
                 rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
 
