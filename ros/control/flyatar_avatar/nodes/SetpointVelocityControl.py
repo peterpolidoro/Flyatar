@@ -42,7 +42,7 @@ class LookupTableMove:
                 dt = t - self.t0
                 if self.duration < dt:
                     self.in_progress = False
-                    # rospy.logwarn("in_progress timed out!")
+                    rospy.logwarn("in_progress timed out!")
                 # else:
                 #     rospy.logwarn("lookup table move in progress")
 
