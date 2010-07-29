@@ -609,6 +609,7 @@ class SetpointControl:
                     self.set_path_to_setpoint()
                     if self.ltm.in_progress:
                         self.stage_commands.lookup_table_correct = True
+                        rospy.logwarn("ltm in progress...")
                     else:
                         self.stage_commands.lookup_table_correct = False
                         if self.on_setpoint_radius:
