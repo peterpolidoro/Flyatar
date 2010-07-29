@@ -46,7 +46,7 @@ class StageUpdate:
 
     rospy.wait_for_service('stage_lookup_table_correct')
     try:
-      self.set_stage_position = rospy.ServiceProxy('stage_lookup_table_correct', Stage_State)
+      self.stage_lookup_table_correct = rospy.ServiceProxy('stage_lookup_table_correct', Stage_State)
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
