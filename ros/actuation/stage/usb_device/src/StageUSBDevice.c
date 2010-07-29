@@ -742,8 +742,8 @@ static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t Entry
 
 static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
 {
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-  {
+  /* ATOMIC_BLOCK(ATOMIC_RESTORESTATE) */
+  /* { */
     for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
       {
         LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency;
@@ -758,7 +758,7 @@ static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
         /*     LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency; */
         /*   } */
       }
-  }
+  /* } */
 }
 
 /*
