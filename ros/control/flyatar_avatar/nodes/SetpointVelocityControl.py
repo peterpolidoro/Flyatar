@@ -646,12 +646,13 @@ class SetpointControl:
         # self.on_setpoint_theta = False
 
     def find_radius_vel_mag(self):
-        if (not self.on_setpoint_radius) and (not self.near_setpoint_radius):
-            vel_mag = self.robot_velocity_max
-        elif self.near_setpoint_radius:
-            vel_mag = abs(self.gain_radius*self.radius_error)
-        else:
-            vel_mag = 0
+        vel_mag = abs(self.gain_radius*self.radius_error)
+        # if (not self.on_setpoint_radius) and (not self.near_setpoint_radius):
+        #     vel_mag = self.robot_velocity_max
+        # elif self.near_setpoint_radius:
+        #     vel_mag = abs(self.gain_radius*self.radius_error)
+        # else:
+        #     vel_mag = 0
 
         if self.robot_velocity_max < vel_mag:
             vel_mag = self.robot_velocity_max
