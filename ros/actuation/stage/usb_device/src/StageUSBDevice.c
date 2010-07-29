@@ -742,24 +742,42 @@ static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t Entry
 
 static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
 {
-  /* ATOMIC_BLOCK(ATOMIC_RESTORESTATE) */
-  /* { */
-    for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
-      {
-        LookupTableRowCorrected[Motor_N].Position = LookupTableRowUncorrected[Motor_N].Position;
-        LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency;
-        /* if (LookupTableRowCorrected[Motor_N].Position < Motor[Motor_N].Position) */
-        /*   { */
-        /*     /\* LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency - LookupTableCorrection[Motor_N].Frequency; *\/ */
-        /*     LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency; */
-        /*   } */
-        /* else */
-        /*   { */
-        /*     /\* LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency + LookupTableCorrection[Motor_N].Frequency; *\/ */
-        /*     LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency; */
-        /*   } */
-      }
-  /* } */
+  int32_t Velocity;
+  int32_t Velocity_Correction;
+
+  for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
+    {
+      if (LookupTableRowUncorrected[Motor_N].Position < Motor[Motor_N].Position)
+        {
+          Velocity = -(int32_t)LookupTableRowUncorrected[Motor_N].Frequency;
+        }
+      else
+        {
+          Velocity = (int32_t)LookupTableRowUncorrected[Motor_N].Frequency;
+        }
+
+      if (LookupTableCorrection[Motor_N].Position < Motor[Motor_N].Position)
+        {
+          Velocity_Correction = -(int32_t)LookupTableCorrection[Motor_N].Frequency;
+        }
+      else
+        {
+          Velocity_Correction = (int32_t)LookupTableCorrection[Motor_N].Frequency;
+        }
+
+      Velocity += Velocity_Correction;
+
+      if (0 < Velocity)
+        {
+          LookupTableRowCorrected[Motor_N].Position = UINT16_MAX;
+          LookupTableRowCorrected[Motor_N].Frequency = (uint16_t)Velocity;
+        }
+      else
+        {
+          LookupTableRowCorrected[Motor_N].Position = UINT16_MIN;
+          LookupTableRowCorrected[Motor_N].Frequency = (uint16_t)(-Velocity);
+        }
+    }
 }
 
 /*
@@ -950,7 +968,6 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
         {
           if (LookupTableVelMove && LookupTableCorrectionOn)
             {
-              /* Motor_Set_Values(LookupTable[TableEntry]); */
               Lookup_Table_Correct(LookupTable[TableEntry]);
               Motor_Set_Values(LookupTableRowCorrected);
             }

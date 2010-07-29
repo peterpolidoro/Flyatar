@@ -55,6 +55,8 @@
 /* Macros: */
 #define TRUE  1
 #define FALSE 0
+#define UINT16_MIN 0
+#define UINT16_MAX 65535
 /* USB Commands */
 #define USB_CMD_GET_STATE                1
 #define USB_CMD_SET_STATE                2
