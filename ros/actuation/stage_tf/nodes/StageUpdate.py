@@ -89,7 +89,6 @@ class StageUpdate:
           if self.update_position:
             self.update_position = False
             response = self.set_stage_position(self.stage_commands)
-            rospy.logwarn("StageUpdate sending set_stage_position")
             # response = self.stage_lookup_table_move(self.stage_commands)
             # rospy.logwarn("set_stage_position()")
             x = response.x
@@ -100,7 +99,6 @@ class StageUpdate:
           elif self.update_velocity:
             self.update_velocity = False
             response = self.set_stage_velocity(self.stage_commands)
-            rospy.logwarn("StageUpdate sending set_stage_velocity")
             # rospy.logwarn("set_stage_velocity()")
             x = response.x
             y = response.y
@@ -109,7 +107,6 @@ class StageUpdate:
             self.update_velocity = False
           elif self.lookup_table_correct:
             self.lookup_table_correct = False
-            rospy.logwarn("StageUpdate sending stage_lookup_table_correct")
             response = self.stage_lookup_table_correct(self.stage_commands)
             x = response.x
             y = response.y
