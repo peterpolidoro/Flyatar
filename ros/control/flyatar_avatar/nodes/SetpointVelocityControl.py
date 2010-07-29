@@ -451,7 +451,7 @@ class SetpointControl:
         return radius_error,theta_error
 
     def set_path_to_setpoint(self):
-        self.radius_error,self.theta_error = self.find_robot_setpoint_error()
+        # self.radius_error,self.theta_error = self.find_robot_setpoint_error()
 
         self.robot_control_frame = self.convert_to_control_frame(self.robot_origin)
         self.robot_plate = self.convert_to_plate(self.robot_origin)
