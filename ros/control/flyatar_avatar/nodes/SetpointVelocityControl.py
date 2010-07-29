@@ -528,19 +528,19 @@ class SetpointControl:
         # start_theta = math.atan2(dy,dx)
 
         if (not self.on_setpoint_radius) and (not self.near_setpoint_radius):
-            self.stage_commands.lookup_table_correct = False
+            self.stage_commands.velocity_control = True
             self.set_velocity_to_setpoint_circle()
             self.ltm.in_progress = False
         elif (not self.on_setpoint_theta) and (not self.near_setpoint_theta):
             if not self.ltm.in_progress:
-                self.stage_commands.lookup_table_correct = False
+                self.stage_commands.velocity_control = True
                 self.set_lookup_table_move()
                 rospy.logwarn("lookup table move started...")
             else:
                 self.stage_commands.lookup_table_correct = True
                 self.set_velocity_to_setpoint_circle()
         else:
-            self.stage_commands.lookup_table_correct = False
+            self.stage_commands.velocity_control = True
             self.set_velocity_to_setpoint()
             self.ltm.in_progress = False
 

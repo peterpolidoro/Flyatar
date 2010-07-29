@@ -98,7 +98,7 @@ class StageUpdate:
             self.ss.lookup_table_move_complete = response.lookup_table_move_complete
             self.update_position = False
           elif self.update_velocity:
-            self.update_position = False
+            self.update_velocity = False
             response = self.set_stage_velocity(self.stage_commands)
             rospy.logwarn("StageUpdate sending set_stage_velocity")
             # rospy.logwarn("set_stage_velocity()")
