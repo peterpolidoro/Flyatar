@@ -948,8 +948,9 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
         {
           if (LookupTableVelMove && LookupTableCorrectionOn)
             {
-              Lookup_Table_Correct(LookupTable[TableEntry]);
-              Motor_Set_Values(LookupTableRowCorrected);
+              Motor_Set_Values(LookupTable[TableEntry]);
+              /* Lookup_Table_Correct(LookupTable[TableEntry]); */
+              /* Motor_Set_Values(LookupTableRowCorrected); */
             }
           else
             {
