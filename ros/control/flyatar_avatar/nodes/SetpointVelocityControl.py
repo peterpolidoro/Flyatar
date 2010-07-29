@@ -464,11 +464,15 @@ class SetpointControl:
         start_theta = math.atan2(dy,dx)
 
         if (not self.ltm.in_progress):
+            self.stage_commands.lookup_table_correct = False
             if self.on_setpoint_radius and (not self.on_setpoint_theta):
                 angle_list,vel_mag_list = self.angle_divide(start_theta,self.setpoint.theta)
                 for angle_n in range(len(angle_list)):
                     if angle_n != 0:
                         self.append_int_setpoint_to_plate_points(angle_list[angle_n])
+                self.ltm.start_move(self.stage_commands)
+                self.ltm.in_progress = True
+                rospy.logwarn("ltm in progress...")
                 # self.plate_points_x.append(self.plate_points_x[0])
                 # self.plate_points_y.append(self.plate_points_y[0])
                 # rospy.logwarn("theta move...")
@@ -482,6 +486,7 @@ class SetpointControl:
 
             self.set_stage_commands_from_plate_points(vel_mag_list)
         else:
+            self.stage_commands.lookup_table_correct = True
             # rospy.logwarn("set_path_to_setpoint and in_progress")
             # if not self.on_setpoint_radius:
             self.append_int_setpoint_to_plate_points(start_theta)
@@ -607,15 +612,6 @@ class SetpointControl:
                     self.sc_ok_to_publish = True
                 else:
                     self.set_path_to_setpoint(radius_error,theta_error)
-                    if self.ltm.in_progress:
-                        self.stage_commands.lookup_table_correct = True
-                        rospy.logwarn("ltm in progress...")
-                    else:
-                        self.stage_commands.lookup_table_correct = False
-                        if self.on_setpoint_radius:
-                            self.ltm.start_move(self.stage_commands)
-                            self.ltm.in_progress = True
-
                     self.sc_ok_to_publish = True
 
                 # if not self.on_setpoint_radius:
