@@ -438,7 +438,7 @@ class SetpointControl:
         # elif self.on_setpoint_theta:
         #     self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
         self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_dist
-        if 0 < setpoint.radius:
+        if 0 < self.setpoint.radius:
             self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_dist/self.setpoint.radius
         else:
             self.on_setpoint_theta = False
