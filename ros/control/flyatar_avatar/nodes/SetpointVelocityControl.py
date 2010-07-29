@@ -150,7 +150,7 @@ class SetpointControl:
 
         self.setpoint_move_threshold = 0.75   # mm
         self.delta_position_threshold = 0.01   # mm
-        self.on_setpoint_dist = 1              # mm
+        self.on_setpoint_dist = 2              # mm
 
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
