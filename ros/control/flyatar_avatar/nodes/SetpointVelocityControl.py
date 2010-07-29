@@ -769,6 +769,10 @@ class SetpointControl:
                 # else:
                 #     self.sc_ok_to_publish = False
 
+                rospy.logwarn("stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
+                rospy.logwarn("stage_commands.velocity_control = %s" % (str(self.stage_commands.velocity_control)))
+                rospy.logwarn("stage_commands.lookup_table_correct = %s" % (str(self.stage_commands.lookup_table_correct)))
+
                 if self.sc_ok_to_publish:
                     self.sc_pub.publish(self.stage_commands)
 

@@ -66,16 +66,16 @@ class StageUpdate:
         self.update_position = True
         self.update_velocity = False
         self.lookup_table_correct = False
-      elif data.lookup_table_correct:
-        rospy.logwarn ("data.lookup_table_correct = %s" % (str(data.lookup_table_correct)))
-        self.update_position = False
-        self.update_velocity = False
-        self.lookup_table_correct = True
       elif data.velocity_control:
         # rospy.logwarn ("data.velocity_control = %s" % (str(data.velocity_control)))
         self.update_position = False
         self.update_velocity = True
         self.lookup_table_correct = False
+      elif data.lookup_table_correct:
+        rospy.logwarn ("data.lookup_table_correct = %s" % (str(data.lookup_table_correct)))
+        self.update_position = False
+        self.update_velocity = False
+        self.lookup_table_correct = True
       else:
         self.update_position = False
         self.update_velocity = False
