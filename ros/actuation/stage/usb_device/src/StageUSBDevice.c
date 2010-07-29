@@ -746,6 +746,7 @@ static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
   /* { */
     for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
       {
+        LookupTableRowCorrected[Motor_N].Position = LookupTableRowUncorrected[Motor_N].Position;
         LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency;
         /* if (LookupTableRowCorrected[Motor_N].Position < Motor[Motor_N].Position) */
         /*   { */
