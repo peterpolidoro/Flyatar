@@ -517,11 +517,11 @@ class SetpointControl:
         # dy = self.robot_control_frame.point.y
         # start_theta = math.atan2(dy,dx)
 
-        if (not self.on_radius_setpoint) and (not self.near_radius_setpoint):
+        if (not self.on_setpoint_radius) and (not self.near_setpoint_radius):
             self.stage_commands.lookup_table_correct = False
             self.set_velocity_to_setpoint_circle()
             self.ltm.in_progress = False
-        elif (not self.on_theta_setpoint) and (not self.near_theta_setpoint):
+        elif (not self.on_setpoint_theta) and (not self.near_setpoint_theta):
             if not self.ltm.in_progress:
                 self.stage_commands.lookup_table_correct = False
                 self.set_lookup_table_move()
