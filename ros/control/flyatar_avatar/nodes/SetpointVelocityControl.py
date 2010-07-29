@@ -150,8 +150,7 @@ class SetpointControl:
 
         self.setpoint_move_threshold = 0.75   # mm
         self.delta_position_threshold = 0.01   # mm
-        self.on_setpoint_radius_dist = 1
-        self.on_setpoint_theta_dist = CircleFunctions.degrees_to_radians(5)
+        self.on_setpoint_dist = 1              # mm
 
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
@@ -438,8 +437,11 @@ class SetpointControl:
         #         # rospy.logwarn("on setpoint radius, on setpoint theta")
         # elif self.on_setpoint_theta:
         #     self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
-        self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
-        self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_theta_dist
+        self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_dist
+        if 0 < setpoint.radius:
+            self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_dist/self.setpoint.radius
+        else:
+            self.on_setpoint_theta = False
 
         return radius_error,theta_error
 
