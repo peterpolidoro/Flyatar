@@ -96,6 +96,8 @@ class StageDevice(USBDevice.USB_Device):
         self.axis_y = 1
         self.axis_theta = 2
 
+        self.lookup_table_vel_correction_max = 5 # mm/s
+
     def update_velocity(self,x_vel_list,y_vel_list):
         # x_vel_mm = x_vel_list[0]
         # y_vel_mm = y_vel_list[0]
@@ -202,6 +204,12 @@ class StageDevice(USBDevice.USB_Device):
         x_vel_mm = x_vel_list[0]
         y_pos_mm = None
         y_vel_mm = y_vel_list[0]
+
+        if self.lookup_table_vel_correction_max < abs(x_vel_mm):
+            x_vel_mm = math.copysign(self.lookup_table_vel_correction_max,x_vel_mm)
+        if self.lookup_table_vel_correction_max < abs(y_vel_mm):
+            y_vel_mm = math.copysign(self.lookup_table_vel_correction_max,y_vel_mm)
+
         rospy.logwarn("lookup_table_vel_correct move...")
         rospy.logwarn("x_vel_mm = %s" % (str(x_vel_mm)))
         rospy.logwarn("y_vel_mm = %s" % (str(y_vel_mm)))
