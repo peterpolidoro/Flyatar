@@ -450,7 +450,7 @@ class SetpointControl:
 
         return radius_error,theta_error
 
-    def set_path_to_setpoint(self):
+    def set_path_to_setpoint(self,radius_error,theta_error):
         # self.radius_error,self.theta_error = self.find_robot_setpoint_error()
 
         self.robot_control_frame = self.convert_to_control_frame(self.robot_origin)
@@ -474,7 +474,7 @@ class SetpointControl:
                 # rospy.logwarn("theta move...")
             elif not self.on_setpoint_radius:
                 self.append_int_setpoint_to_plate_points(start_theta)
-                vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
+                vel_mag_list = [self.find_radius_vel_mag(radius_error)]
                 # rospy.logwarn("off setpoint radius")
                 # rospy.logwarn("radius move...")
             else:
@@ -485,7 +485,7 @@ class SetpointControl:
             # rospy.logwarn("set_path_to_setpoint and in_progress")
             # if not self.on_setpoint_radius:
             self.append_int_setpoint_to_plate_points(start_theta)
-            vel_mag_list = [self.find_radius_vel_mag(self.radius_error)]
+            vel_mag_list = [self.find_radius_vel_mag(radius_error)]
             self.set_stage_commands_from_plate_points(vel_mag_list)
             # rospy.logwarn("vel_mag_list = %s" % (str(vel_mag_list)))
             # rospy.logwarn("plate points x = \n%s" % (str(self.plate_points_x)))
@@ -600,13 +600,13 @@ class SetpointControl:
                     # self.on_setpoint_theta = False
                     self.ltm.in_progress = False
 
-                self.find_robot_setpoint_error()
+                radius_error,theta_error = self.find_robot_setpoint_error()
 
                 if self.on_setpoint_radius and self.on_setpoint_theta:
                     self.set_zero_velocity()
                     self.sc_ok_to_publish = True
                 else:
-                    self.set_path_to_setpoint()
+                    self.set_path_to_setpoint(radius_error,theta_error)
                     if self.ltm.in_progress:
                         self.stage_commands.lookup_table_correct = True
                         rospy.logwarn("ltm in progress...")
