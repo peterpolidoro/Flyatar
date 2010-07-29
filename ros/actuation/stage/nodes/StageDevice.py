@@ -205,6 +205,9 @@ class StageDevice(USBDevice.USB_Device):
         y_pos_mm = None
         y_vel_mm = y_vel_list[0]
 
+        x_vel_mm = 0
+        x_vel_mm = 0
+
         if self.lookup_table_vel_correction_max < abs(x_vel_mm):
             x_vel_mm = math.copysign(self.lookup_table_vel_correction_max,x_vel_mm)
         if self.lookup_table_vel_correction_max < abs(y_vel_mm):
