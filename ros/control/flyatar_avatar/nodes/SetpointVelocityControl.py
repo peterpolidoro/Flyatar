@@ -525,6 +525,7 @@ class SetpointControl:
             if not self.ltm.in_progress:
                 self.stage_commands.lookup_table_correct = False
                 self.set_lookup_table_move()
+                rospy.logwarn("lookup table move started...")
             else:
                 self.stage_commands.lookup_table_correct = True
                 self.set_velocity_to_setpoint_circle()
