@@ -746,16 +746,17 @@ static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
   {
     for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
       {
-        if (LookupTableRowCorrected[Motor_N].Position < Motor[Motor_N].Position)
-          {
-            /* LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency - LookupTableCorrection[Motor_N].Frequency; */
-            LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency;
-          }
-        else
-          {
-            /* LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency + LookupTableCorrection[Motor_N].Frequency; */
-            LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency;
-          }
+        LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency;
+        /* if (LookupTableRowCorrected[Motor_N].Position < Motor[Motor_N].Position) */
+        /*   { */
+        /*     /\* LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency - LookupTableCorrection[Motor_N].Frequency; *\/ */
+        /*     LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency; */
+        /*   } */
+        /* else */
+        /*   { */
+        /*     /\* LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency + LookupTableCorrection[Motor_N].Frequency; *\/ */
+        /*     LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency; */
+        /*   } */
       }
   }
 }
@@ -948,9 +949,9 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
         {
           if (LookupTableVelMove && LookupTableCorrectionOn)
             {
-              Motor_Set_Values(LookupTable[TableEntry]);
-              /* Lookup_Table_Correct(LookupTable[TableEntry]); */
-              /* Motor_Set_Values(LookupTableRowCorrected); */
+              /* Motor_Set_Values(LookupTable[TableEntry]); */
+              Lookup_Table_Correct(LookupTable[TableEntry]);
+              Motor_Set_Values(LookupTableRowCorrected);
             }
           else
             {
