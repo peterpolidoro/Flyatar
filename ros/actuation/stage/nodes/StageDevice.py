@@ -349,6 +349,7 @@ class StageDevice(USBDevice.USB_Device):
         self._send_usb_cmd(self.USB_CMD_SET_STATE,True)
 
     def _lookup_table_fill(self):
+        rospy.logwarn("sending lookup_table_fill to usb device")
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_FILL,True)
 
     def _lookup_table_pos_move(self):
