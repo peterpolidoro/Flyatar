@@ -748,11 +748,13 @@ static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
       {
         if (LookupTableRowCorrected[Motor_N].Position < Motor[Motor_N].Position)
           {
-            LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency - LookupTableCorrection[Motor_N].Frequency;
+            /* LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency - LookupTableCorrection[Motor_N].Frequency; */
+            LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency;
           }
         else
           {
-            LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency + LookupTableCorrection[Motor_N].Frequency;
+            /* LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency + LookupTableCorrection[Motor_N].Frequency; */
+            LookupTableRowCorrected[Motor_N].Frequency = LookupTableRowUncorrected[Motor_N].Frequency;
           }
       }
   }
