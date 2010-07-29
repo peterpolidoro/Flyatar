@@ -475,7 +475,8 @@ class SetpointControl:
                         self.append_int_setpoint_to_plate_points(angle_list[angle_n])
                 self.ltm.start_move(self.stage_commands)
                 self.ltm.in_progress = True
-                rospy.logwarn("ltm in progress...")
+                rospy.logwarn("ltm started...")
+                rospy.logwarn("angle_list = %s" % (str(angle_list)))
                 # self.plate_points_x.append(self.plate_points_x[0])
                 # self.plate_points_y.append(self.plate_points_y[0])
                 # rospy.logwarn("theta move...")
