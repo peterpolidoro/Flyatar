@@ -438,16 +438,8 @@ class SetpointControl:
         #         # rospy.logwarn("on setpoint radius, on setpoint theta")
         # elif self.on_setpoint_theta:
         #     self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
-        if (not self.on_setpoint_radius) and (not self.on_setpoint_theta):
-            if abs(radius_error) < self.on_setpoint_radius_dist:
-                self.on_setpoint_radius = True
-                # rospy.logwarn("on setpoint radius, not on setpoint theta")
-        elif self.on_setpoint_radius and (not self.on_setpoint_theta):
-            if abs(theta_error) < self.on_setpoint_theta_dist:
-                self.on_setpoint_theta = True
-                # rospy.logwarn("on setpoint radius, on setpoint theta")
-        elif self.on_setpoint_theta:
-            self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
+        self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
+        self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_theta_dist
 
         return radius_error,theta_error
 
@@ -566,10 +558,10 @@ class SetpointControl:
         self.stage_commands.lookup_table_correct = False
         self.stage_commands.x_velocity = [0]
         self.stage_commands.y_velocity = [0]
-        self.sc_pub.publish(self.stage_commands)
+        # self.sc_pub.publish(self.stage_commands)
         self.ltm.in_progress = False
-        self.on_setpoint_radius = False
-        self.on_setpoint_theta = False
+        # self.on_setpoint_radius = False
+        # self.on_setpoint_theta = False
 
     def find_radius_vel_mag(self,radius_error):
         vel_mag = abs(self.gain_radius*radius_error)
@@ -597,31 +589,69 @@ class SetpointControl:
                     # rospy.logwarn("self.setpoint_plate.point.x = %s" % (str(self.setpoint_plate.point.x)))
                     # rospy.logwarn("self.setpoint_plate_previous.point.y = %s" % (str(self.setpoint_plate_previous.point.y)))
                     # rospy.logwarn("self.setpoint_plate.point.y = %s" % (str(self.setpoint_plate.point.y)))
-                    self.on_setpoint_radius = False
-                    self.on_setpoint_theta = False
+                    # self.on_setpoint_radius = False
+                    # self.on_setpoint_theta = False
                     self.ltm.in_progress = False
+
                 self.find_robot_setpoint_error()
-                if not self.on_setpoint_radius:
-                    self.ltm.in_progress = False
-                    # vel_mag = self.find_radius_vel_mag()
-                    self.set_path_to_setpoint()
+
+                if self.on_setpoint_radius and self.on_setpoint_theta:
+                    self.set_zero_velocity()
                     self.sc_ok_to_publish = True
-                elif self.on_setpoint_theta:
-                    if self.ltm.in_progress:
-                        self.set_zero_velocity()
-                        self.sc_ok_to_publish = False
+
                 else:
-                    if (not self.ltm.in_progress):
-                        # rospy.logwarn("Moving to setpoint!!")
-                        # vel_mag = self.find_theta_vel_mag(self.theta_error)
-                        self.set_path_to_setpoint()
-                        self.ltm.start_move(self.stage_commands)
-                        self.sc_ok_to_publish = True
-                        self.ltm.in_progress = True
-                    else:
+                    self.set_path_to_setpoint()
+                    if self.ltm.in_progress:
                         self.stage_commands.lookup_table_correct = True
-                        self.set_path_to_setpoint()
-                        self.sc_ok_to_publish = True
+                    else:
+                        self.stage_commands.lookup_table_correct = False
+                        if self.on_setpoint_radius:
+                            self.ltm.start_move(self.stage_commands)
+                            self.ltm.in_progress = True
+
+                    self.sc_ok_to_publish = True
+
+                # if not self.on_setpoint_radius:
+                #     self.ltm.in_progress = False
+                #     # vel_mag = self.find_radius_vel_mag()
+                #     self.set_path_to_setpoint()
+                #     self.sc_ok_to_publish = True
+                # elif self.on_setpoint_theta:
+                # else:
+                #     if (not self.ltm.in_progress):
+                #         # rospy.logwarn("Moving to setpoint!!")
+                #         # vel_mag = self.find_theta_vel_mag(self.theta_error)
+                #         self.set_path_to_setpoint()
+                #         self.ltm.start_move(self.stage_commands)
+                #         self.sc_ok_to_publish = True
+                #         self.ltm.in_progress = True
+                #     else:
+                #         self.stage_commands.lookup_table_correct = True
+                #         self.set_path_to_setpoint()
+                #         self.sc_ok_to_publish = True
+
+                # if not self.on_setpoint_radius:
+                #     self.ltm.in_progress = False
+                #     # vel_mag = self.find_radius_vel_mag()
+                #     self.set_path_to_setpoint()
+                #     self.sc_ok_to_publish = True
+                # elif self.on_setpoint_theta:
+                #     if self.ltm.in_progress:
+                #         self.set_zero_velocity()
+                #         self.sc_ok_to_publish = False
+                # else:
+                #     if (not self.ltm.in_progress):
+                #         # rospy.logwarn("Moving to setpoint!!")
+                #         # vel_mag = self.find_theta_vel_mag(self.theta_error)
+                #         self.set_path_to_setpoint()
+                #         self.ltm.start_move(self.stage_commands)
+                #         self.sc_ok_to_publish = True
+                #         self.ltm.in_progress = True
+                #     else:
+                #         self.stage_commands.lookup_table_correct = True
+                #         self.set_path_to_setpoint()
+                #         self.sc_ok_to_publish = True
+
                     # self.sc_ok_to_publish = False
                     # rospy.logwarn("At correct radius!")
                 # if not self.on_setpoint_theta:
