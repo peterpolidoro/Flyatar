@@ -352,15 +352,18 @@ class StageDevice(USBDevice.USB_Device):
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_FILL,True)
 
     def _lookup_table_pos_move(self):
+        rospy.logwarn("sending lookup_table_pos_move to usb device")
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_POS_MOVE,True)
 
     def _lookup_table_vel_move(self):
+        rospy.logwarn("sending lookup_table_vel_move to usb device")
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_MOVE,True)
         # self._usb_packet_out()
 
     def _lookup_table_vel_correct(self):
+        rospy.logwarn("sending lookup_table_vel_correct to usb device")
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_CORRECT,True)
         # self._usb_packet_out()

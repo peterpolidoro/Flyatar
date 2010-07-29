@@ -503,12 +503,12 @@ class SetpointControl:
         self.set_stage_commands_from_plate_points(vel_mag_list)
         self.ltm.start_move(self.stage_commands)
         self.ltm.in_progress = True
-        rospy.logwarn("stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
-        rospy.logwarn("stage_commands.lookup_table_correct = %s" % (str(self.stage_commands.lookup_table_correct)))
-        rospy.logwarn("stage_commands.x_position = %s" % (str(self.stage_commands.x_position)))
-        rospy.logwarn("stage_commands.y_position = %s" % (str(self.stage_commands.y_position)))
-        rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
-        rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
+        # rospy.logwarn("stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
+        # rospy.logwarn("stage_commands.lookup_table_correct = %s" % (str(self.stage_commands.lookup_table_correct)))
+        # rospy.logwarn("stage_commands.x_position = %s" % (str(self.stage_commands.x_position)))
+        # rospy.logwarn("stage_commands.y_position = %s" % (str(self.stage_commands.y_position)))
+        # rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
+        # rospy.logwarn("stage_commands.y_velocity = %s" % (str(self.stage_commands.y_velocity)))
 
     def set_path_to_setpoint(self):
         # self.radius_error,self.theta_error = self.find_robot_setpoint_error()
