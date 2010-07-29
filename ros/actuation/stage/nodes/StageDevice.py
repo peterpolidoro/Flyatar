@@ -210,9 +210,9 @@ class StageDevice(USBDevice.USB_Device):
         if self.lookup_table_vel_correction_max < abs(y_vel_mm):
             y_vel_mm = math.copysign(self.lookup_table_vel_correction_max,y_vel_mm)
 
-        rospy.logwarn("lookup_table_vel_correct move...")
-        rospy.logwarn("x_vel_mm = %s" % (str(x_vel_mm)))
-        rospy.logwarn("y_vel_mm = %s" % (str(y_vel_mm)))
+        # rospy.logwarn("lookup_table_vel_correct move...")
+        # rospy.logwarn("x_vel_mm = %s" % (str(x_vel_mm)))
+        # rospy.logwarn("y_vel_mm = %s" % (str(y_vel_mm)))
         self._convert_and_set_setpoint(x_pos_mm,x_vel_mm,y_pos_mm,y_vel_mm,0)
         self._lookup_table_vel_correct()
         state = self._return_state()
