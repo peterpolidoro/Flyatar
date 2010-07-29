@@ -96,7 +96,7 @@ class StageDevice(USBDevice.USB_Device):
         self.axis_y = 1
         self.axis_theta = 2
 
-        self.lookup_table_vel_correction_max = 5 # mm/s
+        self.lookup_table_vel_correction_max = 10 # mm/s
 
     def update_velocity(self,x_vel_list,y_vel_list):
         # x_vel_mm = x_vel_list[0]
