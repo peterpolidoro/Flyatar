@@ -150,7 +150,9 @@ class SetpointControl:
 
         self.setpoint_move_threshold = 0.75   # mm
         self.delta_position_threshold = 0.01   # mm
-        self.on_setpoint_dist = 2              # mm
+        self.on_setpoint_dist = 1              # mm
+        self.theta_move_ok = False
+        self.theta_move_ok_dist = 4    # mm
 
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
@@ -438,6 +440,7 @@ class SetpointControl:
         # elif self.on_setpoint_theta:
         #     self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_radius_dist
         self.on_setpoint_radius = abs(radius_error) < self.on_setpoint_dist
+        self.theta_move_ok = abs(radius_error) < self.theta_move_ok_dist
         if 0 < self.setpoint.radius:
             self.on_setpoint_theta_dist = self.on_setpoint_dist/self.setpoint.radius
             self.on_setpoint_theta = abs(theta_error) < self.on_setpoint_theta_dist
@@ -465,7 +468,7 @@ class SetpointControl:
 
         if (not self.ltm.in_progress):
             self.stage_commands.lookup_table_correct = False
-            if self.on_setpoint_radius and (not self.on_setpoint_theta):
+            if self.theta_move_ok and (not self.on_setpoint_theta):
                 angle_list,vel_mag_list = self.angle_divide(start_theta,self.setpoint.theta)
                 for angle_n in range(len(angle_list)):
                     if angle_n != 0:
@@ -476,7 +479,7 @@ class SetpointControl:
                 # self.plate_points_x.append(self.plate_points_x[0])
                 # self.plate_points_y.append(self.plate_points_y[0])
                 # rospy.logwarn("theta move...")
-            elif not self.on_setpoint_radius:
+            elif not self.not_theta_move_ok:
                 self.append_int_setpoint_to_plate_points(start_theta)
                 vel_mag_list = [self.find_radius_vel_mag(radius_error)]
                 # rospy.logwarn("off setpoint radius")
