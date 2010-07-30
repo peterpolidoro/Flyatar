@@ -157,7 +157,7 @@ class SetpointControl:
         self.delta_position_threshold = 0.01   # mm
         self.on_setpoint_dist = 1              # mm
         self.near_setpoint_dist = 4              # mm
-        self.lookup_table_move_setpoint_dist_multiplier = 2
+        self.lookup_table_move_setpoint_dist_multiplier = 2.5
         self.lookup_table_move_gain_radius_multiplier = 2
 
         # self.setpoint_plate_initialized = False
