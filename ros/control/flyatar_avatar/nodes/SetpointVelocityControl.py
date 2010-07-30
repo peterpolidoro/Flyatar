@@ -157,6 +157,7 @@ class SetpointControl:
         self.delta_position_threshold = 0.01   # mm
         self.on_setpoint_dist = 1              # mm
         self.near_setpoint_dist = 4              # mm
+        self.lookup_table_move_setpoint_dist_multiplier = 2
 
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
@@ -200,8 +201,9 @@ class SetpointControl:
         self.initialized = True
 
     def stage_state_callback(self,data):
-        self.stage_state = data
-        self.ltm.in_progress = data.lookup_table_move_in_progress
+        if self.initialized:
+            self.stage_state = data
+            self.ltm.in_progress = data.lookup_table_move_in_progress
 
     def update_setpoint_status(self):
         # rospy.logwarn("setpoint_plate_previous.point.x = %s" % (str(self.setpoint_plate_previous.point.x)))
@@ -451,8 +453,11 @@ class SetpointControl:
             else:
                 self.near_setpoint_radius = abs(self.radius_error) < self.near_setpoint_dist
         else:
-            self.on_setpoint_radius = False
-            self.near_setpoint_radius = True
+            self.on_setpoint_radius = abs(self.radius_error) < self.lookup_table_move_setpoint_dist_multiplier*self.on_setpoint_dist
+            if self.on_setpoint_radius:
+                self.near_setpoint_radius = False
+            else:
+                self.near_setpoint_radius = abs(self.radius_error) < self.lookup_table_move_setpoint_dist_multiplier*self.near_setpoint_dist
 
         if 0 < self.setpoint.radius:
             self.on_setpoint_theta_mag = 2*math.atan(self.on_setpoint_dist/(2*self.setpoint.radius))
