@@ -136,7 +136,7 @@ class SaveVideo:
     def save_black_png(self):
         if 0 < self.black_image_count:
             if (self.im_black is None) and (self.im_size is not None):
-                self.im_black = cv.CreateImage(cv.GetSize(im),cv.IPL_DEPTH_8U,3)
+                self.im_black = cv.CreateImage(self.im_size,cv.IPL_DEPTH_8U,3)
                 cv.SetZero(self.im_black)
 
             if (self.im_black is not None):
