@@ -60,9 +60,8 @@ class SaveVideo:
         # self.time_limit = 3
 
         self.black_image_count = 8
-        if 0 < self.black_image_count:
-            self.im_black = cv.CreateImage(cv.GetSize(im),cv.IPL_DEPTH_8U,3)
-            cv.SetZero(self.im_black)
+        self.im_black = None
+        self.im_size = None
 
         self.NULL = open('/dev/null', 'w')
 
@@ -128,16 +127,23 @@ class SaveVideo:
                 self.video_info.saved_video = True
 
     def save_png(self,cv_image):
+        if self.im_size is None:
+            self.im_size = cv.GetSize(cv_image)
         image_name = "{num:06d}.png".format(num=self.image_number)
         cv.SaveImage(image_name,cv_image)
         self.image_number += 1
 
     def save_black_png(self):
         if 0 < self.black_image_count:
-            for bi in range(self.black_image_count):
-                image_name = "{num:06d}.png".format(num=self.image_number)
-                cv.SaveImage(image_name,self.im_black)
-                self.image_number += 1
+            if (self.im_black is None) and (self.im_size is not None):
+                self.im_black = cv.CreateImage(cv.GetSize(im),cv.IPL_DEPTH_8U,3)
+                cv.SetZero(self.im_black)
+
+            if (self.im_black is not None):
+                for bi in range(self.black_image_count):
+                    image_name = "{num:06d}.png".format(num=self.image_number)
+                    cv.SaveImage(image_name,self.im_black)
+                    self.image_number += 1
 
     def image_callback(self,data):
         if (self.working_dir is not None) and (self.saving_images):
