@@ -682,7 +682,8 @@ class SetpointControl:
 
     def find_theta_vel_mag(self,theta_error,radius):
         self.gain_theta = rospy.get_param("gain_theta")
-        vel_mag = abs(self.gain_theta*theta_error*radius)
+        # vel_mag = abs(self.gain_theta*theta_error*radius)
+        vel_mag = self.robot_velocity_max
         if self.robot_velocity_max < vel_mag:
             vel_mag = self.robot_velocity_max
         # rospy.logwarn("theta_vel_mag = %s" % (str(vel_mag)))
