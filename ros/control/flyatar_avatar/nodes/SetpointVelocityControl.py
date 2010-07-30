@@ -488,7 +488,7 @@ class SetpointControl:
             else:
                 self.near_setpoint_theta = abs(self.theta_error) < self.near_setpoint_theta_mag
 
-            if (not self.ltm.in_progress) and \
+            if self.ltm.in_progress and \
                ((not self.on_setpoint_theta) and (not self.near_setpoint_theta)) and \
                ((self.theta_error < 0) and self.ltm.direction_positive) or \
                ((0 < self.theta_error) and (not self.ltm.direction_positive)):
