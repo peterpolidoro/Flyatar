@@ -349,6 +349,7 @@ class StageDevice(USBDevice.USB_Device):
         self._send_usb_cmd(self.USB_CMD_GET_STATE,False)
 
     def _set_motor_state(self):
+        self.lookup_table_move_in_progress = False
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_SET_STATE,True)
 
