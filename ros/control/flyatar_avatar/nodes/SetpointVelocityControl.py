@@ -158,6 +158,7 @@ class SetpointControl:
         self.on_setpoint_dist = 1              # mm
         self.near_setpoint_dist = 4              # mm
         self.lookup_table_move_setpoint_dist_multiplier = 2
+        self.lookup_table_move_gain_radius_multiplier = 2
 
         # self.setpoint_plate_initialized = False
         # while not self.setpoint_plate_initialized:
@@ -675,7 +676,13 @@ class SetpointControl:
         # self.on_setpoint_theta = False
 
     def find_radius_vel_mag(self):
-        vel_mag = abs(self.gain_radius*self.radius_error)
+        if not self.ltm.in_progress:
+            gain = self.gain_radius
+        else:
+            gain = self.gain_radius*self.lookup_table_move_gain_radius_multiplier
+
+        vel_mag = abs(gain*self.radius_error)
+
         # if (not self.on_setpoint_radius) and (not self.near_setpoint_radius):
         #     vel_mag = self.robot_velocity_max
         # elif self.near_setpoint_radius:
