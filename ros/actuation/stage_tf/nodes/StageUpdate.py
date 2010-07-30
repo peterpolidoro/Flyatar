@@ -100,7 +100,7 @@ class StageUpdate:
             x = response.x
             y = response.y
             self.ss.all_motors_in_position = response.all_motors_in_position
-            self.ss.lookup_table_move_complete = response.lookup_table_move_complete
+            self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
             self.update_position = False
           elif self.update_velocity:
             self.update_velocity = False
@@ -109,7 +109,7 @@ class StageUpdate:
             x = response.x
             y = response.y
             self.ss.all_motors_in_position = response.all_motors_in_position
-            self.ss.lookup_table_move_complete = response.lookup_table_move_complete
+            self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
             self.update_velocity = False
           elif self.lookup_table_correct:
             self.lookup_table_correct = False
@@ -117,14 +117,14 @@ class StageUpdate:
             x = response.x
             y = response.y
             self.ss.all_motors_in_position = response.all_motors_in_position
-            self.ss.lookup_table_move_complete = response.lookup_table_move_complete
+            self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
           else:
             response = self.get_stage_state()
             # rospy.logwarn("get_stage_state()")
             x = response.x
             y = response.y
             self.ss.all_motors_in_position = response.all_motors_in_position
-            self.ss.lookup_table_move_complete = response.lookup_table_move_complete
+            self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
 
           self.ss_pub.publish(self.ss)
           self.tf_broadcaster.sendTransform((x, y, 0),

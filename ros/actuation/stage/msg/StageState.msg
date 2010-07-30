@@ -1,2 +1,2 @@
 bool all_motors_in_position
-bool lookup_table_move_complete
+bool lookup_table_move_in_progress

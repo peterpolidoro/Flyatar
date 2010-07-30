@@ -11,9 +11,10 @@ class StageCommunicator():
         self.dev = StageDevice.StageDevice()
         self.dev.print_values()
         self.response = Stage_StateResponse()
+        self.response.lookup_table_move_in_progress = False
 
     def _fill_response(self,return_state):
-        x,y,theta,x_velocity,y_velocity,theta_velocity,all_motors_in_position,lookup_table_move_complete = return_state
+        x,y,theta,x_velocity,y_velocity,theta_velocity,all_motors_in_position,lookup_table_move_in_progress = return_state
         self.response.header.stamp = rospy.Time.now()
         self.response.x = x
         self.response.y = y
@@ -22,7 +23,7 @@ class StageCommunicator():
         self.response.y_velocity = y_velocity
         self.response.theta_velocity = theta_velocity
         self.response.all_motors_in_position = bool(all_motors_in_position)
-        self.response.lookup_table_move_complete = bool(lookup_table_move_complete)
+        self.response.lookup_table_move_in_progress = lookup_table_move_in_progress
 
     def close(self):
         self.dev.close()
@@ -48,6 +49,11 @@ class StageCommunicator():
         #     x_velocity = 0
         # if abs(y_velocity) < self.min_velocity:
         #     y_velocity = 0
+        # rospy.logwarn ("data.velocity_control = %s" % (str(data.velocity_control)))
+        self.update_position = False
+        self.update_velocity = True
+        self.lookup_table_correct = False
+
         return_state = self.dev.update_velocity(x_vel_list,y_vel_list)
         self._fill_response(return_state)
         return self.response
