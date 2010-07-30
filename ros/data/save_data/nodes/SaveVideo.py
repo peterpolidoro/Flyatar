@@ -59,7 +59,10 @@ class SaveVideo:
         self.rate = rospy.Rate(10)     # Hz
         # self.time_limit = 3
 
-        self.black_image_count = 15
+        self.black_image_count = 8
+        if 0 < self.black_image_count:
+            self.im_black = cv.CreateImage(cv.GetSize(im),cv.IPL_DEPTH_8U,3)
+            cv.SetZero(self.im_black)
 
         self.NULL = open('/dev/null', 'w')
 
@@ -113,6 +116,7 @@ class SaveVideo:
                 self.video_info.ready_for_bag_info = False
                 self.video_info.ready_to_record = False
                 self.saving_images = False
+                self.save_black_png()
                 if not self.cat:
                     self.ready_to_save_video = True
                     rospy.logwarn("Saving video.")
@@ -127,6 +131,13 @@ class SaveVideo:
         image_name = "{num:06d}.png".format(num=self.image_number)
         cv.SaveImage(image_name,cv_image)
         self.image_number += 1
+
+    def save_black_png(self):
+        if 0 < self.black_image_count:
+            for bi in range(self.black_image_count):
+                image_name = "{num:06d}.png".format(num=self.image_number)
+                cv.SaveImage(image_name,self.im_black)
+                self.image_number += 1
 
     def image_callback(self,data):
         if (self.working_dir is not None) and (self.saving_images):
@@ -176,13 +187,6 @@ class SaveVideo:
                 for repeat in range(self.repeat_count):
                     image_name = "{num:06d}.png".format(num=image_number)
                     cv.SaveImage(image_name,im)
-                    image_number += 1
-            if 0 < self.black_image_count:
-                im_black = cv.CreateImage(cv.GetSize(im),cv.IPL_DEPTH_8U,3)
-                cv.SetZero(im_black)
-                for bi in range(self.black_image_count):
-                    image_name = "{num:06d}.png".format(num=image_number)
-                    cv.SaveImage(image_name,im_black)
                     image_number += 1
         else:
             dir_bag = bag_name
