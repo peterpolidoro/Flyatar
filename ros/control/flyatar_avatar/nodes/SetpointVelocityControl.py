@@ -713,6 +713,17 @@ class SetpointControl:
                     self.set_path_to_setpoint()
                     self.sc_ok_to_publish = True
 
+                rospy.logwarn("in control loop: stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
+                rospy.logwarn("in control loop: stage_commands.velocity_control = %s" % (str(self.stage_commands.velocity_control)))
+                rospy.logwarn("in control loop: stage_commands.lookup_table_correct = %s" % (str(self.stage_commands.lookup_table_correct)))
+                rospy.logwarn("in control loop: len(stage_commands.x_position) = %s" % (str(len(self.stage_commands.x_position))))
+                rospy.logwarn("in control loop: len(stage_commands.x_velocity) = %s" % (str(len(self.stage_commands.x_velocity))))
+                rospy.logwarn("in control loop: len(stage_commands.y_position) = %s" % (str(len(self.stage_commands.y_position))))
+                rospy.logwarn("in control loop: len(stage_commands.y_velocity) = %s" % (str(len(self.stage_commands.y_velocity))))
+
+                if self.sc_ok_to_publish:
+                    self.sc_pub.publish(self.stage_commands)
+
                 # if not self.on_setpoint_radius:
                 #     self.ltm.in_progress = False
                 #     # vel_mag = self.find_radius_vel_mag()
@@ -769,13 +780,6 @@ class SetpointControl:
                 #     self.sc_ok_to_publish = True
                 # else:
                 #     self.sc_ok_to_publish = False
-
-                rospy.logwarn("in control loop: stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
-                rospy.logwarn("in control loop: stage_commands.velocity_control = %s" % (str(self.stage_commands.velocity_control)))
-                rospy.logwarn("in control loop: stage_commands.lookup_table_correct = %s" % (str(self.stage_commands.lookup_table_correct)))
-
-                if self.sc_ok_to_publish:
-                    self.sc_pub.publish(self.stage_commands)
 
                 # self.stage_commands.position_control = True
                 # self.set_path_to_setpoint(self.robot_velocity_max/4)
