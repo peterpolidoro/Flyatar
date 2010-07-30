@@ -24,6 +24,7 @@ class LookupTableMove:
         self.t0 = 0
         self.duration = 0
         self.direction_positive = True
+        self.ready = False
 
         freq_not_set = True
         tries = 0
@@ -37,6 +38,14 @@ class LookupTableMove:
                 tries += 1
         self.period = 1/self.freq
         self.initialized = True
+
+    def set_in_progress(self,in_progress):
+        if self.initialized:
+            self.in_progress = self.ready and in_progress
+
+    def set_direction(self,direction_positive):
+        if self.initialized:
+            self.direction_positive = direction_positive
 
     def check_progress(self):
         if self.initialized:
@@ -57,6 +66,12 @@ class LookupTableMove:
             point_count = min(len(stage_commands.x_velocity),len(stage_commands.y_velocity))
             self.t0 = rospy.get_time()
             self.duration = point_count*self.period
+            self.ready = True
+
+    def stop_move(self):
+        if self.initialized:
+            self.ready = False
+            self.in_progress = False
 
 class SetpointControl:
 
@@ -214,7 +229,7 @@ class SetpointControl:
     def stage_state_callback(self,data):
         if self.initialized:
             self.stage_state = data
-            self.ltm.in_progress = data.lookup_table_move_in_progress
+            self.ltm.set_in_progress(data.lookup_table_move_in_progress)
 
     def fly_in_bounds_callback(self,data):
         if self.initialized:
@@ -493,6 +508,7 @@ class SetpointControl:
                ((self.theta_error < 0) and self.ltm.direction_positive) or \
                ((0 < self.theta_error) and (not self.ltm.direction_positive)):
                 rospy.logwarn("using theta_error and ltm.direction_positive...")
+                self.ltm.stop_move()
                 self.on_setpoint_theta = False
                 self.near_setpoint_theta = True
 
@@ -546,7 +562,7 @@ class SetpointControl:
         for angle_n in range(len(angle_list)):
             self.append_int_setpoint_to_plate_points(angle_list[angle_n])
         self.set_stage_commands_from_plate_points(vel_mag_list)
-        self.ltm.direction_positive = direction_positive
+        self.ltm.set_direction(direction_positive)
         self.ltm.start_move(self.stage_commands)
         # rospy.logwarn("in set_lookup_table_move: stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
         # rospy.logwarn("in set_lookup_table_move: stage_commands.velocity_control = %s" % (str(self.stage_commands.velocity_control)))
@@ -572,7 +588,7 @@ class SetpointControl:
         if (not self.on_setpoint_radius) and (not self.near_setpoint_radius):
             self.stage_commands.velocity_control = True
             self.set_velocity_to_setpoint_circle()
-            self.ltm.in_progress = False
+            self.ltm.stop_move()
         elif (not self.on_setpoint_theta) and (not self.near_setpoint_theta):
             if not self.ltm.in_progress:
                 self.stage_commands.velocity_control = True
@@ -585,7 +601,7 @@ class SetpointControl:
         else:
             self.stage_commands.velocity_control = True
             self.set_velocity_to_setpoint()
-            self.ltm.in_progress = False
+            self.ltm.stop_move()
 
         # if (not self.ltm.in_progress):
         #     self.stage_commands.lookup_table_correct = False
@@ -697,7 +713,7 @@ class SetpointControl:
         self.stage_commands.x_velocity = [0]
         self.stage_commands.y_velocity = [0]
         # self.sc_pub.publish(self.stage_commands)
-        self.ltm.in_progress = False
+        self.ltm.stop_move()
         self.stopped = True
         # self.on_setpoint_radius = False
         # self.on_setpoint_theta = False
@@ -754,7 +770,7 @@ class SetpointControl:
                     # rospy.logwarn("self.setpoint_plate.point.y = %s" % (str(self.setpoint_plate.point.y)))
                     # self.on_setpoint_radius = False
                     # self.on_setpoint_theta = False
-                    self.ltm.in_progress = False
+                    self.ltm.stop_move()
 
                 if self.on_setpoint_radius and self.on_setpoint_theta:
                     if not self.stopped:
@@ -843,7 +859,7 @@ class SetpointControl:
                 self.on_setpoint_theta = False
                 self.near_setpoint_radius = False
                 self.near_setpoint_theta = False
-                self.ltm.in_progress = False
+                self.ltm.stop_move()
                 self.stopped = False
 
                 # try:
