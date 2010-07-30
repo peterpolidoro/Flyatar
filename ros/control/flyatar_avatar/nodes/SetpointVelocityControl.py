@@ -508,9 +508,11 @@ class SetpointControl:
                ((self.theta_error < 0) and self.ltm.direction_positive) or \
                ((0 < self.theta_error) and (not self.ltm.direction_positive)):
                 rospy.logwarn("using theta_error and ltm.direction_positive...")
-                self.ltm.stop_move()
-                self.on_setpoint_theta = False
-                self.near_setpoint_theta = True
+                rospy.logwarn("theta_error = %s" % (str(self.theta_error)))
+                rospy.logwarn("ltm.direction_positive = %s" % (str(self.ltm.direction_positive)))
+                # self.ltm.stop_move()
+                # self.on_setpoint_theta = False
+                # self.near_setpoint_theta = True
 
         else:
             self.on_setpoint_theta_mag = 0
