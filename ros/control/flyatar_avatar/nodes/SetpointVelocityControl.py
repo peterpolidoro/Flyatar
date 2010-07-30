@@ -15,6 +15,7 @@ from stage.msg import StageCommands,Setpoint,StageState
 from joystick_commands.msg import JoystickCommands
 from geometry_msgs.msg import PointStamped
 from pythonmodules import CircleFunctions
+from plate_tf.msg import StopState, InBoundsState
 
 class LookupTableMove:
     def __init__(self):
@@ -70,6 +71,13 @@ class SetpointControl:
 
         self.stage_state = StageState()
         self.sc_ok_to_publish = False
+
+        self.fly_in_bounds_sub = rospy.Subscriber("InBoundsState/Fly",InBoundsState, self.fly_in_bounds_callback)
+        self.fly_in_bounds_state = InBoundsState()
+        self.fly_in_bounds_state.InBounds = False
+        self.robot_in_bounds_sub = rospy.Subscriber("InBoundsState/Robot",InBoundsState, self.robot_in_bounds_callback)
+        self.robot_in_bounds_state = InBoundsState()
+        self.robot_in_bounds_state.InBounds = False
 
         self.stage_commands = StageCommands()
         self.stage_commands.position_control = False
@@ -205,6 +213,14 @@ class SetpointControl:
         if self.initialized:
             self.stage_state = data
             self.ltm.in_progress = data.lookup_table_move_in_progress
+
+    def fly_in_bounds_callback(self,data):
+        if self.initialized:
+            self.fly_in_bounds_state = data
+
+    def robot_in_bounds_callback(self,data):
+        if self.initialized:
+            self.robot_in_bounds_state = data
 
     def update_setpoint_status(self):
         # rospy.logwarn("setpoint_plate_previous.point.x = %s" % (str(self.setpoint_plate_previous.point.x)))
@@ -708,6 +724,9 @@ class SetpointControl:
 
     def control_loop(self):
         while not rospy.is_shutdown():
+            if self.tracking and ((not self.fly_in_bounds_state.InBounds) or (not self.fly_in_bounds_state.InBounds)):
+                self.tracking = False
+
             if self.tracking:
                 self.update_setpoint_status()
                 self.find_robot_setpoint_error()
