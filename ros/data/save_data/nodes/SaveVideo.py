@@ -60,7 +60,7 @@ class SaveVideo:
         # self.time_limit = 3
 
         self.black_image_count = int(rospy.get_param("black_image_count",0))
-        self.black_images_save = False
+        self.black_images_saved = False
         self.im_black = None
         self.im_size = None
 
@@ -110,7 +110,7 @@ class SaveVideo:
                 if not self.cat or (self.bag_name == ""):
                     self.bag_name = bag_name
                     self.image_number = 0
-                    self.black_images_save = False
+                    self.black_images_saved = False
                     self.working_dir = self.working_dir_base + "/" + bag_name
                     chdir(self.working_dir)
             elif finished_playing and (not self.saved_video):
