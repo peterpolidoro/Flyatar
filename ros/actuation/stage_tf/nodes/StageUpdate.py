@@ -22,6 +22,8 @@ class StageUpdate:
     self.update_velocity = False
     self.lookup_table_correct = False
 
+    self.updated = True
+
     self.sc_sub = rospy.Subscriber("Stage/Commands", StageCommands, self.stage_commands_callback)
     self.ss_pub = rospy.Publisher("Stage/State",StageState)
     self.ss = StageState()
@@ -59,8 +61,7 @@ class StageUpdate:
     self.initialized = True
 
   def stage_commands_callback(self,data):
-    if self.initialized:
-
+    if self.initialized and self.updated:
       if data.position_control:
         rospy.logwarn ("data.position_control = %s" % (str(data.position_control)))
         self.update_position = True
@@ -90,6 +91,7 @@ class StageUpdate:
     while not rospy.is_shutdown():
       if self.initialized:
         try:
+          self.updated = False
           if self.update_position:
             self.update_position = False
             response = self.set_stage_position(self.stage_commands)
@@ -132,6 +134,8 @@ class StageUpdate:
                                             "Stage")
         except (tf.LookupException, tf.ConnectivityException, rospy.service.ServiceException):
           pass
+
+        self.updated = True
 
         self.rate.sleep()
 
