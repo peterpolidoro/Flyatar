@@ -59,7 +59,7 @@ class SaveVideo:
         self.rate = rospy.Rate(10)     # Hz
         # self.time_limit = 3
 
-        self.black_image_count = 8
+        self.black_image_count = int(rospy.get_param("black_image_count",0))
         self.im_black = None
         self.im_size = None
 
