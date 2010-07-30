@@ -752,7 +752,7 @@ class SetpointControl:
 
     def control_loop(self):
         while not rospy.is_shutdown():
-            if self.tracking and ((not self.fly_in_bounds_state.InBounds) or (not self.fly_in_bounds_state.InBounds)):
+            if self.tracking and ((not self.fly_in_bounds_state.InBounds) or (not self.robot_in_bounds_state.InBounds)):
                 self.tracking = False
 
             if self.tracking:
