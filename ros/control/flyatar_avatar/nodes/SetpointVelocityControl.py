@@ -203,7 +203,7 @@ class SetpointControl:
         self.stage_state = data
         self.ltm.in_progress = data.lookup_table_move_in_progress
 
-    def update_setpoint_moved(self):
+    def update_setpoint_status(self):
         # rospy.logwarn("setpoint_plate_previous.point.x = %s" % (str(self.setpoint_plate_previous.point.x)))
         # rospy.logwarn("setpoint_plate.point.x = %s" % (str(self.setpoint_plate.point.x)))
         # rospy.logwarn("setpoint_plate_previous.point.y = %s" % (str(self.setpoint_plate_previous.point.y)))
@@ -621,7 +621,6 @@ class SetpointControl:
             self.setpoint_origin.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
             self.setpoint_origin.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
             self.setpoint_plate = self.convert_to_plate(self.setpoint_origin)
-            self.update_setpoint_moved()
             # rospy.logwarn("setpoint_origin.point.x = %s" % (str(self.setpoint_origin.point.x)))
             # rospy.logwarn("setpoint_origin.point.y = %s" % (str(self.setpoint_origin.point.y)))
 
@@ -686,8 +685,10 @@ class SetpointControl:
 
     def find_theta_vel_mag(self,theta_error,radius):
         self.gain_theta = rospy.get_param("gain_theta")
-        # vel_mag = abs(self.gain_theta*theta_error*radius)
-        vel_mag = self.robot_velocity_max
+        if self.setpoint_moved:
+            vel_mag = self.robot_velocity_max
+        else:
+            vel_mag = abs(self.gain_theta*theta_error*radius)
         if self.robot_velocity_max < vel_mag:
             vel_mag = self.robot_velocity_max
         # rospy.logwarn("theta_vel_mag = %s" % (str(vel_mag)))
@@ -696,6 +697,7 @@ class SetpointControl:
     def control_loop(self):
         while not rospy.is_shutdown():
             if self.tracking:
+                self.update_setpoint_status()
                 self.find_robot_setpoint_error()
 
                 self.stage_commands.position_control = False
