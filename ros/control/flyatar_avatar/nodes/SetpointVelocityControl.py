@@ -23,10 +23,12 @@ class LookupTableMove:
         self.in_progress = False
         self.t0 = 0
         self.duration = 0
+        self.direction_positive = True
 
         freq_not_set = True
         tries = 0
         tries_limit = 20
+
         while freq_not_set and (tries < tries_limit):
             try:
                 self.freq = rospy.get_param('lookup_table_update_freq')
@@ -283,7 +285,7 @@ class SetpointControl:
             #     point_count = self.point_count_max
             # angle_list = list(numpy.linspace(angle_start,angle_stop,num=point_count,endpoint=True))
         # rospy.logwarn("angle_list = \n%s" % (str(angle_list)))
-        return angle_list,vel_mag_list
+        return angle_list,vel_mag_list,theta_diff_positive
 
     def vel_vector_convert(self,vel_vector,frame):
         (trans,q) = self.tf_listener.lookupTransform("Stage",frame,rospy.Time(0))
@@ -486,6 +488,13 @@ class SetpointControl:
             else:
                 self.near_setpoint_theta = abs(self.theta_error) < self.near_setpoint_theta_mag
 
+            if (not self.ltm.in_progress) and \
+               ((not self.on_setpoint_theta) and (not self.near_setpoint_theta)) and \
+               ((self.theta_error < 0) and self.ltm.direction_positive) or \
+               ((0 < self.theta_error) and (not self.ltm.direction_positive)):
+                self.on_setpoint_theta = False
+                self.near_setpoint_theta = True
+
         else:
             self.on_setpoint_theta_mag = 0
             self.near_setpoint_theta_mag = 0
@@ -532,10 +541,11 @@ class SetpointControl:
     def set_lookup_table_move(self):
         self.plate_points_x = []
         self.plate_points_y = []
-        angle_list,vel_mag_list = self.angle_divide(self.robot_control_frame_theta,self.setpoint.theta)
+        angle_list,vel_mag_list,direction_positive = self.angle_divide(self.robot_control_frame_theta,self.setpoint.theta)
         for angle_n in range(len(angle_list)):
             self.append_int_setpoint_to_plate_points(angle_list[angle_n])
         self.set_stage_commands_from_plate_points(vel_mag_list)
+        self.ltm.direction_positive = direction_positive
         self.ltm.start_move(self.stage_commands)
         # rospy.logwarn("in set_lookup_table_move: stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
         # rospy.logwarn("in set_lookup_table_move: stage_commands.velocity_control = %s" % (str(self.stage_commands.velocity_control)))
