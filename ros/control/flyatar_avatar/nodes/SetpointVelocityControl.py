@@ -511,9 +511,9 @@ class SetpointControl:
             self.append_int_setpoint_to_plate_points(angle_list[angle_n])
         self.set_stage_commands_from_plate_points(vel_mag_list)
         self.ltm.start_move(self.stage_commands)
-        rospy.logwarn("in set_lookup_table_move: stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
-        rospy.logwarn("in set_lookup_table_move: stage_commands.velocity_control = %s" % (str(self.stage_commands.velocity_control)))
-        rospy.logwarn("in set_lookup_table_move: stage_commands.lookup_table_correct = %s" % (str(self.stage_commands.lookup_table_correct)))
+        # rospy.logwarn("in set_lookup_table_move: stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
+        # rospy.logwarn("in set_lookup_table_move: stage_commands.velocity_control = %s" % (str(self.stage_commands.velocity_control)))
+        # rospy.logwarn("in set_lookup_table_move: stage_commands.lookup_table_correct = %s" % (str(self.stage_commands.lookup_table_correct)))
         # rospy.logwarn("stage_commands.x_position = %s" % (str(self.stage_commands.x_position)))
         # rospy.logwarn("stage_commands.y_position = %s" % (str(self.stage_commands.y_position)))
         # rospy.logwarn("stage_commands.x_velocity = %s" % (str(self.stage_commands.x_velocity)))
@@ -540,9 +540,9 @@ class SetpointControl:
             if not self.ltm.in_progress:
                 self.stage_commands.velocity_control = True
                 self.set_lookup_table_move()
-                rospy.logwarn("lookup table move started...")
+                # rospy.logwarn("lookup table move started...")
             else:
-                rospy.logwarn("setting lookup table correct!!!!!!!!!!")
+                # rospy.logwarn("setting lookup table correct!!!!!!!!!!")
                 self.stage_commands.lookup_table_correct = True
                 self.set_velocity_to_setpoint_circle()
         else:
@@ -718,13 +718,13 @@ class SetpointControl:
                     self.set_path_to_setpoint()
                     self.sc_ok_to_publish = True
 
-                rospy.logwarn("in control loop: stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
-                rospy.logwarn("in control loop: stage_commands.velocity_control = %s" % (str(self.stage_commands.velocity_control)))
-                rospy.logwarn("in control loop: stage_commands.lookup_table_correct = %s" % (str(self.stage_commands.lookup_table_correct)))
-                rospy.logwarn("in control loop: len(stage_commands.x_position) = %s" % (str(len(self.stage_commands.x_position))))
-                rospy.logwarn("in control loop: len(stage_commands.x_velocity) = %s" % (str(len(self.stage_commands.x_velocity))))
-                rospy.logwarn("in control loop: len(stage_commands.y_position) = %s" % (str(len(self.stage_commands.y_position))))
-                rospy.logwarn("in control loop: len(stage_commands.y_velocity) = %s" % (str(len(self.stage_commands.y_velocity))))
+                # rospy.logwarn("in control loop: stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
+                # rospy.logwarn("in control loop: stage_commands.velocity_control = %s" % (str(self.stage_commands.velocity_control)))
+                # rospy.logwarn("in control loop: stage_commands.lookup_table_correct = %s" % (str(self.stage_commands.lookup_table_correct)))
+                # rospy.logwarn("in control loop: len(stage_commands.x_position) = %s" % (str(len(self.stage_commands.x_position))))
+                # rospy.logwarn("in control loop: len(stage_commands.x_velocity) = %s" % (str(len(self.stage_commands.x_velocity))))
+                # rospy.logwarn("in control loop: len(stage_commands.y_position) = %s" % (str(len(self.stage_commands.y_position))))
+                # rospy.logwarn("in control loop: len(stage_commands.y_velocity) = %s" % (str(len(self.stage_commands.y_velocity))))
 
                 if self.sc_ok_to_publish:
                     self.sc_pub.publish(self.stage_commands)
