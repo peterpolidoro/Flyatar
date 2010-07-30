@@ -444,11 +444,15 @@ class SetpointControl:
         #         # rospy.logwarn("on setpoint radius, on setpoint theta")
         # elif self.on_setpoint_theta:
         #     self.on_setpoint_radius = abs(self.radius_error) < self.on_setpoint_radius_dist
-        self.on_setpoint_radius = abs(self.radius_error) < self.on_setpoint_dist
-        if self.on_setpoint_radius:
-            self.near_setpoint_radius = False
+        if not self.ltm.in_progress:
+            self.on_setpoint_radius = abs(self.radius_error) < self.on_setpoint_dist
+            if self.on_setpoint_radius:
+                self.near_setpoint_radius = False
+            else:
+                self.near_setpoint_radius = abs(self.radius_error) < self.near_setpoint_dist
         else:
-            self.near_setpoint_radius = abs(self.radius_error) < self.near_setpoint_dist
+            self.on_setpoint_radius = False
+            self.near_setpoint_radius = True
 
         if 0 < self.setpoint.radius:
             self.on_setpoint_theta_mag = 2*math.atan(self.on_setpoint_dist/(2*self.setpoint.radius))
