@@ -60,6 +60,7 @@ class SaveVideo:
         # self.time_limit = 3
 
         self.black_image_count = int(rospy.get_param("black_image_count",0))
+        self.black_images_save = False
         self.im_black = None
         self.im_size = None
 
@@ -109,6 +110,7 @@ class SaveVideo:
                 if not self.cat or (self.bag_name == ""):
                     self.bag_name = bag_name
                     self.image_number = 0
+                    self.black_images_save = False
                     self.working_dir = self.working_dir_base + "/" + bag_name
                     chdir(self.working_dir)
             elif finished_playing and (not self.saved_video):
@@ -139,11 +141,12 @@ class SaveVideo:
                 self.im_black = cv.CreateImage(self.im_size,cv.IPL_DEPTH_8U,3)
                 cv.SetZero(self.im_black)
 
-            if (self.im_black is not None):
+            if (self.im_black is not None) and (not self.black_images_saved):
                 for bi in range(self.black_image_count):
                     image_name = "{num:06d}.png".format(num=self.image_number)
                     cv.SaveImage(image_name,self.im_black)
                     self.image_number += 1
+                self.black_images_saved = True
 
     def image_callback(self,data):
         if (self.working_dir is not None) and (self.saving_images):
