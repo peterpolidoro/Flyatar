@@ -107,10 +107,10 @@ class SaveVideo:
                 self.saved_video = False
                 self.video_info.saved_video = False
                 rospy.logwarn("Saving images.")
+                self.black_images_saved = False
                 if not self.cat or (self.bag_name == ""):
                     self.bag_name = bag_name
                     self.image_number = 0
-                    self.black_images_saved = False
                     self.working_dir = self.working_dir_base + "/" + bag_name
                     chdir(self.working_dir)
             elif finished_playing and (not self.saved_video):
