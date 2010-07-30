@@ -11,7 +11,7 @@ import numpy
 import copy
 from plate_tf.srv import *
 # from stage.srv import *
-from stage.msg import StageCommands,Setpoint
+from stage.msg import StageCommands,Setpoint,StageState
 from joystick_commands.msg import JoystickCommands
 from geometry_msgs.msg import PointStamped
 from pythonmodules import CircleFunctions
@@ -65,8 +65,10 @@ class SetpointControl:
 
         self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.joystick_commands_callback)
         self.sc_pub = rospy.Publisher("Stage/Commands",StageCommands)
+        self.ss_sub = rospy.Subscriber("Stage/State", StageState, self.stage_state_callback)
         self.setpoint_pub = rospy.Publisher("setpoint",Setpoint)
 
+        self.stage_state = StageState()
         self.sc_ok_to_publish = False
 
         self.stage_commands = StageCommands()
@@ -196,6 +198,10 @@ class SetpointControl:
         # rospy.logwarn("stage_points_y = %s" % (str(response.Ydst)))
 
         self.initialized = True
+
+    def stage_state_callback(self,data):
+        self.stage_state = data
+        self.ltm.in_progress = data.lookup_table_move_in_progress
 
     def update_setpoint_moved(self):
         # rospy.logwarn("setpoint_plate_previous.point.x = %s" % (str(self.setpoint_plate_previous.point.x)))
@@ -505,7 +511,6 @@ class SetpointControl:
             self.append_int_setpoint_to_plate_points(angle_list[angle_n])
         self.set_stage_commands_from_plate_points(vel_mag_list)
         self.ltm.start_move(self.stage_commands)
-        self.ltm.in_progress = True
         rospy.logwarn("in set_lookup_table_move: stage_commands.position_control = %s" % (str(self.stage_commands.position_control)))
         rospy.logwarn("in set_lookup_table_move: stage_commands.velocity_control = %s" % (str(self.stage_commands.velocity_control)))
         rospy.logwarn("in set_lookup_table_move: stage_commands.lookup_table_correct = %s" % (str(self.stage_commands.lookup_table_correct)))
