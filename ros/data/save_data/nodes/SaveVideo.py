@@ -59,6 +59,8 @@ class SaveVideo:
         self.rate = rospy.Rate(10)     # Hz
         # self.time_limit = 3
 
+        self.black_image_count = 15
+
         self.NULL = open('/dev/null', 'w')
 
         self.repeat_count = int(rospy.get_param('video_image_repeat_count'))
@@ -174,6 +176,13 @@ class SaveVideo:
                 for repeat in range(self.repeat_count):
                     image_name = "{num:06d}.png".format(num=image_number)
                     cv.SaveImage(image_name,im)
+                    image_number += 1
+            if 0 < self.black_image_count:
+                im_black = cv.CreateImage(cv.GetSize(im),cv.IPL_DEPTH_8U,3)
+                cv.SetZero(im_black)
+                for bi in range(self.black_image_count):
+                    image_name = "{num:06d}.png".format(num=image_number)
+                    cv.SaveImage(image_name,im_black)
                     image_number += 1
         else:
             dir_bag = bag_name
