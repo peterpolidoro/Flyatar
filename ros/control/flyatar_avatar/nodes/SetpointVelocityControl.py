@@ -118,7 +118,8 @@ class SetpointControl:
         self.inc_radius = 1
         self.inc_theta = 0.05
         self.setpoint_radius_max = 80
-        self.setpoint_radius_min = 0
+        self.setpoint_radius_min = 4
+        self.setpoint_radius_thresh = 10
 
 
         self.dummy_point = PointStamped()
@@ -493,7 +494,7 @@ class SetpointControl:
             else:
                 self.near_setpoint_radius = abs(self.radius_error) < self.lookup_table_move_setpoint_dist_multiplier*self.near_setpoint_dist
 
-        if 0 < self.setpoint.radius:
+        if self.setpoint_radius_thresh < self.setpoint.radius:
             self.on_setpoint_theta_mag = 2*math.atan(self.on_setpoint_dist/(2*self.setpoint.radius))
             self.near_setpoint_theta_mag = 2*math.atan(self.near_setpoint_dist/(2*self.setpoint.radius))
 
@@ -516,7 +517,7 @@ class SetpointControl:
         else:
             self.on_setpoint_theta_mag = 0
             self.near_setpoint_theta_mag = 0
-            self.on_setpoint_theta = False
+            self.on_setpoint_theta = True
             self.near_setpoint_theta = False
 
         # rospy.logwarn("on_setpoint_radius = %s" % (str(self.on_setpoint_radius)))
@@ -600,9 +601,10 @@ class SetpointControl:
                 self.stage_commands.lookup_table_correct = True
                 self.set_velocity_to_setpoint_circle()
         else:
-            self.stage_commands.velocity_control = True
-            self.set_velocity_to_setpoint()
-            self.ltm.stop_move()
+            if self.setpoint_radius_thresh < self.setpoint.radius:
+                self.stage_commands.velocity_control = True
+                self.set_velocity_to_setpoint()
+                self.ltm.stop_move()
 
         # if (not self.ltm.in_progress):
         #     self.stage_commands.lookup_table_correct = False

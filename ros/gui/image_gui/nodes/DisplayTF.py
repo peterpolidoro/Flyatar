@@ -82,6 +82,7 @@ class ImageDisplay:
             self.axis_length = 15
         else:
             self.axis_length = 10
+        self.min_setpoint_radius_display = 12
         self.axis_line_width = 3
         self.circle_line_width = 2
         self.axis_tail_dist = 4
@@ -286,7 +287,7 @@ class ImageDisplay:
 
     def draw_setpoint(self):
         try:
-            if self.axis_tail_dist < self.setpoint.radius:
+            if self.min_setpoint_radius_display < self.setpoint.radius:
                 self.setpoint_frame.header.frame_id = self.setpoint.header.frame_id
                 self.setpoint_frame.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
                 self.setpoint_frame.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
