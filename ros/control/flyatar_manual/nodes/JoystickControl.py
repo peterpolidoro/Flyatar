@@ -22,6 +22,9 @@ class JoystickControl:
 
     def commands_callback(self,data):
         if self.initialized:
+            self.stage_commands.position_control = False
+            self.stage_commands.velocity_control = True
+            self.stage_commands.lookup_table_correct = False
             self.stage_commands.x_velocity = [data.y_velocity*self.robot_velocity_max]
             self.stage_commands.y_velocity = [-data.x_velocity*self.robot_velocity_max]
 
