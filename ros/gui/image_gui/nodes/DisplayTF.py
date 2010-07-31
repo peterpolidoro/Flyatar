@@ -82,7 +82,7 @@ class ImageDisplay:
             self.axis_length = 15
         else:
             self.axis_length = 10
-        self.min_setpoint_radius_display = 12
+        self.min_setpoint_radius_display = 25
         self.axis_line_width = 3
         self.circle_line_width = 2
         self.axis_tail_dist = 4

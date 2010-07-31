@@ -119,7 +119,7 @@ class SetpointControl:
         self.inc_theta = 0.05
         self.setpoint_radius_max = 80
         self.setpoint_radius_min = 4
-        self.setpoint_radius_thresh = 10
+        self.setpoint_radius_thresh = 25
 
 
         self.dummy_point = PointStamped()
