@@ -287,7 +287,7 @@ class ImageDisplay:
 
     def draw_setpoint(self):
         try:
-            if self.min_setpoint_radius_display < self.setpoint.radius:
+            if self.axis_tail_dist < self.setpoint.radius:
                 self.setpoint_frame.header.frame_id = self.setpoint.header.frame_id
                 self.setpoint_frame.point.x = self.setpoint.radius*math.cos(self.setpoint.theta)
                 self.setpoint_frame.point.y = self.setpoint.radius*math.sin(self.setpoint.theta)
@@ -322,19 +322,21 @@ class ImageDisplay:
                 #         (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
                 #         (int(setpoint_image.point.x),int(setpoint_image.point.y)),
                 #         cv.CV_RGB(self.color_max,0,self.color_max), 2)
-                cv.Line(self.im_display,
-                        (int(setpoint_line_tail_image.point.x),int(setpoint_line_tail_image.point.y)),
-                        (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                        self.setpoint_color, self.setpoint_line_width)
                 cv.Circle(self.im_display,
                           (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
                           int(setpoint_image_radius), self.setpoint_color, self.setpoint_line_width)
                 # cv.Circle(self.im_display,
                 #           (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
                 #           3, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
-                cv.Circle(self.im_display,
-                          (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                          self.setpoint_size, self.setpoint_color, cv.CV_FILLED)
+
+                if self.min_setpoint_radius_display < self.setpoint.radius:
+                    cv.Line(self.im_display,
+                            (int(setpoint_line_tail_image.point.x),int(setpoint_line_tail_image.point.y)),
+                            (int(setpoint_image.point.x),int(setpoint_image.point.y)),
+                            self.setpoint_color, self.setpoint_line_width)
+                    cv.Circle(self.im_display,
+                              (int(setpoint_image.point.x),int(setpoint_image.point.y)),
+                              self.setpoint_size, self.setpoint_color, cv.CV_FILLED)
 
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
