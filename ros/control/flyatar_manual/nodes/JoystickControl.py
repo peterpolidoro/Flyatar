@@ -13,7 +13,7 @@ class JoystickControl:
         self.initialized = False
 
         self.joy_sub = rospy.Subscriber("Joystick/Commands", JoystickCommands, self.commands_callback)
-        self.sc_pub = rospy.Publisher("StageCommands",StageCommands)
+        self.sc_pub = rospy.Publisher("Stage/Commands",StageCommands)
 
         self.stage_commands = StageCommands()
         self.stage_commands.position_control = False
