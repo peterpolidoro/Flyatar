@@ -134,11 +134,11 @@ class ImageDisplay:
         self.axes_x_head_shifted.point.z = 0
         self.axes_x_head_shifted_camera = PointStamped()
         self.axes_x_head_shifted_camera.header.frame_id = "Camera"
-        self.robot_origin = PointStamped()
-        self.robot_origin.header.frame_id = "Robot"
-        self.robot_origin.point.x = 0
-        self.robot_origin.point.y = 0
-        self.robot_origin.point.z = 0
+        self.plate_origin = PointStamped()
+        self.plate_origin.header.frame_id = "Plate"
+        self.plate_origin.point.x = 0
+        self.plate_origin.point.y = 0
+        self.plate_origin.point.z = 0
 
 
         self.setpoint = Setpoint()
@@ -220,10 +220,10 @@ class ImageDisplay:
             self.axes_x_head_shifted.header.frame_id = frame_id
             self.axes_x_tail_shifted.header.frame_id = frame_id
 
-            robot_origin_frame_id = self.tf_listener.transformPoint(frame_id,self.robot_origin)
+            plate_origin_frame_id = self.tf_listener.transformPoint(frame_id,self.plate_origin)
 
-            self.axes_x_head_shifted.point.y = math.copysign(self.setpoint.radius,robot_origin_frame_id.point.y)
-            self.axes_x_tail_shifted.point.y = math.copysign(self.setpoint.radius,robot_origin_frame_id.point.y)
+            self.axes_x_head_shifted.point.y = math.copysign(self.setpoint.radius,plate_origin_frame_id.point.y)
+            self.axes_x_tail_shifted.point.y = math.copysign(self.setpoint.radius,plate_origin_frame_id.point.y)
 
 
             axes_center_plate = self.tf_listener.transformPoint("Plate",self.axes_center)
