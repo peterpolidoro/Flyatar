@@ -121,7 +121,7 @@ class ImageDisplay:
         self.axes_y_head_camera.header.frame_id = "Camera"
 
 
-        self.axes_x_shift = 3
+        self.axes_x_shift = 4
         self.axes_x_tail_shifted = PointStamped()
         self.axes_x_tail_shifted.point.x = -self.axes_x_shift*self.axis_length
         self.axes_x_tail_shifted.point.y = 0
@@ -311,17 +311,14 @@ class ImageDisplay:
                                 (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
                                 circle_color, self.circle_line_width)
 
+                        cv.Line(self.im_display,
+                                (int(axes_x_tail_shifted_image.point.x),int(axes_x_tail_shifted_image.point.y)),
+                                (int(axes_x_head_shifted_image.point.x),int(axes_x_head_shifted_image.point.y)),
+                                self.setpoint_color, self.setpoint_line_width)
+
                 cv.Circle(self.im_display,
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),
                           circle_radius, circle_color,2)
-
-                axes_x_head_shifted_image
-                axes_x_tail_shifted_image
-
-                cv.Line(self.im_display,
-                        (int(axes_x_tail_shifted_image.point.x),int(axes_x_tail_shifted_image.point.y)),
-                        (int(axes_x_head_shifted_image.point.x),int(axes_x_head_shifted_image.point.y)),
-                        self.setpoint_color, self.setpoint_line_width)
 
 
 
