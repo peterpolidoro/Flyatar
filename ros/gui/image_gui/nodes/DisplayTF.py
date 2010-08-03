@@ -120,6 +120,22 @@ class ImageDisplay:
         self.axes_y_head_camera = PointStamped()
         self.axes_y_head_camera.header.frame_id = "Camera"
 
+
+        self.axes_x_shift = 10
+        self.axes_x_tail_shifted = PointStamped()
+        self.axes_x_tail_shifted.point.x = -self.axes_x_shift*self.axis_length
+        self.axes_x_tail_shifted.point.y = 0
+        self.axes_x_tail_shifted.point.z = 0
+        self.axes_x_tail_shifted_camera = PointStamped()
+        self.axes_x_tail_shifted_camera.header.frame_id = "Camera"
+        self.axes_x_head_shifted = PointStamped()
+        self.axes_x_head_shifted.point.x = self.axes_x_shift*self.axis_length
+        self.axes_x_head_shifted.point.y = 0
+        self.axes_x_head_shifted.point.z = 0
+        self.axes_x_head_shifted_camera = PointStamped()
+        self.axes_x_head_shifted_camera.header.frame_id = "Camera"
+
+
         self.setpoint = Setpoint()
 
         self.resize_published_image = True
@@ -196,14 +212,23 @@ class ImageDisplay:
             self.axes_x_head.header.frame_id = frame_id
             self.axes_y_head.header.frame_id = frame_id
 
+            self.axes_x_head_shifted.frame_id = frame_id
+            self.axes_x_tail_shifted.frame_id = frame_id
+            self.axes_x_head_shifted.point.y = self.setpoint.radius
+            self.axes_x_tail_shifted.point.y = self.setpoint.radius
+
+
             axes_center_plate = self.tf_listener.transformPoint("Plate",self.axes_center)
             axes_x_tail_plate = self.tf_listener.transformPoint("Plate",self.axes_x_tail)
             axes_y_tail_plate = self.tf_listener.transformPoint("Plate",self.axes_y_tail)
             axes_x_head_plate = self.tf_listener.transformPoint("Plate",self.axes_x_head)
             axes_y_head_plate = self.tf_listener.transformPoint("Plate",self.axes_y_head)
 
-            Xsrc = [axes_center_plate.point.x,axes_x_tail_plate.point.x,axes_y_tail_plate.point.x,axes_x_head_plate.point.x,axes_y_head_plate.point.x]
-            Ysrc = [axes_center_plate.point.y,axes_x_tail_plate.point.y,axes_y_tail_plate.point.y,axes_x_head_plate.point.y,axes_y_head_plate.point.y]
+            axes_x_head_shifted_plate = self.tf_listener.transformPoint("Plate",self.axes_x_head_shifted)
+            axes_x_tail_shifted_plate = self.tf_listener.transformPoint("Plate",self.axes_x_tail_shifted)
+
+            Xsrc = [axes_center_plate.point.x,axes_x_tail_plate.point.x,axes_y_tail_plate.point.x,axes_x_head_plate.point.x,axes_y_head_plate.point.x,axes_x_head_shifted_plate.point.x,axes_x_tail_shifted_plate.point.x]
+            Ysrc = [axes_center_plate.point.y,axes_x_tail_plate.point.y,axes_y_tail_plate.point.y,axes_x_head_plate.point.y,axes_y_head_plate.point.y,axes_x_head_shifted_plate.point.y,axes_x_tail_shifted_plate.point.y]
             response = self.plate_to_camera(Xsrc,Ysrc)
             self.axes_center_camera.point.x = response.Xdst[0]
             self.axes_center_camera.point.y = response.Ydst[0]
@@ -217,12 +242,20 @@ class ImageDisplay:
             self.axes_y_head_camera.point.x = response.Xdst[4]
             self.axes_y_head_camera.point.y = response.Ydst[4]
 
+            self.axes_x_head_shifted_camera.point.x = response.Xdst[5]
+            self.axes_x_head_shifted_camera.point.y = response.Ydst[5]
+            self.axes_x_tail_shifted_camera.point.x = response.Xdst[6]
+            self.axes_x_tail_shifted_camera.point.y = response.Ydst[6]
+
             axes_center_image = self.tf_listener.transformPoint(self.image_frame,self.axes_center_camera)
             axes_x_tail_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_tail_camera)
             axes_y_tail_image = self.tf_listener.transformPoint(self.image_frame,self.axes_y_tail_camera)
 
             axes_x_head_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_head_camera)
             axes_y_head_image = self.tf_listener.transformPoint(self.image_frame,self.axes_y_head_camera)
+
+            axes_x_head_shifted_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_head_shifted_camera)
+            axes_x_tail_shifted_image = self.tf_listener.transformPoint(self.image_frame,self.axes_x_tail_shifted_camera)
 
             # rospy.logwarn("axes_center_image.point.x = %s" % (str(axes_center_image.point.x)))
             # rospy.logwarn("axes_center_image.point.y = %s" % (str(axes_center_image.point.y)))
@@ -282,6 +315,16 @@ class ImageDisplay:
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),
                           circle_radius, circle_color,2)
 
+                axes_x_head_shifted_image
+                axes_x_tail_shifted_image
+
+                cv.Line(self.im_display,
+                        (int(axes_x_tail_shifted_image.point.x),int(axes_x_tail_shifted_image.point.y)),
+                        (int(axes_x_head_shifted_image.point.x),int(axes_x_head_shifted_image.point.y)),
+                        self.setpoint_color, self.setpoint_line_width)
+
+
+
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
 
@@ -329,14 +372,14 @@ class ImageDisplay:
                 #           (int(self.setpoint_image_origin.point.x),int(self.setpoint_image_origin.point.y)),
                 #           3, cv.CV_RGB(self.color_max,0,self.color_max), cv.CV_FILLED)
 
-                if self.min_setpoint_radius_display < self.setpoint.radius:
-                    cv.Line(self.im_display,
-                            (int(setpoint_line_tail_image.point.x),int(setpoint_line_tail_image.point.y)),
-                            (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                            self.setpoint_color, self.setpoint_line_width)
-                    cv.Circle(self.im_display,
-                              (int(setpoint_image.point.x),int(setpoint_image.point.y)),
-                              self.setpoint_size, self.setpoint_color, cv.CV_FILLED)
+                # if self.min_setpoint_radius_display < self.setpoint.radius:
+                #     cv.Line(self.im_display,
+                #             (int(setpoint_line_tail_image.point.x),int(setpoint_line_tail_image.point.y)),
+                #             (int(setpoint_image.point.x),int(setpoint_image.point.y)),
+                #             self.setpoint_color, self.setpoint_line_width)
+                #     cv.Circle(self.im_display,
+                #               (int(setpoint_image.point.x),int(setpoint_image.point.y)),
+                #               self.setpoint_size, self.setpoint_color, cv.CV_FILLED)
 
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
