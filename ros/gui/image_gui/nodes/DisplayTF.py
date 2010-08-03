@@ -134,6 +134,11 @@ class ImageDisplay:
         self.axes_x_head_shifted.point.z = 0
         self.axes_x_head_shifted_camera = PointStamped()
         self.axes_x_head_shifted_camera.header.frame_id = "Camera"
+        self.robot_origin = PointStamped()
+        self.robot_origin.header.frame_id = "Robot"
+        self.robot_origin.point.x = 0
+        self.robot_origin.point.y = 0
+        self.robot_origin.point.z = 0
 
 
         self.setpoint = Setpoint()
@@ -214,8 +219,11 @@ class ImageDisplay:
 
             self.axes_x_head_shifted.header.frame_id = frame_id
             self.axes_x_tail_shifted.header.frame_id = frame_id
-            self.axes_x_head_shifted.point.y = self.setpoint.radius
-            self.axes_x_tail_shifted.point.y = self.setpoint.radius
+
+            robot_origin_frame_id = self.tf_listener.transformPoint(frame_id,self.robot_origin)
+
+            self.axes_x_head_shifted.point.y = math.copysign(self.setpoint.radius,robot_origin_frame_id.point.y)
+            self.axes_x_tail_shifted.point.y = math.copysign(self.setpoint.radius,robot_origin_frame_id.point.y)
 
 
             axes_center_plate = self.tf_listener.transformPoint("Plate",self.axes_center)
