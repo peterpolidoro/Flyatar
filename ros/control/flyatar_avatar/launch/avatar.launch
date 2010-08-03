@@ -10,7 +10,7 @@
 
   <node pkg="save_data" type="SaveBags.py" name="SaveBags" />
 
-  <param name="robot_velocity_max" type="double" value="60"/>
+  <param name="robot_velocity_max" type="double" value="80"/>
   <!-- <node pkg="flyatar_avatar" type="SetpointPositionControl.py" name="SetpointPositionControl" /> -->
   <node pkg="flyatar_avatar" type="SetpointVelocityControl.py" name="SetpointVelocityControl" />
 
