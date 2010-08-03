@@ -212,8 +212,8 @@ class ImageDisplay:
             self.axes_x_head.header.frame_id = frame_id
             self.axes_y_head.header.frame_id = frame_id
 
-            self.axes_x_head_shifted.frame_id = frame_id
-            self.axes_x_tail_shifted.frame_id = frame_id
+            self.axes_x_head_shifted.header.frame_id = frame_id
+            self.axes_x_tail_shifted.header.frame_id = frame_id
             self.axes_x_head_shifted.point.y = self.setpoint.radius
             self.axes_x_tail_shifted.point.y = self.setpoint.radius
 
