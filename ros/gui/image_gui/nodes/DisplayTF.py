@@ -121,7 +121,7 @@ class ImageDisplay:
         self.axes_y_head_camera.header.frame_id = "Camera"
 
 
-        self.axes_x_shift = 10
+        self.axes_x_shift = 3
         self.axes_x_tail_shifted = PointStamped()
         self.axes_x_tail_shifted.point.x = -self.axes_x_shift*self.axis_length
         self.axes_x_tail_shifted.point.y = 0
