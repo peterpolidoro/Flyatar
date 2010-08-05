@@ -319,10 +319,10 @@ class ImageDisplay:
                                 (int(axes_x_tail_image.point.x),int(axes_x_tail_image.point.y)),
                                 circle_color, self.circle_line_width)
 
-                        cv.Line(self.im_display,
-                                (int(axes_x_tail_shifted_image.point.x),int(axes_x_tail_shifted_image.point.y)),
-                                (int(axes_x_head_shifted_image.point.x),int(axes_x_head_shifted_image.point.y)),
-                                self.setpoint_color, self.setpoint_line_width)
+                        # cv.Line(self.im_display,
+                        #         (int(axes_x_tail_shifted_image.point.x),int(axes_x_tail_shifted_image.point.y)),
+                        #         (int(axes_x_head_shifted_image.point.x),int(axes_x_head_shifted_image.point.y)),
+                        #         self.setpoint_color, self.setpoint_line_width)
 
                 cv.Circle(self.im_display,
                           (int(axes_center_image.point.x),int(axes_center_image.point.y)),
