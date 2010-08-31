@@ -84,12 +84,14 @@ class StageDevice(USBDevice.USB_Device):
         self.USBPacketIn = USBPacketIn_t()
 
         # Parameters
-        self.frequency_max = 30000
+        self.frequency_max = 50000
         self.position_min = 0
         self.position_max = 44000
         self.min_vel_mm = 1
 
-        self.steps_per_mm = 5000/25.4   # 5000 steps per inch
+        self.steps_per_rev = 25000      # IM483 microstep setting
+        self.in_per_rev = 2             # Timing belt pulley circumference
+        self.steps_per_mm = (self.steps_per_rev/self.in_per_rev)/25.4   # 5000 steps per inch
                                         # 25.4 mm per inch
         self.steps_per_radian = 200     # Change to actual number!
         self.axis_x = 0
