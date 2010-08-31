@@ -89,7 +89,7 @@ class StageDevice(USBDevice.USB_Device):
         self.position_max = 44000
         self.min_vel_mm = 1
 
-        self.steps_per_rev = 25000      # IM483 microstep setting
+        self.steps_per_rev = 10000      # IM483 microstep setting
         self.in_per_rev = 2             # Timing belt pulley circumference
         self.steps_per_mm = (self.steps_per_rev/self.in_per_rev)/25.4   # 5000 steps per inch
                                         # 25.4 mm per inch
