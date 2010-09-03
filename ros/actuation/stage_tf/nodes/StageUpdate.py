@@ -105,7 +105,7 @@ class StageUpdate:
           elif self.update_velocity:
             self.update_velocity = False
             response = self.set_stage_velocity(self.stage_commands)
-            # rospy.logwarn("set_stage_velocity()")
+            rospy.logwarn("set_stage_velocity()")
             x = response.x
             y = response.y
             self.ss.all_motors_in_position = response.all_motors_in_position
