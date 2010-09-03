@@ -76,6 +76,12 @@ wget http://lufa-lib.googlecode.com/files/LUFA-090605.zip
 unzip LUFA-090605.zip
 mv LUFA\ 090605/ LUFA090605
 echo "export LUFA090605=~/LUFA/LUFA090605" >> ~/.bashrc
+
+wget http://lufa-lib.googlecode.com/files/LUFA-100807.zip
+unzip LUFA-100807.zip
+mv LUFA\ 100807/ LUFA100807
+echo "export LUFA100807=~/LUFA/LUFA100807" >> ~/.bashrc
+
 . ~/.bashrc
 sudo apt-get install gcc-avr avr-libc
 mkdir ~/TEENSY

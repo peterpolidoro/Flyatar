@@ -349,11 +349,14 @@ class StageDevice(USBDevice.USB_Device):
 
     def _get_motor_state(self):
         self._send_usb_cmd(self.USB_CMD_GET_STATE,False)
+        # self._print_usb_packet_out()
 
     def _set_motor_state(self):
         self.lookup_table_move_in_progress = False
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_SET_STATE,True)
+        self._print_usb_packet_out()
+        self._print_usb_packet_in()
 
     def _lookup_table_fill(self):
         # rospy.logwarn("sending lookup_table_fill to usb device")
@@ -370,21 +373,22 @@ class StageDevice(USBDevice.USB_Device):
         # rospy.logwarn("sending lookup_table_vel_move to usb device")
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_MOVE,True)
-        # self._usb_packet_out()
+        # self._print_usb_packet_out()
 
     def _lookup_table_vel_correct(self):
         # rospy.logwarn("sending lookup_table_vel_correct to usb device")
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_CORRECT,True)
-        # self._usb_packet_out()
+        # self._print_usb_packet_out()
 
-    def _usb_packet_out(self):
+    def _print_usb_packet_out(self):
         # _fields_ =[('MotorUpdate', ctypes.c_uint8),
         #            ('EntryCount', ctypes.c_uint8),
         #            ('EntryLocation', ctypes.c_uint8),
         #            ('Entry', LookupTableRow_t * _entries_max)]
         # self.USBPacketOut.Entry[entry_n].Motor[axis].Frequency = int(freq)
         rospy.logwarn('*'*20)
+        rospy.logwarn('USB Packet Out')
         rospy.logwarn("MotorUpdate = %s" % (str(self.USBPacketOut.MotorUpdate)))
         rospy.logwarn("EntryCount = %s" % (str(self.USBPacketOut.EntryCount)))
         rospy.logwarn("EntryLocation = %s" % (str(self.USBPacketOut.EntryLocation)))
@@ -394,15 +398,18 @@ class StageDevice(USBDevice.USB_Device):
         rospy.logwarn("Entry 0 Motor 1 Pos = %s" % (str(self.USBPacketOut.Entry[0].Motor[0].Position)))
         rospy.logwarn('*'*20)
 
-    def _print_motor_state(self):
-        print '*'*20
-        print 'Frequency X = ', self.USBPacketIn.State.Motor[self.axis_x].Frequency
-        print 'Position X = ', self.USBPacketIn.State.Motor[self.axis_x].Position
-        print 'Frequency Y = ', self.USBPacketIn.State.Motor[self.axis_y].Frequency
-        print 'Position Y = ', self.USBPacketIn.State.Motor[self.axis_y].Position
-        print 'Frequency Theta = ', self.USBPacketIn.State.Motor[self.axis_theta].Frequency
-        print 'Position Theta = ', self.USBPacketIn.State.Motor[self.axis_theta].Position
-        print '*'*20
+    def _print_usb_packet_in(self):
+        rospy.logwarn('*'*20)
+        rospy.logwarn('USB Packet Out')
+        rospy.logwarn("AllMotorsInPosition = %s" % (str(self.USBPacketIn.AllMotorsInPosition)))
+        rospy.logwarn("LookupTableMoveComplete = %s" % (str(self.USBPacketIn.LookupTableMoveComplete)))
+        rospy.logwarn('Frequency X = ', self.USBPacketIn.State.Motor[self.axis_x].Frequency)
+        rospy.logwarn('Position X = ', self.USBPacketIn.State.Motor[self.axis_x].Position)
+        rospy.logwarn('Frequency Y = ', self.USBPacketIn.State.Motor[self.axis_y].Frequency)
+        rospy.logwarn('Position Y = ', self.USBPacketIn.State.Motor[self.axis_y].Position)
+        rospy.logwarn('Frequency Theta = ', self.USBPacketIn.State.Motor[self.axis_theta].Frequency)
+        rospy.logwarn('Position Theta = ', self.USBPacketIn.State.Motor[self.axis_theta].Position)
+        rospy.logwarn('*'*20)
 
     def _check_cmd_id(self,expected_id,received_id):
         """
@@ -422,8 +429,8 @@ class StageDevice(USBDevice.USB_Device):
 #-------------------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    print "Opening Flyatar stage device ..."
+    rospy.logwarn("Opening Flyatar stage device ...")
     dev = StageDevice()
     dev.print_values()
     dev.close()
-    print "Flyatar stage device closed."
+    rospy.logwarn("Flyatar stage device closed.")
