@@ -89,6 +89,8 @@ class StageUpdate:
 
   def updater(self):
     while not rospy.is_shutdown():
+      if not self.initialized:
+        rospy.logwarn("StageUpdate.py not initialized!")
       if self.initialized:
         try:
           self.updated = False
@@ -96,7 +98,7 @@ class StageUpdate:
             self.update_position = False
             response = self.set_stage_position(self.stage_commands)
             # response = self.stage_lookup_table_move(self.stage_commands)
-            # rospy.logwarn("set_stage_position()")
+            rospy.logwarn("set_stage_position()")
             x = response.x
             y = response.y
             self.ss.all_motors_in_position = response.all_motors_in_position
@@ -114,13 +116,14 @@ class StageUpdate:
           elif self.lookup_table_correct:
             self.lookup_table_correct = False
             response = self.stage_lookup_table_correct(self.stage_commands)
+            rospy.logwarn("stage_lookup_table_correct()")
             x = response.x
             y = response.y
             self.ss.all_motors_in_position = response.all_motors_in_position
             self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
           else:
             response = self.get_stage_state()
-            # rospy.logwarn("get_stage_state()")
+            rospy.logwarn("get_stage_state()")
             x = response.x
             y = response.y
             self.ss.all_motors_in_position = response.all_motors_in_position
@@ -133,7 +136,8 @@ class StageUpdate:
                                             "Magnet",
                                             "Stage")
         except (tf.LookupException, tf.ConnectivityException, rospy.service.ServiceException):
-          pass
+          # pass
+          rospy.logwarn("Exception!!")
 
         self.updated = True
 
