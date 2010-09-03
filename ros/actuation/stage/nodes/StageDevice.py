@@ -403,12 +403,12 @@ class StageDevice(USBDevice.USB_Device):
         rospy.logwarn('USB Packet Out')
         rospy.logwarn("AllMotorsInPosition = %s" % (str(self.USBPacketIn.AllMotorsInPosition)))
         rospy.logwarn("LookupTableMoveComplete = %s" % (str(self.USBPacketIn.LookupTableMoveComplete)))
-        rospy.logwarn('Frequency X = ', self.USBPacketIn.State.Motor[self.axis_x].Frequency)
-        rospy.logwarn('Position X = ', self.USBPacketIn.State.Motor[self.axis_x].Position)
-        rospy.logwarn('Frequency Y = ', self.USBPacketIn.State.Motor[self.axis_y].Frequency)
-        rospy.logwarn('Position Y = ', self.USBPacketIn.State.Motor[self.axis_y].Position)
-        rospy.logwarn('Frequency Theta = ', self.USBPacketIn.State.Motor[self.axis_theta].Frequency)
-        rospy.logwarn('Position Theta = ', self.USBPacketIn.State.Motor[self.axis_theta].Position)
+        rospy.logwarn('Frequency X = ', str(self.USBPacketIn.State.Motor[self.axis_x].Frequency))
+        rospy.logwarn('Position X = ', str(self.USBPacketIn.State.Motor[self.axis_x].Position))
+        rospy.logwarn('Frequency Y = ', str(self.USBPacketIn.State.Motor[self.axis_y].Frequency))
+        rospy.logwarn('Position Y = ', str(self.USBPacketIn.State.Motor[self.axis_y].Position))
+        rospy.logwarn('Frequency Theta = ', str(self.USBPacketIn.State.Motor[self.axis_theta].Frequency))
+        rospy.logwarn('Position Theta = ', str(self.USBPacketIn.State.Motor[self.axis_theta].Position))
         rospy.logwarn('*'*20)
 
     def _check_cmd_id(self,expected_id,received_id):
