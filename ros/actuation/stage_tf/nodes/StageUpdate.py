@@ -61,11 +61,6 @@ class StageUpdate:
     self.initialized = True
 
   def stage_commands_callback(self,data):
-    # rospy.logwarn ("data.position_control = %s" % (str(data.position_control)))
-    # rospy.logwarn ("data.velocity_control = %s" % (str(data.velocity_control)))
-    # rospy.logwarn ("data.lookup_table_correct = %s" % (str(data.lookup_table_correct)))
-    if self.update_lock:
-      rospy.logwarn("Update_lock!!")
     if self.initialized and not self.update_lock:
       if data.position_control:
         # rospy.logwarn ("data.position_control = %s" % (str(data.position_control)))
@@ -107,33 +102,16 @@ class StageUpdate:
 
           if up:
             response = self.set_stage_position(self.stage_commands)
-            # response = self.stage_lookup_table_move(self.stage_commands)
-            rospy.logwarn("set_stage_position()")
-            # x = response.x
-            # y = response.y
-            # self.ss.all_motors_in_position = response.all_motors_in_position
-            # self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
+            # rospy.logwarn("set_stage_position()")
           elif uv:
             response = self.set_stage_velocity(self.stage_commands)
-            rospy.logwarn("set_stage_velocity()")
-            # x = response.x
-            # y = response.y
-            # self.ss.all_motors_in_position = response.all_motors_in_position
-            # self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
+            # rospy.logwarn("set_stage_velocity()")
           elif ltc:
             response = self.stage_lookup_table_correct(self.stage_commands)
-            rospy.logwarn("stage_lookup_table_correct()")
-            # x = response.x
-            # y = response.y
-            # self.ss.all_motors_in_position = response.all_motors_in_position
-            # self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
+            # rospy.logwarn("stage_lookup_table_correct()")
           else:
             response = self.get_stage_state()
-            rospy.logwarn("get_stage_state()")
-            # x = response.x
-            # y = response.y
-            # self.ss.all_motors_in_position = response.all_motors_in_position
-            # self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
+            # rospy.logwarn("get_stage_state()")
 
           x = response.x
           y = response.y

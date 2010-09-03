@@ -355,8 +355,8 @@ class StageDevice(USBDevice.USB_Device):
         self.lookup_table_move_in_progress = False
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_SET_STATE,True)
-        self._print_usb_packet_out()
-        self._print_usb_packet_in()
+        # self._print_usb_packet_out()
+        # self._print_usb_packet_in()
 
     def _lookup_table_fill(self):
         # rospy.logwarn("sending lookup_table_fill to usb device")
