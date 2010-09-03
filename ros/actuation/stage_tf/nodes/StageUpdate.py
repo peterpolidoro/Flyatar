@@ -22,7 +22,7 @@ class StageUpdate:
     self.update_velocity = False
     self.lookup_table_correct = False
 
-    self.updated = True
+    self.update_lock = False
 
     self.sc_sub = rospy.Subscriber("Stage/Commands", StageCommands, self.stage_commands_callback)
     self.ss_pub = rospy.Publisher("Stage/State",StageState)
@@ -61,12 +61,12 @@ class StageUpdate:
     self.initialized = True
 
   def stage_commands_callback(self,data):
-    rospy.logwarn ("data.position_control = %s" % (str(data.position_control)))
-    rospy.logwarn ("data.velocity_control = %s" % (str(data.velocity_control)))
-    rospy.logwarn ("data.lookup_table_correct = %s" % (str(data.lookup_table_correct)))
-    if not self.updated:
-      rospy.logwarn("Not updated!!")
-    if self.initialized and self.updated:
+    # rospy.logwarn ("data.position_control = %s" % (str(data.position_control)))
+    # rospy.logwarn ("data.velocity_control = %s" % (str(data.velocity_control)))
+    # rospy.logwarn ("data.lookup_table_correct = %s" % (str(data.lookup_table_correct)))
+    if self.update_lock:
+      rospy.logwarn("Update_lock!!")
+    if self.initialized and not self.update_lock:
       if data.position_control:
         # rospy.logwarn ("data.position_control = %s" % (str(data.position_control)))
         self.update_position = True
@@ -94,45 +94,51 @@ class StageUpdate:
 
   def updater(self):
     while not rospy.is_shutdown():
-      if not self.initialized:
-        rospy.logwarn("StageUpdate.py not initialized!")
       if self.initialized:
         try:
-          self.updated = False
-          if self.update_position:
-            self.update_position = False
+          self.update_lock = True
+          up = self.update_position
+          uv = self.update_velocity
+          ltc = self.lookup_table_correct
+          self.update_position = False
+          self.update_velocity = False
+          self.lookup_table_correct = False
+          self.update_lock = False
+
+          if up:
             response = self.set_stage_position(self.stage_commands)
             # response = self.stage_lookup_table_move(self.stage_commands)
             rospy.logwarn("set_stage_position()")
-            x = response.x
-            y = response.y
-            self.ss.all_motors_in_position = response.all_motors_in_position
-            self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
-            self.update_position = False
-          elif self.update_velocity:
-            self.update_velocity = False
+            # x = response.x
+            # y = response.y
+            # self.ss.all_motors_in_position = response.all_motors_in_position
+            # self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
+          elif uv:
             response = self.set_stage_velocity(self.stage_commands)
             rospy.logwarn("set_stage_velocity()")
-            x = response.x
-            y = response.y
-            self.ss.all_motors_in_position = response.all_motors_in_position
-            self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
-            self.update_velocity = False
-          elif self.lookup_table_correct:
-            self.lookup_table_correct = False
+            # x = response.x
+            # y = response.y
+            # self.ss.all_motors_in_position = response.all_motors_in_position
+            # self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
+          elif ltc:
             response = self.stage_lookup_table_correct(self.stage_commands)
             rospy.logwarn("stage_lookup_table_correct()")
-            x = response.x
-            y = response.y
-            self.ss.all_motors_in_position = response.all_motors_in_position
-            self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
+            # x = response.x
+            # y = response.y
+            # self.ss.all_motors_in_position = response.all_motors_in_position
+            # self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
           else:
             response = self.get_stage_state()
             rospy.logwarn("get_stage_state()")
-            x = response.x
-            y = response.y
-            self.ss.all_motors_in_position = response.all_motors_in_position
-            self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
+            # x = response.x
+            # y = response.y
+            # self.ss.all_motors_in_position = response.all_motors_in_position
+            # self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
+
+          x = response.x
+          y = response.y
+          self.ss.all_motors_in_position = response.all_motors_in_position
+          self.ss.lookup_table_move_in_progress = response.lookup_table_move_in_progress
 
           self.ss_pub.publish(self.ss)
           self.tf_broadcaster.sendTransform((x, y, 0),
@@ -141,10 +147,7 @@ class StageUpdate:
                                             "Magnet",
                                             "Stage")
         except (tf.LookupException, tf.ConnectivityException, rospy.service.ServiceException):
-          # pass
-          rospy.logwarn("Exception!!")
-
-        self.updated = True
+          pass
 
         self.rate.sleep()
 
