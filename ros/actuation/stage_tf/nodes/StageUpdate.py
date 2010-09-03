@@ -61,6 +61,11 @@ class StageUpdate:
     self.initialized = True
 
   def stage_commands_callback(self,data):
+    rospy.logwarn ("data.position_control = %s" % (str(data.position_control)))
+    rospy.logwarn ("data.velocity_control = %s" % (str(data.velocity_control)))
+    rospy.logwarn ("data.lookup_table_correct = %s" % (str(data.lookup_table_correct)))
+    if not self.updated:
+      rospy.logwarn("Not updated!!")
     if self.initialized and self.updated:
       if data.position_control:
         # rospy.logwarn ("data.position_control = %s" % (str(data.position_control)))
