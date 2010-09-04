@@ -75,10 +75,11 @@ class StageDevice(USBDevice.USB_Device):
         # USB Command IDs
         self.USB_CMD_GET_STATE = ctypes.c_uint8(1)
         self.USB_CMD_SET_STATE = ctypes.c_uint8(2)
-        self.USB_CMD_LOOKUP_TABLE_FILL = ctypes.c_uint8(3)
-        self.USB_CMD_LOOKUP_TABLE_POS_MOVE = ctypes.c_uint8(4)
-        self.USB_CMD_LOOKUP_TABLE_VEL_MOVE = ctypes.c_uint8(5)
-        self.USB_CMD_LOOKUP_TABLE_VEL_CORRECT = ctypes.c_uint8(6)
+        self.USB_CMD_HOME = ctypes.c_uint8(3)
+        self.USB_CMD_LOOKUP_TABLE_FILL = ctypes.c_uint8(4)
+        self.USB_CMD_LOOKUP_TABLE_POS_MOVE = ctypes.c_uint8(5)
+        self.USB_CMD_LOOKUP_TABLE_VEL_MOVE = ctypes.c_uint8(6)
+        self.USB_CMD_LOOKUP_TABLE_VEL_CORRECT = ctypes.c_uint8(7)
 
         self.USBPacketOut = USBPacketOut_t()
         self.USBPacketIn = USBPacketIn_t()
