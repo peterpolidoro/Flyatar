@@ -773,7 +773,21 @@ static void Motor_Set_Values(LookupTableRow_t MotorSetpoint)
               {
                 Motor[Motor_N].Frequency = MotorSetpoint[Motor_N].Frequency;
               }
-            Motor[Motor_N].PositionSetPoint = MotorSetpoint[Motor_N].Position;
+            if (Motor[Motor_N].PositionLimitsEnabled)
+              {
+                if (Motor[Motor_N].PositionLimitMax < MotorSetpoint[Motor_N].Position)
+                  {
+                    Motor[Motor_N].PositionSetPoint = Motor[Motor_N].PositionLimitMax;
+                  }
+                else if (MotorSetpoint[Motor_N].Position < Motor[Motor_N].PositionLimitMin)
+                  {
+                    Motor[Motor_N].PositionSetPoint = Motor[Motor_N].PositionLimitMin;
+                  }
+              }
+            else
+              {
+                Motor[Motor_N].PositionSetPoint = MotorSetpoint[Motor_N].Position;
+              }
             if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position)
               {
                 Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos;
@@ -898,18 +912,10 @@ ISR(MOTOR_0_INTERRUPT)
       if (Motor[0].Direction == Motor[0].DirectionPos)
         {
           Motor[0].Position += 1;
-          if (Motor[0].PositionLimitsEnabled && (Motor[0].PositionLimitMax == Motor[0].Position))
-            {
-              Motor[0].PositionSetPoint = Motor[0].Position;
-            }
         }
       else
         {
           Motor[0].Position -= 1;
-          if (Motor[0].PositionLimitsEnabled && (Motor[0].Position == Motor[0].PositionLimitMin))
-            {
-              Motor[0].PositionSetPoint = Motor[0].Position;
-            }
         }
       if (Motor[0].Position == Motor[0].PositionSetPoint)
         {
