@@ -551,7 +551,7 @@ static void Motor_Init(void)
   Motor[0].HomeSet = FALSE;
   Motor[0].PositionLimitMax = 10000;
   Motor[0].PositionLimitMin = 500;
-  Motor[0].PositionLimitsEnabled = False;
+  Motor[0].PositionLimitsEnabled = FALSE;
 
   Motor[1].Timer = MOTOR_1_TIMER;
   Motor[1].DirectionPort = &PORTC;
@@ -564,12 +564,12 @@ static void Motor_Init(void)
   Motor[1].Position = MOTOR_1_POSITION_HOME;
   Motor[1].PositionSetPoint = MOTOR_1_POSITION_HOME;
   Motor[1].Update = TRUE;
-  Motor[1].InPosition = TRUE
+  Motor[1].InPosition = TRUE;
   Motor[1].HomeInProgress = FALSE;
-  Motor[1].HomeSet = FALSE
+  Motor[1].HomeSet = FALSE;
   Motor[1].PositionLimitMax = 10000;
   Motor[1].PositionLimitMin = 500;
-  Motor[1].PositionLimitsEnabled = False;
+  Motor[1].PositionLimitsEnabled = FALSE;
 
   Motor[2].Timer = MOTOR_2_TIMER;
   Motor[2].DirectionPort = &PORTC;
@@ -587,7 +587,7 @@ static void Motor_Init(void)
   Motor[2].HomeSet = FALSE;
   Motor[2].PositionLimitMax = 10000;
   Motor[2].PositionLimitMin = 500;
-  Motor[2].PositionLimitsEnabled = False;
+  Motor[2].PositionLimitsEnabled = FALSE;
 
   /* Update Motors */
   Motor_Update_All();
