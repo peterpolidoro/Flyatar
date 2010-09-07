@@ -1005,21 +1005,37 @@ ISR(MOTOR_0_HOME_INTERRUPT)
     {
       Motor[0].Frequency = 0;
       Timer_Off(Motor[0].Timer);
-      Motor[0].Position = MOTOR_0_POSITION_HOME;
-      Motor[0].HomeInProgress = 0;
-      Motor[0].HomeSet = 1;
-      EIMSK &= ~(1<<INT0);
+
+      uint8_t ones=0, zeros=0, i;
+      for (i=0;i<9;i++)
+        {
+          if (PIND & (1<<DDD0))
+            {
+              ones++;
+            }
+          else
+            {
+              zeroes++;
+            }
+          _delay_ms(10);
+        }
+      if (zeroes < ones)
+        {
+          LookupTableRow_t MotorHomeParameters;
+          Motor[0].Position = MOTOR_0_POSITION_HOME;
+          MotorHomeParameters[0].Frequency = 1000;
+          MotorHomeParameters[0].Position = UINT16_MAX;
+          Motor_Set_Values(MotorHomeParameters);
+          Motor_Update_All();
+        }
+      else
+        {
+          Motor[0].Position = MOTOR_0_POSITION_HOME;
+          Motor[0].HomeInProgress = 0;
+          Motor[0].HomeSet = 1;
+          EIMSK &= ~(1<<INT0);
+        }
     }
-
-
-  /* if (PINB & (1<<DDB7)) */
-  /*   { */
-  /*     if (LookupTableVelMove) */
-  /*       { */
-  /*         /\* Set interrupt 4 low to enable interrupt (PORTE pin 4) *\/ */
-  /*         PORTE &= ~(1<<PE4); */
-  /*       } */
-  /*   } */
   return;
 }
 
