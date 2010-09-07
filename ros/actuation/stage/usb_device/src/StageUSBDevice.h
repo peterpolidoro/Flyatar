@@ -120,6 +120,8 @@ typedef struct
   uint16_t    PositionSetPoint;
   uint8_t     Update;
   uint8_t     InPosition;
+  uint8_t     HomeInProgress;
+  uint8_t     HomeSet;
 } MotorWrapper_t;
 
 typedef struct

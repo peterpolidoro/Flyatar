@@ -634,7 +634,9 @@ static void Motor_Home(void)
   /* EIMSK |= ((1<<INT0) | (1<<INT1) | (1<<INT2) | (1<<INT3) | (1<<INT4) | (1<<INT5)); */
   EIMSK |= (1<<INT0);
 
-  Motor[0].Update = 1;
+  MotorUpdateBits = 1;
+  Motor[0].HomeInProgress = 1;
+  Motor[0].HomeSet = 0;
   Motor_Set_Values(MotorHomeParameters);
   Motor_Update_All();
 
@@ -999,9 +1001,15 @@ ISR(MOTOR_2_INTERRUPT)
 
 ISR(MOTOR_0_HOME_INTERRUPT)
 {
-  Motor[0].Frequency = 0;
-  Timer_Off(Motor[0].Timer);
-  Motor[0].Position = MOTOR_0_POSITION_HOME;
+  if (Motor[0].HomeInProgress)
+    {
+      Motor[0].Frequency = 0;
+      Timer_Off(Motor[0].Timer);
+      Motor[0].Position = MOTOR_0_POSITION_HOME;
+      Motor[0].HomeInProgress = 0;
+      Motor[0].HomeSet = 1;
+      EIMSK &= ~(1<<INT0);
+    }
 
 
   /* if (PINB & (1<<DDB7)) */
