@@ -634,6 +634,7 @@ static void Motor_Home(void)
   /* EIMSK |= ((1<<INT0) | (1<<INT1) | (1<<INT2) | (1<<INT3) | (1<<INT4) | (1<<INT5)); */
   EIMSK |= (1<<INT0);
 
+  Motor[0].Update = 1;
   Motor_Set_Values(MotorHomeParameters);
   Motor_Update_All();
 
