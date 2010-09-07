@@ -92,7 +92,9 @@ int main(void)
   /* Initialize Software Interrupt */
   Interrupt_Init();
 
-
+  /* Home Motors */
+  /* MotorUpdateBits = (1<<MOTOR_0) | (1<<MOTOR_1); */
+  MotorUpdateBits = (1<<MOTOR_0);
   Motor_Home();
 
   /* Scheduling - routine never returns, so put this last in the main function */
@@ -545,6 +547,11 @@ static void Motor_Init(void)
   Motor[0].PositionSetPoint = MOTOR_0_POSITION_HOME;
   Motor[0].Update = TRUE;
   Motor[0].InPosition = TRUE;
+  Motor[0].HomeInProgress = FALSE;
+  Motor[0].HomeSet = FALSE;
+  Motor[0].PositionLimitMax = 10000;
+  Motor[0].PositionLimitMin = 500;
+  Motor[0].PositionLimitsEnabled = False;
 
   Motor[1].Timer = MOTOR_1_TIMER;
   Motor[1].DirectionPort = &PORTC;
@@ -557,7 +564,12 @@ static void Motor_Init(void)
   Motor[1].Position = MOTOR_1_POSITION_HOME;
   Motor[1].PositionSetPoint = MOTOR_1_POSITION_HOME;
   Motor[1].Update = TRUE;
-  Motor[1].InPosition = TRUE;
+  Motor[1].InPosition = TRUE
+  Motor[1].HomeInProgress = FALSE;
+  Motor[1].HomeSet = FALSE
+  Motor[1].PositionLimitMax = 10000;
+  Motor[1].PositionLimitMin = 500;
+  Motor[1].PositionLimitsEnabled = False;
 
   Motor[2].Timer = MOTOR_2_TIMER;
   Motor[2].DirectionPort = &PORTC;
@@ -571,6 +583,11 @@ static void Motor_Init(void)
   Motor[2].PositionSetPoint = MOTOR_2_POSITION_HOME;
   Motor[2].Update = TRUE;
   Motor[2].InPosition = TRUE;
+  Motor[2].HomeInProgress = FALSE;
+  Motor[2].HomeSet = FALSE;
+  Motor[2].PositionLimitMax = 10000;
+  Motor[2].PositionLimitMin = 500;
+  Motor[2].PositionLimitsEnabled = False;
 
   /* Update Motors */
   Motor_Update_All();
@@ -634,9 +651,8 @@ static void Motor_Home(void)
   /* EIMSK |= ((1<<INT0) | (1<<INT1) | (1<<INT2) | (1<<INT3) | (1<<INT4) | (1<<INT5)); */
   EIMSK |= (1<<INT0);
 
-  MotorUpdateBits = 1;
-  Motor[0].HomeInProgress = 1;
-  Motor[0].HomeSet = 0;
+  Motor[0].HomeInProgress = TRUE;
+  Motor[0].HomeSet = FALSE;
   Motor_Set_Values(MotorHomeParameters);
   Motor_Update_All();
 
@@ -882,10 +898,18 @@ ISR(MOTOR_0_INTERRUPT)
       if (Motor[0].Direction == Motor[0].DirectionPos)
         {
           Motor[0].Position += 1;
+          if (Motor[0].PositionLimitsEnabled && (Motor[0].PositionLimitMax == Motor[0].Position))
+            {
+              Motor[0].PositionSetPoint = Motor[0].Position;
+            }
         }
       else
         {
           Motor[0].Position -= 1;
+          if (Motor[0].PositionLimitsEnabled && (Motor[0].Position == Motor[0].PositionLimitMin))
+            {
+              Motor[0].PositionSetPoint = Motor[0].Position;
+            }
         }
       if (Motor[0].Position == Motor[0].PositionSetPoint)
         {
@@ -1019,9 +1043,9 @@ ISR(MOTOR_0_HOME_INTERRUPT)
             }
           _delay_ms(10);
         }
+      LookupTableRow_t MotorHomeParameters;
       if (zeros < ones)
         {
-          LookupTableRow_t MotorHomeParameters;
           Motor[0].Position = MOTOR_0_POSITION_HOME;
           MotorHomeParameters[0].Frequency = 100;
           MotorHomeParameters[0].Position = UINT16_MAX;
@@ -1031,8 +1055,9 @@ ISR(MOTOR_0_HOME_INTERRUPT)
       else
         {
           Motor[0].Position = MOTOR_0_POSITION_HOME;
-          Motor[0].HomeInProgress = 0;
-          Motor[0].HomeSet = 1;
+          Motor[0].HomeInProgress = FALSE;
+          Motor[0].HomeSet = TRUE;
+          Motor[0].PositionLimitsEnabled = TRUE;
           EIMSK &= ~(1<<INT0);
         }
     }

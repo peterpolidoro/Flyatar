@@ -70,6 +70,9 @@
 #define USB_CMD_AVR_DFU_MODE             201
 
 /* Motor Parameter Values */
+#define MOTOR_0 0
+#define MOTOR_1 1
+#define MOTOR_2 2
 #define MOTOR_0_POSITION_HOME 0
 #define MOTOR_1_POSITION_HOME 0
 #define MOTOR_2_POSITION_HOME 0
@@ -123,6 +126,9 @@ typedef struct
   uint8_t     InPosition;
   uint8_t     HomeInProgress;
   uint8_t     HomeSet;
+  uint16_t    PositionLimitMax;
+  uint16_t    PositionLimitMin;
+  uint8_t     PositionLimitsEnabled;
 } MotorWrapper_t;
 
 typedef struct
@@ -192,7 +198,7 @@ uint8_t                 TableEnd=0;
 uint8_t                 TableEntry=0;
 uint8_t                 LookupTablePosMove=FALSE;
 uint8_t                 LookupTableVelMove=FALSE;
-uint8_t                 MotorUpdateBits;
+uint8_t                 MotorUpdateBits=0;
 uint8_t                 AllMotorsInPosition=FALSE;
 uint8_t                 LookupTableMoveComplete=FALSE;
 LookupTableRow_t        LookupTableCorrection;
