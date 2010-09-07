@@ -616,7 +616,7 @@ static void Motor_Home(void)
   LookupTableRow_t MotorHomeParameters;
 
   Motor[0].Position = UINT16_MAX;
-  MotorHomeParameters[0].Frequency = 1000;
+  MotorHomeParameters[0].Frequency = 10000;
   MotorHomeParameters[0].Position = 0;
 
   LookupTablePosMove = FALSE;
@@ -1023,7 +1023,7 @@ ISR(MOTOR_0_HOME_INTERRUPT)
         {
           LookupTableRow_t MotorHomeParameters;
           Motor[0].Position = MOTOR_0_POSITION_HOME;
-          MotorHomeParameters[0].Frequency = 1000;
+          MotorHomeParameters[0].Frequency = 100;
           MotorHomeParameters[0].Position = UINT16_MAX;
           Motor_Set_Values(MotorHomeParameters);
           Motor_Update_All();
