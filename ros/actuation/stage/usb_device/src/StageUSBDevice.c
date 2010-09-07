@@ -81,7 +81,7 @@ int main(void)
   USB_Init();
 
   /* Initialize I/O lines */
-  //IO_Init();
+  IO_Init();
 
   /* Initialize Timers */
   Timer_Init();
