@@ -92,6 +92,9 @@ int main(void)
   /* Initialize Software Interrupt */
   Interrupt_Init();
 
+
+  Motor_Home();
+
   /* Scheduling - routine never returns, so put this last in the main function */
   Scheduler_Start();
 }
@@ -227,6 +230,16 @@ TASK(USB_ProcessPacket)
                     Motor_Update_All();
                   }
                   break;
+                case USB_CMD_HOME:
+                  {
+                    if (!IO_Enabled)
+                      {
+                        IO_Init();
+                      }
+                    MotorUpdateBits = USBPacketOut.MotorUpdate;
+                    Motor_Home();
+                  }
+                  break;
                 case USB_CMD_LOOKUP_TABLE_FILL:
                   {
                     LookupTablePosMove = FALSE;
@@ -350,6 +363,14 @@ static void IO_Init(void)
 {
   /* Input lines initialization */
 
+  /* Set data direction of pins 0:2 on PORTD to input for HOME lines */
+  DDRD &= ~((1<<DDD0) | (1<<DDD1) | (1<<DDD2));
+
+  /* Enable pull-up resistors on pins 0:2 on PORTD */
+  PORTD |= ((1<<PD0) | (1<<PD1) | (1<<PD2));
+
+  /* Disable Pull-up disable */
+  MCUCR &= ~(1<<PUD);
 
   /* Output lines initialization */
 
@@ -588,6 +609,34 @@ static void Timer_Off(uint8_t Timer_N)
 
   /* Timer[Timer_N] is turned off */
   Timer[Timer_N].On = FALSE;
+}
+
+static void Motor_Home(void)
+{
+  LookupTableRow_t MotorHomeParameters;
+
+  Motor[0].Position = UINT16_MAX;
+  MotorHomeParameters[0].Frequency = 1000;
+  MotorHomeParameters[0].Position = 0;
+
+  LookupTablePosMove = FALSE;
+  LookupTableVelMove = FALSE;
+  LookupTableCorrectionOn = FALSE;
+
+  /* External interrupts initialization */
+  /* Disable external interrupt pins 0:2 before changing interrupt sense control */
+  EIMSK &= ~((1<<INT0) | (1<<INT1) | (1<<INT2));
+
+  /* Set external interrupt pins 0:2 to rising edge */
+  EICRA |= ((1<<ISC01) | (1<<ISC00));
+
+  /* Enable external interrupt pins 0:2 */
+  /* EIMSK |= ((1<<INT0) | (1<<INT1) | (1<<INT2) | (1<<INT3) | (1<<INT4) | (1<<INT5)); */
+  EIMSK |= (1<<INT0);
+
+  Motor_Set_Values(MotorHomeParameters);
+  Motor_Update_All();
+
 }
 
 static void Motor_Update(uint8_t Motor_N)
@@ -944,6 +993,24 @@ ISR(MOTOR_2_INTERRUPT)
           Motor[2].InPosition = FALSE;
         }
     }
+  return;
+}
+
+ISR(MOTOR_0_HOME_INTERRUPT)
+{
+  Motor[0].Frequency = 0;
+  Timer_Off(Motor[0].Timer);
+  Motor[0].Position = MOTOR_0_POSITION_HOME;
+
+
+  /* if (PINB & (1<<DDB7)) */
+  /*   { */
+  /*     if (LookupTableVelMove) */
+  /*       { */
+  /*         /\* Set interrupt 4 low to enable interrupt (PORTE pin 4) *\/ */
+  /*         PORTE &= ~(1<<PE4); */
+  /*       } */
+  /*   } */
   return;
 }
 

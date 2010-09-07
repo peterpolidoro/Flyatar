@@ -88,6 +88,10 @@
 #define MOTOR_1_INTERRUPT     TIMER3_OVF_vect
 #define MOTOR_2_INTERRUPT     TIMER2_OVF_vect
 
+#define MOTOR_0_HOME_INTERRUPT     INT0_vect
+#define MOTOR_1_HOME_INTERRUPT     INT1_vect
+#define MOTOR_2_HOME_INTERRUPT     INT2_vect
+
 #define LOOKUP_TABLE_JUMP_INTERRUPT  INT4_vect
 #define LOOKUP_TABLE_VEL_TIMER_INTERRUPT  TIMER0_OVF_vect
 
@@ -216,6 +220,7 @@ static void Motor_Init(void);
 static void Motor_Update(uint8_t Motor_N);
 static void Motor_Update_All(void);
 static void Motor_Set_Values(LookupTableRow_t MotorSetpoint);
+static void Motor_Home(void);
 static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t EntryCount,uint8_t EntryLocation);
 static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected);
 //static void Position_Update(volatile uint8_t Motor_N);
