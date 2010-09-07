@@ -1015,11 +1015,11 @@ ISR(MOTOR_0_HOME_INTERRUPT)
             }
           else
             {
-              zeroes++;
+              zeros++;
             }
           _delay_ms(10);
         }
-      if (zeroes < ones)
+      if (zeros < ones)
         {
           LookupTableRow_t MotorHomeParameters;
           Motor[0].Position = MOTOR_0_POSITION_HOME;
