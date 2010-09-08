@@ -93,7 +93,6 @@ int main(void)
   Interrupt_Init();
 
   /* Home Motors */
-  MotorUpdateBits = (1<<MOTOR_0) | (1<<MOTOR_1);
   Motor_Home();
 
   /* Scheduling - routine never returns, so put this last in the main function */
@@ -678,11 +677,11 @@ static void Motor_Update(uint8_t Motor_N)
   }
 
   Timer_N = Motor[Motor_N].Timer;
-  if (Motor[Motor_N].Update && (Freq == 0) && Timer[Timer_N].On)
+  if ((Freq == 0) && Timer[Timer_N].On)
     {
       Timer_Off(Timer_N);
     }
-  else if (Motor[Motor_N].Update && (Freq > 0))
+  else if (Freq > 0)
     {
       if (Freq > Motor[Motor_N].FrequencyMax)
         {
@@ -757,7 +756,11 @@ static void Motor_Update_All(void)
 
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
     {
-      Motor_Update(Motor_N);
+      Motor[Motor_N].Update = (MotorUpdateBits & (1<<Motor_N));
+      if (Motor[Motor_N].Update)
+        {
+          Motor_Update(Motor_N);
+        }
     }
 }
 
