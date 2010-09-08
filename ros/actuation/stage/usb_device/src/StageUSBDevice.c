@@ -1108,6 +1108,9 @@ ISR(MOTOR_0_HOME_INTERRUPT)
       EIMSK &= ~(1<<INT0);
       EIFR  |= (1<<INTF0);
 
+      /* Reenable interrupts so code will not block */
+      sei();
+
       uint8_t ones=0, zeros=0, i;
       for (i=0;i<9;i++)
         {
@@ -1154,6 +1157,9 @@ ISR(MOTOR_1_HOME_INTERRUPT)
       /* Disable external interrupt pin 1 */
       EIMSK &= ~(1<<INT1);
       EIFR  |= (1<<INTF1);
+
+      /* Reenable interrupts so code will not block */
+      sei();
 
       uint8_t ones=0, zeros=0, i;
       for (i=0;i<9;i++)
