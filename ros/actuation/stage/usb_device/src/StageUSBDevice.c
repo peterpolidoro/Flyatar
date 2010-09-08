@@ -227,7 +227,7 @@ TASK(USB_ProcessPacket)
                     LookupTablePosMove = FALSE;
                     LookupTableVelMove = FALSE;
                     LookupTableCorrectionOn = FALSE;
-                    Motor_Set_Values(USBPacketOut.Setpoint[0]);
+                    Motor_Set_Values_All(USBPacketOut.Setpoint[0]);
                     Motor_Update_All();
                   }
                   break;
@@ -266,7 +266,7 @@ TASK(USB_ProcessPacket)
                     TableEntry = 0;
                     if (TableEntry < TableEnd)
                       {
-                        Motor_Set_Values(LookupTable[TableEntry]);
+                        Motor_Set_Values_All(LookupTable[TableEntry]);
                         TableEntry++;
                         Motor_Update_All();
                       }
@@ -810,7 +810,7 @@ static void Motor_Set_Values_All(LookupTableRow_t MotorSetpoint)
       Motor[Motor_N].Update = (MotorUpdateBits & (1<<Motor_N));
       if (Motor[Motor_N].Update)
         {
-          Motor_Set_Values(MotorSetpoint);
+          Motor_Set_Values(MotorSetpoint,Motor_N);
         }
     }
 }
@@ -1167,11 +1167,11 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
           if (LookupTableVelMove && LookupTableCorrectionOn)
             {
               Lookup_Table_Correct(LookupTable[TableEntry]);
-              Motor_Set_Values(LookupTableRowCorrected);
+              Motor_Set_Values_All(LookupTableRowCorrected);
             }
           else
             {
-              Motor_Set_Values(LookupTable[TableEntry]);
+              Motor_Set_Values_All(LookupTable[TableEntry]);
             }
           TableEntry++;
           Motor_Update_All();
