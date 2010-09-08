@@ -93,8 +93,7 @@ int main(void)
   Interrupt_Init();
 
   /* Home Motors */
-  /* MotorUpdateBits = (1<<MOTOR_0) | (1<<MOTOR_1); */
-  MotorUpdateBits = (1<<MOTOR_0);
+  MotorUpdateBits = (1<<MOTOR_0) | (1<<MOTOR_1);
   Motor_Home();
 
   /* Scheduling - routine never returns, so put this last in the main function */
@@ -567,8 +566,8 @@ static void Motor_Init(void)
   Motor[1].InPosition = TRUE;
   Motor[1].HomeInProgress = FALSE;
   Motor[1].HomeSet = FALSE;
-  Motor[1].PositionLimitMax = 10000;
-  Motor[1].PositionLimitMin = 500;
+  Motor[1].PositionLimitMax = 40000;
+  Motor[1].PositionLimitMin = 1000;
   Motor[1].PositionLimitsEnabled = FALSE;
 
   Motor[2].Timer = MOTOR_2_TIMER;
@@ -632,10 +631,6 @@ static void Motor_Home(void)
 {
   LookupTableRow_t MotorHomeParameters;
 
-  Motor[0].Position = UINT16_MAX;
-  MotorHomeParameters[0].Frequency = 10000;
-  MotorHomeParameters[0].Position = 0;
-
   LookupTablePosMove = FALSE;
   LookupTableVelMove = FALSE;
   LookupTableCorrectionOn = FALSE;
@@ -645,14 +640,24 @@ static void Motor_Home(void)
   EIMSK &= ~((1<<INT0) | (1<<INT1) | (1<<INT2));
 
   /* Set external interrupt pins 0:2 to rising edge */
-  EICRA |= ((1<<ISC01) | (1<<ISC00));
+  EICRA |= ((1<<ISC01) | (1<<ISC00) | (1<<ISC11) | (1<<ISC10));
 
   /* Enable external interrupt pins 0:2 */
   /* EIMSK |= ((1<<INT0) | (1<<INT1) | (1<<INT2) | (1<<INT3) | (1<<INT4) | (1<<INT5)); */
-  EIMSK |= (1<<INT0);
+  EIMSK |= (1<<INT0) | (1<<INT1);
 
   Motor[0].HomeInProgress = TRUE;
   Motor[0].HomeSet = FALSE;
+  Motor[0].Position = UINT16_MAX;
+  MotorHomeParameters[0].Frequency = 10000;
+  MotorHomeParameters[0].Position = 0;
+
+  Motor[1].HomeInProgress = TRUE;
+  Motor[1].HomeSet = FALSE;
+  Motor[1].Position = UINT16_MAX;
+  MotorHomeParameters[1].Frequency = 10020;
+  MotorHomeParameters[1].Position = 0;
+
   Motor_Set_Values(MotorHomeParameters);
   Motor_Update_All();
 
@@ -1074,6 +1079,48 @@ ISR(MOTOR_0_HOME_INTERRUPT)
           Motor_Set_Values(MotorHomeParameters);
           Motor_Update_All();
           EIMSK &= ~(1<<INT0);
+        }
+    }
+  return;
+}
+
+ISR(MOTOR_1_HOME_INTERRUPT)
+{
+  if (Motor[1].HomeInProgress)
+    {
+      Motor[1].Frequency = 0;
+      Timer_Off(Motor[1].Timer);
+
+      uint8_t ones=0, zeros=0, i;
+      for (i=0;i<9;i++)
+        {
+          if (PIND & (1<<DDD1))
+            {
+              ones++;
+            }
+          else
+            {
+              zeros++;
+            }
+          _delay_ms(10);
+        }
+      LookupTableRow_t MotorHomeParameters;
+      if (zeros < ones)
+        {
+          Motor[1].Position = MOTOR_1_POSITION_HOME;
+          MotorHomeParameters[1].Frequency = 111;
+          MotorHomeParameters[1].Position = UINT16_MAX;
+          Motor_Set_Values(MotorHomeParameters);
+          Motor_Update_All();
+        }
+      else
+        {
+          Motor[1].Position = MOTOR_1_POSITION_HOME;
+          MotorHomeParameters[1].Frequency = 10000;
+          MotorHomeParameters[1].Position = 12345;
+          Motor_Set_Values(MotorHomeParameters);
+          Motor_Update_All();
+          EIMSK &= ~(1<<INT1);
         }
     }
   return;
