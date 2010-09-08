@@ -879,27 +879,27 @@ static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
 
 static void Position_Update(volatile uint8_t Motor_N)
 {
-  if (Motor[Motor_n].Direction == Motor[Motor_n].DirectionPos)
+  if (Motor[Motor_N].Direction == Motor[Motor_N].DirectionPos)
     {
-      Motor[Motor_n].Position += 1;
+      Motor[Motor_N].Position += 1;
     }
   else
     {
-      Motor[Motor_n].Position -= 1;
+      Motor[Motor_N].Position -= 1;
     }
-  if (Motor[Motor_n].Position == Motor[Motor_n].PositionSetPoint)
+  if (Motor[Motor_N].Position == Motor[Motor_N].PositionSetPoint)
     {
-      Motor[Motor_n].Frequency = 0;
-      Timer_Off(Motor[Motor_n].Timer);
-      Motor[Motor_n].InPosition = TRUE;
+      Motor[Motor_N].Frequency = 0;
+      Timer_Off(Motor[Motor_N].Timer);
+      Motor[Motor_N].InPosition = TRUE;
       /* Add this to test drift problem... */
-      *Motor[Motor_n].DirectionPort &= ~(1<<Motor[Motor_n].DirectionPin);
+      *Motor[Motor_N].DirectionPort &= ~(1<<Motor[Motor_N].DirectionPin);
 
-      if (Motor[Motor_n].HomeInProgress)
+      if (Motor[Motor_N].HomeInProgress)
         {
-          Motor[Motor_n].HomeInProgress = FALSE;
-          Motor[Motor_n].HomeSet = TRUE;
-          Motor[Motor_n].PositionLimitsEnabled = TRUE;
+          Motor[Motor_N].HomeInProgress = FALSE;
+          Motor[Motor_N].HomeSet = TRUE;
+          Motor[Motor_N].PositionLimitsEnabled = TRUE;
         }
 
       /* If all motors are in position, set InPosition interrupt */
@@ -916,9 +916,9 @@ static void Position_Update(volatile uint8_t Motor_N)
             }
         }
     }
-  else if (Motor[Motor_n].InPosition)
+  else if (Motor[Motor_N].InPosition)
     {
-      Motor[Motor_n].InPosition = FALSE;
+      Motor[Motor_N].InPosition = FALSE;
     }
 }
 
