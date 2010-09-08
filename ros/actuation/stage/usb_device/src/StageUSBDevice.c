@@ -549,8 +549,8 @@ static void Motor_Init(void)
   Motor[0].InPosition = TRUE;
   Motor[0].HomeInProgress = FALSE;
   Motor[0].HomeSet = FALSE;
-  Motor[0].PositionLimitMax = 10000;
-  Motor[0].PositionLimitMin = 500;
+  Motor[0].PositionLimitMax = 40000;
+  Motor[0].PositionLimitMin = 1000;
   Motor[0].PositionLimitsEnabled = FALSE;
 
   Motor[1].Timer = MOTOR_1_TIMER;
@@ -924,6 +924,14 @@ ISR(MOTOR_0_INTERRUPT)
           Motor[0].InPosition = TRUE;
           /* Add this to test drift problem... */
           *Motor[0].DirectionPort &= ~(1<<Motor[0].DirectionPin);
+
+          if (Motor[0].HomeInProgress)
+            {
+              Motor[0].HomeInProgress = FALSE;
+              Motor[0].HomeSet = TRUE;
+              Motor[0].PositionLimitsEnabled = TRUE;
+            }
+
           /* If all motors are in position, set InPosition interrupt */
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
@@ -1061,9 +1069,10 @@ ISR(MOTOR_0_HOME_INTERRUPT)
       else
         {
           Motor[0].Position = MOTOR_0_POSITION_HOME;
-          Motor[0].HomeInProgress = FALSE;
-          Motor[0].HomeSet = TRUE;
-          Motor[0].PositionLimitsEnabled = TRUE;
+          MotorHomeParameters[0].Frequency = 10000;
+          MotorHomeParameters[0].Position = 12345;
+          Motor_Set_Values(MotorHomeParameters);
+          Motor_Update_All();
           EIMSK &= ~(1<<INT0);
         }
     }
