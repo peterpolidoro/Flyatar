@@ -187,8 +187,8 @@ enum USB_StatusCodes_t
 const  uint16_t         PrescalerArray16[PRESCALER_NUM] = {1, 8, 64, 256, 1024};
 /* Probably a mistake with using the PrescalerArray8!!! */
 const  uint16_t         PrescalerArray8[PRESCALER_NUM] = {1, 8, 32, 64, 128};
-MotorWrapper_t          Motor[MOTOR_NUM];
-TimerWrapper_t          Timer[TIMER_NUM];
+volatile MotorWrapper_t Motor[MOTOR_NUM];
+volatile TimerWrapper_t Timer[TIMER_NUM];
 USBPacketOutWrapper_t   USBPacketOut;
 USBPacketInWrapper_t    USBPacketIn;
 uint8_t                 IO_Enabled=FALSE;
@@ -199,7 +199,7 @@ uint8_t                 TableEntry=0;
 uint8_t                 LookupTablePosMove=FALSE;
 uint8_t                 LookupTableVelMove=FALSE;
 uint8_t                 MotorUpdateBits=0;
-uint8_t                 AllMotorsInPosition=FALSE;
+volatile uint8_t        AllMotorsInPosition=FALSE;
 uint8_t                 LookupTableMoveComplete=FALSE;
 LookupTableRow_t        LookupTableCorrection;
 uint8_t                 LookupTableCorrectionOn=FALSE;
