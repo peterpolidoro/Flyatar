@@ -651,16 +651,16 @@ static void Motor_Home(void)
   Motor[0].Position = UINT16_MAX;
   MotorHomeParameters[0].Frequency = 10000;
   MotorHomeParameters[0].Position = 0;
+  Motor_Set_Values(MotorHomeParameters,0);
+  Motor_Update(0);
 
   Motor[1].HomeInProgress = TRUE;
   Motor[1].HomeSet = FALSE;
   Motor[1].Position = UINT16_MAX;
   MotorHomeParameters[1].Frequency = 10020;
   MotorHomeParameters[1].Position = 0;
-
-  Motor_Set_Values(MotorHomeParameters);
-  Motor_Update_All();
-
+  Motor_Set_Values(MotorHomeParameters,1);
+  Motor_Update(1);
 }
 
 static void Motor_Update(uint8_t Motor_N)
@@ -761,51 +761,56 @@ static void Motor_Update_All(void)
     }
 }
 
-static void Motor_Set_Values(LookupTableRow_t MotorSetpoint)
+static void Motor_Set_Values(LookupTableRow_t MotorSetpoint, uint8_t Motor_N)
+{
+  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  {
+    if (MotorSetpoint[Motor_N].Frequency > Motor[Motor_N].FrequencyMax)
+      {
+        Motor[Motor_N].Frequency = Motor[Motor_N].FrequencyMax;
+      }
+    else
+      {
+        Motor[Motor_N].Frequency = MotorSetpoint[Motor_N].Frequency;
+      }
+    if (Motor[Motor_N].PositionLimitsEnabled)
+      {
+        if (Motor[Motor_N].PositionLimitMax < MotorSetpoint[Motor_N].Position)
+          {
+            Motor[Motor_N].PositionSetPoint = Motor[Motor_N].PositionLimitMax;
+          }
+        else if (MotorSetpoint[Motor_N].Position < Motor[Motor_N].PositionLimitMin)
+          {
+            Motor[Motor_N].PositionSetPoint = Motor[Motor_N].PositionLimitMin;
+          }
+      }
+    else
+      {
+        Motor[Motor_N].PositionSetPoint = MotorSetpoint[Motor_N].Position;
+      }
+    if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position)
+      {
+        Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos;
+      }
+    else if (Motor[Motor_N].PositionSetPoint < Motor[Motor_N].Position)
+      {
+        Motor[Motor_N].Direction = Motor[Motor_N].DirectionNeg;
+      }
+    else
+      {
+        Motor[Motor_N].Frequency = 0;
+      }
+  }
+}
+
+static void Motor_Set_Values_All(LookupTableRow_t MotorSetpoint)
 {
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
     {
       Motor[Motor_N].Update = (MotorUpdateBits & (1<<Motor_N));
       if (Motor[Motor_N].Update)
         {
-          ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-          {
-            if (MotorSetpoint[Motor_N].Frequency > Motor[Motor_N].FrequencyMax)
-              {
-                Motor[Motor_N].Frequency = Motor[Motor_N].FrequencyMax;
-              }
-            else
-              {
-                Motor[Motor_N].Frequency = MotorSetpoint[Motor_N].Frequency;
-              }
-            if (Motor[Motor_N].PositionLimitsEnabled)
-              {
-                if (Motor[Motor_N].PositionLimitMax < MotorSetpoint[Motor_N].Position)
-                  {
-                    Motor[Motor_N].PositionSetPoint = Motor[Motor_N].PositionLimitMax;
-                  }
-                else if (MotorSetpoint[Motor_N].Position < Motor[Motor_N].PositionLimitMin)
-                  {
-                    Motor[Motor_N].PositionSetPoint = Motor[Motor_N].PositionLimitMin;
-                  }
-              }
-            else
-              {
-                Motor[Motor_N].PositionSetPoint = MotorSetpoint[Motor_N].Position;
-              }
-            if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position)
-              {
-                Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos;
-              }
-            else if (Motor[Motor_N].PositionSetPoint < Motor[Motor_N].Position)
-              {
-                Motor[Motor_N].Direction = Motor[Motor_N].DirectionNeg;
-              }
-            else
-              {
-                Motor[Motor_N].Frequency = 0;
-              }
-          }
+          Motor_Set_Values(MotorSetpoint);
         }
     }
 }
@@ -1082,7 +1087,7 @@ ISR(MOTOR_0_HOME_INTERRUPT)
           Motor[0].Position = MOTOR_0_POSITION_HOME;
           MotorHomeParameters[0].Frequency = 100;
           MotorHomeParameters[0].Position = UINT16_MAX;
-          Motor_Set_Values(MotorHomeParameters);
+          Motor_Set_Values(MotorHomeParameters,0);
           Motor_Update(0);
         }
       else
@@ -1090,7 +1095,7 @@ ISR(MOTOR_0_HOME_INTERRUPT)
           Motor[0].Position = MOTOR_0_POSITION_HOME;
           MotorHomeParameters[0].Frequency = 10000;
           MotorHomeParameters[0].Position = 12345;
-          Motor_Set_Values(MotorHomeParameters);
+          Motor_Set_Values(MotorHomeParameters,0);
           Motor_Update(0);
           EIMSK &= ~(1<<INT0);
         }
@@ -1124,7 +1129,7 @@ ISR(MOTOR_1_HOME_INTERRUPT)
           Motor[1].Position = MOTOR_1_POSITION_HOME;
           MotorHomeParameters[1].Frequency = 111;
           MotorHomeParameters[1].Position = UINT16_MAX;
-          Motor_Set_Values(MotorHomeParameters);
+          Motor_Set_Values(MotorHomeParameters,1);
           Motor_Update(1);
         }
       else
@@ -1132,7 +1137,7 @@ ISR(MOTOR_1_HOME_INTERRUPT)
           Motor[1].Position = MOTOR_1_POSITION_HOME;
           MotorHomeParameters[1].Frequency = 10000;
           MotorHomeParameters[1].Position = 12345;
-          Motor_Set_Values(MotorHomeParameters);
+          Motor_Set_Values(MotorHomeParameters,1);
           Motor_Update(1);
           EIMSK &= ~(1<<INT1);
         }
