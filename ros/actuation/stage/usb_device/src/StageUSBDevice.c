@@ -421,6 +421,7 @@ static void Interrupt_Init(void)
   EICRB &= ~((1<<ISC40) | (1<<ISC41));
 
   /* Enable external interrupt pins 4 */
+  EIFR  |= (1<<INTF4);
   EIMSK |= (1<<INT4);
 
   Interrupt_Enabled = TRUE;
@@ -644,6 +645,7 @@ static void Motor_Home(void)
 
   /* Enable external interrupt pins 0:2 */
   /* EIMSK |= ((1<<INT0) | (1<<INT1) | (1<<INT2)); */
+  EIFR  |= (1<<INTF0) | (1<<INTF1);
   EIMSK |= (1<<INT0) | (1<<INT1);
 
   Motor[0].HomeInProgress = TRUE;
@@ -877,123 +879,56 @@ static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
 }
 
 
-static void Position_Update(volatile uint8_t Motor_N)
-{
-  if (Motor[Motor_N].Direction == Motor[Motor_N].DirectionPos)
-    {
-      Motor[Motor_N].Position += 1;
-    }
-  else
-    {
-      Motor[Motor_N].Position -= 1;
-    }
-  if (Motor[Motor_N].Position == Motor[Motor_N].PositionSetPoint)
-    {
-      Motor[Motor_N].Frequency = 0;
-      Timer_Off(Motor[Motor_N].Timer);
-      Motor[Motor_N].InPosition = TRUE;
-      /* Add this to test drift problem... */
-      *Motor[Motor_N].DirectionPort &= ~(1<<Motor[Motor_N].DirectionPin);
+/* static void Position_Update(volatile uint8_t Motor_N) */
+/* { */
+/*   if (Motor[Motor_N].Direction == Motor[Motor_N].DirectionPos) */
+/*     { */
+/*       Motor[Motor_N].Position += 1; */
+/*     } */
+/*   else */
+/*     { */
+/*       Motor[Motor_N].Position -= 1; */
+/*     } */
+/*   if (Motor[Motor_N].Position == Motor[Motor_N].PositionSetPoint) */
+/*     { */
+/*       Motor[Motor_N].Frequency = 0; */
+/*       Timer_Off(Motor[Motor_N].Timer); */
+/*       Motor[Motor_N].InPosition = TRUE; */
+/*       /\* Add this to test drift problem... *\/ */
+/*       *Motor[Motor_N].DirectionPort &= ~(1<<Motor[Motor_N].DirectionPin); */
 
-      if (Motor[Motor_N].HomeInProgress)
-        {
-          Motor[Motor_N].HomeInProgress = FALSE;
-          Motor[Motor_N].HomeSet = TRUE;
-          Motor[Motor_N].PositionLimitsEnabled = TRUE;
-        }
+/*       if (Motor[Motor_N].HomeInProgress) */
+/*         { */
+/*           Motor[Motor_N].HomeInProgress = FALSE; */
+/*           Motor[Motor_N].HomeSet = TRUE; */
+/*           Motor[Motor_N].PositionLimitsEnabled = TRUE; */
+/*         } */
 
-      /* If all motors are in position, set InPosition interrupt */
-      if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
-        {
-          /* Set InPositionPin high (PORTE pin 5) */
-          /* PORTE |= (1<<PE5); */
-          AllMotorsInPosition = TRUE;
+/*       /\* If all motors are in position, set InPosition interrupt *\/ */
+/*       if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition) */
+/*         { */
+/*           /\* Set InPositionPin high (PORTE pin 5) *\/ */
+/*           /\* PORTE |= (1<<PE5); *\/ */
+/*           AllMotorsInPosition = TRUE; */
 
-          if (LookupTablePosMove)
-            {
-              /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
-              PORTE &= ~(1<<PE4);
-            }
-        }
-    }
-  else if (Motor[Motor_N].InPosition)
-    {
-      Motor[Motor_N].InPosition = FALSE;
-    }
-}
-
-ISR(MOTOR_0_INTERRUPT)
-{
-  if (PINB & (1<<DDB5))
-    {
-      Position_Update(0);
-    }
-  return;
-}
-
-ISR(MOTOR_1_INTERRUPT)
-{
-  if (PINC & (1<<DDC6))
-    {
-      Position_Update(1);
-    }
-  return;
-}
-
-ISR(MOTOR_2_INTERRUPT)
-{
-  if (PINB & (1<<DDB4))
-    {
-      Position_Update(2);
-    }
-  return;
-}
+/*           if (LookupTablePosMove) */
+/*             { */
+/*               /\* Set interrupt 4 low to enable interrupt (PORTE pin 4) *\/ */
+/*               PORTE &= ~(1<<PE4); */
+/*             } */
+/*         } */
+/*     } */
+/*   else if (Motor[Motor_N].InPosition) */
+/*     { */
+/*       Motor[Motor_N].InPosition = FALSE; */
+/*     } */
+/* } */
 
 /* ISR(MOTOR_0_INTERRUPT) */
 /* { */
 /*   if (PINB & (1<<DDB5)) */
 /*     { */
-/*       if (Motor[0].Direction == Motor[0].DirectionPos) */
-/*         { */
-/*           Motor[0].Position += 1; */
-/*         } */
-/*       else */
-/*         { */
-/*           Motor[0].Position -= 1; */
-/*         } */
-/*       if (Motor[0].Position == Motor[0].PositionSetPoint) */
-/*         { */
-/*           Motor[0].Frequency = 0; */
-/*           Timer_Off(Motor[0].Timer); */
-/*           Motor[0].InPosition = TRUE; */
-/*           /\* Add this to test drift problem... *\/ */
-/*           *Motor[0].DirectionPort &= ~(1<<Motor[0].DirectionPin); */
-
-/*           if (Motor[0].HomeInProgress) */
-/*             { */
-/*               Motor[0].HomeInProgress = FALSE; */
-/*               Motor[0].HomeSet = TRUE; */
-/*               Motor[0].PositionLimitsEnabled = TRUE; */
-/*             } */
-
-/*           /\* If all motors are in position, set InPosition interrupt *\/ */
-/*           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition) */
-/*             { */
-/*               /\* Set InPositionPin high (PORTE pin 5) *\/ */
-/*               /\* PORTE |= (1<<PE5); *\/ */
-/*               AllMotorsInPosition = TRUE; */
-
-/*               if (LookupTablePosMove) */
-/*                 { */
-/*                   /\* Set interrupt 4 low to enable interrupt (PORTE pin 4) *\/ */
-/*                   PORTE &= ~(1<<PE4); */
-/*                 } */
-/*             } */
-/*         } */
-/*       else if (Motor[0].InPosition) */
-/*         { */
-/*           Motor[0].InPosition = FALSE; */
-/*         } */
+/*       Position_Update(0); */
 /*     } */
 /*   return; */
 /* } */
@@ -1002,47 +937,7 @@ ISR(MOTOR_2_INTERRUPT)
 /* { */
 /*   if (PINC & (1<<DDC6)) */
 /*     { */
-/*       if (Motor[1].Direction == Motor[1].DirectionPos) */
-/*         { */
-/*           Motor[1].Position += 1; */
-/*         } */
-/*       else */
-/*         { */
-/*           Motor[1].Position -= 1; */
-/*         } */
-/*       if (Motor[1].Position == Motor[1].PositionSetPoint) */
-/*         { */
-/*           Motor[1].Frequency = 0; */
-/*           Timer_Off(Motor[1].Timer); */
-/*           Motor[1].InPosition = TRUE; */
-/*           /\* Add this to test drift problem... *\/ */
-/*           *Motor[1].DirectionPort &= ~(1<<Motor[1].DirectionPin); */
-
-/*           if (Motor[1].HomeInProgress) */
-/*             { */
-/*               Motor[1].HomeInProgress = FALSE; */
-/*               Motor[1].HomeSet = TRUE; */
-/*               Motor[1].PositionLimitsEnabled = TRUE; */
-/*             } */
-
-/*           /\* If all motors are in position, set InPosition interrupt *\/ */
-/*           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition) */
-/*             { */
-/*               /\* Set InPositionPin high (PORTE pin 5) *\/ */
-/*               /\* PORTE |= (1<<PE5); *\/ */
-/*               AllMotorsInPosition = TRUE; */
-
-/*               if (LookupTablePosMove) */
-/*                 { */
-/*                   /\* Set interrupt 4 low to enable interrupt (PORTE pin 4) *\/ */
-/*                   PORTE &= ~(1<<PE4); */
-/*                 } */
-/*             } */
-/*         } */
-/*       else if (Motor[1].InPosition) */
-/*         { */
-/*           Motor[1].InPosition = FALSE; */
-/*         } */
+/*       Position_Update(1); */
 /*     } */
 /*   return; */
 /* } */
@@ -1051,49 +946,156 @@ ISR(MOTOR_2_INTERRUPT)
 /* { */
 /*   if (PINB & (1<<DDB4)) */
 /*     { */
-/*       if (Motor[2].Direction == Motor[2].DirectionPos) */
-/*         { */
-/*           Motor[2].Position += 1; */
-/*         } */
-/*       else */
-/*         { */
-/*           Motor[2].Position -= 1; */
-/*         } */
-/*       if (Motor[2].Position == Motor[2].PositionSetPoint) */
-/*         { */
-/*           Motor[2].Frequency = 0; */
-/*           Timer_Off(Motor[2].Timer); */
-/*           Motor[2].InPosition = TRUE; */
-/*           /\* Add this to test drift problem... *\/ */
-
-/*           if (Motor[2].HomeInProgress) */
-/*             { */
-/*               Motor[2].HomeInProgress = FALSE; */
-/*               Motor[2].HomeSet = TRUE; */
-/*               Motor[2].PositionLimitsEnabled = TRUE; */
-/*             } */
-
-/*           /\* If all motors are in position, set InPosition interrupt *\/ */
-/*           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition) */
-/*             { */
-/*               /\* Set InPositionPin high (PORTE pin 5) *\/ */
-/*               /\* PORTE |= (1<<PE5); *\/ */
-/*               AllMotorsInPosition = TRUE; */
-
-/*               if (LookupTablePosMove) */
-/*                 { */
-/*                   /\* Set interrupt 4 low to enable interrupt (PORTE pin 4) *\/ */
-/*                   PORTE &= ~(1<<PE4); */
-/*                 } */
-/*             } */
-/*         } */
-/*       else if (Motor[2].InPosition) */
-/*         { */
-/*           Motor[2].InPosition = FALSE; */
-/*         } */
+/*       Position_Update(2); */
 /*     } */
 /*   return; */
 /* } */
+
+ISR(MOTOR_0_INTERRUPT)
+{
+  if (PINB & (1<<DDB5))
+    {
+      if (Motor[0].Direction == Motor[0].DirectionPos)
+        {
+          Motor[0].Position += 1;
+        }
+      else
+        {
+          Motor[0].Position -= 1;
+        }
+      if (Motor[0].Position == Motor[0].PositionSetPoint)
+        {
+          Motor[0].Frequency = 0;
+          Timer_Off(Motor[0].Timer);
+          Motor[0].InPosition = TRUE;
+          /* Add this to test drift problem... */
+          *Motor[0].DirectionPort &= ~(1<<Motor[0].DirectionPin);
+
+          if (Motor[0].HomeInProgress)
+            {
+              Motor[0].HomeInProgress = FALSE;
+              Motor[0].HomeSet = TRUE;
+              Motor[0].PositionLimitsEnabled = TRUE;
+            }
+
+          /* If all motors are in position, set InPosition interrupt */
+          if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
+            {
+              /* Set InPositionPin high (PORTE pin 5) */
+              /* PORTE |= (1<<PE5); */
+              AllMotorsInPosition = TRUE;
+
+              if (LookupTablePosMove)
+                {
+                  /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+                  PORTE &= ~(1<<PE4);
+                }
+            }
+        }
+      else if (Motor[0].InPosition)
+        {
+          Motor[0].InPosition = FALSE;
+        }
+    }
+  return;
+}
+
+ISR(MOTOR_1_INTERRUPT)
+{
+  if (PINC & (1<<DDC6))
+    {
+      if (Motor[1].Direction == Motor[1].DirectionPos)
+        {
+          Motor[1].Position += 1;
+        }
+      else
+        {
+          Motor[1].Position -= 1;
+        }
+      if (Motor[1].Position == Motor[1].PositionSetPoint)
+        {
+          Motor[1].Frequency = 0;
+          Timer_Off(Motor[1].Timer);
+          Motor[1].InPosition = TRUE;
+          /* Add this to test drift problem... */
+          *Motor[1].DirectionPort &= ~(1<<Motor[1].DirectionPin);
+
+          if (Motor[1].HomeInProgress)
+            {
+              Motor[1].HomeInProgress = FALSE;
+              Motor[1].HomeSet = TRUE;
+              Motor[1].PositionLimitsEnabled = TRUE;
+            }
+
+          /* If all motors are in position, set InPosition interrupt */
+          if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
+            {
+              /* Set InPositionPin high (PORTE pin 5) */
+              /* PORTE |= (1<<PE5); */
+              AllMotorsInPosition = TRUE;
+
+              if (LookupTablePosMove)
+                {
+                  /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+                  PORTE &= ~(1<<PE4);
+                }
+            }
+        }
+      else if (Motor[1].InPosition)
+        {
+          Motor[1].InPosition = FALSE;
+        }
+    }
+  return;
+}
+
+ISR(MOTOR_2_INTERRUPT)
+{
+  if (PINB & (1<<DDB4))
+    {
+      if (Motor[2].Direction == Motor[2].DirectionPos)
+        {
+          Motor[2].Position += 1;
+        }
+      else
+        {
+          Motor[2].Position -= 1;
+        }
+      if (Motor[2].Position == Motor[2].PositionSetPoint)
+        {
+          Motor[2].Frequency = 0;
+          Timer_Off(Motor[2].Timer);
+          Motor[2].InPosition = TRUE;
+          /* Add this to test drift problem... */
+
+          if (Motor[2].HomeInProgress)
+            {
+              Motor[2].HomeInProgress = FALSE;
+              Motor[2].HomeSet = TRUE;
+              Motor[2].PositionLimitsEnabled = TRUE;
+            }
+
+          /* If all motors are in position, set InPosition interrupt */
+          if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
+            {
+              /* Set InPositionPin high (PORTE pin 5) */
+              /* PORTE |= (1<<PE5); */
+              AllMotorsInPosition = TRUE;
+
+              if (LookupTablePosMove)
+                {
+                  /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+                  PORTE &= ~(1<<PE4);
+                }
+            }
+        }
+      else if (Motor[2].InPosition)
+        {
+          Motor[2].InPosition = FALSE;
+        }
+    }
+  return;
+}
 
 ISR(MOTOR_0_HOME_INTERRUPT)
 {
@@ -1101,6 +1103,10 @@ ISR(MOTOR_0_HOME_INTERRUPT)
     {
       Motor[0].Frequency = 0;
       Timer_Off(Motor[0].Timer);
+
+      /* Disable external interrupt pin 0 */
+      EIMSK &= ~(1<<INT0);
+      EIFR  |= (1<<INTF0);
 
       uint8_t ones=0, zeros=0, i;
       for (i=0;i<9;i++)
@@ -1121,6 +1127,7 @@ ISR(MOTOR_0_HOME_INTERRUPT)
           Motor[0].Position = MOTOR_0_POSITION_HOME;
           MotorHomeParameters[0].Frequency = 100;
           MotorHomeParameters[0].Position = UINT16_MAX;
+          EIMSK |= (1<<INT0);
 
           Motor_Set_Values(MotorHomeParameters,0);
           Motor_Update(0);
@@ -1132,8 +1139,6 @@ ISR(MOTOR_0_HOME_INTERRUPT)
           MotorHomeParameters[0].Position = 12345;
           Motor_Set_Values(MotorHomeParameters,0);
           Motor_Update(0);
-          /* Disable external interrupt pin 0 */
-          EIMSK &= ~(1<<INT0);
         }
     }
   return;
@@ -1145,6 +1150,10 @@ ISR(MOTOR_1_HOME_INTERRUPT)
     {
       Motor[1].Frequency = 0;
       Timer_Off(Motor[1].Timer);
+
+      /* Disable external interrupt pin 1 */
+      EIMSK &= ~(1<<INT1);
+      EIFR  |= (1<<INTF1);
 
       uint8_t ones=0, zeros=0, i;
       for (i=0;i<9;i++)
@@ -1165,6 +1174,7 @@ ISR(MOTOR_1_HOME_INTERRUPT)
           Motor[1].Position = MOTOR_1_POSITION_HOME;
           MotorHomeParameters[1].Frequency = 100;
           MotorHomeParameters[1].Position = UINT16_MAX;
+          EIMSK |= (1<<INT1);
 
           Motor_Set_Values(MotorHomeParameters,1);
           Motor_Update(1);
