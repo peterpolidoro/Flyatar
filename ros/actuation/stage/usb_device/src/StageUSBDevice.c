@@ -643,7 +643,7 @@ static void Motor_Home(void)
   EICRA |= ((1<<ISC01) | (1<<ISC00) | (1<<ISC11) | (1<<ISC10));
 
   /* Enable external interrupt pins 0:2 */
-  /* EIMSK |= ((1<<INT0) | (1<<INT1) | (1<<INT2) | (1<<INT3) | (1<<INT4) | (1<<INT5)); */
+  /* EIMSK |= ((1<<INT0) | (1<<INT1) | (1<<INT2)); */
   EIMSK |= (1<<INT0) | (1<<INT1);
 
   Motor[0].HomeInProgress = TRUE;
@@ -979,6 +979,12 @@ ISR(MOTOR_1_INTERRUPT)
           /* Add this to test drift problem... */
           *Motor[1].DirectionPort &= ~(1<<Motor[1].DirectionPin);
 
+          if (Motor[1].HomeInProgress)
+            {
+              Motor[1].HomeInProgress = FALSE;
+              Motor[1].HomeSet = TRUE;
+              Motor[1].PositionLimitsEnabled = TRUE;
+            }
 
           /* If all motors are in position, set InPosition interrupt */
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
@@ -1020,6 +1026,14 @@ ISR(MOTOR_2_INTERRUPT)
           Timer_Off(Motor[2].Timer);
           Motor[2].InPosition = TRUE;
           /* Add this to test drift problem... */
+
+          if (Motor[2].HomeInProgress)
+            {
+              Motor[2].HomeInProgress = FALSE;
+              Motor[2].HomeSet = TRUE;
+              Motor[2].PositionLimitsEnabled = TRUE;
+            }
+
           /* If all motors are in position, set InPosition interrupt */
           if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
             {
@@ -1069,7 +1083,7 @@ ISR(MOTOR_0_HOME_INTERRUPT)
           MotorHomeParameters[0].Frequency = 100;
           MotorHomeParameters[0].Position = UINT16_MAX;
           Motor_Set_Values(MotorHomeParameters);
-          Motor_Update_All();
+          Motor_Update(0);
         }
       else
         {
@@ -1077,7 +1091,7 @@ ISR(MOTOR_0_HOME_INTERRUPT)
           MotorHomeParameters[0].Frequency = 10000;
           MotorHomeParameters[0].Position = 12345;
           Motor_Set_Values(MotorHomeParameters);
-          Motor_Update_All();
+          Motor_Update(0);
           EIMSK &= ~(1<<INT0);
         }
     }
@@ -1111,7 +1125,7 @@ ISR(MOTOR_1_HOME_INTERRUPT)
           MotorHomeParameters[1].Frequency = 111;
           MotorHomeParameters[1].Position = UINT16_MAX;
           Motor_Set_Values(MotorHomeParameters);
-          Motor_Update_All();
+          Motor_Update(1);
         }
       else
         {
@@ -1119,7 +1133,7 @@ ISR(MOTOR_1_HOME_INTERRUPT)
           MotorHomeParameters[1].Frequency = 10000;
           MotorHomeParameters[1].Position = 12345;
           Motor_Set_Values(MotorHomeParameters);
-          Motor_Update_All();
+          Motor_Update(1);
           EIMSK &= ~(1<<INT1);
         }
     }
