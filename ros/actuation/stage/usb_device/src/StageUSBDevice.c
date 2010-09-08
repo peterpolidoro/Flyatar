@@ -789,6 +789,10 @@ static void Motor_Set_Values(LookupTableRow_t MotorSetpoint, uint8_t Motor_N)
           {
             Motor[Motor_N].PositionSetPoint = Motor[Motor_N].PositionLimitMin;
           }
+        else
+          {
+            Motor[Motor_N].PositionSetPoint = MotorSetpoint[Motor_N].Position;
+          }
       }
     else
       {
