@@ -233,7 +233,7 @@ static void Motor_Set_Values_All(LookupTableRow_t MotorSetpoint);
 static void Motor_Home(void);
 static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t EntryCount,uint8_t EntryLocation);
 static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected);
-//static void Position_Update(volatile uint8_t Motor_N);
+static void Position_Update(volatile uint8_t Motor_N);
 #endif
 
 #endif
