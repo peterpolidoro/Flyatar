@@ -638,8 +638,9 @@ static void Motor_Home(void)
   /* Disable external interrupt pins 0:2 before changing interrupt sense control */
   EIMSK &= ~((1<<INT0) | (1<<INT1) | (1<<INT2));
 
-  /* Set external interrupt pins 0:2 to rising edge */
-  EICRA |= ((1<<ISC01) | (1<<ISC00) | (1<<ISC11) | (1<<ISC10));
+  /* Set external interrupt pins 0:2 to either rising or falling edge */
+  EICRA |= ((1<<ISC00) | (1<<ISC10) | (1<<ISC20));
+  EICRA &= ~((1<<ISC01) | (1<<ISC11) | (1<<ISC21));
 
   /* Enable external interrupt pins 0:2 */
   /* EIMSK |= ((1<<INT0) | (1<<INT1) | (1<<INT2)); */
@@ -1071,9 +1072,6 @@ ISR(MOTOR_0_HOME_INTERRUPT)
       Motor[0].Frequency = 0;
       Timer_Off(Motor[0].Timer);
 
-      /* Disable external interrupt pin 0 */
-      EIMSK &= ~(1<<INT0);
-
       uint8_t ones=0, zeros=0, i;
       for (i=0;i<9;i++)
         {
@@ -1094,13 +1092,6 @@ ISR(MOTOR_0_HOME_INTERRUPT)
           MotorHomeParameters[0].Frequency = 100;
           MotorHomeParameters[0].Position = UINT16_MAX;
 
-          /* Set external interrupt pin 0 to falling edge */
-          EICRA |= (1<<ISC01);
-          EICRA &= ~(1<<ISC00);
-
-          /* Enable external interrupt pin 0 */
-          EIMSK |= (1<<INT0);
-
           Motor_Set_Values(MotorHomeParameters,0);
           Motor_Update(0);
         }
@@ -1111,6 +1102,8 @@ ISR(MOTOR_0_HOME_INTERRUPT)
           MotorHomeParameters[0].Position = 12345;
           Motor_Set_Values(MotorHomeParameters,0);
           Motor_Update(0);
+          /* Disable external interrupt pin 0 */
+          EIMSK &= ~(1<<INT0);
         }
     }
   return;
@@ -1122,9 +1115,6 @@ ISR(MOTOR_1_HOME_INTERRUPT)
     {
       Motor[1].Frequency = 0;
       Timer_Off(Motor[1].Timer);
-
-      /* Disable external interrupt pin 1  */
-      EIMSK &= ~(1<<INT1);
 
       uint8_t ones=0, zeros=0, i;
       for (i=0;i<9;i++)
@@ -1146,13 +1136,6 @@ ISR(MOTOR_1_HOME_INTERRUPT)
           MotorHomeParameters[1].Frequency = 111;
           MotorHomeParameters[1].Position = UINT16_MAX;
 
-          /* Set external interrupt pin 1 to falling edge */
-          EICRA |= (1<<ISC11);
-          EICRA &= ~(1<<ISC10);
-
-          /* Enable external interrupt pin 1 */
-          EIMSK |= (1<<INT1);
-
           Motor_Set_Values(MotorHomeParameters,1);
           Motor_Update(1);
         }
@@ -1163,6 +1146,8 @@ ISR(MOTOR_1_HOME_INTERRUPT)
           MotorHomeParameters[1].Position = 12345;
           Motor_Set_Values(MotorHomeParameters,1);
           Motor_Update(1);
+          /* Disable external interrupt pin 1  */
+          EIMSK &= ~(1<<INT1);
         }
     }
   return;
