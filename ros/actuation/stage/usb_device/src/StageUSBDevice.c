@@ -649,7 +649,7 @@ static void Motor_Home(void)
   Motor[0].HomeInProgress = TRUE;
   Motor[0].HomeSet = FALSE;
   Motor[0].Position = UINT16_MAX;
-  MotorHomeParameters[0].Frequency = 10000;
+  MotorHomeParameters[0].Frequency = 8000;
   MotorHomeParameters[0].Position = 0;
   Motor_Set_Values(MotorHomeParameters,0);
   Motor_Update(0);
@@ -657,7 +657,7 @@ static void Motor_Home(void)
   Motor[1].HomeInProgress = TRUE;
   Motor[1].HomeSet = FALSE;
   Motor[1].Position = UINT16_MAX;
-  MotorHomeParameters[1].Frequency = 10020;
+  MotorHomeParameters[1].Frequency = 7000;
   MotorHomeParameters[1].Position = 0;
   Motor_Set_Values(MotorHomeParameters,1);
   Motor_Update(1);
@@ -1133,7 +1133,7 @@ ISR(MOTOR_1_HOME_INTERRUPT)
       if (zeros < ones)
         {
           Motor[1].Position = MOTOR_1_POSITION_HOME;
-          MotorHomeParameters[1].Frequency = 111;
+          MotorHomeParameters[1].Frequency = 100;
           MotorHomeParameters[1].Position = UINT16_MAX;
 
           Motor_Set_Values(MotorHomeParameters,1);
