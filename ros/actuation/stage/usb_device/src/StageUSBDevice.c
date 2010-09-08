@@ -547,8 +547,8 @@ static void Motor_Init(void)
   Motor[0].InPosition = TRUE;
   Motor[0].HomeInProgress = FALSE;
   Motor[0].HomeSet = FALSE;
-  Motor[0].PositionLimitMax = 40000;
-  Motor[0].PositionLimitMin = 1000;
+  Motor[0].PositionLimitMax = 45000;
+  Motor[0].PositionLimitMin = 500;
   Motor[0].PositionLimitsEnabled = FALSE;
 
   Motor[1].Timer = MOTOR_1_TIMER;
@@ -565,8 +565,8 @@ static void Motor_Init(void)
   Motor[1].InPosition = TRUE;
   Motor[1].HomeInProgress = FALSE;
   Motor[1].HomeSet = FALSE;
-  Motor[1].PositionLimitMax = 40000;
-  Motor[1].PositionLimitMin = 1000;
+  Motor[1].PositionLimitMax = 45000;
+  Motor[1].PositionLimitMin = 500;
   Motor[1].PositionLimitsEnabled = FALSE;
 
   Motor[2].Timer = MOTOR_2_TIMER;
