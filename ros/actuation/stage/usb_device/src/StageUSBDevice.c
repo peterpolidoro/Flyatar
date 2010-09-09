@@ -884,7 +884,7 @@ static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
 
 
 #define POSITION_UPDATE(Motor_N) \
-(uint8_t Timer_N; \
+uint8_t Timer_N; \
  \
  Timer_N = Motor[Motor_N].Timer; \
  if (*Timer[Timer_N].Address.PinPort & (1<<Timer[Timer_N].OutputPin)) \
@@ -930,24 +930,22 @@ static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
        { \
          Motor[Motor_N].InPosition = FALSE; \
        } \
-   }) \
+   } \
+ return; \
 
 ISR(MOTOR_0_INTERRUPT)
 {
-  POSITION_UPDATE(0);
-  return;
+  POSITION_UPDATE(0)
 }
 
 ISR(MOTOR_1_INTERRUPT)
 {
-  POSITION_UPDATE(1);
-  return;
+  POSITION_UPDATE(1)
 }
 
 ISR(MOTOR_2_INTERRUPT)
 {
-  POSITION_UPDATE(2);
-  return;
+  POSITION_UPDATE(2)
 }
 
 /* ISR(MOTOR_0_INTERRUPT) */
