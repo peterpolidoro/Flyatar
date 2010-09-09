@@ -45,6 +45,8 @@ rostopic pub -1 /Stage/Commands stage/StageCommands -- True False False [125] [1
 rostopic pub -1 /Stage/Commands stage/StageCommands -- False True False [] [] [5] [5]
 <Example: Set velocity 5,5 (mm/s in Stage coordinates) for 160 ms (16 ms for every item in list, not counting last item) then stop (0 mm/s)>
 rostopic pub -1 /Stage/Commands stage/StageCommands -- False True False [] [] [5,5,5,5,5,5,5,5,5,5,0] [5,5,5,5,5,5,5,5,5,5,0]
+<Example: Move in a square pattern at 50 mm/s>
+rostopic pub -1 /Stage/Commands stage/StageCommands -- True False False [100,150,150,100,100] [100,100,150,150,100] [50,50,50,50,50] [50,50,50,50,50]
 
 Calibration:
 sudo mkdir /cameras
