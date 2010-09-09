@@ -2,6 +2,8 @@ ROS Installation (Ubuntu):
 sudo apt-get install build-essential python-yaml cmake subversion wget git-core git-gui git-doc
 
 git clone git://github.com/peterpolidoro/Flyatar.git ~/git/Flyatar
+mkdir ~/bin
+export PATH=~/bin:$PATH
 cp ~/git/Flyatar/ros/rosinstall ~/bin/
 
 // rosinstall ~/ros/cturtle_wg_all http://www.ros.org/rosinstalls/cturtle_wg_all.rosinstall
