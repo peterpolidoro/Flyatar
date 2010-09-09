@@ -537,7 +537,7 @@ static void Motor_Init(void)
   Motor[0].Timer = MOTOR_0_TIMER;
   Motor[0].DirectionPort = &PORTC;
   Motor[0].DirectionPin = PC0;
-  Motor[0].HomePort = &PORTD;
+  Motor[0].HomePort = &PIND;
   Motor[0].HomePin = DDD0;
   Motor[0].HomeEIMSK = INT0;
   Motor[0].HomeEIFR = INTF0;
@@ -559,7 +559,7 @@ static void Motor_Init(void)
   Motor[1].Timer = MOTOR_1_TIMER;
   Motor[1].DirectionPort = &PORTC;
   Motor[1].DirectionPin = PC1;
-  Motor[1].HomePort = &PORTD;
+  Motor[1].HomePort = &PIND;
   Motor[1].HomePin = DDD1;
   Motor[1].HomeEIMSK = INT1;
   Motor[1].HomeEIFR = INTF1;
@@ -581,7 +581,7 @@ static void Motor_Init(void)
   Motor[2].Timer = MOTOR_2_TIMER;
   Motor[2].DirectionPort = &PORTC;
   Motor[2].DirectionPin = PC2;
-  Motor[2].HomePort = &PORTD;
+  Motor[2].HomePort = &PIND;
   Motor[2].HomePin = DDD2;
   Motor[2].HomeEIMSK = INT2;
   Motor[2].HomeEIFR = INTF2;
@@ -961,9 +961,9 @@ if (Motor[Motor_N].HomeInProgress)                                              
     uint8_t ones=0, zeros=0, i;                                                    \
     for (i=0;i<9;i++)                                                              \
       {                                                                            \
-        if (PIND & (1<<DDD0))                                                      \
+        /* if (PIND & (1<<DDD0))                                         */        \
                                                                                    \
-        /* if (*Motor[Motor_N].HomePort & (1<<Motor[Motor_N].HomePin))   */        \ 
+        if (*Motor[Motor_N].HomePort & (1<<Motor[Motor_N].HomePin))                \
           {                                                                        \
             ones++;                                                                \
           }                                                                        \
