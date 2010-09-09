@@ -99,6 +99,9 @@
 #define LOOKUP_TABLE_JUMP_INTERRUPT  INT4_vect
 #define LOOKUP_TABLE_VEL_TIMER_INTERRUPT  TIMER0_OVF_vect
 
+#define HOME_FREQUENCY_FAST 10000
+#define HOME_FREQUENCY_SLOW 100
+
 /* Software reset */
 #define AVR_RESET() wdt_enable(WDTO_30MS); while(TRUE) {}
 #define AVR_IS_WDT_RESET()  ((MCUSR&(1<<WDRF)) ? TRUE:FALSE)
@@ -115,6 +118,10 @@ typedef struct
   uint8_t     Timer;
   volatile uint8_t     *DirectionPort;
   uint8_t     DirectionPin;
+  volatile uint8_t     *HomePort;
+  uint8_t     HomePin;
+  uint8_t     HomeEIMSK;
+  uint8_t     HomeEIFR;
   uint16_t    Frequency;
   uint16_t    FrequencyMax;
   uint8_t     Direction;
