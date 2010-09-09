@@ -162,6 +162,8 @@ class StageDevice(USBDevice.USB_Device):
             x_pos_list = [None]*point_count
             y_pos_list = [None]*point_count
             vel_move = True
+        else:
+            vel_move = False
             # if 1 < point_count:
             #     rospy.logwarn("x_vel_list = \n%s" % (str(x_vel_list)))
             #     rospy.logwarn("y_vel_list = \n%s" % (str(y_vel_list)))
