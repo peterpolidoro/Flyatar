@@ -23,6 +23,9 @@ sudo adduser $USER usb
 sudo cp ~/git/Flyatar/ros/udevrules/99*.rules /etc/udev/rules.d/
 (restart computer)
 
+Compiling:
+rosmake flyatar_avatar
+
 Calibration:
 sudo mkdir /cameras
 sudo chown $USER cameras/
