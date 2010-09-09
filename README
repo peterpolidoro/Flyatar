@@ -31,6 +31,16 @@ Updating:
 rosinstall -u ~/ros
 rosinstall -u ~/ros/Flyatar
 
+Controlling Just the Stage:
+roslaunch stage_tf stage_tf.launch
+rosmsg show stage/StageCommands
+<Example: Goto position 125,125 (mm in Stage coordinates) at 50 mm/s>
+rostopic pub -1 /Stage/Commands stage/StageCommands -- True False False [125] [125] [50] [50]
+<Example: Set velocity 5,5 (mm/s in Stage coordinates)>
+rostopic pub -1 /Stage/Commands stage/StageCommandsFalse True False [] [] [5] [5]
+<Example: Set velocity 5,5 (mm/s in Stage coordinates) for 160 ms (16 ms for every item in list, not counting last item) then stop (0 mm/s)>
+rostopic pub -1 /Stage/Commands stage/StageCommands -- False True False [] [] [5,5,5,5,5,5,5,5,5,5,0] [5,5,5,5,5,5,5,5,5,5,0]
+
 Calibration:
 sudo mkdir /cameras
 sudo chown $USER cameras/
