@@ -7,7 +7,7 @@ import tf
 # import numpy, math
 from geometry_msgs.msg import PointStamped
 # from plate_tf.srv import *
-import KalmanFilter as kf
+import filters
 import copy
 from plate_tf.msg import StopState
 
@@ -53,7 +53,7 @@ class StagePlateTFBroadcaster:
 
         self.tries_limit = 4
 
-        self.kf_stage_plate_offset = kf.KalmanFilter()
+        self.kf_stage_plate_offset = filters.KalmanFilter()
         self.initialized = True
 
     def convert_to_plate(self,point):
