@@ -4,8 +4,11 @@ sudo apt-get install build-essential python-yaml cmake subversion wget git-core 
 git clone git://github.com/peterpolidoro/Flyatar.git ~/git/Flyatar
 cp ~/git/Flyatar/ros/rosinstall ~/bin/
 
-rosinstall ~/ros/cturtle_wg_all http://www.ros.org/rosinstalls/cturtle_wg_all.rosinstall
-source ~/ros/cturtle_wg_all/setup.sh
+// rosinstall ~/ros/cturtle_wg_all http://www.ros.org/rosinstalls/cturtle_wg_all.rosinstall
+// source ~/ros/cturtle_wg_all/setup.sh
+
+rosinstall ~/ros http://ros.org/rosinstalls/cturtle_pr2all.rosinstall
+source ~/ros/cturtle_pr2all/setup.sh
 
 rosinstall -o ~/ros/Flyatar ~/git/Flyatar/ros/flyatar.local.rosinstall
 echo "source ~/ros/Flyatar/setup.sh" >> ~/.bashrc
@@ -77,10 +80,10 @@ unzip LUFA-090605.zip
 mv LUFA\ 090605/ LUFA090605
 echo "export LUFA090605=~/LUFA/LUFA090605" >> ~/.bashrc
 
-wget http://lufa-lib.googlecode.com/files/LUFA-100807.zip
-unzip LUFA-100807.zip
-mv LUFA\ 100807/ LUFA100807
-echo "export LUFA100807=~/LUFA/LUFA100807" >> ~/.bashrc
+// wget http://lufa-lib.googlecode.com/files/LUFA-100807.zip
+// unzip LUFA-100807.zip
+// mv LUFA\ 100807/ LUFA100807
+// echo "export LUFA100807=~/LUFA/LUFA100807" >> ~/.bashrc
 
 . ~/.bashrc
 sudo apt-get install gcc-avr avr-libc
