@@ -25,6 +25,8 @@ class JoystickControl:
 
     def commands_callback(self,data):
         if self.initialized:
+            if data.stop:
+                self.moving_to_start = False
             if data.goto_start and not self.moving_to_start:
                 self.stage_commands.position_control = True
                 self.stage_commands.velocity_control = False
@@ -35,7 +37,6 @@ class JoystickControl:
                 self.stage_commands.y_velocity = []
                 self.moving_to_start = True
             else:
-                self.moving_to_start = False
                 self.stage_commands.position_control = False
                 self.stage_commands.velocity_control = True
                 self.stage_commands.lookup_table_correct = False
