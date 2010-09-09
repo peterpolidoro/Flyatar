@@ -1,14 +1,15 @@
 ROS Installation (Ubuntu):
 sudo apt-get install build-essential python-yaml cmake subversion wget git-core git-gui git-doc
 
-git clone git://github.com/peterpolidoro/Flyatar.git ~/git/Flyatar
+New Users:
 mkdir ~/bin
 export PATH=~/bin:$PATH
+
+Flyatar Git Repository:
+git clone git://github.com/peterpolidoro/Flyatar.git ~/git/Flyatar
 cp ~/git/Flyatar/ros/rosinstall ~/bin/
 
-// rosinstall ~/ros/cturtle_wg_all http://www.ros.org/rosinstalls/cturtle_wg_all.rosinstall
-// source ~/ros/cturtle_wg_all/setup.sh
-
+ROS Installation:
 rosinstall ~/ros http://ros.org/rosinstalls/cturtle_pr2all.rosinstall
 source ~/ros/setup.sh
 
@@ -25,6 +26,10 @@ sudo cp ~/git/Flyatar/ros/udevrules/99*.rules /etc/udev/rules.d/
 
 Compiling:
 rosmake flyatar_avatar
+
+Updating:
+rosinstall -u ~/ros
+rosinstall -u ~/ros/Flyatar
 
 Calibration:
 sudo mkdir /cameras
