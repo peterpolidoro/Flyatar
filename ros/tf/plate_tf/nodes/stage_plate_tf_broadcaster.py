@@ -7,7 +7,7 @@ import tf
 # import numpy, math
 from geometry_msgs.msg import PointStamped
 # from plate_tf.srv import *
-import kalman_filter as kf
+import filters.kalman_filter as kf
 import copy
 from plate_tf.msg import StopState
 
