@@ -36,7 +36,7 @@ class JoystickControl:
                 self.stage_commands.x_velocity = []
                 self.stage_commands.y_velocity = []
                 self.moving_to_start = True
-            else:
+            elif not self.moving_to_start:
                 self.stage_commands.position_control = False
                 self.stage_commands.velocity_control = True
                 self.stage_commands.lookup_table_correct = False
