@@ -961,8 +961,6 @@ if (Motor[Motor_N].HomeInProgress)                                              
     uint8_t ones=0, zeros=0, i;                                                    \
     for (i=0;i<9;i++)                                                              \
       {                                                                            \
-        /* if (PIND & (1<<DDD0))                                         */        \
-                                                                                   \
         if (*Motor[Motor_N].HomePort & (1<<Motor[Motor_N].HomePin))                \
           {                                                                        \
             ones++;                                                                \
