@@ -27,17 +27,22 @@ sudo cp ~/git/Flyatar/ros/udevrules/99*.rules /etc/udev/rules.d/
 Compiling:
 rosmake flyatar_avatar
 
-Updating:
+Updating Ros Code:
 rosinstall -u ~/ros
+
+Updating Flyatar Code:
+cd ~/git/Flyatar
+git pull origin master
 rosinstall -u ~/ros/Flyatar
 
 Controlling Just the Stage:
 roslaunch stage_tf stage_tf.launch
+<Open new terminal>
 rosmsg show stage/StageCommands
 <Example: Goto position 125,125 (mm in Stage coordinates) at 50 mm/s>
 rostopic pub -1 /Stage/Commands stage/StageCommands -- True False False [125] [125] [50] [50]
 <Example: Set velocity 5,5 (mm/s in Stage coordinates)>
-rostopic pub -1 /Stage/Commands stage/StageCommandsFalse True False [] [] [5] [5]
+rostopic pub -1 /Stage/Commands stage/StageCommands -- False True False [] [] [5] [5]
 <Example: Set velocity 5,5 (mm/s in Stage coordinates) for 160 ms (16 ms for every item in list, not counting last item) then stop (0 mm/s)>
 rostopic pub -1 /Stage/Commands stage/StageCommands -- False True False [] [] [5,5,5,5,5,5,5,5,5,5,0] [5,5,5,5,5,5,5,5,5,5,0]
 
