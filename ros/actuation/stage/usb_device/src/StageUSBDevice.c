@@ -225,7 +225,6 @@ TASK(USB_ProcessPacket)
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTablePosMove = FALSE;
                     LookupTableVelMove = FALSE;
-                    LookupTableCorrectionOn = FALSE;
                     Motor_Set_Values_All(USBPacketOut.Setpoint[0]);
                     Motor_Update_All();
                   }
@@ -244,7 +243,6 @@ TASK(USB_ProcessPacket)
                   {
                     LookupTablePosMove = FALSE;
                     LookupTableVelMove = FALSE;
-                    LookupTableCorrectionOn = FALSE;
                     if (USBPacketOut.EntryLocation < LOOKUP_TABLE_SIZE)
                       {
                         Lookup_Table_Fill(USBPacketOut.Setpoint,USBPacketOut.EntryCount,USBPacketOut.EntryLocation);
@@ -260,7 +258,6 @@ TASK(USB_ProcessPacket)
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTablePosMove = TRUE;
                     LookupTableMoveComplete = FALSE;
-                    LookupTableCorrectionOn = FALSE;
 
                     TableEntry = 0;
                     if (TableEntry < TableEnd)
@@ -275,20 +272,6 @@ TASK(USB_ProcessPacket)
                       }
                   }
                   break;
-                case USB_CMD_LOOKUP_TABLE_VEL_CORRECT:
-                  {
-                    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-                    {
-                      /* LookupTableCorrection = USBPacketOut.Setpoint[0]; */
-                      /* Cannot save an entire LookupTableRow? */
-                      for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
-                        {
-                          LookupTableCorrection[Motor_N] = USBPacketOut.Setpoint[0][Motor_N];
-                        }
-                    }
-                    LookupTableCorrectionOn = TRUE;
-                  }
-                  break;
                 case USB_CMD_LOOKUP_TABLE_VEL_MOVE:
                   {
                     if (!IO_Enabled)
@@ -298,7 +281,6 @@ TASK(USB_ProcessPacket)
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTableVelMove = TRUE;
                     LookupTableMoveComplete = FALSE;
-                    LookupTableCorrectionOn = FALSE;
                     TableEntry = 0;
                     Timer_On(0);
                   }
@@ -645,7 +627,6 @@ static void Motor_Home(void)
 
   LookupTablePosMove = FALSE;
   LookupTableVelMove = FALSE;
-  LookupTableCorrectionOn = FALSE;
 
   /* External interrupts initialization */
   /* Disable external interrupt pins 0:2 before changing interrupt sense control */
@@ -853,47 +834,6 @@ static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t Entry
         }
     }
 }
-
-static void Lookup_Table_Correct(LookupTableRow_t LookupTableRowUncorrected)
-{
-  int32_t Velocity;
-  int32_t Velocity_Correction;
-
-  for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
-    {
-      if (LookupTableRowUncorrected[Motor_N].Position < Motor[Motor_N].Position)
-        {
-          Velocity = -(int32_t)LookupTableRowUncorrected[Motor_N].Frequency;
-        }
-      else
-        {
-          Velocity = (int32_t)LookupTableRowUncorrected[Motor_N].Frequency;
-        }
-
-      if (LookupTableCorrection[Motor_N].Position < Motor[Motor_N].Position)
-        {
-          Velocity_Correction = -(int32_t)LookupTableCorrection[Motor_N].Frequency;
-        }
-      else
-        {
-          Velocity_Correction = (int32_t)LookupTableCorrection[Motor_N].Frequency;
-        }
-
-      Velocity += Velocity_Correction;
-
-      if (0 < Velocity)
-        {
-          LookupTableRowCorrected[Motor_N].Position = UINT16_MAX;
-          LookupTableRowCorrected[Motor_N].Frequency = (uint16_t)Velocity;
-        }
-      else
-        {
-          LookupTableRowCorrected[Motor_N].Position = UINT16_MIN;
-          LookupTableRowCorrected[Motor_N].Frequency = (uint16_t)(-Velocity);
-        }
-    }
-}
-
 
 #define POSITION_UPDATE(Motor_N)                                                   \
 uint8_t Timer_N;                                                                   \
@@ -1283,15 +1223,7 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
 
       if (TableEntry < TableEnd)
         {
-          if (LookupTableVelMove && LookupTableCorrectionOn)
-            {
-              Lookup_Table_Correct(LookupTable[TableEntry]);
-              Motor_Set_Values_All(LookupTableRowCorrected);
-            }
-          else
-            {
-              Motor_Set_Values_All(LookupTable[TableEntry]);
-            }
+          Motor_Set_Values_All(LookupTable[TableEntry]);
           TableEntry++;
           Motor_Update_All();
         }
