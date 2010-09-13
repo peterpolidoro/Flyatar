@@ -20,7 +20,6 @@ class StageUpdate:
     self.stage_commands = Stage_StateRequest()
     self.update_position = False
     self.update_velocity = False
-    self.lookup_table_correct = False
 
     self.update_lock = False
 
@@ -46,46 +45,27 @@ class StageUpdate:
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
-    rospy.wait_for_service('stage_lookup_table_correct')
-    try:
-      self.stage_lookup_table_correct = rospy.ServiceProxy('stage_lookup_table_correct', Stage_State)
-    except rospy.ServiceException, e:
-      print "Service call failed: %s"%e
-
-    # rospy.wait_for_service('stage_lookup_table_move')
-    # try:
-    #   self.stage_lookup_table_move = rospy.ServiceProxy('stage_lookup_table_move', Stage_State)
-    # except rospy.ServiceException, e:
-    #   print "Service call failed: %s"%e
-
     self.initialized = True
 
   def stage_commands_callback(self,data):
     if self.initialized and not self.update_lock:
-      if data.position_control:
-        # rospy.logwarn ("data.position_control = %s" % (str(data.position_control)))
+      position_list_length = min(len(data.x_position),len(data.y_position))
+      velocity_list_length = min(len(data.x_velocity),len(data.y_velocity))
+      if (0 < position_list_length):
         self.update_position = True
         self.update_velocity = False
-        self.lookup_table_correct = False
-      elif data.velocity_control:
-        # rospy.logwarn ("data.velocity_control = %s" % (str(data.velocity_control)))
+      elif (0 < position_list_length):
         self.update_position = False
         self.update_velocity = True
-        self.lookup_table_correct = False
-      elif data.lookup_table_correct:
-        # rospy.logwarn ("data.lookup_table_correct = %s" % (str(data.lookup_table_correct)))
-        self.update_position = False
-        self.update_velocity = False
-        self.lookup_table_correct = True
       else:
         self.update_position = False
         self.update_velocity = False
-        self.lookup_table_correct = False
 
       self.stage_commands.x_position = data.x_position
       self.stage_commands.y_position = data.y_position
       self.stage_commands.x_velocity = data.x_velocity
       self.stage_commands.y_velocity = data.y_velocity
+      self.stage_commands.velocity_magnitude = data.velocity_magnitude
 
   def updater(self):
     while not rospy.is_shutdown():
@@ -94,10 +74,8 @@ class StageUpdate:
           self.update_lock = True
           up = self.update_position
           uv = self.update_velocity
-          ltc = self.lookup_table_correct
           self.update_position = False
           self.update_velocity = False
-          self.lookup_table_correct = False
           self.update_lock = False
 
           if up:
@@ -106,9 +84,6 @@ class StageUpdate:
           elif uv:
             response = self.set_stage_velocity(self.stage_commands)
             # rospy.logwarn("set_stage_velocity()")
-          elif ltc:
-            response = self.stage_lookup_table_correct(self.stage_commands)
-            # rospy.logwarn("stage_lookup_table_correct()")
           else:
             response = self.get_stage_state()
             # rospy.logwarn("get_stage_state()")
