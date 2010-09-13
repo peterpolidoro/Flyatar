@@ -4,6 +4,7 @@ import roslib; roslib.load_manifest('stage')
 import rospy
 import StageDevice
 from stage.srv import *
+import threading
 
 class StageCommunicator():
     def __init__(self):
@@ -12,6 +13,7 @@ class StageCommunicator():
         self.dev.print_values()
         self.response = Stage_StateResponse()
         self.response.lookup_table_move_in_progress = False
+        self.reentrant_lock = threading.Lock()
 
     def _fill_response(self,return_state):
         x,y,theta,x_velocity,y_velocity,theta_velocity,all_motors_in_position,lookup_table_move_in_progress = return_state
@@ -31,8 +33,9 @@ class StageCommunicator():
 
     def get_stage_state(self,req):
         # return_state = self.dev.return_state()
-        return_state = self.dev.get_state()
-        self._fill_response(return_state)
+        with self.reentrant_lock:
+            return_state = self.dev.get_state()
+            self._fill_response(return_state)
         return self.response
 
     def set_stage_velocity(self,req):
@@ -54,8 +57,9 @@ class StageCommunicator():
         self.update_velocity = True
         self.lookup_table_correct = False
 
-        return_state = self.dev.update_velocity(x_vel_list,y_vel_list)
-        self._fill_response(return_state)
+        with self.reentrant_lock:
+            return_state = self.dev.update_velocity(x_vel_list,y_vel_list)
+            self._fill_response(return_state)
         return self.response
 
     def set_stage_position(self,req):
@@ -70,15 +74,17 @@ class StageCommunicator():
         y_vel_list = req.y_velocity
         # point_count = min(len(x_pos_list),len(y_pos_list),len(x_vel_list),len(y_vel_list))
         # rospy.logwarn("point_count = %s" % (str(point_count)))
-        return_state = self.dev.update_position(x_pos_list,x_vel_list,y_pos_list,y_vel_list)
-        self._fill_response(return_state)
+        with self.reentrant_lock:
+            return_state = self.dev.update_position(x_pos_list,x_vel_list,y_pos_list,y_vel_list)
+            self._fill_response(return_state)
         return self.response
 
     def stage_lookup_table_correct(self,req):
         x_vel_list = req.x_velocity
         y_vel_list = req.y_velocity
-        return_state = self.dev.lookup_table_vel_correct(x_vel_list,y_vel_list)
-        self._fill_response(return_state)
+        with self.reentrant_lock:
+            return_state = self.dev.lookup_table_vel_correct(x_vel_list,y_vel_list)
+            self._fill_response(return_state)
         return self.response
 
     # def stage_lookup_table_move(self,req):
@@ -92,6 +98,7 @@ class StageCommunicator():
     #     # y_pos_list = [100,120,140,120,100]
     #     # y_vel_list = [20,20,20,20,20]
 
+    # with self.reentrant_lock:
     #     return_state = self.dev.lookup_table_move(x_pos_list,x_vel_list,y_pos_list,y_vel_list)
     #     self._fill_response(return_state)
     #     return self.response
