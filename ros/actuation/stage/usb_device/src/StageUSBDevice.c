@@ -107,8 +107,6 @@ void EVENT_USB_Connect(void)
   /* Indicate USB enumerating */
   UpdateStatus(Status_USBEnumerating);
 
-  /* Home Motors */
-  Motor_Home();
 }
 
 /** Event handler for the USB_Disconnect event. This indicates that the device is no longer connected to a host via
@@ -137,6 +135,12 @@ void EVENT_USB_ConfigurationChanged(void)
   Endpoint_ConfigureEndpoint(IN_EPNUM, EP_TYPE_BULK,
                              ENDPOINT_DIR_IN, IN_EPSIZE,
                              ENDPOINT_BANK_SINGLE);
+
+  /* Home Motors */
+  if (!MotorsHomed)
+    {
+      Motors_Home();
+    }
 
   /* Indicate USB connected and ready */
   UpdateStatus(Status_USBReady);
@@ -236,7 +240,7 @@ TASK(USB_ProcessPacket)
                         IO_Init();
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
-                    Motor_Home();
+                    Motors_Home();
                   }
                   break;
                 case USB_CMD_LOOKUP_TABLE_FILL:
@@ -621,7 +625,7 @@ static void Timer_Off(uint8_t Timer_N)
   Timer[Timer_N].On = FALSE;
 }
 
-static void Motor_Home(void)
+static void Motors_Home(void)
 {
   LookupTableRow_t MotorHomeParameters;
 
@@ -656,6 +660,8 @@ static void Motor_Home(void)
   MotorHomeParameters[1].Position = 0;
   Motor_Set_Values(MotorHomeParameters,1);
   Motor_Update(1);
+
+  MotorsHomed = TRUE;
 }
 
 static void Motor_Update(uint8_t Motor_N)
