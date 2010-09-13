@@ -80,13 +80,13 @@ class StageUpdate:
 
           if up:
             response = self.set_stage_position(self.stage_commands)
-            # rospy.logwarn("set_stage_position()")
+            rospy.logwarn("set_stage_position()")
           elif uv:
             response = self.set_stage_velocity(self.stage_commands)
-            # rospy.logwarn("set_stage_velocity()")
+            rospy.logwarn("set_stage_velocity()")
           else:
             response = self.get_stage_state()
-            # rospy.logwarn("get_stage_state()")
+            rospy.logwarn("get_stage_state()")
 
           x = response.x
           y = response.y
