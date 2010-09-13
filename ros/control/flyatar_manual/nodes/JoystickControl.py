@@ -31,9 +31,9 @@ class JoystickControl:
                     self.moving_to_start = True
                     self.stage_commands.x_position = [self.start_x_position]
                     self.stage_commands.y_position = [self.start_y_position]
-                    self.stage_commands.x_velocity = [self.goto_start_velocity]
-                    self.stage_commands.y_velocity = [self.goto_start_velocity]
-                    self.stage_commands.velocity_magnitude = []
+                    self.stage_commands.x_velocity = []
+                    self.stage_commands.y_velocity = []
+                    self.stage_commands.velocity_magnitude = [self.goto_start_velocity]
                 else:
                     self.stage_commands.x_position = []
                     self.stage_commands.y_position = []

@@ -54,7 +54,7 @@ class StageUpdate:
       if (0 < position_list_length):
         self.update_position = True
         self.update_velocity = False
-      elif (0 < position_list_length):
+      elif (0 < velocity_list_length):
         self.update_position = False
         self.update_velocity = True
       else:
