@@ -103,13 +103,16 @@ class StageDevice(USBDevice.USB_Device):
         self.lookup_table_move_in_progress = False
 
     def update_velocity(self,x_vel_list,y_vel_list,vel_mag_list):
+        rospy.logwarn("type(x_vel_list) = %s" % str(type(x_vel_list)))
+        rospy.logwarn("type(y_vel_list) = %s" % str(type(y_vel_list)))
+        rospy.logwarn("type(vel_mag_list) = %s" % str(type(vel_mag_list)))
         vel_mag_list,point_count = self._condition_vel_mag_list(x_vel_list,y_vel_list,vel_mag_list)
         if 0 < len(vel_mag_list):
             for point_n in range(point_count):
                 vel_norm = numpy.linalg.norm([x_vel_list[point_n],y_vel_list[point_n]])
                 vel_scale = vel_mag_list[point_n]/vel_norm
-                x_vel_list[point_n] = x_vel_list[point_n]*vel_scale
-                y_vel_list[point_n] = y_vel_list[point_n]*vel_scale
+                x_vel_list[point_n] *= vel_scale
+                y_vel_list[point_n] *= vel_scale
 
         state = self._send_cmds_receive_state(None,x_vel_list,None,y_vel_list)
         return state
