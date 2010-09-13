@@ -39,18 +39,18 @@ class StageCommunicator():
     def set_stage_velocity(self,req):
         x_vel_list = req.x_velocity
         y_vel_list = req.y_velocity
+        vel_mag_list = req.velocity_magnitude
         with self.reentrant_lock:
-            return_state = self.dev.update_velocity(x_vel_list,y_vel_list)
+            return_state = self.dev.update_velocity(x_vel_list,y_vel_list,vel_mag_list)
             self._fill_response(return_state)
         return self.response
 
     def set_stage_position(self,req):
         x_pos_list = req.x_position
         y_pos_list = req.y_position
-        x_vel_list = req.x_velocity
-        y_vel_list = req.y_velocity
+        vel_mag_list = req.velocity_magnitude
         with self.reentrant_lock:
-            return_state = self.dev.update_position(x_pos_list,x_vel_list,y_pos_list,y_vel_list)
+            return_state = self.dev.update_position(x_pos_list,y_pos_list,vel_mag_list)
             self._fill_response(return_state)
         return self.response
 
