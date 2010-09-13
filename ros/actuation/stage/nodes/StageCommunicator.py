@@ -40,19 +40,25 @@ class StageCommunicator():
         x_vel_list = req.x_velocity
         y_vel_list = req.y_velocity
         vel_mag_list = req.velocity_magnitude
-        with self.reentrant_lock:
-            return_state = self.dev.update_velocity(x_vel_list,y_vel_list,vel_mag_list)
-            self._fill_response(return_state)
-        return self.response
+        if (len(x_vel_list) == 0) or (len(y_vel_list) == 0):
+            rospy.logerr("Error in set_stage_velocity call: x_vel_list or y_vel_list length == 0")
+        else:
+            with self.reentrant_lock:
+                return_state = self.dev.update_velocity(x_vel_list,y_vel_list,vel_mag_list)
+                self._fill_response(return_state)
+            return self.response
 
     def set_stage_position(self,req):
         x_pos_list = req.x_position
         y_pos_list = req.y_position
         vel_mag_list = req.velocity_magnitude
-        with self.reentrant_lock:
-            return_state = self.dev.update_position(x_pos_list,y_pos_list,vel_mag_list)
-            self._fill_response(return_state)
-        return self.response
+        if (len(x_pos_list) == 0) or (len(y_pos_list) == 0) or (len(vel_mag_list) == 0):
+            rospy.logerr("Error in set_stage_position call: x_pos_list or y_pos_list or vel_mag_list length == 0")
+        else:
+            with self.reentrant_lock:
+                return_state = self.dev.update_position(x_pos_list,y_pos_list,vel_mag_list)
+                self._fill_response(return_state)
+            return self.response
 
 if __name__ == '__main__':
     rospy.init_node('StageCommunicator', anonymous=True)
