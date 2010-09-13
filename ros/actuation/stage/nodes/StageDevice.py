@@ -101,17 +101,11 @@ class StageDevice(USBDevice.USB_Device):
         self.lookup_table_vel_correction_max = 30 # mm/s
         self.lookup_table_move_in_progress = False
 
-    def update_velocity(self,x_vel_list,y_vel_list):
-        # x_vel_mm = x_vel_list[0]
-        # y_vel_mm = y_vel_list[0]
-        # self._convert_and_set_setpoint(None,x_vel_mm,None,y_vel_mm,0)
-        # self._set_motor_state()
-        # x,y,theta,x_velocity,y_velocity,theta_velocity,all_motors_in_position,lookup_table_move_complete = self._return_state()
-        # return x,y,theta,x_velocity,y_velocity,theta_velocity,all_motors_in_position,lookup_table_move_complete
+    def update_velocity(self,x_vel_list,y_vel_list,vel_mag_list):
         state = self._send_cmds_receive_state(None,x_vel_list,None,y_vel_list)
         return state
 
-    def update_position(self,x_pos_list,x_vel_list,y_pos_list,y_vel_list):
+    def update_position(self,x_pos_list,y_pos_list,vel_mag_list):
         state = self._send_cmds_receive_state(x_pos_list,x_vel_list,y_pos_list,y_vel_list)
         return state
 

@@ -92,9 +92,6 @@ int main(void)
   /* Initialize Software Interrupt */
   Interrupt_Init();
 
-  /* Home Motors */
-  Motor_Home();
-
   /* Scheduling - routine never returns, so put this last in the main function */
   Scheduler_Start();
 }
@@ -140,6 +137,9 @@ void EVENT_USB_ConfigurationChanged(void)
 
   /* Indicate USB connected and ready */
   UpdateStatus(Status_USBReady);
+
+  /* Home Motors */
+  Motor_Home();
 
   /* Start ProcessPacket task */
   Scheduler_SetTaskMode(USB_ProcessPacket, TASK_RUN);
