@@ -30,21 +30,17 @@ class JoystickControl:
             if not self.moving_to_start:
                 if data.goto_start:
                     self.moving_to_start = True
-                    self.stage_commands.position_control = True
-                    self.stage_commands.velocity_control = False
-                    self.stage_commands.lookup_table_correct = False
                     self.stage_commands.x_position = [self.start_x_position]
                     self.stage_commands.y_position = [self.start_y_position]
                     self.stage_commands.x_velocity = [self.goto_start_velocity]
                     self.stage_commands.y_velocity = [self.goto_start_velocity]
+                    self.stage_commands.velocity_magnitude = []
                 else:
-                    self.stage_commands.position_control = False
-                    self.stage_commands.velocity_control = True
-                    self.stage_commands.lookup_table_correct = False
                     self.stage_commands.x_position = []
                     self.stage_commands.y_position = []
                     self.stage_commands.x_velocity = [data.y_velocity*self.robot_velocity_max]
                     self.stage_commands.y_velocity = [-data.x_velocity*self.robot_velocity_max]
+                    self.stage_commands.velocity_magnitude = []
             elif (self.velocity_threshold < abs(data.x_velocity)) or (self.velocity_threshold < abs(data.y_velocity)):
                 self.moving_to_start = False
 
