@@ -37,7 +37,7 @@ class StageCommunicator():
         return self.response
 
     def set_stage_velocity(self,req):
-        x_vel_list = list(req.x_velocity)
+        x_vel_list = req.x_velocity
         y_vel_list = req.y_velocity
         vel_mag_list = req.velocity_magnitude
         if (len(x_vel_list) == 0) or (len(y_vel_list) == 0):
