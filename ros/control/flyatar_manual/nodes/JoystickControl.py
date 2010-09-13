@@ -16,7 +16,6 @@ class JoystickControl:
         self.sc_pub = rospy.Publisher("Stage/Commands",StageCommands)
 
         self.stage_commands = StageCommands()
-        self.stage_commands.position_control = False
         self.robot_velocity_max = rospy.get_param("robot_velocity_max",100) # mm/s
         self.moving_to_start = False
         self.start_x_position = 125     # mm in Stage coordinates
