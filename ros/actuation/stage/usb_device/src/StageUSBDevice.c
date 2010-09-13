@@ -106,6 +106,9 @@ void EVENT_USB_Connect(void)
 
   /* Indicate USB enumerating */
   UpdateStatus(Status_USBEnumerating);
+
+  /* Home Motors */
+  Motor_Home();
 }
 
 /** Event handler for the USB_Disconnect event. This indicates that the device is no longer connected to a host via
@@ -137,9 +140,6 @@ void EVENT_USB_ConfigurationChanged(void)
 
   /* Indicate USB connected and ready */
   UpdateStatus(Status_USBReady);
-
-  /* Home Motors */
-  Motor_Home();
 
   /* Start ProcessPacket task */
   Scheduler_SetTaskMode(USB_ProcessPacket, TASK_RUN);
