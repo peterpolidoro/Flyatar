@@ -106,9 +106,6 @@ class StageDevice(USBDevice.USB_Device):
         x_vel_list = list(x_vel)
         y_vel_list = list(y_vel)
         vel_mag_list = list(vel_mag)
-        rospy.logwarn("x_vel_list = %s" % (str(x_vel_list)))
-        rospy.logwarn("y_vel_list = %s" % (str(y_vel_list)))
-        rospy.logwarn("vel_mag_list = %s" % (str(vel_mag_list)))
         vel_mag_list,point_count = self._condition_vel_mag_list(x_vel_list,y_vel_list,vel_mag_list)
         if 0 < len(vel_mag_list):
             for point_n in range(point_count):
@@ -121,9 +118,6 @@ class StageDevice(USBDevice.USB_Device):
                     x_vel_list[point_n] = 0
                     y_vel_list[point_n] = 0
 
-        rospy.logwarn("x_vel_list = %s" % (str(x_vel_list)))
-        rospy.logwarn("y_vel_list = %s" % (str(y_vel_list)))
-        rospy.logwarn("vel_mag_list = %s" % (str(vel_mag_list)))
         state = self._send_cmds_receive_state(None,x_vel_list,None,y_vel_list)
         return state
 
