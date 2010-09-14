@@ -139,7 +139,7 @@ void EVENT_USB_ConfigurationChanged(void)
   /* Home Motors */
   if (!MotorsHomed)
     {
-      Motors_Home();
+      Motor_Home();
     }
 
   /* Indicate USB connected and ready */
@@ -240,7 +240,7 @@ TASK(USB_ProcessPacket)
                         IO_Init();
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
-                    Motors_Home();
+                    Motor_Home();
                   }
                   break;
                 case USB_CMD_LOOKUP_TABLE_FILL:
@@ -625,7 +625,7 @@ static void Timer_Off(uint8_t Timer_N)
   Timer[Timer_N].On = FALSE;
 }
 
-static void Motors_Home(void)
+static void Motor_Home(void)
 {
   LookupTableRow_t MotorHomeParameters;
 
@@ -808,6 +808,8 @@ static void Motor_Set_Values(LookupTableRow_t MotorSetpoint, uint8_t Motor_N)
     else
       {
         Motor[Motor_N].Frequency = 0;
+        Motor[Motor_N].InPosition = TRUE;
+        Motor_Check_In_Position();
       }
   }
 }
@@ -820,6 +822,23 @@ static void Motor_Set_Values_All(LookupTableRow_t MotorSetpoint)
       if (Motor[Motor_N].Update)
         {
           Motor_Set_Values(MotorSetpoint,Motor_N);
+        }
+    }
+}
+
+static void Motor_Check_In_Position(void)
+{
+  /* If all motors are in position, set InPosition interrupt */
+  if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)
+    {
+      /* Set InPositionPin high (PORTE pin 5) */
+      /* PORTE |= (1<<PE5); */
+      AllMotorsInPosition = TRUE;
+
+      if (LookupTablePosMove)
+        {
+          /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */
+          PORTE &= ~(1<<PE4);
         }
     }
 }
@@ -871,18 +890,7 @@ if (*Timer[Timer_N].Address.PinPort & (1<<Timer[Timer_N].OutputPin))            
           }                                                                        \
                                                                                    \
         /* If all motors are in position, set InPosition interrupt */              \
-        if (Motor[0].InPosition && Motor[1].InPosition && Motor[2].InPosition)     \
-          {                                                                        \
-            /* Set InPositionPin high (PORTE pin 5) */                             \
-            /* PORTE |= (1<<PE5); */                                               \
-            AllMotorsInPosition = TRUE;                                            \
-                                                                                   \
-            if (LookupTablePosMove)                                                \
-              {                                                                    \
-                /* Set interrupt 4 low to enable interrupt (PORTE pin 4) */        \
-                PORTE &= ~(1<<PE4);                                                \
-              }                                                                    \
-          }                                                                        \
+        Motor_Check_In_Position();                                                 \
       }                                                                            \
     else if (Motor[Motor_N].InPosition)                                            \
       {                                                                            \
