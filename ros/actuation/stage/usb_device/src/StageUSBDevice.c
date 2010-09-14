@@ -266,8 +266,8 @@ TASK(USB_ProcessPacket)
                     TableEntry = 0;
                     if (TableEntry < TableEnd)
                       {
-                        Motor_Set_Values_All(LookupTable[TableEntry]);
                         TableEntry++;
+                        Motor_Set_Values_All(LookupTable[TableEntry]);
                         Motor_Update_All();
                       }
                     else
@@ -1237,8 +1237,8 @@ ISR(LOOKUP_TABLE_JUMP_INTERRUPT)
 
       if (TableEntry < TableEnd)
         {
-          Motor_Set_Values_All(LookupTable[TableEntry]);
           TableEntry++;
+          Motor_Set_Values_All(LookupTable[TableEntry]);
           Motor_Update_All();
         }
       else
