@@ -51,6 +51,8 @@ rostopic pub -1 /Stage/Commands stage/StageCommands -- [] [] [-0.6] [0.8] [10]
 rostopic pub -1 /Stage/Commands stage/StageCommands -- [] [] [5,5,5,5,5,5,5,5,5,5,0] [5,5,5,5,5,5,5,5,5,5,0] []
 <Example: Move in a square pattern at 50 mm/s>
 rostopic pub -1 /Stage/Commands stage/StageCommands -- [100,150,150,100,100] [100,100,150,150,100] [] [] [50]
+<Example: Move in a square pattern at varying velocities, each velocity value sets the velocity of the move to reach the cooresponding x,y position>
+rostopic pub -1 /Stage/Commands stage/StageCommands -- [100,150,150,100,100] [100,100,150,150,100] [] [] [50,10,70,30,50]
 
 Calibration:
 sudo mkdir /cameras
