@@ -752,10 +752,6 @@ static void Motor_Update(uint8_t Motor_N)
 
 static void Motor_Update_All(void)
 {
-  /* Set InPositionPin low (PORTE pin 5) */
-  /* PORTE &= ~(1<<PE5); */
-  AllMotorsInPosition = FALSE;
-
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
     {
       Motor[Motor_N].Update = (MotorUpdateBits & (1<<Motor_N));
@@ -797,6 +793,7 @@ static void Motor_Set_Values(LookupTableRow_t MotorSetpoint, uint8_t Motor_N)
       {
         Motor[Motor_N].PositionSetPoint = MotorSetpoint[Motor_N].Position;
       }
+    Motor[Motor_N].InPosition = FALSE;
     if (Motor[Motor_N].PositionSetPoint > Motor[Motor_N].Position)
       {
         Motor[Motor_N].Direction = Motor[Motor_N].DirectionPos;
@@ -809,13 +806,16 @@ static void Motor_Set_Values(LookupTableRow_t MotorSetpoint, uint8_t Motor_N)
       {
         Motor[Motor_N].Frequency = 0;
         Motor[Motor_N].InPosition = TRUE;
-        Motor_Check_In_Position();
       }
   }
 }
 
 static void Motor_Set_Values_All(LookupTableRow_t MotorSetpoint)
 {
+  /* Set InPositionPin low (PORTE pin 5) */
+  /* PORTE &= ~(1<<PE5); */
+  AllMotorsInPosition = FALSE;
+
   for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
     {
       Motor[Motor_N].Update = (MotorUpdateBits & (1<<Motor_N));
@@ -824,6 +824,7 @@ static void Motor_Set_Values_All(LookupTableRow_t MotorSetpoint)
           Motor_Set_Values(MotorSetpoint,Motor_N);
         }
     }
+  Motor_Check_In_Position();
 }
 
 static void Motor_Check_In_Position(void)
