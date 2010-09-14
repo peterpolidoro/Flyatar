@@ -113,11 +113,13 @@ class StageDevice(USBDevice.USB_Device):
         if 0 < len(vel_mag_list):
             for point_n in range(point_count):
                 vel_norm = numpy.linalg.norm([x_vel_list[point_n],y_vel_list[point_n]])
-                rospy.logwarn("vel_norm = %s" % (str(vel_norm)))
-                vel_scale = vel_mag_list[point_n]/vel_norm
-                rospy.logwarn("vel_scale = %s" % (str(vel_scale)))
-                x_vel_list[point_n] *= vel_scale
-                y_vel_list[point_n] *= vel_scale
+                if 0 < vel_norm:
+                    vel_scale = vel_mag_list[point_n]/vel_norm
+                    x_vel_list[point_n] *= vel_scale
+                    y_vel_list[point_n] *= vel_scale
+                else:
+                    x_vel_list[point_n] = 0
+                    y_vel_list[point_n] = 0
 
         rospy.logwarn("x_vel_list = %s" % (str(x_vel_list)))
         rospy.logwarn("y_vel_list = %s" % (str(y_vel_list)))
