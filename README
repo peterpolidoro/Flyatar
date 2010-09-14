@@ -40,13 +40,17 @@ roslaunch stage_tf stage_tf.launch
 <Open new terminal>
 rosmsg show stage/StageCommands
 <Example: Goto position 125,125 (mm in Stage coordinates) at 50 mm/s>
-rostopic pub -1 /Stage/Commands stage/StageCommands -- True False False [125] [125] [50] [50]
-<Example: Set velocity 5,5 (mm/s in Stage coordinates)>
-rostopic pub -1 /Stage/Commands stage/StageCommands -- False True False [] [] [5] [5]
+rostopic pub -1 /Stage/Commands stage/StageCommands -- [125] [125] [] [] [50]
+<Example: Set velocity -6,8 (mm/s in Stage coordinates)>
+rostopic pub -1 /Stage/Commands stage/StageCommands -- [] [] [-6] [8] []
+<Example: Set velocity -6,8 (mm/s in Stage coordinates), equivalent to setting velocity to -3,4 with velocity magitude set to 10>
+rostopic pub -1 /Stage/Commands stage/StageCommands -- [] [] [-3] [4] [10]
+<Example: Set velocity -6,8 (mm/s in Stage coordinates), equivalent to setting velocity to -0.6,0.8 with velocity magitude set to 10>
+rostopic pub -1 /Stage/Commands stage/StageCommands -- [] [] [-0.6] [0.8] [10]
 <Example: Set velocity 5,5 (mm/s in Stage coordinates) for 160 ms (16 ms for every item in list, not counting last item) then stop (0 mm/s)>
-rostopic pub -1 /Stage/Commands stage/StageCommands -- False True False [] [] [5,5,5,5,5,5,5,5,5,5,0] [5,5,5,5,5,5,5,5,5,5,0]
+rostopic pub -1 /Stage/Commands stage/StageCommands -- [] [] [5,5,5,5,5,5,5,5,5,5,0] [5,5,5,5,5,5,5,5,5,5,0] []
 <Example: Move in a square pattern at 50 mm/s>
-rostopic pub -1 /Stage/Commands stage/StageCommands -- True False False [100,150,150,100,100] [100,100,150,150,100] [50,50,50,50,50] [50,50,50,50,50]
+rostopic pub -1 /Stage/Commands stage/StageCommands -- [100,150,150,100,100] [100,100,150,150,100] [] [] [50]
 
 Calibration:
 sudo mkdir /cameras
