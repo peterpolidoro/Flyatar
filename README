@@ -36,7 +36,7 @@ git pull origin master
 rosinstall -u ~/ros/Flyatar
 
 Controlling Just the Stage:
-roslaunch stage_tf stage_tf.launch
+roslaunch stage_message_interface stage_message_interface.launch
 <Open new terminal>
 rosmsg show stage/StageCommands
 <Example: Goto position 125,125 (mm in Stage coordinates) at 50 mm/s>
