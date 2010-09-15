@@ -151,7 +151,10 @@ class StageDevice(USBDevice.USB_Device):
             else:
                 delta_x = abs(x_pos_list[point_n] - x_pos_list[point_n - 1])
                 delta_y = abs(y_pos_list[point_n] - y_pos_list[point_n - 1])
-            alpha = math.sqrt((vel_mag_list[point_n]**2)/(delta_x**2 + delta_y**2))
+            try:
+                alpha = math.sqrt((vel_mag_list[point_n]**2)/(delta_x**2 + delta_y**2))
+            except ZeroDivisionError:
+                alpha = 0
             x_vel_list.append(alpha*delta_x)
             y_vel_list.append(alpha*delta_y)
         return x_vel_list,y_vel_list
