@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division
 import roslib
-roslib.load_manifest('stage_tf')
+roslib.load_manifest('stage_message_interface')
 import rospy
 import tf
 from stage.msg import StageCommands,StageState
