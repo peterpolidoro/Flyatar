@@ -9,10 +9,8 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/manual</url>
   <depend package="rospy"/>
-  <!-- <depend package="tf"/> -->
   <depend package="joystick_commands"/>
-  <!-- <depend package="image_gui"/> -->
-  <depend package="stage_tf"/>
+  <depend package="stage_message_interface"/>
 
 </package>
 
