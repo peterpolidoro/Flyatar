@@ -109,6 +109,7 @@ roslaunch flyatar_calibration StagePlate.launch
 <drive magnet around randomly all over plate until calibration values seem to converge>
 <record robot_min_ecc, robot_max_ecc, robot_min_area, robot_max_area in robotimage_calibration_data.launch>
 <record translation vector and quaternion info in stage_plate_calibration_data.launch>
+<ctrl-c to shutdown StagePlate.launch>
 
 Run in Avatar Mode:
 roslaunch flyatar_avatar avatar.launch
