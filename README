@@ -85,15 +85,17 @@ rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/
 <wave 30 mm checkerboard in front of camera until calibrate button activates>
 <click calibrate button>
 <click commit button>
+<ctrl-c to shutdown flyatar_camera_cal_c.launch>
 <transfer camera calibration info from /cameras/basler_a622f_calibration.yaml 
  and /cameras/basler_a622f_rect_calibration.yaml into 
  $(find flyatar_calibration)/calibration_data/camera_calibration_data.launch by hand>
 roslaunch flyatar_calibration CameraPlate.launch
 <use left joystick to move green circle until centered on plate>
 <use right joystick to change green circle radius until on edges of plate>
-<place checkerboard on plate>
 <record mask radius and camera_plate_origin info into camera_plateimage_calibration_data.launch>
+<place checkerboard on plate>
 <record rvec and tvec info into camera_plate_calibration_data.launch>
+<ctrl-c to shutdown CameraPlate.launch>
 rm /cameras/background.png
 <remove all objects from plate, next step acquires a background image>
 roslaunch track_image_contours track_image_contours_view_images.launch
