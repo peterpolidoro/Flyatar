@@ -5,9 +5,12 @@ roslib.load_manifest('flyatar_experiments')
 import rospy
 import smach
 import smach_ros
+import tf
+from plate_tf.srv import *
+from plate_tf.msg import StopState, InBoundsState
 
-# define state Foo
-class Foo(smach.State):
+# define state ExperimentStart
+class ExperimentStart(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['outcome1','outcome2'])
         self.counter = 0
@@ -33,25 +36,28 @@ class Bar(smach.State):
 
 
 
-# main
-def main():
-    rospy.init_node('smach_example_state_machine')
+class Experiment():
+    def __init__(self):
+        self.tf_listener = tf.TransformListener()
 
-    # Create a SMACH state machine
-    sm = smach.StateMachine(outcomes=['outcome4', 'outcome5'])
+    def main():
+        # Create a SMACH state machine
+        sm = smach.StateMachine(outcomes=['outcome4', 'outcome5'])
 
-    # Open the container
-    with sm:
-        # Add states to the container
-        smach.StateMachine.add('FOO', Foo(),
-                               transitions={'outcome1':'BAR',
-                                            'outcome2':'outcome4'})
-        smach.StateMachine.add('BAR', Bar(),
-                               transitions={'outcome2':'FOO'})
+        # Open the container
+        with sm:
+            # Add states to the container
+            smach.StateMachine.add('FOO', Foo(),
+                                   transitions={'outcome1':'BAR',
+                                                'outcome2':'outcome4'})
+            smach.StateMachine.add('BAR', Bar(),
+                                   transitions={'outcome2':'FOO'})
 
-    # Execute SMACH plan
-    outcome = sm.execute()
+        # Execute SMACH plan
+        outcome = sm.execute()
 
 
 if __name__ == '__main__':
-    main()
+    rospy.init_node('TestExperiment')
+    e = Experiment()
+    e.main()

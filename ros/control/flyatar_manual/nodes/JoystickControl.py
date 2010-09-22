@@ -4,7 +4,7 @@ import roslib
 roslib.load_manifest('flyatar_manual')
 import sys
 import rospy
-from stage.msg import StageCommands
+from stage_message_interface.msg import StageCommands
 from joystick_commands.msg import JoystickCommands
 
 class JoystickControl:

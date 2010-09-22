@@ -4,7 +4,7 @@ import roslib
 roslib.load_manifest('stage_message_interface')
 import rospy
 import tf
-from stage.msg import StageCommands,StageState
+from stage_message_interface.msg import StageCommands,StageState
 from stage.srv import *
 
 class StageUpdate:
