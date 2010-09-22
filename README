@@ -67,6 +67,7 @@ rosrun dynamic_reconfigure reconfigure_gui camera1394v2_node
 <record...>
 <ctrl-c to shutdown flyatar_camera_cal_a.launch>
 roslaunch camera1394v2 flyatar_camera_cal_b.launch
+<open new terminal>
 rosdep install camera_calibration
 rosmake camera_calibration
 rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/camera/image_raw camera:=/camera
