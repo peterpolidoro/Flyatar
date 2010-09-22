@@ -1,26 +1,26 @@
 <launch>
-  <param name="KK_fx_raw" type="double" value="1880.22"/>
-  <param name="KK_fy_raw" type="double" value="1880.23"/>
-  <param name="KK_cx_raw" type="double" value="660.536"/>
-  <param name="KK_cy_raw" type="double" value="513.218"/>
+  <param name="KK_fx_raw" type="double" value="1845.26"/>
+  <param name="KK_fy_raw" type="double" value="1843.18"/>
+  <param name="KK_cx_raw" type="double" value="665.735"/>
+  <param name="KK_cy_raw" type="double" value="525.817"/>
 
-  <param name="kc_k1_raw" type="double" value="-0.046"/>
-  <param name="kc_k2_raw" type="double" value="0.06"/>
-  <param name="kc_p1_raw" type="double" value="0.0005"/>
-  <param name="kc_p2_raw" type="double" value="0.0014"/>
+  <param name="kc_k1_raw" type="double" value="-0.048"/>
+  <param name="kc_k2_raw" type="double" value="0.069"/>
+  <param name="kc_p1_raw" type="double" value="0.002"/>
+  <param name="kc_p2_raw" type="double" value="0.003"/>
 
-  <param name="KK_fx_rect" type="double" value="1879.37"/>
-  <param name="KK_fy_rect" type="double" value="1876.22"/>
-  <param name="KK_cx_rect" type="double" value="653.346"/>
-  <param name="KK_cy_rect" type="double" value="521.015"/>
+  <param name="KK_fx_rect" type="double" value="1947.82"/>
+  <param name="KK_fy_rect" type="double" value="1948.17"/>
+  <param name="KK_cx_rect" type="double" value="700.71"/>
+  <param name="KK_cy_rect" type="double" value="519.766"/>
 
-  <param name="kc_k1_rect" type="double" value="-0.021"/>
-  <param name="kc_k2_rect" type="double" value="0.22"/>
-  <param name="kc_p1_rect" type="double" value="0.0"/>
-  <param name="kc_p2_rect" type="double" value="0.0"/>
+  <param name="kc_k1_rect" type="double" value="-0.014"/>
+  <param name="kc_k2_rect" type="double" value="-0.574"/>
+  <param name="kc_p1_rect" type="double" value="0.002"/>
+  <param name="kc_p2_rect" type="double" value="0.001"/>
 
   <!-- tf broadcasters -->
-  <node pkg="tf" type="static_transform_publisher" name="image_raw_broadcaster" args="-660.536 -513.218 0 0 0 0 Camera ImageRaw 10" />
-  <node pkg="tf" type="static_transform_publisher" name="image_rect_broadcaster" args="-653.346 -521.015 0 0 0 0 Camera ImageRect 10" />
+  <node pkg="tf" type="static_transform_publisher" name="image_raw_broadcaster" args="-665.735 -525.817 0 0 0 0 Camera ImageRaw 10" />
+  <node pkg="tf" type="static_transform_publisher" name="image_rect_broadcaster" args="-700.71 -519.766 0 0 0 0 Camera ImageRect 10" />
 
 </launch>
