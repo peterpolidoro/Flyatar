@@ -57,6 +57,12 @@ class StageDevice(MotorController.MotorControllerDevice):
         motor0_pos = self._mm_to_steps(x_pos_mm)
         motor1_pos = self._mm_to_steps(y_pos_mm)
         vel_mag_steps = self._mm_to_steps(vel_mag_mm)
+        rospy.logwarn("x_pos_mm = %s" % (str(x_pos_mm)))
+        rospy.logwarn("motor0_pos = %s" % (str(motor0_pos)))
+        rospy.logwarn("y_pos_mm = %s" % (str(y_pos_mm)))
+        rospy.logwarn("motor1_pos = %s" % (str(motor1_pos)))
+        rospy.logwarn("vel_mag_mm = %s" % (str(vel_mag_mm)))
+        rospy.logwarn("vel_mag_steps = %s" % (str(vel_mag_steps)))
         return_state = self.update_position(motor0_pos,motor1_pos,vel_mag_steps)
         return self._fill_response(return_state)
 
