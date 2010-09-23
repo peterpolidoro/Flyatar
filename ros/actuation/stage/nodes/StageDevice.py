@@ -75,7 +75,9 @@ class StageDevice(MotorController.MotorControllerDevice):
         return [(quantity_steps/self.steps_per_mm) for quantity_steps in list_steps]
 
     def _fill_response(self,return_state):
+        rospy.logwarn("return_state_steps = %s" % (str(return_state)))
         return_state = self._steps_to_mm(return_state)
+        rospy.logwarn("return_state_mm = %s" % (str(return_state)))
         x,x_velocity,y,y_velocity,theta,theta_velocity,all_motors_in_position,lookup_table_move_in_progress,motors_homed = return_state
         self.response.header.stamp = rospy.Time.now()
         self.response.x = x
