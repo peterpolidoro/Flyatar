@@ -75,6 +75,7 @@ class UpdateStagePositionAction(object):
     self.initialized = True
 
   def execute_cb(self, goal):
+    rospy.logwarn("In execute_cb...")
     if self.initialized:
       position_list_length = min(len(goal.x_position),len(goal.y_position))
       if (0 < position_list_length):
