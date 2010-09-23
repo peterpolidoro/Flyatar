@@ -65,6 +65,7 @@ class UpdateStagePositionAction(object):
     su = StageUpdate()
 
     self._action_name = name
+    rospy.logwarn("self._action_name = %s" % (str(name)))
     self._as = actionlib.SimpleActionServer(self._action_name, stage_action_server.msg.UpdateStagePositionAction, execute_cb=self.execute_cb)
 
     # create messages that are used to publish feedback/result
