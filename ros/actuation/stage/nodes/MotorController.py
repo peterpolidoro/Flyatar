@@ -14,8 +14,6 @@
 #    pjp 08/19/09    version 1.0
 # ---------------------------------------------------------------------------
 from __future__ import division
-import roslib; roslib.load_manifest('stage')
-import rospy
 import USBDevice
 import ctypes
 import time
@@ -189,7 +187,6 @@ class MotorControllerDevice(USBDevice.USB_Device):
 
                 self.USBPacketOut.EntryCount = packet_point_n
                 self.USBPacketOut.EntryLocation = point_n - packet_point_n
-                # rospy.loginfo("packet_n = %s, packet_point_n = %s, point_n = %s" % (str(packet_n),str(packet_point_n),str(point_n)))
                 self._lookup_table_fill()
 
             if vel_move:
@@ -216,9 +213,7 @@ class MotorControllerDevice(USBDevice.USB_Device):
         return motor0_position,motor0_velocity,motor1_position,motor1_velocity,motor2_position,motor2_velocity,all_motors_in_position,self.lookup_table_move_in_progress,motors_homed
 
     def _convert_and_set_setpoint(self,motor0_pos,motor0_vel,motor1_pos,motor1_vel,entry_n=0):
-        rospy.logwarn('_convert_and_set_setpoint: motor0_pos = %s' % (str(motor0_pos)))
         motor0_pos,motor0_vel,motor1_pos,motor1_vel = self._check_and_convert_setpoint(motor0_pos,motor0_vel,motor1_pos,motor1_vel)
-        rospy.logwarn('_check_and_convert_setpoint: motor0_pos = %s' % (str(motor0_pos)))
 
         self._set_position(0,motor0_pos,entry_n)
         self._set_frequency(0,motor0_vel,entry_n)
@@ -266,7 +261,6 @@ class MotorControllerDevice(USBDevice.USB_Device):
         self.USBPacketOut.Entry[entry_n].Motor[axis].Frequency = int(freq)
 
     def _set_position(self,axis,pos,entry_n=0):
-        rospy.logwarn('_set_position: pos = %s' % (str(pos)))
         self.USBPacketOut.Entry[entry_n].Motor[axis].Position = int(pos)
 
     def _send_usb_cmd(self,cmd,data_in_out_packet):
@@ -357,8 +351,8 @@ class MotorControllerDevice(USBDevice.USB_Device):
 #-------------------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    rospy.loginfo("Opening motor controller device ...")
+    # rospy.loginfo("Opening motor controller device ...")
     dev = MotorControllerDevice()
     dev.print_values()
     dev.close()
-    rospy.loginfo("Motor controller device closed.")
+    # rospy.loginfo("Motor controller device closed.")

@@ -47,28 +47,16 @@ class StageDevice(MotorController.MotorControllerDevice):
         return self._fill_response(return_state)
 
     def update_stage_velocity(self,x_vel_mm,y_vel_mm,vel_mag_mm):
-        rospy.logwarn("x_vel_mm = %s" % (str(x_vel_mm)))
-        rospy.logwarn("y_vel_mm = %s" % (str(y_vel_mm)))
-        rospy.logwarn("vel_mag_mm = %s" % (str(vel_mag_mm)))
         motor0_vel = self._mm_to_steps(x_vel_mm)
         motor1_vel = self._mm_to_steps(y_vel_mm)
         vel_mag_steps = self._mm_to_steps(vel_mag_mm)
-        rospy.logwarn("motor0_vel = %s" % (str(motor0_vel)))
-        rospy.logwarn("motor1_vel = %s" % (str(motor1_vel)))
-        rospy.logwarn("vel_mag_steps = %s" % (str(vel_mag_steps)))
         return_state = self.update_velocity(motor0_vel,motor1_vel,vel_mag_steps)
         return self._fill_response(return_state)
 
     def update_stage_position(self,x_pos_mm,y_pos_mm,vel_mag_mm):
-        rospy.logwarn("x_vel_mm = %s" % (str(x_vel_mm)))
-        rospy.logwarn("y_vel_mm = %s" % (str(y_vel_mm)))
-        rospy.logwarn("vel_mag_mm = %s" % (str(vel_mag_mm)))
         motor0_pos = self._mm_to_steps(x_pos_mm)
         motor1_pos = self._mm_to_steps(y_pos_mm)
         vel_mag_steps = self._mm_to_steps(vel_mag_mm)
-        rospy.logwarn("motor0_vel = %s" % (str(motor0_vel)))
-        rospy.logwarn("motor1_vel = %s" % (str(motor1_vel)))
-        rospy.logwarn("vel_mag_steps = %s" % (str(vel_mag_steps)))
         return_state = self.update_position(motor0_pos,motor1_pos,vel_mag_steps)
         return self._fill_response(return_state)
 
