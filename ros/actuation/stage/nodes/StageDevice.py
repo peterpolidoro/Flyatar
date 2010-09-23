@@ -38,9 +38,9 @@ class StageDevice(MotorController.MotorControllerDevice):
         self.response = Stage_StateResponse()
 
         MotorController.MotorControllerDevice.__init__(self,
-                                                       self._mm_to_steps(self.frequency_max_mm),
-                                                       self._mm_to_steps(self.position_min_mm),
-                                                       self._mm_to_steps(self.position_max_mm))
+                                                       self._mm_to_steps(self.frequency_max_mm)[0],
+                                                       self._mm_to_steps(self.position_min_mm)[0],
+                                                       self._mm_to_steps(self.position_max_mm)[0])
 
     def get_stage_state(self):
         return_state = self.get_state()
