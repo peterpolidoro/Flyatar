@@ -56,6 +56,7 @@ class FlyatarActionClient():
         self.goal.x_position = [125]
         self.goal.y_position = [125]
         self.goal.velocity_magnitude = [50]
+        self.send_goal()
 
     def main(self):
         self.num_trials = 3
