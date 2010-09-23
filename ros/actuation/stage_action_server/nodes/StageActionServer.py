@@ -19,6 +19,7 @@ class StageUpdate:
 
     self.stage_commands = stage.srv.Stage_StateRequest()
     self.update_position = False
+    self.home = False
 
     rospy.wait_for_service('get_stage_state')
     try:
@@ -32,20 +33,28 @@ class StageUpdate:
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
+    rospy.wait_for_service('home_stage')
+    try:
+      self.home_stage() = rospy.ServiceProxy('home_stage', stage.srv.Stage_State)
+    except rospy.ServiceException, e:
+      print "Service call failed: %s"%e
+
     self.initialized = True
 
   def update(self):
     if self.initialized:
       try:
         up = self.update_position
+        h = self.home
         self.update_position = False
+        self.home = False
 
         if up:
           self.response = self.set_stage_position(self.stage_commands)
-          # rospy.logwarn("set_stage_position()")
+        elif h:
+          self.response = self.home_stage()
         else:
           self.response = self.get_stage_state()
-          # rospy.logwarn("get_stage_state()")
 
         x = self.response.x
         y = self.response.y
@@ -82,7 +91,7 @@ class UpdateStagePositionAction(object):
         self.x_goal = goal.x_position[-1]
         self.y_goal = goal.y_position[-1]
       else:
-        self.su.update_position = False
+        self.su.home = True
         self.x_goal = None
         self.y_goal = None
 
@@ -125,7 +134,16 @@ class UpdateStagePositionAction(object):
             self.feedback.x_velocity = self.su.response.x_velocity
             self.feedback.y_velocity = self.su.response.y_velocity
         else:
-          self.success = True
+          if (not self.su.response.lookup_table_move_in_progress) and \
+             self.su.response.all_motors_in_position and \
+             self.su.response.motors_homed:
+            self.success = True
+            # if (abs(self.su.response.x - self.x_goal) < self.goal_threshold) and \
+            #        (abs(self.su.response.y - self.y_goal) < self.goal_threshold):
+            #   self.success = True
+            # else:
+            #   self._as.set_aborted()
+            #   break
 
         self.su.rate.sleep()
 

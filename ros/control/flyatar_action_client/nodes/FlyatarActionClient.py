@@ -21,6 +21,22 @@ def flyatar_action_client():
     # Creates a goal to send to the action server.
     goal = stage_action_server.msg.UpdateStagePositionGoal()
 
+    # Home
+    goal.x_position = []
+    goal.y_position = []
+    goal.velocity_magnitude = []
+
+    # Sends the goal to the action server.
+    rospy.logwarn("Sending goal...")
+    client.send_goal(goal)
+
+    # Waits for the server to finish performing the action.
+    client.wait_for_result()
+
+    # Prints out the result of executing the action
+    result = client.get_result()
+    rospy.logwarn("result = %s" % (str(result)))
+
     num_trials = 3
     for trial in range(num_trials):
         if trial == 0:
