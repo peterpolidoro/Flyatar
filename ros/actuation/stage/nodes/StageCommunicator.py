@@ -12,6 +12,7 @@ class StageCommunicator():
         self.dev = StageDevice.StageDevice()
         self.dev.print_values()
         self.reentrant_lock = threading.Lock()
+        self.home_stage()
 
     def close(self):
         self.dev.close()
@@ -44,12 +45,18 @@ class StageCommunicator():
                 response = self.dev.update_stage_position(x_pos_list,y_pos_list,vel_mag_list)
             return response
 
+    def home_stage(self,req):
+        with self.reentrant_lock:
+            response = self.dev.home_stage()
+        return response
+
 if __name__ == '__main__':
     rospy.init_node('StageCommunicator', anonymous=True)
     sc = StageCommunicator()
     s_gss = rospy.Service('get_stage_state', Stage_State, sc.get_stage_state)
     s_ssv = rospy.Service('set_stage_velocity', Stage_State, sc.set_stage_velocity)
     s_ssp = rospy.Service('set_stage_position', Stage_State, sc.set_stage_position)
+    s_hs = rospy.Service('home_stage', Stage_State, sc.home_stage)
 
     while not rospy.is_shutdown():
         rospy.spin()
