@@ -216,7 +216,9 @@ class MotorControllerDevice(USBDevice.USB_Device):
         return motor0_position,motor0_velocity,motor1_position,motor1_velocity,motor2_position,motor2_velocity,all_motors_in_position,self.lookup_table_move_in_progress,motors_homed
 
     def _convert_and_set_setpoint(self,motor0_pos,motor0_vel,motor1_pos,motor1_vel,entry_n=0):
+        rospy.logwarn('_convert_and_set_setpoint: motor0_pos = %s' % (str(motor0_pos)))
         motor0_pos,motor0_vel,motor1_pos,motor1_vel = self._check_and_convert_setpoint(motor0_pos,motor0_vel,motor1_pos,motor1_vel)
+        rospy.logwarn('_check_and_convert_setpoint: motor0_pos = %s' % (str(motor0_pos)))
 
         self._set_position(0,motor0_pos,entry_n)
         self._set_frequency(0,motor0_vel,entry_n)
