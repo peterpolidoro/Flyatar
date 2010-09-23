@@ -11,20 +11,7 @@ class StageCommunicator():
         rospy.loginfo("Opening Flyatar stage device...")
         self.dev = StageDevice.StageDevice()
         self.dev.print_values()
-        self.response = Stage_StateResponse()
         self.reentrant_lock = threading.Lock()
-
-    def _fill_response(self,return_state):
-        x,y,theta,x_velocity,y_velocity,theta_velocity,all_motors_in_position,lookup_table_move_in_progress = return_state
-        self.response.header.stamp = rospy.Time.now()
-        self.response.x = x
-        self.response.y = y
-        self.response.theta = theta
-        self.response.x_velocity = x_velocity
-        self.response.y_velocity = y_velocity
-        self.response.theta_velocity = theta_velocity
-        self.response.all_motors_in_position = bool(all_motors_in_position)
-        self.response.lookup_table_move_in_progress = lookup_table_move_in_progress
 
     def close(self):
         self.dev.close()
@@ -32,9 +19,8 @@ class StageCommunicator():
 
     def get_stage_state(self,req):
         with self.reentrant_lock:
-            return_state = self.dev.get_state()
-            self._fill_response(return_state)
-        return self.response
+            response = self.dev.get_stage_state()
+        return response
 
     def set_stage_velocity(self,req):
         x_vel_list = req.x_velocity
@@ -44,9 +30,8 @@ class StageCommunicator():
             rospy.logerr("Error in set_stage_velocity call: x_vel_list or y_vel_list length == 0")
         else:
             with self.reentrant_lock:
-                return_state = self.dev.update_velocity(x_vel_list,y_vel_list,vel_mag_list)
-                self._fill_response(return_state)
-            return self.response
+                response = self.dev.update_stage_velocity(x_vel_list,y_vel_list,vel_mag_list)
+            return response
 
     def set_stage_position(self,req):
         x_pos_list = req.x_position
@@ -56,9 +41,8 @@ class StageCommunicator():
             rospy.logerr("Error in set_stage_position call: x_pos_list or y_pos_list or vel_mag_list length == 0")
         else:
             with self.reentrant_lock:
-                return_state = self.dev.update_position(x_pos_list,y_pos_list,vel_mag_list)
-                self._fill_response(return_state)
-            return self.response
+                response = self.dev.update_stage_position(x_pos_list,y_pos_list,vel_mag_list)
+            return response
 
 if __name__ == '__main__':
     rospy.init_node('StageCommunicator', anonymous=True)

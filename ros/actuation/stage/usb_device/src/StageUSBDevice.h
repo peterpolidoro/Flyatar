@@ -176,6 +176,7 @@ typedef struct
   uint8_t       CommandID;
   uint8_t       AllMotorsInPosition;
   uint8_t       LookupTableMoveComplete;
+  uint8_t       MotorsHomed;
   LookupTableRow_t MotorStatus;
 } USBPacketInWrapper_t;
 

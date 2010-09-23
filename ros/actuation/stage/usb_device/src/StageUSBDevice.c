@@ -240,6 +240,7 @@ TASK(USB_ProcessPacket)
                         IO_Init();
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
+                    MotorsHomed = FALSE;
                     Motor_Home();
                   }
                   break;
@@ -305,6 +306,7 @@ TASK(USB_ProcessPacket)
                 }
               USBPacketIn.AllMotorsInPosition = AllMotorsInPosition;
               USBPacketIn.LookupTableMoveComplete = LookupTableMoveComplete;
+              USBPacketIn.MotorsHomed = MotorsHomed;
               USBPacket_Write();
 
               /* Indicate ready */
