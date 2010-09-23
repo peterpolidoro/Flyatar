@@ -16,6 +16,7 @@ def flyatar_action_client():
 
     # Waits until the action server has started up and started
     # listening for goals.
+    rospy.logwarn("Waiting for server...")
     client.wait_for_server()
 
     # Creates a goal to send to the action server.
