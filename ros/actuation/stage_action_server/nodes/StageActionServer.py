@@ -62,12 +62,12 @@ class StageUpdate:
 class UpdateStagePositionAction(object):
   def __init__(self, name):
     self.initialized = False
-    rospy.logwarn("Creating StageUpdate instance")
     su = StageUpdate()
-    rospy.logwarn("Created StageUpdate instance...")
 
+    rospy.logwarn("Creating SimpleActionServer")
     self._action_name = name
     self._as = actionlib.SimpleActionServer(self._action_name, stage_action_server.msg.UpdateStagePositionAction, execute_cb=self.execute_cb)
+    rospy.logwarn("Created SimpleActionServer...")
 
     # create messages that are used to publish feedback/result
     self.feedback = stage_action_server.msg.UpdateStagePositionFeedback()
