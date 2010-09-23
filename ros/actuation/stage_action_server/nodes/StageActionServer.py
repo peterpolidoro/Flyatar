@@ -98,8 +98,7 @@ class UpdateStagePositionAction(object):
       # rospy.loginfo('%s: Executing, creating fibonacci sequence of order %i with seeds %i, %i' % (self._action_name, goal.order, self._feedback.sequence[0], self._feedback.sequence[1]))
 
       # start executing the action
-      while (not self.success) and (self.count < 1000):
-        self.count += 1
+      while (not self.success) and (self.count < 100):
         self.su.update()
         rospy.logwarn("self.su.response.x = %s" % (str(self.su.response.x)))
         rospy.logwarn("self.su.response.y = %s" % (str(self.su.response.y)))
@@ -119,6 +118,7 @@ class UpdateStagePositionAction(object):
              (abs(self.su.response.y - self.y_goal) < self.goal_threshold):
             self.success = True
           else:
+            self.count += 1
             self.feedback.x = self.su.response.x
             self.feedback.y = self.su.response.y
             self.feedback.x_velocity = self.su.response.x_velocity
