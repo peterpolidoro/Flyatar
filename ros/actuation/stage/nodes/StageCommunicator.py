@@ -12,7 +12,6 @@ class StageCommunicator():
         self.dev = StageDevice.StageDevice()
         self.dev.print_values()
         self.reentrant_lock = threading.Lock()
-        self.dev.home_stage()
 
     def close(self):
         self.dev.close()
