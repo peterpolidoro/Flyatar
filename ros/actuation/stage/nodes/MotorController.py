@@ -15,10 +15,6 @@
 # ---------------------------------------------------------------------------
 from __future__ import division
 import USBDevice
-
-import roslib; roslib.load_manifest('stage')
-import rospy
-
 import ctypes
 import time
 import math
@@ -219,11 +215,6 @@ class MotorControllerDevice(USBDevice.USB_Device):
         motors_homed = self.USBPacketIn.MotorsHomed
         if self.lookup_table_move_in_progress and lookup_table_move_complete:
             self.lookup_table_move_in_progress = False
-
-        rospy.logwarn("motor0_position = %s" % (str(motor0_position)))
-        rospy.logwarn("motor0_velocity = %s" % (str(motor0_velocity)))
-        rospy.logwarn("motor1_position = %s" % (str(motor1_position)))
-        rospy.logwarn("motor1_velocity = %s" % (str(motor1_velocity)))
 
         return motor0_position,motor0_velocity,motor1_position,motor1_velocity,motor2_position,motor2_velocity,all_motors_in_position,self.lookup_table_move_in_progress,motors_homed
 
