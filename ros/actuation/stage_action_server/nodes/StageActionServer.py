@@ -124,7 +124,6 @@ class UpdateStagePositionAction(object):
             self.feedback.y = self.su.response.y
             self.feedback.x_velocity = self.su.response.x_velocity
             self.feedback.y_velocity = self.su.response.y_velocity
-            self.feedback.motors_homed = self.su.response.motors_homed
         else:
           self.success = True
 
@@ -133,7 +132,6 @@ class UpdateStagePositionAction(object):
       if self.success:
         self.result.x = self.su.response.x
         self.result.y = self.su.response.y
-        self.result.motors_homed = self.su.response.motors_homed
         self._as.set_succeeded(self.result)
 
 if __name__ == '__main__':
