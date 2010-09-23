@@ -123,7 +123,7 @@ class MotorControllerDevice(USBDevice.USB_Device):
         state = self._send_cmds_receive_state(motor0_pos_list,motor0_vel_list,motor1_pos_list,motor1_vel_list)
         return state
 
-    def home_stage(self):
+    def home(self):
         self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
         self._send_usb_cmd(self.USB_CMD_HOME,True)
         state = self._return_state()

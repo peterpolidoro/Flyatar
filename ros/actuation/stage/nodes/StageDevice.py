@@ -60,6 +60,10 @@ class StageDevice(MotorController.MotorControllerDevice):
         return_state = self.update_position(motor0_pos,motor1_pos,vel_mag_steps)
         return self._fill_response(return_state)
 
+    def home_stage(self):
+        return_state = self.home()
+        return self._fill_response(return_state)
+
     def _mm_to_steps(self,quantity_mm):
         try:
             list_mm = list(quantity_mm)
