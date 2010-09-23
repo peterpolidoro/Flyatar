@@ -14,6 +14,8 @@
 #    pjp 08/19/09    version 1.0
 # ---------------------------------------------------------------------------
 from __future__ import division
+import roslib; roslib.load_manifest('stage')
+import rospy
 import USBDevice
 import ctypes
 import time
@@ -262,6 +264,7 @@ class MotorControllerDevice(USBDevice.USB_Device):
         self.USBPacketOut.Entry[entry_n].Motor[axis].Frequency = int(freq)
 
     def _set_position(self,axis,pos,entry_n=0):
+        rospy.logwarn('_set_position: pos = %s' % (str(pos)))
         self.USBPacketOut.Entry[entry_n].Motor[axis].Position = int(pos)
 
     def _send_usb_cmd(self,cmd,data_in_out_packet):
