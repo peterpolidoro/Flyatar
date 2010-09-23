@@ -30,7 +30,7 @@ class FlyatarActionClient():
         self.client.wait_for_result()
 
         # Prints out the result of executing the action
-        self.result = client.get_result()
+        self.result = self.client.get_result()
         rospy.logwarn("result = %s" % (str(self.result)))
 
     def home(self):
