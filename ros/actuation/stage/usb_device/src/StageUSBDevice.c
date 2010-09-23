@@ -300,10 +300,11 @@ TASK(USB_ProcessPacket)
                 {
                   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
                   {
-                    /* USBPacketIn.MotorStatus[Motor_N].Frequency = Motor[Motor_N].Frequency; */
-                    /* USBPacketIn.MotorStatus[Motor_N].Position = Motor[Motor_N].Position; */
-                    USBPacketIn.MotorStatus[Motor_N].Frequency = (Motor_N+1)*10000;
+                    USBPacketIn.MotorStatus[Motor_N].Frequency = Motor[Motor_N].Frequency;
                     USBPacketIn.MotorStatus[Motor_N].Position = Motor[Motor_N].Position;
+
+                    /* USBPacketIn.MotorStatus[Motor_N].Frequency = (Motor_N+1)*10000; */
+                    /* USBPacketIn.MotorStatus[Motor_N].Position = Motor[Motor_N].Position; */
                   }
                 }
               USBPacketIn.AllMotorsInPosition = AllMotorsInPosition;
