@@ -75,7 +75,6 @@ class UpdateStagePositionAction(object):
     self.initialized = True
 
   def execute_cb(self, goal):
-    rospy.logwarn("In execute_cb...")
     if self.initialized:
       position_list_length = min(len(goal.x_position),len(goal.y_position))
       if (0 < position_list_length):
@@ -100,6 +99,11 @@ class UpdateStagePositionAction(object):
       # start executing the action
       while not self.success:
         self.su.update()
+        rospy.logwarn("self.su.response.x = %s" % (str(self.su.response.x)))
+        rospy.logwarn("self.su.response.y = %s" % (str(self.su.response.y)))
+        rospy.logwarn("self.x_goal = %s" % (str(self.x_goal)))
+        rospy.logwarn("self.y_goal = %s" % (str(self.y_goal)))
+
         # check that preempt has not been requested by the client
         if self._as.is_preempt_requested():
           rospy.loginfo('%s: Preempted' % self._action_name)
