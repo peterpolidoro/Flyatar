@@ -44,6 +44,21 @@ def flyatar_action_client():
         result = client.get_result()
         rospy.logwarn("result = %s" % (str(result)))
 
+        goal.x_position = [125]
+        goal.y_position = [125]
+        goal.velocity_magnitude = [50]
+
+        # Sends the goal to the action server.
+        rospy.logwarn("Sending goal...")
+        client.send_goal(goal)
+
+        # Waits for the server to finish performing the action.
+        client.wait_for_result()
+
+        # Prints out the result of executing the action
+        result = client.get_result()
+        rospy.logwarn("result = %s" % (str(result)))
+
 if __name__ == '__main__':
     try:
         # Initializes a rospy node so that the SimpleActionClient can
