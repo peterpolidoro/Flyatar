@@ -92,12 +92,14 @@ class UpdateStagePositionAction(object):
 
       # helper variables
       self.success = False
+      self.count = 0
 
       # publish info to the console for the user
       # rospy.loginfo('%s: Executing, creating fibonacci sequence of order %i with seeds %i, %i' % (self._action_name, goal.order, self._feedback.sequence[0], self._feedback.sequence[1]))
 
       # start executing the action
-      while not self.success:
+      while (not self.success) and (1000 < self.count):
+        self.count += 1
         self.su.update()
         rospy.logwarn("self.su.response.x = %s" % (str(self.su.response.x)))
         rospy.logwarn("self.su.response.y = %s" % (str(self.su.response.y)))
