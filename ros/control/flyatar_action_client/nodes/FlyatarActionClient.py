@@ -20,37 +20,29 @@ def flyatar_action_client():
 
     # Creates a goal to send to the action server.
     goal = stage_action_server.msg.UpdateStagePositionGoal()
-    goal.x_position = [100,150,150,100,100]
-    goal.y_position = [100,100,150,150,100]
-    goal.velocity_magnitude = [50]
 
-    # Sends the goal to the action server.
-    rospy.logwarn("Sending goal...")
-    client.send_goal(goal)
+    num_trials = 3
+    for trial in range(num_trials):
+        if trial == 0:
+            x_pos_list = [100,150,150,100,100]
+            y_pos_list = [100,100,150,150,100]
+        else:
+            x_pos_list.reverse()
+            y_pos_list.reverse()
+        goal.x_position = x_pos_list
+        goal.y_position = y_pos_list
+        goal.velocity_magnitude = [50]
 
-    # Waits for the server to finish performing the action.
-    client.wait_for_result()
+        # Sends the goal to the action server.
+        rospy.logwarn("Sending goal...")
+        client.send_goal(goal)
 
-    # Prints out the result of executing the action
-    result = client.get_result()
-    rospy.logwarn("result = %s" % (str(result)))
+        # Waits for the server to finish performing the action.
+        client.wait_for_result()
 
-    # Creates a goal to send to the action server.
-    goal = stage_action_server.msg.UpdateStagePositionGoal()
-    goal.x_position = [100,150,150,100,100].reverse()
-    goal.y_position = [100,100,150,150,100].reverse()
-    goal.velocity_magnitude = [50]
-
-    # Sends the goal to the action server.
-    rospy.logwarn("Sending goal...")
-    client.send_goal(goal)
-
-    # Waits for the server to finish performing the action.
-    client.wait_for_result()
-
-    # Prints out the result of executing the action
-    result = client.get_result()
-    rospy.logwarn("result = %s" % (str(result)))
+        # Prints out the result of executing the action
+        result = client.get_result()
+        rospy.logwarn("result = %s" % (str(result)))
 
 if __name__ == '__main__':
     try:
