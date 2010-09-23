@@ -22,13 +22,13 @@ class StageUpdate:
 
     rospy.wait_for_service('get_stage_state')
     try:
-      self.get_stage_state = rospy.ServiceProxy('get_stage_state', Stage_State)
+      self.get_stage_state = rospy.ServiceProxy('get_stage_state', stage.srv.Stage_State)
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
     rospy.wait_for_service('set_stage_position')
     try:
-      self.set_stage_position = rospy.ServiceProxy('set_stage_position', Stage_State)
+      self.set_stage_position = rospy.ServiceProxy('set_stage_position', stage.srv.Stage_State)
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
