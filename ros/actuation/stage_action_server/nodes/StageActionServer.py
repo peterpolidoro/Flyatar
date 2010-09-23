@@ -130,6 +130,6 @@ class UpdateStagePositionAction(object):
         self._as.set_succeeded(self.result)
 
 if __name__ == '__main__':
-  rospy.init_node('StageUpdate', anonymous=True)
+  rospy.init_node('StageActionServer', anonymous=True)
   UpdateStagePositionAction(rospy.get_name())
   rospy.spin()

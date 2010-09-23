@@ -7,5 +7,5 @@
 
   <include file="$(find flyatar_calibration)/calibration_data/stage_plate_calibration_data.launch" />
 
-  <node pkg="stage_action_server" type="StageUpdate.py" name="StageUpdate"/>
+  <node pkg="stage_action_server" type="StageActionServer.py" name="StageActionServer"/>
 </launch>
