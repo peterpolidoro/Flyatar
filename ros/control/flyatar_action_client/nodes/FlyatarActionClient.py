@@ -25,6 +25,7 @@ def flyatar_action_client():
     goal.velocity_magnitude = [50]
 
     # Sends the goal to the action server.
+    rospy.logwarn("Sending goal...")
     client.send_goal(goal)
 
     # Waits for the server to finish performing the action.
