@@ -22,7 +22,7 @@ class FlyatarActionClient():
         # Creates a goal to send to the action server.
         self.goal = stage_action_server.msg.UpdateStagePositionGoal()
 
-    def send_goal(self)
+    def send_goal(self):
         # Sends the goal to the action server.
         self.client.send_goal(self.goal)
 
