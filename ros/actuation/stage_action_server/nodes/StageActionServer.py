@@ -71,7 +71,7 @@ class UpdateStagePositionAction(object):
     self.feedback = stage_action_server.msg.UpdateStagePositionFeedback()
     self.result   = stage_action_server.msg.UpdateStagePositionResult()
 
-    self.goal_threshold = 1             # mm
+    self.goal_threshold = 0.1             # mm
     self.initialized = True
 
   def execute_cb(self, goal):
@@ -92,18 +92,17 @@ class UpdateStagePositionAction(object):
 
       # helper variables
       self.success = False
-      self.count = 0
 
       # publish info to the console for the user
       # rospy.loginfo('%s: Executing, creating fibonacci sequence of order %i with seeds %i, %i' % (self._action_name, goal.order, self._feedback.sequence[0], self._feedback.sequence[1]))
 
       # start executing the action
-      while (not self.success) and (self.count < 1000):
+      while (not self.success):
         self.su.update()
-        rospy.logwarn("self.su.response.x = %s" % (str(self.su.response.x)))
-        rospy.logwarn("self.su.response.y = %s" % (str(self.su.response.y)))
-        rospy.logwarn("self.x_goal = %s" % (str(self.x_goal)))
-        rospy.logwarn("self.y_goal = %s" % (str(self.y_goal)))
+        # rospy.logwarn("self.su.response.x = %s" % (str(self.su.response.x)))
+        # rospy.logwarn("self.su.response.y = %s" % (str(self.su.response.y)))
+        # rospy.logwarn("self.x_goal = %s" % (str(self.x_goal)))
+        # rospy.logwarn("self.y_goal = %s" % (str(self.y_goal)))
 
         # check that preempt has not been requested by the client
         if self._as.is_preempt_requested():
@@ -113,12 +112,14 @@ class UpdateStagePositionAction(object):
         if (self.x_goal is not None) and (self.y_goal is not None):
           if (not self.su.response.lookup_table_move_in_progress) and \
              self.su.response.all_motors_in_position and \
-             self.su.response.motors_homed and \
-             (abs(self.su.response.x - self.x_goal) < self.goal_threshold) and \
-             (abs(self.su.response.y - self.y_goal) < self.goal_threshold):
-            self.success = True
+             self.su.response.motors_homed:
+            if (abs(self.su.response.x - self.x_goal) < self.goal_threshold) and \
+                   (abs(self.su.response.y - self.y_goal) < self.goal_threshold):
+              self.success = True
+            else:
+              self._as.set_aborted()
+              break
           else:
-            self.count += 1
             self.feedback.x = self.su.response.x
             self.feedback.y = self.su.response.y
             self.feedback.x_velocity = self.su.response.x_velocity
