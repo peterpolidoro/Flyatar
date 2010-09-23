@@ -9,77 +9,67 @@ import actionlib
 # goal message and the result message.
 import stage_action_server.msg
 
-def flyatar_action_client():
-    # Creates the SimpleActionClient, passing the type of the action
-    # to the constructor.
-    client = actionlib.SimpleActionClient('StageActionServer', stage_action_server.msg.UpdateStagePositionAction)
+class FlyatarActionClient():
+    def __init__(self):
+        # Creates the SimpleActionClient, passing the type of the action
+        # to the constructor.
+        self.client = actionlib.SimpleActionClient('StageActionServer', stage_action_server.msg.UpdateStagePositionAction)
 
-    # Waits until the action server has started up and started
-    # listening for goals.
-    client.wait_for_server()
+        # Waits until the action server has started up and started
+        # listening for goals.
+        self.client.wait_for_server()
 
-    # Creates a goal to send to the action server.
-    goal = stage_action_server.msg.UpdateStagePositionGoal()
+        # Creates a goal to send to the action server.
+        self.goal = stage_action_server.msg.UpdateStagePositionGoal()
 
-    # Home
-    goal.x_position = []
-    goal.y_position = []
-    goal.velocity_magnitude = []
+    def send_goal(self)
+        # Sends the goal to the action server.
+        self.client.send_goal(self.goal)
 
-    # Sends the goal to the action server.
-    rospy.logwarn("Sending goal...")
-    client.send_goal(goal)
+        # Waits for the server to finish performing the action.
+        self.client.wait_for_result()
 
-    # Waits for the server to finish performing the action.
-    client.wait_for_result()
+        # Prints out the result of executing the action
+        self.result = client.get_result()
+        rospy.logwarn("result = %s" % (str(self.result)))
 
-    # Prints out the result of executing the action
-    result = client.get_result()
-    rospy.logwarn("result = %s" % (str(result)))
+    def home(self):
+        self.goal.x_position = []
+        self.goal.y_position = []
+        self.goal.velocity_magnitude = []
+        self.send_goal()
 
-    num_trials = 3
-    for trial in range(num_trials):
+    def square_move(self,trial=0):
         if trial == 0:
-            x_pos_list = [100,150,150,100,100]
-            y_pos_list = [100,100,150,150,100]
+            self.x_pos_list = [100,150,150,100,100]
+            self.y_pos_list = [100,100,150,150,100]
         else:
-            x_pos_list.reverse()
-            y_pos_list.reverse()
-        goal.x_position = x_pos_list
-        goal.y_position = y_pos_list
-        goal.velocity_magnitude = [50]
+            self.x_pos_list.reverse()
+            self.y_pos_list.reverse()
 
-        # Sends the goal to the action server.
-        rospy.logwarn("Sending goal...")
-        client.send_goal(goal)
+        self.goal.x_position = self.x_pos_list
+        self.goal.y_position = self.y_pos_list
+        self.goal.velocity_magnitude = [50]
+        self.send_goal()
 
-        # Waits for the server to finish performing the action.
-        client.wait_for_result()
+    def center_move(self):
+        self.goal.x_position = [125]
+        self.goal.y_position = [125]
+        self.goal.velocity_magnitude = [50]
 
-        # Prints out the result of executing the action
-        result = client.get_result()
-        rospy.logwarn("result = %s" % (str(result)))
+    def main(self):
+        self.num_trials = 3
+        for trial in range(self.num_trials):
+            self.square_move(trial)
+            self.center_move
 
-        goal.x_position = [125]
-        goal.y_position = [125]
-        goal.velocity_magnitude = [50]
-
-        # Sends the goal to the action server.
-        rospy.logwarn("Sending goal...")
-        client.send_goal(goal)
-
-        # Waits for the server to finish performing the action.
-        client.wait_for_result()
-
-        # Prints out the result of executing the action
-        result = client.get_result()
-        rospy.logwarn("result = %s" % (str(result)))
 
 if __name__ == '__main__':
     try:
         # Initializes a rospy node so that the SimpleActionClient can
         # publish and subscribe over ROS.
         rospy.init_node('FlyatarActionClient')
-        flyatar_action_client()
+        fac = FlyatarActionClient()
+        fac.main()
     except rospy.ROSInterruptException:
         print "program interrupted before completion"
