@@ -12,7 +12,7 @@ import stage_action_server.msg
 def flyatar_action_client():
     # Creates the SimpleActionClient, passing the type of the action
     # to the constructor.
-    client = actionlib.SimpleActionClient('flyatar_action_client', stage_action_server.msg.UpdateStagePositionAction)
+    client = actionlib.SimpleActionClient('StageActionServer', stage_action_server.msg.UpdateStagePositionAction)
 
     # Waits until the action server has started up and started
     # listening for goals.
