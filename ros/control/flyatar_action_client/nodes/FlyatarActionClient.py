@@ -18,6 +18,7 @@ def flyatar_action_client():
     # listening for goals.
     rospy.logwarn("Waiting for server...")
     client.wait_for_server()
+    rospy.logwarn("Wait for server finished...")
 
     # Creates a goal to send to the action server.
     goal = stage_action_server.msg.UpdateStagePositionGoal()

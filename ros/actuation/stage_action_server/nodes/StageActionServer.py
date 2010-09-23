@@ -64,10 +64,8 @@ class UpdateStagePositionAction(object):
     self.initialized = False
     su = StageUpdate()
 
-    rospy.logwarn("Creating SimpleActionServer")
     self._action_name = name
     self._as = actionlib.SimpleActionServer(self._action_name, stage_action_server.msg.UpdateStagePositionAction, execute_cb=self.execute_cb)
-    rospy.logwarn("Created SimpleActionServer...")
 
     # create messages that are used to publish feedback/result
     self.feedback = stage_action_server.msg.UpdateStagePositionFeedback()
@@ -75,6 +73,7 @@ class UpdateStagePositionAction(object):
 
     self.goal_threshold = 1             # mm
     self.initialized = True
+    rospy.logwarn("SimpleActionServer initialized...")
 
   def execute_cb(self, goal):
     rospy.logwarn("In execute_cb...")
