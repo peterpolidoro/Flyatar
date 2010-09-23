@@ -118,7 +118,7 @@ class MotorControllerDevice(USBDevice.USB_Device):
         vel_mag_list = list(vel_mag)
         return_state = self.get_state()
         motor0_initial_pos = return_state[0]
-        motor1_initial_pos = return_state[1]
+        motor1_initial_pos = return_state[2]
         motor0_vel_list,motor1_vel_list = self._find_velocity_from_position(motor0_pos_list,motor1_pos_list,vel_mag_list,motor0_initial_pos,motor1_initial_pos)
         state = self._send_cmds_receive_state(motor0_pos_list,motor0_vel_list,motor1_pos_list,motor1_vel_list)
         return state
