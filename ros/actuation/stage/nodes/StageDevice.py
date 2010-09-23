@@ -86,6 +86,7 @@ class StageDevice(MotorController.MotorControllerDevice):
         self.response.theta_velocity = theta_velocity
         self.response.all_motors_in_position = bool(all_motors_in_position)
         self.response.lookup_table_move_in_progress = lookup_table_move_in_progress
+        self.response.motors_homed = motors_homed
         return self.response
 
 #-------------------------------------------------------------------------------------
