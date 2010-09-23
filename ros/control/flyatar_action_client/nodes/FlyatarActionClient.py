@@ -62,7 +62,7 @@ class FlyatarActionClient():
         self.num_trials = 3
         for trial in range(self.num_trials):
             self.square_move(trial)
-            self.center_move
+            self.center_move()
 
 
 if __name__ == '__main__':
