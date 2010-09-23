@@ -129,7 +129,7 @@ class UpdateStagePositionAction(object):
 
         self.su.rate.sleep()
 
-      if success:
+      if self.success:
         self.result.x = self.su.response.x
         self.result.y = self.su.response.y
         self.result.motors_homed = self.su.response.motors_homed
