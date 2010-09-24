@@ -115,12 +115,12 @@ class UpdateStagePositionAction(object):
 
   def convert_feedback_to_plate(self):
     response = self.su.stage_to_plate([self.feedback_stage.x],[self.feedback_stage.y])
-    rospy.logwarn("self.feedback_stage.x = %s" % (str(self.feedback_stage.x)))
-    rospy.logwarn("self.feedback_stage.y = %s" % (str(self.feedback_stage.y)))
+    # rospy.logwarn("self.feedback_stage.x = %s" % (str(self.feedback_stage.x)))
+    # rospy.logwarn("self.feedback_stage.y = %s" % (str(self.feedback_stage.y)))
     self.feedback_plate.x = response.Xdst[0]
     self.feedback_plate.y = response.Ydst[0]
-    rospy.logwarn("self.feedback_plate.x = %s" % (str(self.feedback_plate.x)))
-    rospy.logwarn("self.feedback_plate.y = %s" % (str(self.feedback_plate.y)))
+    # rospy.logwarn("self.feedback_plate.x = %s" % (str(self.feedback_plate.x)))
+    # rospy.logwarn("self.feedback_plate.y = %s" % (str(self.feedback_plate.y)))
     vel_norm_stage = numpy.linalg.norm([self.feedback_stage.x_velocity,self.feedback_stage.y_velocity])
     response = self.su.stage_to_plate([self.feedback_stage.x_velocity],[self.feedback_stage.y_velocity])
     self.feedback_plate.x_velocity = response.Xdst[0]
@@ -129,10 +129,10 @@ class UpdateStagePositionAction(object):
     vel_norm_ratio = vel_norm_stage/vel_norm_plate
     self.feedback_plate.x_velocity = self.feedback_plate.x_velocity*vel_norm_ratio
     self.feedback_plate.y_velocity = self.feedback_plate.y_velocity*vel_norm_ratio
-    rospy.logwarn("self.feedback_stage.x_velocity = %s" % (str(self.feedback_stage.x_velocity)))
-    rospy.logwarn("self.feedback_stage.y_velocity = %s" % (str(self.feedback_stage.y_velocity)))
-    rospy.logwarn("self.feedback_plate.x_velocity = %s" % (str(self.feedback_plate.x_velocity)))
-    rospy.logwarn("self.feedback_plate.y_velocity = %s" % (str(self.feedback_plate.y_velocity)))
+    # rospy.logwarn("self.feedback_stage.x_velocity = %s" % (str(self.feedback_stage.x_velocity)))
+    # rospy.logwarn("self.feedback_stage.y_velocity = %s" % (str(self.feedback_stage.y_velocity)))
+    # rospy.logwarn("self.feedback_plate.x_velocity = %s" % (str(self.feedback_plate.x_velocity)))
+    # rospy.logwarn("self.feedback_plate.y_velocity = %s" % (str(self.feedback_plate.y_velocity)))
 
   def execute_cb(self, goal):
     if self.initialized:
