@@ -135,9 +135,9 @@ class UpdateStagePositionAction(object):
     rospy.logwarn("self.feedback_plate.y_velocity = %s" % (str(self.feedback_plate.y_velocity)))
 
   def execute_cb(self, goal):
-    self.goal_plate = goal
-    self.convert_goal_to_stage()
     if self.initialized:
+      self.goal_plate = goal
+      self.convert_goal_to_stage()
       position_list_length = min(len(self.goal_stage.x_position),len(self.goal_stage.y_position))
       if (0 < position_list_length):
         self.su.update_position = True
@@ -205,6 +205,8 @@ class UpdateStagePositionAction(object):
         self.result_stage.y = self.su.response.y
         self.convert_result_to_plate()
         self._as.set_succeeded(self.result_plate)
+    else:
+      self._as.set_aborted()
 
 if __name__ == '__main__':
   rospy.init_node('StageActionServer', anonymous=True)
