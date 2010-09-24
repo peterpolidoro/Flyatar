@@ -114,27 +114,27 @@ class UpdateStagePositionAction(object):
     rospy.logwarn("self.goal_stage.y_position = %s" % (str(self.goal_stage.y_position)))
 
   def convert_result_to_plate(self):
-    response = self.su.stage_to_plate(self.result_stage.x,self.result_stage.y)
+    response = self.su.stage_to_plate([self.result_stage.x],[self.result_stage.y])
     rospy.logwarn("self.result_stage.x = %s" % (str(self.result_stage.x)))
     rospy.logwarn("self.result_stage.y = %s" % (str(self.result_stage.y)))
-    self.result_plate.x = response.Xdst
-    self.result_plate.y = response.Ydst
+    self.result_plate.x = response.Xdst[0]
+    self.result_plate.y = response.Ydst[0]
     rospy.logwarn("self.result_plate.x = %s" % (str(self.result_plate.x)))
     rospy.logwarn("self.result_plate.y = %s" % (str(self.result_plate.y)))
 
   def convert_feedback_to_plate(self):
-    response = self.su.stage_to_plate(self.feedback_stage.x,self.feedback_stage.y)
+    response = self.su.stage_to_plate([self.feedback_stage.x],[self.feedback_stage.y])
     rospy.logwarn("self.feedback_stage.x = %s" % (str(self.feedback_stage.x)))
     rospy.logwarn("self.feedback_stage.y = %s" % (str(self.feedback_stage.y)))
-    self.feedback_plate.x = response.Xdst
-    self.feedback_plate.y = response.Ydst
+    self.feedback_plate.x = response.Xdst[0]
+    self.feedback_plate.y = response.Ydst[0]
     rospy.logwarn("self.feedback_plate.x = %s" % (str(self.feedback_plate.x)))
     rospy.logwarn("self.feedback_plate.y = %s" % (str(self.feedback_plate.y)))
-    response = self.su.stage_to_plate(self.feedback_stage.x_velocity,self.feedback_stage.y_velocity)
+    response = self.su.stage_to_plate([self.feedback_stage.x_velocity],[self.feedback_stage.y_velocity])
     rospy.logwarn("self.feedback_stage.x_velocity = %s" % (str(self.feedback_stage.x_velocity)))
     rospy.logwarn("self.feedback_stage.y_velocity = %s" % (str(self.feedback_stage.y_velocity)))
-    self.feedback_plate.x_velocity = response.Xdst
-    self.feedback_plate.y_velocity = response.Ydst
+    self.feedback_plate.x_velocity = response.Xdst[0]
+    self.feedback_plate.y_velocity = response.Ydst[0]
     rospy.logwarn("self.feedback_plate.x_velocity = %s" % (str(self.feedback_plate.x_velocity)))
     rospy.logwarn("self.feedback_plate.y_velocity = %s" % (str(self.feedback_plate.y_velocity)))
 
