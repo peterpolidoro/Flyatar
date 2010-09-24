@@ -7,6 +7,7 @@ import actionlib
 import stage_action_server.msg
 import stage.srv
 import tf
+import plate_tf.srv
 
 class StageUpdate:
   def __init__(self):
@@ -36,6 +37,18 @@ class StageUpdate:
     rospy.wait_for_service('home_stage')
     try:
       self.home_stage = rospy.ServiceProxy('home_stage', stage.srv.Stage_State)
+    except rospy.ServiceException, e:
+      print "Service call failed: %s"%e
+
+    rospy.wait_for_service('plate_to_stage')
+    try:
+      self.plate_to_stage = rospy.ServiceProxy('plate_to_stage', plate_tf.srv.PlateStageConversion)
+    except rospy.ServiceException, e:
+      print "Service call failed: %s"%e
+
+    rospy.wait_for_service('stage_to_plate')
+    try:
+      self.stage_to_plate = rospy.ServiceProxy('stage_to_plate', plate_tf.srv.PlateStageConversion)
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
@@ -77,33 +90,70 @@ class UpdateStagePositionAction(object):
     self._as = actionlib.SimpleActionServer(self._action_name, stage_action_server.msg.UpdateStagePositionAction, execute_cb=self.execute_cb)
 
     # create messages that are used to publish feedback/result
-    self.feedback = stage_action_server.msg.UpdateStagePositionFeedback()
-    self.result   = stage_action_server.msg.UpdateStagePositionResult()
+    self.goal_stage   = stage_action_server.msg.UpdateStagePositionResult()
+    self.goal_plate   = stage_action_server.msg.UpdateStagePositionResult()
+    self.result_stage   = stage_action_server.msg.UpdateStagePositionResult()
+    self.result_plate   = stage_action_server.msg.UpdateStagePositionResult()
+    self.feedback_stage = stage_action_server.msg.UpdateStagePositionFeedback()
+    self.feedback_plate = stage_action_server.msg.UpdateStagePositionFeedback()
 
     self.goal_threshold = 0.1             # mm
     self.initialized = True
 
+  def convert_goal_to_stage(self):
+    response = self.plate_to_stage(self.goal_plate.x_position,self.goal_plate.y_position)
+    rospy.logwarn("self.goal_plate.x_position = %s" % (str(self.goal_plate.x_position)))
+    rospy.logwarn("self.goal_plate.y_position = %s" % (str(self.goal_plate.y_position)))
+    self.goal_stage.x_position = response.Xdst
+    self.goal_stage.y_position = response.Ydst
+    rospy.logwarn("self.goal_stage.x_position = %s" % (str(self.goal_stage.x_position)))
+    rospy.logwarn("self.goal_stage.y_position = %s" % (str(self.goal_stage.y_position)))
+
+  def convert_result_to_plate(self):
+    response = self.stage_to_plate(self.result_stage.x,self.result_stage.y)
+    rospy.logwarn("self.result_stage.x = %s" % (str(self.result_stage.x)))
+    rospy.logwarn("self.result_stage.y = %s" % (str(self.result_stage.y)))
+    self.result_plate.x = response.Xdst
+    self.result_plate.y = response.Ydst
+    rospy.logwarn("self.result_plate.x = %s" % (str(self.result_plate.x)))
+    rospy.logwarn("self.result_plate.y = %s" % (str(self.result_plate.y)))
+
+  def convert_feedback_to_plate(self):
+    response = self.stage_to_plate(self.feedback_stage.x,self.feedback_stage.y)
+    rospy.logwarn("self.feedback_stage.x = %s" % (str(self.feedback_stage.x)))
+    rospy.logwarn("self.feedback_stage.y = %s" % (str(self.feedback_stage.y)))
+    self.feedback_plate.x = response.Xdst
+    self.feedback_plate.y = response.Ydst
+    rospy.logwarn("self.feedback_plate.x = %s" % (str(self.feedback_plate.x)))
+    rospy.logwarn("self.feedback_plate.y = %s" % (str(self.feedback_plate.y)))
+    response = self.stage_to_plate(self.feedback_stage.x_velocity,self.feedback_stage.y_velocity)
+    rospy.logwarn("self.feedback_stage.x_velocity = %s" % (str(self.feedback_stage.x_velocity)))
+    rospy.logwarn("self.feedback_stage.y_velocity = %s" % (str(self.feedback_stage.y_velocity)))
+    self.feedback_plate.x_velocity = response.Xdst
+    self.feedback_plate.y_velocity = response.Ydst
+    rospy.logwarn("self.feedback_plate.x_velocity = %s" % (str(self.feedback_plate.x_velocity)))
+    rospy.logwarn("self.feedback_plate.y_velocity = %s" % (str(self.feedback_plate.y_velocity)))
+
   def execute_cb(self, goal):
+    self.goal_plate = goal
+    self.convert_goal_to_stage()
     if self.initialized:
-      position_list_length = min(len(goal.x_position),len(goal.y_position))
+      position_list_length = min(len(self.goal_stage.x_position),len(self.goal_stage.y_position))
       if (0 < position_list_length):
         self.su.update_position = True
-        self.x_goal = goal.x_position[-1]
-        self.y_goal = goal.y_position[-1]
+        self.x_goal = self.goal_stage.x_position[-1]
+        self.y_goal = self.goal_stage.y_position[-1]
       else:
         self.su.home = True
         self.x_goal = None
         self.y_goal = None
 
-      self.su.stage_commands.x_position = goal.x_position
-      self.su.stage_commands.y_position = goal.y_position
-      self.su.stage_commands.velocity_magnitude = goal.velocity_magnitude
+      self.su.stage_commands.x_position = self.goal_stage.x_position
+      self.su.stage_commands.y_position = self.goal_stage.y_position
+      self.su.stage_commands.velocity_magnitude = self.goal_stage.velocity_magnitude
 
       # helper variables
       self.success = False
-
-      # publish info to the console for the user
-      # rospy.loginfo('%s: Executing, creating fibonacci sequence of order %i with seeds %i, %i' % (self._action_name, goal.order, self._feedback.sequence[0], self._feedback.sequence[1]))
 
       # start executing the action
       while (not self.success):
@@ -129,10 +179,10 @@ class UpdateStagePositionAction(object):
               self._as.set_aborted()
               break
           else:
-            self.feedback.x = self.su.response.x
-            self.feedback.y = self.su.response.y
-            self.feedback.x_velocity = self.su.response.x_velocity
-            self.feedback.y_velocity = self.su.response.y_velocity
+            self.feedback_stage.x = self.su.response.x
+            self.feedback_stage.y = self.su.response.y
+            self.feedback_stage.x_velocity = self.su.response.x_velocity
+            self.feedback_stage.y_velocity = self.su.response.y_velocity
         else:
           if (not self.su.response.lookup_table_move_in_progress) and \
              self.su.response.all_motors_in_position and \
@@ -145,12 +195,16 @@ class UpdateStagePositionAction(object):
             #   self._as.set_aborted()
             #   break
 
+        self.convert_feedback_to_plate()
+        self._as.publish_feedback(self.feedback_plate)
+
         self.su.rate.sleep()
 
       if self.success:
-        self.result.x = self.su.response.x
-        self.result.y = self.su.response.y
-        self._as.set_succeeded(self.result)
+        self.result_stage.x = self.su.response.x
+        self.result_stage.y = self.su.response.y
+        self.convert_result_to_plate()
+        self._as.set_succeeded(self.result_plate)
 
 if __name__ == '__main__':
   rospy.init_node('StageActionServer', anonymous=True)

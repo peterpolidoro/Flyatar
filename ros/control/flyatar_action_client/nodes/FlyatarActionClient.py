@@ -41,8 +41,10 @@ class FlyatarActionClient():
 
     def square_move(self,trial=0):
         if trial == 0:
-            self.x_pos_list = [100,150,150,100,100]
-            self.y_pos_list = [100,100,150,150,100]
+            # self.x_pos_list = [100,150,150,100,100]
+            # self.y_pos_list = [100,100,150,150,100]
+            self.x_pos_list = [25,25,-25,-25,25]
+            self.y_pos_list = [-25,25,25,-25,-25]
         else:
             self.x_pos_list.reverse()
             self.y_pos_list.reverse()
@@ -53,8 +55,10 @@ class FlyatarActionClient():
         self.send_goal()
 
     def center_move(self):
-        self.goal.x_position = [125]
-        self.goal.y_position = [125]
+        # self.goal.x_position = [125]
+        # self.goal.y_position = [125]
+        self.goal.x_position = [0]
+        self.goal.y_position = [0]
         self.goal.velocity_magnitude = [50]
         self.send_goal()
 
