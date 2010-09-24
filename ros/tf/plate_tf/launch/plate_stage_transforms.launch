@@ -1,6 +1,5 @@
 <launch>
-  <!-- <include file="$(find flyatar_calibration)/calibration_data/stage_plate_calibration_data.launch" /> -->
-  <node pkg="tf" type="static_transform_publisher" name="PlateStageStaticTFBroadcaster" args="116.713 -115.941 0 0 0 0.713 0.701 Plate Stage 10" />
+  <include file="$(find flyatar_calibration)/calibration_data/stage_plate_calibration_data.launch" />
 
   <node name="PlateStageTransforms" pkg="plate_tf" type="PlateStageTransforms.py"/>
 </launch>
