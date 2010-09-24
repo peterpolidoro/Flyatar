@@ -8,6 +8,7 @@ import stage_action_server.msg
 import stage.srv
 import tf
 import plate_tf.srv
+import numpy
 
 class StageUpdate:
   def __init__(self):
@@ -41,14 +42,12 @@ class StageUpdate:
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
-    rospy.logwarn("Waiting for service: plate_to_stage")
     rospy.wait_for_service('plate_to_stage')
     try:
       self.plate_to_stage = rospy.ServiceProxy('plate_to_stage', plate_tf.srv.PlateStageConversion)
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
-    rospy.logwarn("Waiting for service: stage_to_plate")
     rospy.wait_for_service('stage_to_plate')
     try:
       self.stage_to_plate = rospy.ServiceProxy('stage_to_plate', plate_tf.srv.PlateStageConversion)
@@ -105,22 +104,14 @@ class UpdateStagePositionAction(object):
 
   def convert_goal_to_stage(self):
     response = self.su.plate_to_stage(self.goal_plate.x_position,self.goal_plate.y_position)
-    rospy.logwarn("self.goal_plate.x_position = %s" % (str(self.goal_plate.x_position)))
-    rospy.logwarn("self.goal_plate.y_position = %s" % (str(self.goal_plate.y_position)))
     self.goal_stage.x_position = response.Xdst
     self.goal_stage.y_position = response.Ydst
     self.goal_stage.velocity_magnitude = self.goal_plate.velocity_magnitude
-    rospy.logwarn("self.goal_stage.x_position = %s" % (str(self.goal_stage.x_position)))
-    rospy.logwarn("self.goal_stage.y_position = %s" % (str(self.goal_stage.y_position)))
 
   def convert_result_to_plate(self):
     response = self.su.stage_to_plate([self.result_stage.x],[self.result_stage.y])
-    rospy.logwarn("self.result_stage.x = %s" % (str(self.result_stage.x)))
-    rospy.logwarn("self.result_stage.y = %s" % (str(self.result_stage.y)))
     self.result_plate.x = response.Xdst[0]
     self.result_plate.y = response.Ydst[0]
-    rospy.logwarn("self.result_plate.x = %s" % (str(self.result_plate.x)))
-    rospy.logwarn("self.result_plate.y = %s" % (str(self.result_plate.y)))
 
   def convert_feedback_to_plate(self):
     response = self.su.stage_to_plate([self.feedback_stage.x],[self.feedback_stage.y])
@@ -130,11 +121,16 @@ class UpdateStagePositionAction(object):
     self.feedback_plate.y = response.Ydst[0]
     rospy.logwarn("self.feedback_plate.x = %s" % (str(self.feedback_plate.x)))
     rospy.logwarn("self.feedback_plate.y = %s" % (str(self.feedback_plate.y)))
+    vel_norm_stage = numpy.linalg.norm([self.feedback_stage.x_velocity,self.feedback_stage.y_velocity])
     response = self.su.stage_to_plate([self.feedback_stage.x_velocity],[self.feedback_stage.y_velocity])
-    rospy.logwarn("self.feedback_stage.x_velocity = %s" % (str(self.feedback_stage.x_velocity)))
-    rospy.logwarn("self.feedback_stage.y_velocity = %s" % (str(self.feedback_stage.y_velocity)))
     self.feedback_plate.x_velocity = response.Xdst[0]
     self.feedback_plate.y_velocity = response.Ydst[0]
+    vel_norm_plate = numpy.linalg.norm([self.feedback_plate.x_velocity,self.feedback_plate.y_velocity])
+    vel_norm_ratio = vel_norm_stage/vel_norm_plate
+    self.feedback_plate.x_velocity = self.feedback_plate.x_velocity*vel_norm_ratio
+    self.feedback_plate.y_velocity = self.feedback_plate.y_velocity*vel_norm_ratio
+    rospy.logwarn("self.feedback_stage.x_velocity = %s" % (str(self.feedback_stage.x_velocity)))
+    rospy.logwarn("self.feedback_stage.y_velocity = %s" % (str(self.feedback_stage.y_velocity)))
     rospy.logwarn("self.feedback_plate.x_velocity = %s" % (str(self.feedback_plate.x_velocity)))
     rospy.logwarn("self.feedback_plate.y_velocity = %s" % (str(self.feedback_plate.y_velocity)))
 
