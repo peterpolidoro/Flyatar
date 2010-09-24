@@ -15,7 +15,7 @@ class Transforms:
                 (self.trans,self.rot) = self.tf_listener.lookupTransform("Stage", "Plate", rospy.Time.now())
                 self.transforms_initialized = True
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-                pass
+                rospy.logwarn("Error looking up transform from Stage to Plate")
 
         self.T = tf.transformations.translation_matrix(self.trans)
         self.R = tf.transformations.quaternion_matrix(self.rot)
