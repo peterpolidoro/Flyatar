@@ -10,7 +10,10 @@ class Transforms:
     def __init__(self):
         self.tf_listener = tf.TransformListener()
         self.transforms_initialized = False
+        rospy.logwarn("Waiting to find Stage Plate transform...")
         while not self.transforms_initialized:
+            # (self.trans,self.rot) = self.tf_listener.lookupTransform("Stage", "Plate", rospy.Time(0))
+            # self.transforms_initialized = True
             try:
                 (self.trans,self.rot) = self.tf_listener.lookupTransform("Stage", "Plate", rospy.Time(0))
                 self.transforms_initialized = True
