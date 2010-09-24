@@ -92,8 +92,8 @@ class UpdateStagePositionAction(object):
     self._as = actionlib.SimpleActionServer(self._action_name, stage_action_server.msg.UpdateStagePositionAction, execute_cb=self.execute_cb)
 
     # create messages that are used to publish feedback/result
-    self.goal_stage   = stage_action_server.msg.UpdateStagePositionResult()
-    self.goal_plate   = stage_action_server.msg.UpdateStagePositionResult()
+    self.goal_stage   = stage_action_server.msg.UpdateStagePositionGoal()
+    self.goal_plate   = stage_action_server.msg.UpdateStagePositionGoal()
     self.result_stage   = stage_action_server.msg.UpdateStagePositionResult()
     self.result_plate   = stage_action_server.msg.UpdateStagePositionResult()
     self.feedback_stage = stage_action_server.msg.UpdateStagePositionFeedback()
