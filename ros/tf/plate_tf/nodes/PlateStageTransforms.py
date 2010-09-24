@@ -17,6 +17,8 @@ class Transforms:
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 pass
                 # rospy.logwarn("Error looking up transform from Stage to Plate")
+            finally:
+                rospy.logwarn("Found transform from Stage to Plate")
 
         self.T = tf.transformations.translation_matrix(self.trans)
         self.R = tf.transformations.quaternion_matrix(self.rot)

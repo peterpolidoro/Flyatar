@@ -40,12 +40,14 @@ class StageUpdate:
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
+    rospy.logwarn("Waiting for service: plate_to_stage")
     rospy.wait_for_service('plate_to_stage')
     try:
       self.plate_to_stage = rospy.ServiceProxy('plate_to_stage', plate_tf.srv.PlateStageConversion)
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
+    rospy.logwarn("Waiting for service: stage_to_plate")
     rospy.wait_for_service('stage_to_plate')
     try:
       self.stage_to_plate = rospy.ServiceProxy('stage_to_plate', plate_tf.srv.PlateStageConversion)
