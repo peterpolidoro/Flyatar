@@ -1,6 +1,6 @@
 <launch>
   <!-- Coordinate Systems parameters -->
-  <node pkg="tf" type="static_transform_publisher" name="PlateStageStaticTFBroadcaster" args="116.713 -115.941 0 0 0 0.713 0.701 Plate Stage 10" />
+  <node pkg="tf" type="static_transform_publisher" name="PlateStageStaticTFBroadcaster" args="116.713 -115.941 0 0 0 0.713 0.701 Plate Stage 100" />
   <!-- <param name="stage_plate_offset_x" type="double" value="116.713"/> -->
   <!-- <param name="stage_plate_offset_y" type="double" value="-115.941"/> -->
   <!-- <param name="stage_plate_quat_z" type="double" value="0.713"/> -->
