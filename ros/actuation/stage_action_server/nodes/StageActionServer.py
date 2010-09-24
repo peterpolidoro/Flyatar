@@ -18,6 +18,7 @@ class StageUpdate:
 
     self.tf_broadcaster = tf.TransformBroadcaster()
 
+    self.response = None
     self.stage_commands = stage.srv.Stage_StateRequest()
     self.update_position = False
     self.home = False
@@ -160,6 +161,9 @@ class UpdateStagePositionAction(object):
       # start executing the action
       while (not self.success):
         self.su.update()
+        if self.su.response is None:
+          self._as.set_aborted()
+          break
         # rospy.logwarn("self.su.response.x = %s" % (str(self.su.response.x)))
         # rospy.logwarn("self.su.response.y = %s" % (str(self.su.response.y)))
         # rospy.logwarn("self.x_goal = %s" % (str(self.x_goal)))
