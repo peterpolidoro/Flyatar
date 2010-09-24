@@ -109,6 +109,7 @@ class UpdateStagePositionAction(object):
     rospy.logwarn("self.goal_plate.y_position = %s" % (str(self.goal_plate.y_position)))
     self.goal_stage.x_position = response.Xdst
     self.goal_stage.y_position = response.Ydst
+    self.goal_stage.velocity_magnitude = self.goal_plate.velocity_magnitude
     rospy.logwarn("self.goal_stage.x_position = %s" % (str(self.goal_stage.x_position)))
     rospy.logwarn("self.goal_stage.y_position = %s" % (str(self.goal_stage.y_position)))
 
