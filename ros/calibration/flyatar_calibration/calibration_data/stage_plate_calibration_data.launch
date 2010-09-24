@@ -1,13 +1,13 @@
 <launch>
   <!-- Coordinate Systems parameters -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="stage_broadcaster" args="116.8 -113.6 0 0 0 0.714 0.700 Plate Stage 10" /> -->
-  <param name="stage_plate_offset_x" type="double" value="116.713"/>
-  <param name="stage_plate_offset_y" type="double" value="-115.941"/>
-  <param name="stage_plate_quat_z" type="double" value="0.713"/>
-  <param name="stage_plate_quat_w" type="double" value="0.701"/>
+  <node pkg="tf" type="static_transform_publisher" name="stage_broadcaster" args="116.713 -115.941 0 0 0 0.713 0.701 Plate Stage 10" />
+  <!-- <param name="stage_plate_offset_x" type="double" value="116.713"/> -->
+  <!-- <param name="stage_plate_offset_y" type="double" value="-115.941"/> -->
+  <!-- <param name="stage_plate_quat_z" type="double" value="0.713"/> -->
+  <!-- <param name="stage_plate_quat_w" type="double" value="0.701"/> -->
 
-  <param name="in_bounds_radius" type="double" value="100"/>
+  <!-- <param name="in_bounds_radius" type="double" value="100"/> -->
 
-  <node name="stage_plate_tf_broadcaster" pkg="plate_tf" type="stage_plate_tf_broadcaster.py"/>
+  <!-- <node name="stage_plate_tf_broadcaster" pkg="plate_tf" type="stage_plate_tf_broadcaster.py"/> -->
 
 </launch>
