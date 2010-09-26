@@ -5,6 +5,7 @@ import rospy
 import numpy
 import tf
 import plate_tf.srv
+import time
 
 class Transforms:
     def __init__(self):
@@ -17,6 +18,7 @@ class Transforms:
                 self.transforms_initialized = True
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 pass
+            time.sleep(0.1)
 
         self.T = tf.transformations.translation_matrix(self.trans)
         self.R = tf.transformations.quaternion_matrix(self.rot)
