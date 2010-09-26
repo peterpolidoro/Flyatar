@@ -239,6 +239,7 @@ static void Motor_Home(void);
 static void Motor_Check_In_Position(void);
 static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t EntryCount,uint8_t EntryLocation);
 static void Position_Update(volatile uint8_t Motor_N);
+static void Write_Return_USBPacket(void);
 #endif
 
 #endif

@@ -205,19 +205,20 @@ TASK(USB_ProcessPacket)
                 {
                 case USB_CMD_AVR_RESET:
                   {
-                    USBPacket_Write();
+                    Write_Return_USBPacket();
                     AVR_RESET();
                   }
                   break;
                 case USB_CMD_AVR_DFU_MODE:
                   {
-                    USBPacket_Write();
+                    Write_Return_USBPacket();
                     boot_key = DFU_BOOT_KEY_VAL;
                     AVR_RESET();
                   }
                   break;
                 case USB_CMD_GET_STATE:
                   {
+                    Write_Return_USBPacket();
                   }
                   break;
                 case USB_CMD_SET_STATE:
@@ -231,6 +232,7 @@ TASK(USB_ProcessPacket)
                     LookupTableVelMove = FALSE;
                     Motor_Set_Values_All(USBPacketOut.Setpoint[0]);
                     Motor_Update_All();
+                    Write_Return_USBPacket();
                   }
                   break;
                 case USB_CMD_HOME:
@@ -241,6 +243,7 @@ TASK(USB_ProcessPacket)
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     MotorsHomed = FALSE;
+                    Write_Return_USBPacket();
                     Motor_Home();
                   }
                   break;
@@ -252,6 +255,7 @@ TASK(USB_ProcessPacket)
                       {
                         Lookup_Table_Fill(USBPacketOut.Setpoint,USBPacketOut.EntryCount,USBPacketOut.EntryLocation);
                       }
+                    Write_Return_USBPacket();
                   }
                   break;
                 case USB_CMD_LOOKUP_TABLE_POS_MOVE:
@@ -275,6 +279,7 @@ TASK(USB_ProcessPacket)
                       {
                         LookupTablePosMove = FALSE;
                       }
+                    Write_Return_USBPacket();
                   }
                   break;
                 case USB_CMD_LOOKUP_TABLE_VEL_MOVE:
@@ -288,32 +293,37 @@ TASK(USB_ProcessPacket)
                     LookupTableMoveComplete = FALSE;
                     TableEntry = 0;
                     Timer_On(0);
+                    Write_Return_USBPacket();
                   }
                   break;
                 default:
                   {
+                    Write_Return_USBPacket();
                   }
                 }
-
-              /* Write the return USB packet */
-              for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
-                {
-                  ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-                  {
-                    USBPacketIn.MotorStatus[Motor_N].Frequency = Motor[Motor_N].Frequency;
-                    USBPacketIn.MotorStatus[Motor_N].Position = Motor[Motor_N].Position;
-                  }
-                }
-              USBPacketIn.AllMotorsInPosition = AllMotorsInPosition;
-              USBPacketIn.LookupTableMoveComplete = LookupTableMoveComplete;
-              USBPacketIn.MotorsHomed = MotorsHomed;
-              USBPacket_Write();
 
               /* Indicate ready */
               LEDs_SetAllLEDs(LEDS_LED2 | LEDS_LED4);
             }
         }
     }
+}
+
+/* Write the return USB packet */
+static void Write_Return_USBPacket(void)
+{
+  for ( uint8_t Motor_N=0; Motor_N<MOTOR_NUM; Motor_N++ )
+    {
+      ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+      {
+        USBPacketIn.MotorStatus[Motor_N].Frequency = Motor[Motor_N].Frequency;
+        USBPacketIn.MotorStatus[Motor_N].Position = Motor[Motor_N].Position;
+      }
+    }
+  USBPacketIn.AllMotorsInPosition = AllMotorsInPosition;
+  USBPacketIn.LookupTableMoveComplete = LookupTableMoveComplete;
+  USBPacketIn.MotorsHomed = MotorsHomed;
+  USBPacket_Write();
 }
 
 static void USBPacket_Read(void)
