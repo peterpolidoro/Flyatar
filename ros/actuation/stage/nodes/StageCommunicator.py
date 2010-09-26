@@ -3,7 +3,7 @@ from __future__ import division
 import roslib; roslib.load_manifest('stage')
 import rospy
 import StageDevice
-from stage.srv import *
+import stage.srv
 import threading
 
 class StageCommunicator():
@@ -52,10 +52,10 @@ class StageCommunicator():
 if __name__ == '__main__':
     rospy.init_node('StageCommunicator', anonymous=True)
     sc = StageCommunicator()
-    s_gss = rospy.Service('get_stage_state', Stage_State, sc.get_stage_state)
-    s_ssv = rospy.Service('set_stage_velocity', Stage_State, sc.set_stage_velocity)
-    s_ssp = rospy.Service('set_stage_position', Stage_State, sc.set_stage_position)
-    s_hs = rospy.Service('home_stage', Stage_State, sc.home_stage)
+    s_gss = rospy.Service('get_stage_state', stage.srv.Stage_State, sc.get_stage_state)
+    s_ssv = rospy.Service('set_stage_velocity', stage.srv.Stage_State, sc.set_stage_velocity)
+    s_ssp = rospy.Service('set_stage_position', stage.srv.Stage_State, sc.set_stage_position)
+    s_hs = rospy.Service('home_stage', stage.srv.Stage_State, sc.home_stage)
 
     while not rospy.is_shutdown():
         rospy.spin()
