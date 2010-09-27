@@ -94,6 +94,9 @@ class MotorControllerDevice(USBDevice.USB_Device):
 
         self.reentrant_lock = threading.Lock()
 
+        self.send_cmd_count = 0
+        self.received_cmd_count = 0
+
     def get_state(self):
         self._get_motor_state()
         state = self._return_state()
@@ -276,7 +279,11 @@ class MotorControllerDevice(USBDevice.USB_Device):
 
     def _send_usb_cmd(self,cmd,data_in_out_packet):
         with self.reentrant_lock:
-            rospy.logwarn("Sending cmd # %s" % (str(cmd)))
+            if int(cmd) != 1:
+                rospy.logwarn("Sending cmd # %s" % (str(int(cmd))))
+
+                self.send_cmd_count += 1
+
             if data_in_out_packet:
                 outdata = [cmd, self.USBPacketOut]
             else:
@@ -284,7 +291,9 @@ class MotorControllerDevice(USBDevice.USB_Device):
             intypes = [ctypes.c_uint8, USBPacketIn_t]
             val_list = self.usb_cmd(outdata,intypes)
             cmd_id = val_list[0]
-            rospy.logwarn("Received cmd_id # %s" % (str(cmd_id)))
+            self.received_cmd_count += 1
+            if int(cmd) != 1:
+                rospy.logwarn("Received cmd_id # %s" % (str(int(cmd_id))))
             self._check_cmd_id(cmd,cmd_id)
             self.USBPacketIn = val_list[1]
 
@@ -356,6 +365,8 @@ class MotorControllerDevice(USBDevice.USB_Device):
         Return: None
         """
         if not expected_id.value == received_id.value:
+            rospy.logwarn("send cmd count = %s" % (str(self.send_cmd_count)))
+            rospy.logwarn("received cmd count = %s" % (str(self.received_cmd_count)))
             msg = "received incorrect command ID %d expected %d"%(received_id.value,expected_id.value)
             raise IOError, msg
         return
