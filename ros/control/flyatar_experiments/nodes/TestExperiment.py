@@ -6,6 +6,17 @@ import rospy
 import smach
 import smach_ros
 import stage_action_server.msg
+import time
+
+# define state Wait
+class Wait(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded'])
+
+    def execute(self, userdata):
+        rospy.logwarn('Executing state WAIT')
+        time.sleep(5)
+        return 'succeeded'
 
 class Experiment():
     def __init__(self):
@@ -29,7 +40,11 @@ class Experiment():
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
                                                                goal=stage_goal),
+                                   transitions={'succeeded':'WAIT'})
+
+            smach.StateMachine.add('WAIT', Wait(),
                                    transitions={'succeeded':'GOTO_NEWPOSITION'})
+
             smach.StateMachine.add('GOTO_NEWPOSITION',
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
