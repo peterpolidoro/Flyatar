@@ -17,7 +17,7 @@ from __future__ import division
 import roslib; roslib.load_manifest('stage')
 import rospy
 import MotorController
-from stage.srv import *
+import stage.srv
 import math
 
 class StageDevice(MotorController.MotorControllerDevice):
@@ -35,7 +35,7 @@ class StageDevice(MotorController.MotorControllerDevice):
         self.steps_per_radian = self.steps_per_rev/math.pi
 
         rospy.set_param('lookup_table_update_freq',MotorController._lookup_table_update_freq)
-        self.response = Stage_StateResponse()
+        self.response = stage.srv.Stage_StateResponse()
 
         MotorController.MotorControllerDevice.__init__(self,
                                                        self._mm_to_steps(self.frequency_max_mm)[0],
@@ -84,7 +84,8 @@ class StageDevice(MotorController.MotorControllerDevice):
         x,x_velocity,y,y_velocity,theta,theta_velocity = pos_vel_values_mm
         all_motors_in_position = bool(return_state[6])
         lookup_table_move_in_progress = bool(return_state[7])
-        motors_homed = bool(return_state[8])
+        home_in_progress = bool(return_state[8])
+        motors_homed = bool(return_state[9])
         self.response.header.stamp = rospy.Time.now()
         self.response.x = x
         self.response.y = y
@@ -94,6 +95,7 @@ class StageDevice(MotorController.MotorControllerDevice):
         self.response.theta_velocity = theta_velocity
         self.response.all_motors_in_position = all_motors_in_position
         self.response.lookup_table_move_in_progress = lookup_table_move_in_progress
+        self.response.home_in_progress = home_in_progress
         self.response.motors_homed = motors_homed
         return self.response
 

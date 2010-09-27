@@ -87,8 +87,6 @@ class MotorControllerDevice(USBDevice.USB_Device):
         self.USBPacketOut = USBPacketOut_t()
         self.USBPacketIn = USBPacketIn_t()
 
-        self.lookup_table_move_in_progress = False
-
     def get_state(self):
         self._get_motor_state()
         state = self._return_state()
@@ -212,12 +210,11 @@ class MotorControllerDevice(USBDevice.USB_Device):
         motor2_position = self.USBPacketIn.State.Motor[2].Position
         motor2_velocity = self.USBPacketIn.State.Motor[2].Frequency
         all_motors_in_position = self.USBPacketIn.AllMotorsInPosition
-        lookup_table_move_complete = self.USBPacketIn.LookupTableMoveComplete
+        lookup_table_move_in_progress = self.USBPacketIn.LookupTableMoveInProgress
+        home_in_progress = self.USBPacketIn.HomeInProgress
         motors_homed = self.USBPacketIn.MotorsHomed
-        if self.lookup_table_move_in_progress and lookup_table_move_complete:
-            self.lookup_table_move_in_progress = False
 
-        return motor0_position,motor0_velocity,motor1_position,motor1_velocity,motor2_position,motor2_velocity,all_motors_in_position,self.lookup_table_move_in_progress,motors_homed
+        return motor0_position,motor0_velocity,motor1_position,motor1_velocity,motor2_position,motor2_velocity,all_motors_in_position,lookup_table_move_in_progress,home_in_progress,motors_homed
 
     def _convert_and_set_setpoint(self,motor0_pos,motor0_vel,motor1_pos,motor1_vel,entry_n=0):
         motor0_pos,motor0_vel,motor1_pos,motor1_vel = self._check_and_convert_setpoint(motor0_pos,motor0_vel,motor1_pos,motor1_vel)

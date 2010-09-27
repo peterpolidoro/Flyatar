@@ -15,4 +15,5 @@ float32 theta_velocity
 
 bool all_motors_in_position
 bool lookup_table_move_in_progress
+bool home_in_progress
 bool motors_homed
