@@ -36,7 +36,7 @@ class Experiment():
                                                                goal=stage_goal2),
                                    transitions={'succeeded':'succeeded'})
 
-    def main():
+    def main(self):
         # Execute SMACH plan
         outcome = self.sm.execute()
 
