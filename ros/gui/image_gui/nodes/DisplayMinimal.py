@@ -5,13 +5,13 @@ roslib.load_manifest('image_gui')
 import sys
 import rospy
 import cv
-from sensor_msgs.msg import Image
+import sensor_msgs.msg
 from cv_bridge import CvBridge, CvBridgeError
 
 class ImageDisplay:
 
     def __init__(self):
-        self.image_sub = rospy.Subscriber("UndistortedImage", Image, self.image_callback)
+        self.image_sub = rospy.Subscriber("camera/image_rect", sensor_msgs.msg.Image, self.image_callback)
 
         cv.NamedWindow("Display",1)
         self.bridge = CvBridge()
@@ -41,7 +41,7 @@ class ImageDisplay:
 
 
 if __name__ == '__main__':
-    rospy.init_node('ImageDisplay', anonymous=True)
+    rospy.init_node('ImageDisplay')
     id = ImageDisplay()
 
     while not rospy.is_shutdown():

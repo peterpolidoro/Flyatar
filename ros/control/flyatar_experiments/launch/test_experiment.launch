@@ -1,7 +1,7 @@
 <launch>
   <include file="$(find stage_action_server)/launch/stage_action_server.launch" />
 
-  <!-- <include file="$(find image_gui)/launch/image_gui.launch" /> -->
+  <include file="$(find image_gui)/launch/DisplayMinimal.launch" />
   <!-- <include file="$(find plate_tf)/launch/plate_tf.launch" /> -->
 
   <!-- <node pkg="save_data" type="SaveBags.py" name="SaveBags" /> -->
