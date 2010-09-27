@@ -94,18 +94,8 @@ class MotorControllerDevice(USBDevice.USB_Device):
 
         self.reentrant_lock = threading.Lock()
 
-        self.send_cmd_1_count = 0
-        self.received_cmd_1_count = 0
-        self.send_cmd_2_count = 0
-        self.received_cmd_2_count = 0
-        self.send_cmd_3_count = 0
-        self.received_cmd_3_count = 0
-        self.send_cmd_4_count = 0
-        self.received_cmd_4_count = 0
-        self.send_cmd_5_count = 0
-        self.received_cmd_5_count = 0
-        self.send_cmd_6_count = 0
-        self.received_cmd_6_count = 0
+        self.send_cmd_list = []
+        self.received_cmd_list = []
 
     def get_state(self):
         self._get_motor_state()
@@ -290,18 +280,7 @@ class MotorControllerDevice(USBDevice.USB_Device):
     def _send_usb_cmd(self,cmd,data_in_out_packet):
         with self.reentrant_lock:
 
-            if int(cmd.value) == 1:
-                self.send_cmd_1_count += 1
-            elif int(cmd.value) == 2:
-                self.send_cmd_2_count += 1
-            elif int(cmd.value) == 3:
-                self.send_cmd_3_count += 1
-            elif int(cmd.value) == 4:
-                self.send_cmd_4_count += 1
-            elif int(cmd.value) == 5:
-                self.send_cmd_5_count += 1
-            elif int(cmd.value) == 6:
-                self.send_cmd_6_count += 1
+            self.send_cmd_list.append(cmd.value)
 
             if data_in_out_packet:
                 outdata = [cmd, self.USBPacketOut]
@@ -311,18 +290,7 @@ class MotorControllerDevice(USBDevice.USB_Device):
             val_list = self.usb_cmd(outdata,intypes)
             cmd_id = val_list[0]
 
-            if int(cmd.value) == 1:
-                self.received_cmd_1_count += 1
-            elif int(cmd.value) == 2:
-                self.received_cmd_2_count += 1
-            elif int(cmd.value) == 3:
-                self.received_cmd_3_count += 1
-            elif int(cmd.value) == 4:
-                self.received_cmd_4_count += 1
-            elif int(cmd.value) == 5:
-                self.received_cmd_5_count += 1
-            elif int(cmd.value) == 6:
-                self.received_cmd_6_count += 1
+            self.received_cmd_list.append(cmd_id.value)
 
             self._check_cmd_id(cmd,cmd_id)
             self.USBPacketIn = val_list[1]
@@ -395,18 +363,8 @@ class MotorControllerDevice(USBDevice.USB_Device):
         Return: None
         """
         if not expected_id.value == received_id.value:
-            rospy.logwarn("send cmd 1 count = %s" % (str(self.send_cmd_1_count)))
-            rospy.logwarn("received cmd 1 count = %s" % (str(self.received_cmd_1_count)))
-            rospy.logwarn("send cmd 2 count = %s" % (str(self.send_cmd_2_count)))
-            rospy.logwarn("received cmd 2 count = %s" % (str(self.received_cmd_2_count)))
-            rospy.logwarn("send cmd 3 count = %s" % (str(self.send_cmd_3_count)))
-            rospy.logwarn("received cmd 3 count = %s" % (str(self.received_cmd_3_count)))
-            rospy.logwarn("send cmd 4 count = %s" % (str(self.send_cmd_4_count)))
-            rospy.logwarn("received cmd 4 count = %s" % (str(self.received_cmd_4_count)))
-            rospy.logwarn("send cmd 5 count = %s" % (str(self.send_cmd_5_count)))
-            rospy.logwarn("received cmd 5 count = %s" % (str(self.received_cmd_5_count)))
-            rospy.logwarn("send cmd 6 count = %s" % (str(self.send_cmd_6_count)))
-            rospy.logwarn("received cmd 6 count = %s" % (str(self.received_cmd_6_count)))
+            rospy.logwarn("send_cmd_list = %s" % (str(self.send_cmd_list[-10:-1])))
+            rospy.logwarn("received_cmd_list = %s" % (str(self.received_cmd_list[-10:-1])))
 
             msg = "received incorrect command ID %d expected %d"%(received_id.value,expected_id.value)
             raise IOError, msg
