@@ -14,6 +14,10 @@
 #    pjp 08/19/09    version 1.0
 # ---------------------------------------------------------------------------
 from __future__ import division
+
+import roslib; roslib.load_manifest('stage')
+import rospy
+
 import USBDevice
 import ctypes
 import time
@@ -272,6 +276,7 @@ class MotorControllerDevice(USBDevice.USB_Device):
 
     def _send_usb_cmd(self,cmd,data_in_out_packet):
         with self.reentrant_lock:
+            rospy.logwarn("Sending cmd # %s" % (str(cmd)))
             if data_in_out_packet:
                 outdata = [cmd, self.USBPacketOut]
             else:
@@ -279,6 +284,7 @@ class MotorControllerDevice(USBDevice.USB_Device):
             intypes = [ctypes.c_uint8, USBPacketIn_t]
             val_list = self.usb_cmd(outdata,intypes)
             cmd_id = val_list[0]
+            rospy.logwarn("Received cmd_id # %s" % (str(cmd_id)))
             self._check_cmd_id(cmd,cmd_id)
             self.USBPacketIn = val_list[1]
 
