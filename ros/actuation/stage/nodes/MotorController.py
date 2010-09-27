@@ -279,8 +279,8 @@ class MotorControllerDevice(USBDevice.USB_Device):
 
     def _send_usb_cmd(self,cmd,data_in_out_packet):
         with self.reentrant_lock:
-            if int(cmd) != 1:
-                rospy.logwarn("Sending cmd # %s" % (str(int(cmd))))
+            if cmd != ctypes.c_uint8(1):
+                rospy.logwarn("Sending cmd # %s" % (str(cmd)))
 
                 self.send_cmd_count += 1
 
@@ -292,8 +292,8 @@ class MotorControllerDevice(USBDevice.USB_Device):
             val_list = self.usb_cmd(outdata,intypes)
             cmd_id = val_list[0]
             self.received_cmd_count += 1
-            if int(cmd) != 1:
-                rospy.logwarn("Received cmd_id # %s" % (str(int(cmd_id))))
+            if cmd != ctypes.c_uint8(1):
+                rospy.logwarn("Received cmd_id # %s" % (str(cmd_id)))
             self._check_cmd_id(cmd,cmd_id)
             self.USBPacketIn = val_list[1]
 
