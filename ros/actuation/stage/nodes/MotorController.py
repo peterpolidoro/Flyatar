@@ -396,17 +396,17 @@ class MotorControllerDevice(USBDevice.USB_Device):
         """
         if not expected_id.value == received_id.value:
             rospy.logwarn("send cmd 1 count = %s" % (str(self.send_cmd_1_count)))
-            rospy.logwarn("received cmd 1 count = %s" % (str(self.received_1_cmd_count)))
+            rospy.logwarn("received cmd 1 count = %s" % (str(self.received_cmd_1_count)))
             rospy.logwarn("send cmd 2 count = %s" % (str(self.send_cmd_2_count)))
-            rospy.logwarn("received cmd 2 count = %s" % (str(self.received_2_cmd_count)))
+            rospy.logwarn("received cmd 2 count = %s" % (str(self.received_cmd_2_count)))
             rospy.logwarn("send cmd 3 count = %s" % (str(self.send_cmd_3_count)))
-            rospy.logwarn("received cmd 3 count = %s" % (str(self.received_3_cmd_count)))
+            rospy.logwarn("received cmd 3 count = %s" % (str(self.received_cmd_3_count)))
             rospy.logwarn("send cmd 4 count = %s" % (str(self.send_cmd_4_count)))
-            rospy.logwarn("received cmd 4 count = %s" % (str(self.received_4_cmd_count)))
+            rospy.logwarn("received cmd 4 count = %s" % (str(self.received_cmd_4_count)))
             rospy.logwarn("send cmd 5 count = %s" % (str(self.send_cmd_5_count)))
-            rospy.logwarn("received cmd 5 count = %s" % (str(self.received_5_cmd_count)))
+            rospy.logwarn("received cmd 5 count = %s" % (str(self.received_cmd_5_count)))
             rospy.logwarn("send cmd 6 count = %s" % (str(self.send_cmd_6_count)))
-            rospy.logwarn("received cmd 6 count = %s" % (str(self.received_6_cmd_count)))
+            rospy.logwarn("received cmd 6 count = %s" % (str(self.received_cmd_6_count)))
 
             msg = "received incorrect command ID %d expected %d"%(received_id.value,expected_id.value)
             raise IOError, msg
