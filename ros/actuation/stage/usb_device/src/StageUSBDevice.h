@@ -175,7 +175,8 @@ typedef struct
 {
   uint8_t       CommandID;
   uint8_t       AllMotorsInPosition;
-  uint8_t       LookupTableMoveComplete;
+  uint8_t       LookupTableMoveInProgress;
+  uint8_t       HomeInProgress;
   uint8_t       MotorsHomed;
   LookupTableRow_t MotorStatus;
 } USBPacketInWrapper_t;
@@ -207,7 +208,8 @@ uint8_t                 LookupTablePosMove=FALSE;
 uint8_t                 LookupTableVelMove=FALSE;
 uint8_t                 MotorUpdateBits=0;
 volatile uint8_t        AllMotorsInPosition=FALSE;
-uint8_t                 LookupTableMoveComplete=FALSE;
+uint8_t                 LookupTableMoveInProgress=FALSE;
+uint8_t                 HomeInProgress=FALSE;
 uint8_t                 MotorsHomed=FALSE;
 
 /* Task Definitions: */
@@ -237,6 +239,7 @@ static void Motor_Set_Values(LookupTableRow_t MotorSetpoint,uint8_t Motor_N);
 static void Motor_Set_Values_All(LookupTableRow_t MotorSetpoint);
 static void Motor_Home(void);
 static void Motor_Check_In_Position(void);
+static void Motor_Check_Home(void);
 static void Lookup_Table_Fill(LookupTableRow_t *LookupTableEntries,uint8_t EntryCount,uint8_t EntryLocation);
 static void Position_Update(volatile uint8_t Motor_N);
 static void Write_Return_USBPacket(void);

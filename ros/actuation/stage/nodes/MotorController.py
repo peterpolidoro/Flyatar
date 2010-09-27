@@ -46,7 +46,8 @@ class USBPacketOut_t(ctypes.LittleEndianStructure):
 class USBPacketIn_t(ctypes.LittleEndianStructure):
     _pack_ = 1
     _fields_ =[('AllMotorsInPosition', ctypes.c_uint8),
-               ('LookupTableMoveComplete', ctypes.c_uint8),
+               ('LookupTableMoveInProgress', ctypes.c_uint8),
+               ('HomeInProgress', ctypes.c_uint8),
                ('MotorsHomed', ctypes.c_uint8),
                ('State', LookupTableRow_t)]
 
