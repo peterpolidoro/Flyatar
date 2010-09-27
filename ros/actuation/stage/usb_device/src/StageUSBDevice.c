@@ -917,7 +917,7 @@ if (*Timer[Timer_N].Address.PinPort & (1<<Timer[Timer_N].OutputPin))            
             Motor[Motor_N].HomeInProgress = FALSE;                                 \
             Motor[Motor_N].HomeSet = TRUE;                                         \
             Motor[Motor_N].PositionLimitsEnabled = TRUE;                           \
-            Motor_Check_Home_In_Progress();                                        \
+            Motor_Check_Home();                                                    \
           }                                                                        \
                                                                                    \
         /* If all motors are in position, set InPosition interrupt */              \
