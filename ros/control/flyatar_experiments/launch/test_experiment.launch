@@ -1,13 +1,12 @@
 <launch>
-  <include file="$(find joystick_commands)/launch/joystick_commands.launch" />
-  <include file="$(find stage_message_interface)/launch/stage_message_interface.launch" />
+  <include file="$(find stage_action_server)/launch/stage_action_server.launch" />
 
-  <include file="$(find image_gui)/launch/image_gui.launch" />
-  <include file="$(find plate_tf)/launch/plate_tf.launch" />
+  <!-- <include file="$(find image_gui)/launch/image_gui.launch" /> -->
+  <!-- <include file="$(find plate_tf)/launch/plate_tf.launch" /> -->
 
   <!-- <node pkg="save_data" type="SaveBags.py" name="SaveBags" /> -->
 
-  <param name="robot_velocity_max" type="double" value="80"/>
+  <!-- <param name="robot_velocity_max" type="double" value="80"/> -->
   <!-- <node pkg="flyatar_avatar" type="SetpointPositionControl.py" name="SetpointPositionControl" /> -->
   <node pkg="flyatar_experiments" type="TestExperiment.py" name="TestExperiment" />
 

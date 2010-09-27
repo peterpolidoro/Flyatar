@@ -5,56 +5,40 @@ roslib.load_manifest('flyatar_experiments')
 import rospy
 import smach
 import smach_ros
-import tf
-from plate_tf.srv import *
-from plate_tf.msg import StopState, InBoundsState
-
-# define state ExperimentStart
-class ExperimentStart(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['outcome1','outcome2'])
-        self.counter = 0
-
-    def execute(self, userdata):
-        rospy.loginfo('Executing state FOO')
-        if self.counter < 3:
-            self.counter += 1
-            return 'outcome1'
-        else:
-            return 'outcome2'
-
-
-# define state Bar
-class Bar(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['outcome2'])
-
-    def execute(self, userdata):
-        rospy.loginfo('Executing state BAR')
-        return 'outcome2'
-
-
-
+import stage_action_server.msg
 
 class Experiment():
     def __init__(self):
-        self.tf_listener = tf.TransformListener()
-
-    def main():
         # Create a SMACH state machine
-        sm = smach.StateMachine(outcomes=['outcome4', 'outcome5'])
+        self.sm = smach.StateMachine(['succeeded','aborted','preempted'])
 
         # Open the container
-        with sm:
-            # Add states to the container
-            smach.StateMachine.add('FOO', Foo(),
-                                   transitions={'outcome1':'BAR',
-                                                'outcome2':'outcome4'})
-            smach.StateMachine.add('BAR', Bar(),
-                                   transitions={'outcome2':'FOO'})
+        with self.sm:
+            stage_goal = stage_action_server.msg.UpdateStagePositionGoal()
+            stage_goal.x_position = [0]
+            stage_goal.y_position = [0]
+            stage_goal.velocity_magnitude = [50]
 
+            stage_goal2 = stage_action_server.msg.UpdateStagePositionGoal()
+            stage_goal2.x_position = [25]
+            stage_goal2.y_position = [25]
+            stage_goal2.velocity_magnitude = [50]
+
+            # Add states to the container
+            StateMachine.add('GOTO_START',
+                             SimpleActionState('StageActionServer',
+                                               stage_action_server.msg.UpdateStagePositionAction,
+                                               goal=stage_goal),
+                             transitions={'succeeded':'GOTO_NEWPOSITION'})
+            StateMachine.add('GOTO_NEWPOSITION',
+                             SimpleActionState('StageActionServer',
+                                               stage_action_server.msg.UpdateStagePositionAction,
+                                               goal=stage_goal2),
+                             transitions={'succeeded':'succeeded'})
+
+    def main():
         # Execute SMACH plan
-        outcome = sm.execute()
+        outcome = self.sm.execute()
 
 
 if __name__ == '__main__':
