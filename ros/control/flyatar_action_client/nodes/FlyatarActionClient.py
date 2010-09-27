@@ -63,7 +63,7 @@ class FlyatarActionClient():
         self.send_goal()
 
     def main(self):
-        self.home()
+        # self.home()
         self.num_trials = 3
         for trial in range(self.num_trials):
             self.square_move(trial)
