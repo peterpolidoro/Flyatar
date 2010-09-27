@@ -25,16 +25,16 @@ class Experiment():
             stage_goal2.velocity_magnitude = [50]
 
             # Add states to the container
-            StateMachine.add('GOTO_START',
-                             SimpleActionState('StageActionServer',
-                                               stage_action_server.msg.UpdateStagePositionAction,
-                                               goal=stage_goal),
-                             transitions={'succeeded':'GOTO_NEWPOSITION'})
-            StateMachine.add('GOTO_NEWPOSITION',
-                             SimpleActionState('StageActionServer',
-                                               stage_action_server.msg.UpdateStagePositionAction,
-                                               goal=stage_goal2),
-                             transitions={'succeeded':'succeeded'})
+            smach.StateMachine.add('GOTO_START',
+                                   smach_ros.SimpleActionState('StageActionServer',
+                                                               stage_action_server.msg.UpdateStagePositionAction,
+                                                               goal=stage_goal),
+                                   transitions={'succeeded':'GOTO_NEWPOSITION'})
+            smach.StateMachine.add('GOTO_NEWPOSITION',
+                                   smach_ros.SimpleActionState('StageActionServer',
+                                                               stage_action_server.msg.UpdateStagePositionAction,
+                                                               goal=stage_goal2),
+                                   transitions={'succeeded':'succeeded'})
 
     def main():
         # Execute SMACH plan
