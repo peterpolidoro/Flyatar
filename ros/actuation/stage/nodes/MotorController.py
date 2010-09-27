@@ -283,32 +283,37 @@ class MotorControllerDevice(USBDevice.USB_Device):
             self.USBPacketIn = val_list[1]
 
     def _get_motor_state(self):
-        self._send_usb_cmd(self.USB_CMD_GET_STATE,False)
-        # self._print_usb_packet_out()
+        with self.reentrant_lock:
+            self._send_usb_cmd(self.USB_CMD_GET_STATE,False)
+            # self._print_usb_packet_out()
 
     def _set_motor_state(self):
-        self.lookup_table_move_in_progress = False
-        self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
-        self._send_usb_cmd(self.USB_CMD_SET_STATE,True)
-        # self._print_usb_packet_out()
-        # self._print_usb_packet_in()
+        with self.reentrant_lock:
+            self.lookup_table_move_in_progress = False
+            self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
+            self._send_usb_cmd(self.USB_CMD_SET_STATE,True)
+            # self._print_usb_packet_out()
+            # self._print_usb_packet_in()
 
     def _lookup_table_fill(self):
-        # rospy.loginfo("sending lookup_table_fill to usb device")
-        self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_FILL,True)
+        with self.reentrant_lock:
+            # rospy.loginfo("sending lookup_table_fill to usb device")
+            self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_FILL,True)
 
     def _lookup_table_pos_move(self):
-        self.lookup_table_move_in_progress = True
-        # rospy.loginfo("sending lookup_table_pos_move to usb device")
-        self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
-        self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_POS_MOVE,True)
+        with self.reentrant_lock:
+            self.lookup_table_move_in_progress = True
+            # rospy.loginfo("sending lookup_table_pos_move to usb device")
+            self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
+            self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_POS_MOVE,True)
 
     def _lookup_table_vel_move(self):
-        self.lookup_table_move_in_progress = True
-        # rospy.loginfo("sending lookup_table_vel_move to usb device")
-        self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
-        self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_MOVE,True)
-        # self._print_usb_packet_out()
+        with self.reentrant_lock:
+            self.lookup_table_move_in_progress = True
+            # rospy.loginfo("sending lookup_table_vel_move to usb device")
+            self.USBPacketOut.MotorUpdate = ctypes.c_uint8(7)
+            self._send_usb_cmd(self.USB_CMD_LOOKUP_TABLE_VEL_MOVE,True)
+            # self._print_usb_packet_out()
 
     # def _print_usb_packet_out(self):
     #     # _fields_ =[('MotorUpdate', ctypes.c_uint8),
