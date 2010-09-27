@@ -19,6 +19,7 @@ import ctypes
 import time
 import math
 import numpy
+import threading
 
 # Motorcontroller device parameters
 _motor_num = 3
@@ -86,6 +87,8 @@ class MotorControllerDevice(USBDevice.USB_Device):
 
         self.USBPacketOut = USBPacketOut_t()
         self.USBPacketIn = USBPacketIn_t()
+
+        self.reentrant_lock = threading.Lock()
 
     def get_state(self):
         self._get_motor_state()
@@ -268,15 +271,16 @@ class MotorControllerDevice(USBDevice.USB_Device):
         self.USBPacketOut.Entry[entry_n].Motor[axis].Position = int(pos)
 
     def _send_usb_cmd(self,cmd,data_in_out_packet):
-        if data_in_out_packet:
-            outdata = [cmd, self.USBPacketOut]
-        else:
-            outdata = [cmd]
-        intypes = [ctypes.c_uint8, USBPacketIn_t]
-        val_list = self.usb_cmd(outdata,intypes)
-        cmd_id = val_list[0]
-        self._check_cmd_id(cmd,cmd_id)
-        self.USBPacketIn = val_list[1]
+        with self.reentrant_lock:
+            if data_in_out_packet:
+                outdata = [cmd, self.USBPacketOut]
+            else:
+                outdata = [cmd]
+            intypes = [ctypes.c_uint8, USBPacketIn_t]
+            val_list = self.usb_cmd(outdata,intypes)
+            cmd_id = val_list[0]
+            self._check_cmd_id(cmd,cmd_id)
+            self.USBPacketIn = val_list[1]
 
     def _get_motor_state(self):
         self._send_usb_cmd(self.USB_CMD_GET_STATE,False)
