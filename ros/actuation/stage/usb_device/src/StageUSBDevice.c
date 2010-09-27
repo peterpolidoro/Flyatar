@@ -277,8 +277,6 @@ TASK(USB_ProcessPacket)
                       }
                     MotorUpdateBits = USBPacketOut.MotorUpdate;
                     LookupTablePosMove = TRUE;
-                    LookupTableMoveComplete = FALSE;
-
                     AllMotorsInPosition = FALSE;
                     LookupTableMoveInProgress = TRUE;
                     Write_Return_USBPacket();
