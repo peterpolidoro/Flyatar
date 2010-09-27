@@ -364,7 +364,9 @@ class MotorControllerDevice(USBDevice.USB_Device):
         """
         if not expected_id.value == received_id.value:
             rospy.logwarn("send_cmd_list = %s" % (str(self.send_cmd_list[-10:])))
+            rospy.logwarn("len(send_cmd_list) = %s" % (str(len(self.send_cmd_list))))
             rospy.logwarn("received_cmd_list = %s" % (str(self.received_cmd_list[-10:])))
+            rospy.logwarn("len(received_cmd_list) = %s" % (str(len(self.received_cmd_list))))
 
             msg = "received incorrect command ID %d expected %d"%(received_id.value,expected_id.value)
             raise IOError, msg
