@@ -30,7 +30,7 @@ class DrawObjects:
 
         self.rate = rospy.Rate(10)
 
-    def handle_robot_image_pose(self):
+    def handle_robot_image_pose(self,data):
         self.robot_marker_x += 1
         self.robot_marker_y += 2
         self.robot_marker.change_center(CvPrimatives.Point(self.robot_marker_x,self.robot_marker_y).point)
