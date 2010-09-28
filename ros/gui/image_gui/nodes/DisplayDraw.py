@@ -46,12 +46,24 @@ class ImageDisplay:
 
     def draw_objects(self,draw_object_list):
         for draw_object in draw_object_list:
-            self.draw_circles(draw_object.circle_list,draw_object.object_center)
+            if (not draw_object_list.hide_all) and (draw_object.show or draw_object_list.show_all):
+                self.draw_lines(draw_object.line_list,draw_object.object_center)
+                self.draw_circles(draw_object.circle_list,draw_object.object_center)
+
+    def draw_lines(self,line_list,object_center):
+        for line in line_list:
+            cv.Line(self.im_display,
+                      ((object_center.x + line.pt1.x),(object_center.y + line.pt1.y)),
+                      ((object_center.x + line.pt2.x),(object_center.y + line.pt2.y)),
+                      cv.CV_RGB(line.color.red,line.color.green,line.color.blue),
+                      line.thickness,
+                      line.lineType,
+                      line.shift)
 
     def draw_circles(self,circle_list,object_center):
         for circle in circle_list:
             cv.Circle(self.im_display,
-                      ((object_center.x + circle.center.x),(object_center.y + circle.center.x)),
+                      ((object_center.x + circle.center.x),(object_center.y + circle.center.y)),
                       circle.radius,
                       cv.CV_RGB(circle.color.red,circle.color.green,circle.color.blue),
                       circle.thickness,

@@ -21,12 +21,14 @@ class DrawObjects:
         self.origin = CvPrimatives.Point(0,0)
         self.robot_marker = DrawPrimatives.CenteredCircle(self.origin.point,25,self.colors.blue,2)
 
-        self.robot_marker_x = 100
-        self.robot_marker_y = 100
-
         self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
 
-        self.draw_object_list.draw_object_list = [self.robot_marker.draw_object]
+        self.plate_origin_marker = DrawPrimatives.Axes(CvPrimatives.Point(300,300).point)
+
+        self.draw_object_list.draw_object_list = [self.plate_origin_marker.draw_object,
+                                                  self.robot_marker.draw_object]
+        self.draw_object_list.show_all = False
+        self.draw_object_list.hide_all = False
 
         self.rate = rospy.Rate(10)
 
