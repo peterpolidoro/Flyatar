@@ -17,13 +17,13 @@ class DrawObjects:
         self.circle_list = []
 
         self.color_red = image_gui.msg.CvColor()
-        self.color_red.color.red = self.color_max
-        self.color_red.color.green = 0
-        self.color_red.color.blue = 0
+        self.color_red.red = self.color_max
+        self.color_red.green = 0
+        self.color_red.blue = 0
         self.color_green = image_gui.msg.CvColor()
-        self.color_green.color.red = 0
-        self.color_green.color.green = self.color_max
-        self.color_green.color.blue = 0
+        self.color_green.red = 0
+        self.color_green.green = self.color_max
+        self.color_green.blue = 0
 
         # self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
 
