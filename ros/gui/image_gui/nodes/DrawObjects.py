@@ -16,21 +16,28 @@ class DrawObjects:
         self.circle = image_gui.msg.CvCircle()
         self.circle_list = []
 
+        self.color_red = image_gui.msg.CvColor()
+        self.color_red.color.red = self.color_max
+        self.color_red.color.green = 0
+        self.color_red.color.blue = 0
+        self.color_green = image_gui.msg.CvColor()
+        self.color_green.color.red = 0
+        self.color_green.color.green = self.color_max
+        self.color_green.color.blue = 0
+
         # self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
 
 
         self.circle.center.x = 100
         self.circle.center.y = 100
         self.circle.radius = 50
-        self.circle.color.red = self.color_max
-        self.circle.color.green = 0
-        self.circle.color.blue = 0
+        self.circle.color = self.color_red
         self.circle.thickness = 2
         self.circle.lineType = 8
         self.circle.shift = 0
         self.circle_list.append(copy.deepcopy(self.circle))
         self.circle.center.x = 400
-        self.circle.color.green = self.color_max
+        self.circle.color = self.color_green
         self.circle_list.append(copy.deepcopy(self.circle))
         self.draw_objects.circle_list = self.circle_list
 
