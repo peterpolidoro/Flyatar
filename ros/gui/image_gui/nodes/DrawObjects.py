@@ -33,7 +33,7 @@ class DrawObjects:
         self.circle.color = self.colors.yellow
         self.circle_list.append(copy.deepcopy(self.circle))
         self.draw_object.circle_list = self.circle_list
-        self.draw_object_list = [self.draw_object]
+        self.draw_object_list.draw_object_list = [self.draw_object]
 
         rospy.logwarn("draw_objects = %s" % (str(self.draw_objects)))
 

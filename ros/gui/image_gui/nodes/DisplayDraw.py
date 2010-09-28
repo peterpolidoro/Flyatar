@@ -38,7 +38,7 @@ class ImageDisplay:
             self.initialize_images(cv_image)
 
         cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
-        self.draw_objects(self.draw_object_list)
+        self.draw_objects(self.draw_object_list.draw_object_list)
 
         cv.ShowImage("Display", self.im_display)
         cv.WaitKey(3)
