@@ -8,7 +8,7 @@ import image_gui.msg
 import colors
 import CvPrimatives
 import DrawPrimatives
-# from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped
 
 class DrawObjects:
 
@@ -17,26 +17,28 @@ class DrawObjects:
         self.draw_object_list = image_gui.msg.DrawObjectList()
 
         self.colors = colors.Colors()
-        # self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
-        self.origin = CvPrimatives.Point(0,0)
-        self.marker1 = DrawPrimatives.CenteredCircle(self.origin.point,50,self.colors.red,2)
-        self.marker2 = DrawPrimatives.CenteredCircle(self.origin.point,25,self.colors.blue,-1)
-        self.marker1.change_center(CvPrimatives.Point(100,100).point)
-        self.marker2.change_center(CvPrimatives.Point(200,200).point)
 
-        self.draw_object_list.draw_object_list = [self.marker1.draw_object,self.marker2.draw_object]
+        self.origin = CvPrimatives.Point(0,0)
+        self.robot_marker = DrawPrimatives.CenteredCircle(self.origin.point,25,self.colors.blue,2)
+
+        self.robot_marker_x = 100
+        self.robot_marker_y = 100
+
+        self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
+
+        self.draw_object_list.draw_object_list = [self.robot_marker.draw_object]
 
         self.rate = rospy.Rate(10)
 
-    def main(self):
+    def handle_robot_image_pose(self):
+        self.robot_marker_x += 1
+        self.robot_marker_y += 2
+        self.robot_marker.change_center(CvPrimatives.Point(self.robot_marker_x,self.robot_marker_y).point)
         self.draw_object_list_pub.publish(self.draw_object_list)
 
 if __name__ == '__main__':
     rospy.init_node('DrawObjects')
     do = DrawObjects()
-    do.main()
 
     while not rospy.is_shutdown():
-        do.main()
-        do.rate.sleep()
-        # rospy.spin()
+        rospy.spin()
