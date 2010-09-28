@@ -46,6 +46,7 @@ class ImageDisplay:
 
     def draw_circles(self,circle_list):
         for circle_N in range(len(circle_list)):
+            rospy.logwarn("center = %s" % (str(circle_list[circle_N].center)))
             cv.Circle(self.im_display,
                       circle_list[circle_N].center,
                       circle_list[circle_N].radius,
