@@ -3,8 +3,9 @@ from __future__ import division
 import roslib
 roslib.load_manifest('image_gui')
 import rospy
-import image_gui.msg
 import copy
+import image_gui.msg
+# from geometry_msgs.msg import PoseStamped
 
 class DrawObjects:
 
@@ -14,6 +15,9 @@ class DrawObjects:
         self.draw_objects = image_gui.msg.DrawObjects()
         self.circle = image_gui.msg.CvCircle()
         self.circle_list = []
+
+        # self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
+
 
         self.circle.center.x = 100
         self.circle.center.y = 100

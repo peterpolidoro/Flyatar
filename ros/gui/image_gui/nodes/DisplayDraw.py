@@ -45,14 +45,22 @@ class ImageDisplay:
 
 
     def draw_circles(self,circle_list):
-        for circle_N in range(len(circle_list)):
+        for circle in circle_list:
             cv.Circle(self.im_display,
-                      (circle_list[circle_N].center.x,circle_list[circle_N].center.x),
-                      circle_list[circle_N].radius,
-                      cv.CV_RGB(circle_list[circle_N].color.red,circle_list[circle_N].color.green,circle_list[circle_N].color.blue),
-                      circle_list[circle_N].thickness,
-                      circle_list[circle_N].lineType,
-                      circle_list[circle_N].shift)
+                      (circle.center.x,circle.center.x),
+                      circle.radius,
+                      cv.CV_RGB(circle.color.red,circle.color.green,circle.color.blue),
+                      circle.thickness,
+                      circle.lineType,
+                      circle.shift)
+        # for circle_N in range(len(circle_list)):
+        #     cv.Circle(self.im_display,
+        #               (circle_list[circle_N].center.x,circle_list[circle_N].center.x),
+        #               circle_list[circle_N].radius,
+        #               cv.CV_RGB(circle_list[circle_N].color.red,circle_list[circle_N].color.green,circle_list[circle_N].color.blue),
+        #               circle_list[circle_N].thickness,
+        #               circle_list[circle_N].lineType,
+        #               circle_list[circle_N].shift)
 
     def draw_objects_callback(self,data):
         self.draw_objects = data
