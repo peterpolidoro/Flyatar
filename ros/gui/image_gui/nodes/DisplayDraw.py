@@ -46,12 +46,12 @@ class ImageDisplay:
 
     def draw_objects(self,draw_object_list):
         for draw_object in draw_object_list:
-            self.draw_circles(draw_object.circle_list)
+            self.draw_circles(draw_object.circle_list,draw_object.object_center)
 
-    def draw_circles(self,circle_list):
+    def draw_circles(self,circle_list,object_center):
         for circle in circle_list:
             cv.Circle(self.im_display,
-                      (circle.center.x,circle.center.x),
+                      ((object_center.x + circle.center.x),(object_center.y + circle.center.x)),
                       circle.radius,
                       cv.CV_RGB(circle.color.red,circle.color.green,circle.color.blue),
                       circle.thickness,

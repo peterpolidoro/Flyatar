@@ -6,6 +6,7 @@ import rospy
 import copy
 import image_gui.msg
 import colors
+import DrawPrimatives
 # from geometry_msgs.msg import PoseStamped
 
 class DrawObjects:
@@ -13,27 +14,14 @@ class DrawObjects:
     def __init__(self):
         self.draw_object_list_pub = rospy.Publisher("DrawObjectList/image_rect", image_gui.msg.DrawObjectList)
         self.draw_object_list = image_gui.msg.DrawObjectList()
-        self.draw_object = image_gui.msg.DrawObject()
-        self.circle = image_gui.msg.CvCircle()
-        self.circle_list = []
 
         self.colors = colors.Colors()
         # self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
+        self.marker1 = CenteredCircle((100,100),50,self.colors.red,2)
+        self.marker2 = CenteredCircle((100,100),25,self.colors.blue,-1)
+        self.marker2.change_center((200,200))
 
-
-        self.circle.center.x = 100
-        self.circle.center.y = 100
-        self.circle.radius = 50
-        self.circle.color = self.colors.cyan
-        self.circle.thickness = 2
-        self.circle.lineType = 8
-        self.circle.shift = 0
-        self.circle_list.append(copy.deepcopy(self.circle))
-        self.circle.center.x = 400
-        self.circle.color = self.colors.yellow
-        self.circle_list.append(copy.deepcopy(self.circle))
-        self.draw_object.circle_list = self.circle_list
-        self.draw_object_list.draw_object_list = [self.draw_object]
+        self.draw_object_list.draw_object_list = [self.marker1.draw_object,self.marker2.draw_object]
 
         self.rate = rospy.Rate(10)
 
