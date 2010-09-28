@@ -45,7 +45,7 @@ class ImageDisplay:
         cv.WaitKey(3)
 
 
-    def draw_cicles(self,circle_list):
+    def draw_circles(self,circle_list):
         for circle_N in range(len(circle_list)):
             cv.Circle(self.im_display,
                       circle_list[circle_N].center,
