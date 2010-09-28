@@ -24,6 +24,9 @@ class DrawObjects:
         self.circle.lineType = 8
         self.circle.shift = 0
         self.circle_list.append(self.circle)
+        self.circle.center.x = 400
+        self.circle.color.green = self.color_max
+        self.circle_list.append(self.circle)
         self.draw_objects.circle_list = self.circle_list
 
         self.rate = rospy.Rate(10)
