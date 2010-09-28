@@ -5,6 +5,16 @@ roslib.load_manifest('image_gui')
 import rospy
 import image_gui.msg
 
+class Point:
+    def __init__(self,x,y):
+        self.point = image_gui.msg.CvPoint()
+        self.point.x = x
+        self.point.y = y
+
+    def change_center(self,x,y):
+        self.point.x = x
+        self.point.y = y
+
 class Circle:
     def __init__(self,center,radius,color,thickness):
         self.circle = image_gui.msg.CvCircle()

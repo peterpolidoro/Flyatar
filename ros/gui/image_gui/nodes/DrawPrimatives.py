@@ -11,7 +11,8 @@ class CenteredCircle:
         self.draw_object = image_gui.msg.DrawObject()
         self.draw_object.object_center = center
 
-        self.circle = CvPrimatives.Circle((0,0),radius,color,thickness)
+        self.origin = CvPrimatives.Point(0,0)
+        self.circle = CvPrimatives.Circle(self.origin.point,radius,color,thickness)
         self.draw_object.circle_list = [self.circle]
 
     def change_center(self,center):

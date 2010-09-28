@@ -6,6 +6,7 @@ import rospy
 import copy
 import image_gui.msg
 import colors
+import CvPrimatives
 import DrawPrimatives
 # from geometry_msgs.msg import PoseStamped
 
@@ -17,8 +18,10 @@ class DrawObjects:
 
         self.colors = colors.Colors()
         # self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
-        self.marker1 = DrawPrimatives.CenteredCircle((100,100),50,self.colors.red,2)
-        self.marker2 = DrawPrimatives.CenteredCircle((100,100),25,self.colors.blue,-1)
+        self.origin = CvPrimatives.Point(0,0)
+        self.marker1 = DrawPrimatives.CenteredCircle(self.origin.point,50,self.colors.red,2)
+        self.marker2 = DrawPrimatives.CenteredCircle(self.origin.point,25,self.colors.blue,-1)
+        self.marker2.change_center((100,100))
         self.marker2.change_center((200,200))
 
         self.draw_object_list.draw_object_list = [self.marker1.draw_object,self.marker2.draw_object]
