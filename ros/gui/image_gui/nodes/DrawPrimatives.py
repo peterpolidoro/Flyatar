@@ -13,11 +13,11 @@ class CenteredCircle:
 
         self.origin = CvPrimatives.Point(0,0)
         self.circle = CvPrimatives.Circle(self.origin.point,radius,color,thickness)
-        self.draw_object.circle_list = [self.circle]
+        self.draw_object.circle_list = [self.circle.circle]
 
     def change_center(self,center):
         self.draw_object.object_center = center
 
     def change_radius(self,radius):
-        self.circle.radius = radius
+        self.circle.change_radius(radius)
 
