@@ -6,7 +6,7 @@ import sys
 import rospy
 from track_image_contours.msg import ContourInfo
 from geometry_msgs.msg import PoseStamped,PointStamped
-from plate_tf.srv import *
+import plate_tf.srv
 import tf,math
 
 class ContourIdentifier:
@@ -48,7 +48,7 @@ class ContourIdentifier:
 
     rospy.wait_for_service('plate_to_camera')
     try:
-      self.plate_to_camera = rospy.ServiceProxy('plate_to_camera', PlateCameraConversion)
+      self.plate_to_camera = rospy.ServiceProxy('plate_to_camera', plate_tf.srv.PlateCameraConversion)
     except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 

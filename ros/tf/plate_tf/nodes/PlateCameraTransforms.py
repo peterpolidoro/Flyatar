@@ -6,7 +6,7 @@ import cv
 import numpy
 import tf
 from pythonmodules import cvNumpy,CameraParameters
-from plate_tf.srv import *
+import plate_tf.srv
 
 class Transforms:
     def __init__(self):
@@ -64,8 +64,8 @@ class Transforms:
 def plate_camera_transforms_server():
     rospy.init_node('plate_camera_transforms_server')
     transforms = Transforms()
-    s_pc = rospy.Service('plate_to_camera', PlateCameraConversion, transforms.plate_to_camera)
-    s_cp = rospy.Service('camera_to_plate', PlateCameraConversion, transforms.camera_to_plate)
+    s_pc = rospy.Service('plate_to_camera', plate_tf.srv.PlateCameraConversion, transforms.plate_to_camera)
+    s_cp = rospy.Service('camera_to_plate', plate_tf.srv.PlateCameraConversion, transforms.camera_to_plate)
 
 if __name__ == "__main__":
     plate_camera_transforms_server()

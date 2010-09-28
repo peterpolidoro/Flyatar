@@ -10,6 +10,8 @@
   <!-- Coordinate Systems parameters -->
   <param name="ImageProcessor_OutputCoordinates" type="string" value="Camera"/>
 
+  <include file="$(find plate_tf)/launch/plate_camera_transforms.launch" />
+
   <include file="$(find flyatar_calibration)/calibration_data/camera_plateimage_calibration_data.launch" />
   <include file="$(find flyatar_calibration)/calibration_data/robotimage_calibration_data.launch" />
 
