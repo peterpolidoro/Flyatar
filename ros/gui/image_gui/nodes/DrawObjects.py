@@ -29,6 +29,8 @@ class DrawObjects:
         self.circle_list.append(self.circle)
         self.draw_objects.circle_list = self.circle_list
 
+        rospy.logwarn("draw_objects = %s" % (str(self.draw_objects)))
+
         self.rate = rospy.Rate(10)
 
     def main(self):
