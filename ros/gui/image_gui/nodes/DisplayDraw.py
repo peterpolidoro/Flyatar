@@ -53,8 +53,8 @@ class ImageDisplay:
     def draw_lines(self,line_list,object_center):
         for line in line_list:
             cv.Line(self.im_display,
-                      ((object_center.x + line.pt1.x),(object_center.y + line.pt1.y)),
-                      ((object_center.x + line.pt2.x),(object_center.y + line.pt2.y)),
+                      ((object_center.x + line.point1.x),(object_center.y + line.point1.y)),
+                      ((object_center.x + line.point2.x),(object_center.y + line.point2.y)),
                       cv.CV_RGB(line.color.red,line.color.green,line.color.blue),
                       line.thickness,
                       line.lineType,

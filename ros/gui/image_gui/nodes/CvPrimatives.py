@@ -32,17 +32,17 @@ class Circle:
         self.circle.radius = radius
 
 class Line:
-    def __init__(self,pt1,pt2,color,thickness,lineType=8,shift=0):
+    def __init__(self,point1,point2,color,thickness,lineType=8,shift=0):
         self.line = image_gui.msg.CvLine()
-        self.line.pt1 = pt1
-        self.line.pt2 = pt2
+        self.line.point1 = point1
+        self.line.point2 = point2
         self.line.color = color
         self.line.thickness = thickness
         self.line.lineType = lineType
         self.line.shift = shift
 
-    def change_pt1(self,pt):
-        self.line.pt1 = pt
+    def change_point1(self,pt):
+        self.line.point1 = point
 
-    def change_pt2(self,pt):
-        self.line.pt2 = pt
+    def change_point2(self,pt):
+        self.line.point2 = point
