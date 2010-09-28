@@ -21,7 +21,7 @@ class DrawObjects:
         self.origin = CvPrimatives.Point(0,0)
         self.marker1 = DrawPrimatives.CenteredCircle(self.origin.point,50,self.colors.red,2)
         self.marker2 = DrawPrimatives.CenteredCircle(self.origin.point,25,self.colors.blue,-1)
-        self.marker2.change_center(CvPrimatives.Point(100,100).point)
+        self.marker1.change_center(CvPrimatives.Point(100,100).point)
         self.marker2.change_center(CvPrimatives.Point(200,200).point)
 
         self.draw_object_list.draw_object_list = [self.marker1.draw_object,self.marker2.draw_object]
