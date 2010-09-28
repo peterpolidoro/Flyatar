@@ -35,8 +35,6 @@ class DrawObjects:
         self.draw_object.circle_list = self.circle_list
         self.draw_object_list.draw_object_list = [self.draw_object]
 
-        rospy.logwarn("draw_objects = %s" % (str(self.draw_objects)))
-
         self.rate = rospy.Rate(10)
 
     def main(self):
