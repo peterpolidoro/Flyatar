@@ -30,6 +30,9 @@ class DrawObjects:
         self.draw_object_list.show_all = False
         self.draw_object_list.hide_all = False
 
+        self.robot_marker_x = 0
+        self.robot_marker_y = 0
+
         self.rate = rospy.Rate(10)
 
     def handle_robot_image_pose(self,data):
