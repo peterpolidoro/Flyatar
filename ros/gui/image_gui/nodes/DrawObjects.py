@@ -4,6 +4,7 @@ import roslib
 roslib.load_manifest('image_gui')
 import rospy
 import image_gui.msg
+import copy
 
 class DrawObjects:
 
@@ -23,10 +24,10 @@ class DrawObjects:
         self.circle.thickness = 2
         self.circle.lineType = 8
         self.circle.shift = 0
-        self.circle_list.append(self.circle)
+        self.circle_list.append(copy.copy(self.circle))
         self.circle.center.x = 400
         self.circle.color.green = self.color_max
-        self.circle_list.append(self.circle)
+        self.circle_list.append(copy.copy(self.circle))
         self.draw_objects.circle_list = self.circle_list
 
         rospy.logwarn("draw_objects = %s" % (str(self.draw_objects)))
