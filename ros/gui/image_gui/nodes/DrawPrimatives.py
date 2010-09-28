@@ -29,7 +29,7 @@ class Axes:
                                              colors.green,
                                              2)
 
-        self.draw_object.line_list = [self.x_axis_line,self.y_axis_line]
+        self.draw_object.line_list = [self.x_axis_line.line,self.y_axis_line.line]
         self.draw_object.show = True
 
     def change_center(self,center):
