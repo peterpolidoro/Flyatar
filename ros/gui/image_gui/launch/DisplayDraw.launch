@@ -1,4 +1,5 @@
 <launch>
   <include file="$(find track_image_contours)/launch/track_image_contours_tf.launch" />
+  <node pkg="image_gui" type="DrawObjects.py" name="DrawObjects" />
   <node pkg="image_gui" type="DisplayDraw.py" name="ImageDisplayDraw" />
 </launch>

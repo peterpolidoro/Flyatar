@@ -17,7 +17,6 @@ class ImageDisplay:
         cv.NamedWindow("Display",1)
         self.bridge = CvBridge()
 
-        self.color_max = 255
         self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
         self.images_initialized = False
 
