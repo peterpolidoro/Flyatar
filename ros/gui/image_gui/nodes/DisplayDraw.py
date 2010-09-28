@@ -20,8 +20,8 @@ class ImageDisplay:
         self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
         self.images_initialized = False
 
-        self.draw_objects_sub = rospy.Subscriber("DrawObjects/image_rect", image_gui.msg.DrawObjects, self.draw_objects_callback)
-        self.draw_objects = image_gui.msg.DrawObjects()
+        self.draw_object_list_sub = rospy.Subscriber("DrawObjectList/image_rect", image_gui.msg.DrawObjectList, self.draw_object_list_callback)
+        self.draw_object_list = image_gui.msg.DrawObjectList()
 
     def initialize_images(self,cv_image):
         self.im_display = cv.CreateImage(cv.GetSize(cv_image),cv.IPL_DEPTH_8U,3)
@@ -38,11 +38,15 @@ class ImageDisplay:
             self.initialize_images(cv_image)
 
         cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
-        self.draw_circles(self.draw_objects.circle_list)
+        self.draw_objects(self.draw_object_list)
 
         cv.ShowImage("Display", self.im_display)
         cv.WaitKey(3)
 
+
+    def draw_objects(self,draw_object_list):
+        for draw_object in draw_object_list:
+            self.draw_circles(draw_object.circle_list)
 
     def draw_circles(self,circle_list):
         for circle in circle_list:
@@ -54,8 +58,8 @@ class ImageDisplay:
                       circle.lineType,
                       circle.shift)
 
-    def draw_objects_callback(self,data):
-        self.draw_objects = data
+    def draw_object_list_callback(self,data):
+        self.draw_object_list = data
 
 if __name__ == '__main__':
     rospy.init_node('ImageDisplayDraw')

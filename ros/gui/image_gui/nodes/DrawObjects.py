@@ -11,8 +11,9 @@ import colors
 class DrawObjects:
 
     def __init__(self):
-        self.draw_objects_pub = rospy.Publisher("DrawObjects/image_rect", image_gui.msg.DrawObjects)
-        self.draw_objects = image_gui.msg.DrawObjects()
+        self.draw_object_list_pub = rospy.Publisher("DrawObjectList/image_rect", image_gui.msg.DrawObjectList)
+        self.draw_object_list = image_gui.msg.DrawObjectList()
+        self.draw_object = image_gui.msg.DrawObject()
         self.circle = image_gui.msg.CvCircle()
         self.circle_list = []
 
@@ -31,14 +32,15 @@ class DrawObjects:
         self.circle.center.x = 400
         self.circle.color = self.colors.yellow
         self.circle_list.append(copy.deepcopy(self.circle))
-        self.draw_objects.circle_list = self.circle_list
+        self.draw_object.circle_list = self.circle_list
+        self.draw_object_list = [self.draw_object]
 
         rospy.logwarn("draw_objects = %s" % (str(self.draw_objects)))
 
         self.rate = rospy.Rate(10)
 
     def main(self):
-        self.draw_objects_pub.publish(self.draw_objects)
+        self.draw_object_list_pub.publish(self.draw_object_list)
 
 if __name__ == '__main__':
     rospy.init_node('DrawObjects')
