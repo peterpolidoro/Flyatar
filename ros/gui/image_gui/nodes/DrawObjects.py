@@ -11,7 +11,7 @@ class DrawObjects:
         self.color_max = 255
         self.draw_objects_pub = rospy.Publisher("DrawObjects/image_rect", image_gui.msg.DrawObjects)
         self.draw_objects = image_gui.msg.DrawObjects()
-        self.circle = image_gui.msg.CvCircle
+        self.circle = image_gui.msg.CvCircle()
         self.circle_list = []
 
         self.circle.center.x = 100
