@@ -11,7 +11,6 @@ import colors
 class DrawObjects:
 
     def __init__(self):
-        self.color_max = 255
         self.draw_objects_pub = rospy.Publisher("DrawObjects/image_rect", image_gui.msg.DrawObjects)
         self.draw_objects = image_gui.msg.DrawObjects()
         self.circle = image_gui.msg.CvCircle()
@@ -24,13 +23,13 @@ class DrawObjects:
         self.circle.center.x = 100
         self.circle.center.y = 100
         self.circle.radius = 50
-        self.circle.color = self.colors.blue
+        self.circle.color = self.colors.cyan
         self.circle.thickness = 2
         self.circle.lineType = 8
         self.circle.shift = 0
         self.circle_list.append(copy.deepcopy(self.circle))
         self.circle.center.x = 400
-        self.circle.color = self.colors.purple
+        self.circle.color = self.colors.yellow
         self.circle_list.append(copy.deepcopy(self.circle))
         self.draw_objects.circle_list = self.circle_list
 
