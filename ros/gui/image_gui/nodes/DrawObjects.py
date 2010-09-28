@@ -5,6 +5,7 @@ roslib.load_manifest('image_gui')
 import rospy
 import copy
 import image_gui.msg
+import colors
 # from geometry_msgs.msg import PoseStamped
 
 class DrawObjects:
@@ -16,28 +17,20 @@ class DrawObjects:
         self.circle = image_gui.msg.CvCircle()
         self.circle_list = []
 
-        self.color_red = image_gui.msg.CvColor()
-        self.color_red.red = self.color_max
-        self.color_red.green = 0
-        self.color_red.blue = 0
-        self.color_green = image_gui.msg.CvColor()
-        self.color_green.red = 0
-        self.color_green.green = self.color_max
-        self.color_green.blue = 0
-
+        self.colors = colors.Colors()
         # self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
 
 
         self.circle.center.x = 100
         self.circle.center.y = 100
         self.circle.radius = 50
-        self.circle.color = self.color_red
+        self.circle.color = self.colors.blue
         self.circle.thickness = 2
         self.circle.lineType = 8
         self.circle.shift = 0
         self.circle_list.append(copy.deepcopy(self.circle))
         self.circle.center.x = 400
-        self.circle.color = self.color_green
+        self.circle.color = self.colors.purple
         self.circle_list.append(copy.deepcopy(self.circle))
         self.draw_objects.circle_list = self.circle_list
 
