@@ -8,9 +8,6 @@ import smach_ros
 import stage_action_server.msg
 import time
 
-
-self.sm_experiment = smach.StateMachine(['succeeded','aborted','preempted'])
-
 # define state Wait
 class Wait(smach.State):
     def __init__(self):
