@@ -8,14 +8,54 @@ import smach_ros
 import stage_action_server.msg
 import time
 
-# define state Wait
-class Wait(smach.State):
+# define state RecordData
+class RecordData(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state WAIT')
-        time.sleep(5)
+        rospy.loginfo('Executing state RECORD_DATA')
+        time.sleep(7)
+        return 'succeeded'
+
+# define state EraseData
+class EraseData(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing state ERASE_DATA')
+        time.sleep(3)
+        return 'succeeded'
+
+# define state MonitorConditions
+class MonitorConditions(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing state MONITOR_CONDITIONS')
+        time.sleep(3)
+        return 'succeeded'
+
+# define state ControlRobot
+class ControlRobot(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing state CONTROL_ROBOT')
+        time.sleep(3)
+        return 'succeeded'
+
+# define state ControlRobot
+class LogTrial(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing state LOG_TRIAL')
+        time.sleep(3)
         return 'succeeded'
 
 class Trial():
@@ -25,29 +65,36 @@ class Trial():
 
         # Open the container
         with self.sm_trial:
-            stage_goal1 = stage_action_server.msg.UpdateStagePositionGoal()
-            stage_goal1.x_position = [25]
-            stage_goal1.y_position = [25]
-            stage_goal1.velocity_magnitude = [50]
+            # Create the concurrent sub SMACH state machine
+            self.sm_con = smach.Concurrence(outcomes=['succeeded','aborted','preempted'],
+                                            default_outcome='aborted',
+                                            outcome_map={'succeeded':
+                                                         { 'RECORD_DATA':'succeeded',
+                                                           'MONITOR_CONDITIONS':'succeeded',
+                                                           'CONTROL_ROBOT':'succeeded'}})
 
-            stage_goal2 = stage_action_server.msg.UpdateStagePositionGoal()
-            stage_goal2.x_position = [-25]
-            stage_goal2.y_position = [15]
-            stage_goal2.velocity_magnitude = [25]
+            # Open the container
+            with self.sm_con:
+                # Add states to the container
+                smach.Concurrence.add('RECORD_DATA', RecordData())
+                smach.Concurrence.add('MONITOR_CONDITIONS', MonitorConditions())
+                smach.Concurrence.add('CONTROL_ROBOT', ControlRobot())
 
             # Add states to the container
-            smach.StateMachine.add('GOTO_GOAL1',
-                                   smach_ros.SimpleActionState('StageActionServer',
-                                                               stage_action_server.msg.UpdateStagePositionAction,
-                                                               goal=stage_goal1),
-                                   transitions={'succeeded':'GOTO_GOAL2'})
+            smach.StateMachine.add('CON', sm_con,
+                                       transitions={'succeeded':'LOG_TRIAL',
+                                                    'aborted':'ERASE_DATA',
+                                                    'preempted':'ERASE_DATA'})
 
-            smach.StateMachine.add('GOTO_GOAL2',
-                                   smach_ros.SimpleActionState('StageActionServer',
-                                                               stage_action_server.msg.UpdateStagePositionAction,
-                                                               goal=stage_goal2),
-                                   transitions={'succeeded':'succeeded'})
+            smach.StateMachine.add('ERASE_DATA', EraseData(),
+                                   transitions={'succeeded':'succeeded',
+                                                'aborted':'aborted',
+                                                'preempted':'preempted'})
 
+            smach.StateMachine.add('LOG_TRIAL', LogTrial(),
+                                   transitions={'succeeded':'succeeded',
+                                                'aborted':'aborted',
+                                                'preempted':'preempted'})
 
         # Create and start the introspection server
         self.sis = smach_ros.IntrospectionServer('sis_server_trial', self.sm_trial, '/SM_EXPERIMENT/SM_TRIAL')
