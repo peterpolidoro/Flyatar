@@ -5,7 +5,7 @@ roslib.load_manifest('image_gui')
 import rospy
 import copy
 import image_gui.msg
-import colors
+import Colors
 import CvPrimatives
 import DrawPrimatives
 from geometry_msgs.msg import PoseStamped
@@ -15,7 +15,7 @@ class DrawObjects:
         self.draw_objects_pub = rospy.Publisher("DrawObjects/image_rect", image_gui.msg.DrawObjects)
         self.draw_objects = image_gui.msg.DrawObjects()
 
-        self.colors = colors.Colors()
+        self.colors = Colors.Colors()
 
         self.origin = CvPrimatives.Point(0,0)
         self.robot_marker = DrawPrimatives.CenteredCircle(self.origin.point,25,self.colors.blue,2)

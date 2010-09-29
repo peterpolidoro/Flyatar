@@ -4,10 +4,10 @@ import roslib
 roslib.load_manifest('image_gui')
 import rospy
 import image_gui.msg
-import colors
+import Colors
 import CvPrimatives
 
-colors = colors.Colors()
+colors = Colors.Colors()
 
 class Axes:
     def __init__(self,center):
