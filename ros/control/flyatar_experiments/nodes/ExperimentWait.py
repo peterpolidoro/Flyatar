@@ -7,7 +7,7 @@ import smach
 import smach_ros
 import stage_action_server.msg
 import time
-import TrialStraight as Trial
+import Trial
 
 # define state Wait
 class WaitForFly(smach.State):

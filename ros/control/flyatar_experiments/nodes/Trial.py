@@ -81,10 +81,10 @@ class Trial():
                 smach.Concurrence.add('CONTROL_ROBOT', ControlRobot())
 
             # Add states to the container
-            smach.StateMachine.add('CON', sm_con,
-                                       transitions={'succeeded':'LOG_TRIAL',
-                                                    'aborted':'ERASE_DATA',
-                                                    'preempted':'ERASE_DATA'})
+            smach.StateMachine.add('CON', self.sm_con,
+                                   transitions={'succeeded':'LOG_TRIAL',
+                                                'aborted':'ERASE_DATA',
+                                                'preempted':'ERASE_DATA'})
 
             smach.StateMachine.add('ERASE_DATA', EraseData(),
                                    transitions={'succeeded':'succeeded',
@@ -106,7 +106,7 @@ class Trial():
 
 
 if __name__ == '__main__':
-    rospy.init_node('TrialStraight')
+    rospy.init_node('Trial')
     t = Trial()
     t.execute()
     t.sis.stop()
