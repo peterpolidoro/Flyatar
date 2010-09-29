@@ -55,7 +55,9 @@ class Experiment():
                                                 'preempted':'GOTO_START'})
 
         # Create and start the introspection server
-        self.sis = smach_ros.IntrospectionServer('sis_server_experiment', self.sm_experiment, '/SM_EXPERIMENT')
+        self.sis = smach_ros.IntrospectionServer('sis_server_experiment',
+                                                 self.sm_experiment,
+                                                 '/SM_EXPERIMENT')
         self.sis.start()
 
     def execute(self):

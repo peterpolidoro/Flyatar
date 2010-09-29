@@ -64,7 +64,9 @@ class RobotMotionProfile():
                                    transitions={'succeeded':'succeeded'})
 
         # Create and start the introspection server
-        self.sis = smach_ros.IntrospectionServer('sis_server_robot_motion_profile', self.sm_experiment, '/SM_EXPERIMENT/SM_TRIAL/SM_ROBOT_MOTION_PROFILE')
+        self.sis = smach_ros.IntrospectionServer('sis_server_robot_motion_profile',
+                                                 self.sm_robot_motion_profile,
+                                                 '/SM_EXPERIMENT/SM_TRIAL/SM_ROBOT_MOTION_PROFILE')
         self.sis.start()
 
     def execute(self):
