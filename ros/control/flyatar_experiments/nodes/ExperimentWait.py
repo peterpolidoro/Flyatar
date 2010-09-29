@@ -12,7 +12,7 @@ import TrialStraight as Trial
 # define state Wait
 class WaitForFly(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute(self, userdata):
         rospy.loginfo('Executing state WAIT_FOR_FLY')
