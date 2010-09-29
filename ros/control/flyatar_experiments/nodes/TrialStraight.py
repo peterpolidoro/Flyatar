@@ -17,7 +17,7 @@ class Wait(smach.State):
         smach.State.__init__(self, outcomes=['succeeded'])
 
     def execute(self, userdata):
-        rospy.logwarn('Executing state WAIT')
+        rospy.loginfo('Executing state WAIT')
         time.sleep(5)
         return 'succeeded'
 
@@ -28,31 +28,29 @@ class Trial():
 
         # Open the container
         with self.sm_trial:
-            stage_goal = stage_action_server.msg.UpdateStagePositionGoal()
-            stage_goal.x_position = [0]
-            stage_goal.y_position = [0]
-            stage_goal.velocity_magnitude = [50]
+            stage_goal1 = stage_action_server.msg.UpdateStagePositionGoal()
+            stage_goal1.x_position = [25]
+            stage_goal1.y_position = [25]
+            stage_goal1.velocity_magnitude = [50]
 
             stage_goal2 = stage_action_server.msg.UpdateStagePositionGoal()
-            stage_goal2.x_position = [25]
-            stage_goal2.y_position = [25]
-            stage_goal2.velocity_magnitude = [50]
+            stage_goal2.x_position = [-25]
+            stage_goal2.y_position = [15]
+            stage_goal2.velocity_magnitude = [25]
 
             # Add states to the container
-            smach.StateMachine.add('GOTO_START',
+            smach.StateMachine.add('GOTO_GOAL1',
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
-                                                               goal=stage_goal),
-                                   transitions={'succeeded':'WAIT_FOR_FLY'})
+                                                               goal=stage_goal1),
+                                   transitions={'succeeded':'GOTO_GOAL2'})
 
-            smach.StateMachine.add('WAIT_FOR_FLY', WaitForFly(),
-                                   transitions={'succeeded':'GOTO_NEWPOSITION'})
-
-            smach.StateMachine.add('GOTO_NEWPOSITION',
+            smach.StateMachine.add('GOTO_GOAL2',
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
                                                                goal=stage_goal2),
                                    transitions={'succeeded':'succeeded'})
+
 
     def execute(self):
         # Execute SMACH plan
