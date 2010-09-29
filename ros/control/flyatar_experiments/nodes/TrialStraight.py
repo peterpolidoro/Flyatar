@@ -50,7 +50,7 @@ class Trial():
 
 
         # Create and start the introspection server
-        self.sis = smach_ros.IntrospectionServer('sis_server_trial', sm, '/SM_EXPERIMENT/SM_TRIAL')
+        self.sis = smach_ros.IntrospectionServer('sis_server_trial', self.sm_trial, '/SM_EXPERIMENT/SM_TRIAL')
         self.sis.start()
 
     def execute(self):
