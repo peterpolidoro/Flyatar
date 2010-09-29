@@ -11,6 +11,7 @@
   <depend package="rospy"/>
   <depend package="track_image_contours"/>
   <depend package="stage"/>
+  <depend package="tf"/>
   <depend package="plate_tf"/>
   <depend package="rosbag"/>
 
