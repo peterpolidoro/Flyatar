@@ -42,8 +42,8 @@ class DrawObjects:
         self.plate_image_origin_display_frame = self.tf_listener.transformPoint(self.display_frame,
                                                                                 self.plate_image_origin)
 
-        self.plate_origin_marker = DrawPrimatives.Axes((self.plate_image_origin_display_frame.point.x,
-                                                        self.plate_image_origin_display_frame.point.y).point)
+        self.plate_origin_marker = DrawPrimatives.Axes(CvPrimatives.Point(self.plate_image_origin_display_frame.point.x,
+                                                                          self.plate_image_origin_display_frame.point.y).point)
 
         self.draw_objects.draw_object_list = [self.plate_origin_marker.draw_object,
                                               self.robot_marker.draw_object]
