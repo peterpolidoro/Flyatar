@@ -57,7 +57,7 @@ class Trial():
         # Open the container
         with self.sm_trial:
             self.robot_motion_profile = RobotMotionProfiles.RobotMotionProfile()
-            self.sm_robot_motion_profile = self.RobotMotionProfile.sm_robot_motion_profile
+            self.sm_robot_motion_profile = self.robot_motion_profile.sm_robot_motion_profile
 
             # Create the concurrent sub SMACH state machine
             self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','aborted','preempted'],
