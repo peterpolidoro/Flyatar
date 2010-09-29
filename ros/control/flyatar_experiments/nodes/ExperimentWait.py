@@ -49,7 +49,7 @@ class Experiment():
                                    transitions={'succeeded':'GOTO_START'})
 
         # Create and start the introspection server
-        self.sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')
+        self.sis = smach_ros.IntrospectionServer('sis_server_experiment', sm, '/SM_EXPERIMENT')
         self.sis.start()
 
     def execute(self):

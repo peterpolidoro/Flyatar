@@ -49,6 +49,10 @@ class Trial():
                                    transitions={'succeeded':'succeeded'})
 
 
+        # Create and start the introspection server
+        self.sis = smach_ros.IntrospectionServer('sis_server_trial', sm, '/SM_EXPERIMENT/SM_TRIAL')
+        self.sis.start()
+
     def execute(self):
         # Execute SMACH plan
         self.outcome = self.sm_trial.execute()
@@ -58,3 +62,4 @@ if __name__ == '__main__':
     rospy.init_node('TrialStraight')
     t = Trial()
     t.execute()
+    t.sis.stop()
