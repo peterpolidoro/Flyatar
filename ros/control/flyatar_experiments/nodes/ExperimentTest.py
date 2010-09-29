@@ -57,6 +57,6 @@ class Experiment():
 
 
 if __name__ == '__main__':
-    rospy.init_node('TestExperiment')
+    rospy.init_node('ExperimentTest')
     e = Experiment()
     e.main()

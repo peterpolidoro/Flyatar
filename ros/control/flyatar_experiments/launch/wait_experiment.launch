@@ -8,7 +8,7 @@
 
   <!-- <param name="robot_velocity_max" type="double" value="80"/> -->
   <!-- <node pkg="flyatar_avatar" type="SetpointPositionControl.py" name="SetpointPositionControl" /> -->
-  <node pkg="flyatar_experiments" type="WaitExperiment.py" name="WaitExperiment" />
+  <node pkg="flyatar_experiments" type="ExperimentWait.py" name="ExperimentWait" />
 
   <!-- <param name="contour_count_max" type="double" value="2"/> -->
   <!-- <param name="image_processor_display_images" type="boolean" value="false"/> -->
