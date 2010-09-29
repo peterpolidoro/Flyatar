@@ -48,12 +48,17 @@ class Experiment():
                                    self.sm_trial,
                                    transitions={'succeeded':'GOTO_START'})
 
+        # Create and start the introspection server
+        self.sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')
+        self.sis.start()
+
     def execute(self):
         # Execute SMACH plan
-        outcome = self.sm_experiment.execute()
+        self.outcome = self.sm_experiment.execute()
 
 
 if __name__ == '__main__':
     rospy.init_node('ExperimentWait')
     e = Experiment()
     e.execute()
+    e.sis.stop()

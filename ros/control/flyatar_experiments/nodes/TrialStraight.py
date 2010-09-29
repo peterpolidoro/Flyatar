@@ -51,7 +51,7 @@ class Trial():
 
     def execute(self):
         # Execute SMACH plan
-        outcome = self.sm_trial.execute()
+        self.outcome = self.sm_trial.execute()
 
 
 if __name__ == '__main__':
