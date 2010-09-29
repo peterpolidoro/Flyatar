@@ -9,7 +9,7 @@ import stage_action_server.msg
 import time
 import Trial
 
-# define state Wait
+# define state WaitForFly
 class WaitForFly(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
@@ -31,8 +31,8 @@ class Experiment():
             plate_origin_goal.y_position = [0]
             plate_origin_goal.velocity_magnitude = [50]
 
-            self.Trial = Trial.Trial()
-            self.sm_trial = self.Trial.sm_trial
+            self.trial = Trial.Trial()
+            self.sm_trial = self.trial.sm_trial
 
             # Add states to the container
             smach.StateMachine.add('GOTO_START',

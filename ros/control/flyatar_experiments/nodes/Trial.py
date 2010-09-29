@@ -7,6 +7,7 @@ import smach
 import smach_ros
 import stage_action_server.msg
 import time
+import RobotMotionProfiles
 
 # define state RecordData
 class RecordData(smach.State):
@@ -15,7 +16,7 @@ class RecordData(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Executing state RECORD_DATA')
-        time.sleep(7)
+        time.sleep(10)
         return 'succeeded'
 
 # define state EraseData
@@ -39,16 +40,6 @@ class MonitorConditions(smach.State):
         return 'succeeded'
 
 # define state ControlRobot
-class ControlRobot(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
-
-    def execute(self, userdata):
-        rospy.loginfo('Executing state CONTROL_ROBOT')
-        time.sleep(3)
-        return 'succeeded'
-
-# define state ControlRobot
 class LogTrial(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
@@ -65,23 +56,26 @@ class Trial():
 
         # Open the container
         with self.sm_trial:
+            self.robot_motion_profile = RobotMotionProfiles.RobotMotionProfile()
+            self.sm_robot_motion_profile = self.RobotMotionProfile.sm_robot_motion_profile
+
             # Create the concurrent sub SMACH state machine
-            self.sm_con = smach.Concurrence(outcomes=['succeeded','aborted','preempted'],
-                                            default_outcome='aborted',
-                                            outcome_map={'succeeded':
-                                                         { 'RECORD_DATA':'succeeded',
-                                                           'MONITOR_CONDITIONS':'succeeded',
-                                                           'CONTROL_ROBOT':'succeeded'}})
+            self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','aborted','preempted'],
+                                                               default_outcome='aborted',
+                                                               outcome_map={'succeeded':
+                                                                            { 'RECORD_DATA':'succeeded',
+                                                                              'MONITOR_CONDITIONS':'succeeded',
+                                                                              'CONTROL_ROBOT':'succeeded'}})
 
             # Open the container
-            with self.sm_con:
+            with self.sm_record_monitor_control:
                 # Add states to the container
                 smach.Concurrence.add('RECORD_DATA', RecordData())
                 smach.Concurrence.add('MONITOR_CONDITIONS', MonitorConditions())
-                smach.Concurrence.add('CONTROL_ROBOT', ControlRobot())
+                smach.Concurrence.add('CONTROL_ROBOT', self.sm_robot_motion_profile)
 
             # Add states to the container
-            smach.StateMachine.add('CON', self.sm_con,
+            smach.StateMachine.add('RECORD_MONITOR_CONTROL', self.sm_con,
                                    transitions={'succeeded':'LOG_TRIAL',
                                                 'aborted':'ERASE_DATA',
                                                 'preempted':'ERASE_DATA'})
