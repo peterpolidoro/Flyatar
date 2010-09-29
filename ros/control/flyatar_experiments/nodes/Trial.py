@@ -75,7 +75,7 @@ class Trial():
                 smach.Concurrence.add('CONTROL_ROBOT', self.sm_robot_motion_profile)
 
             # Add states to the container
-            smach.StateMachine.add('RECORD_MONITOR_CONTROL', self.sm_con,
+            smach.StateMachine.add('RECORD_MONITOR_CONTROL', self.sm_record_monitor_control,
                                    transitions={'succeeded':'LOG_TRIAL',
                                                 'aborted':'ERASE_DATA',
                                                 'preempted':'ERASE_DATA'})
