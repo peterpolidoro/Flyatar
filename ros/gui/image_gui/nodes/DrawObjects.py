@@ -56,11 +56,11 @@ class DrawObjects:
             try:
                 self.robot_image_origin_display_frame = self.tf_listener.transformPoint(self.display_frame,
                                                                                         self.robot_image_origin)
+                self.robot_marker.change_center(CvPrimatives.Point(self.robot_image_origin_display_frame.point.x,
+                                                                   self.robot_image_origin_display_frame.point.y).point)
             except (tf.LookupException, tf.ConnectivityException):
                 pass
 
-            self.robot_marker.change_center(CvPrimatives.Point(self.robot_image_origin_display_frame.point.x,
-                                                               self.robot_image_origin_display_frame.point.y).point)
             self.draw_objects_pub.publish(self.draw_objects)
 
 if __name__ == '__main__':
