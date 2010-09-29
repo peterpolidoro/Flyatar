@@ -20,8 +20,8 @@ class ImageDisplay:
         self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
         self.images_initialized = False
 
-        self.draw_object_list_sub = rospy.Subscriber("DrawObjectList/image_rect", image_gui.msg.DrawObjectList, self.draw_object_list_callback)
-        self.draw_object_list = image_gui.msg.DrawObjectList()
+        self.draw_objects_sub = rospy.Subscriber("DrawObjects/image_rect", image_gui.msg.DrawObjects, self.draw_objects_callback)
+        self.draw_objects = image_gui.msg.DrawObjects()
 
     def initialize_images(self,cv_image):
         self.im_display = cv.CreateImage(cv.GetSize(cv_image),cv.IPL_DEPTH_8U,3)
@@ -38,19 +38,19 @@ class ImageDisplay:
             self.initialize_images(cv_image)
 
         cv.CvtColor(cv_image,self.im_display,cv.CV_GRAY2RGB)
-        self.draw_objects(self.draw_object_list.draw_object_list)
+        self.draw_objects_on_image(self.draw_objects)
 
         cv.ShowImage("Display", self.im_display)
         cv.WaitKey(3)
 
 
-    def draw_objects(self,draw_object_list):
-        for draw_object in draw_object_list:
-            if (not draw_object_list.hide_all) and (draw_object.show or draw_object_list.show_all):
-                self.draw_lines(draw_object.line_list,draw_object.object_center)
-                self.draw_circles(draw_object.circle_list,draw_object.object_center)
+    def draw_objects_on_image(self,draw_objects):
+        for draw_object in draw_objects.draw_object_list:
+            if (not draw_objects.hide_all) and (draw_object.show or draw_objects.show_all):
+                self.draw_lines_on_image(draw_object.line_list,draw_object.object_center)
+                self.draw_circles_on_image(draw_object.circle_list,draw_object.object_center)
 
-    def draw_lines(self,line_list,object_center):
+    def draw_lines_on_image(self,line_list,object_center):
         for line in line_list:
             cv.Line(self.im_display,
                       ((object_center.x + line.point1.x),(object_center.y + line.point1.y)),
@@ -60,7 +60,7 @@ class ImageDisplay:
                       line.lineType,
                       line.shift)
 
-    def draw_circles(self,circle_list,object_center):
+    def draw_circles_on_image(self,circle_list,object_center):
         for circle in circle_list:
             cv.Circle(self.im_display,
                       ((object_center.x + circle.center.x),(object_center.y + circle.center.y)),

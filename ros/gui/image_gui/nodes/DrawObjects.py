@@ -11,10 +11,9 @@ import DrawPrimatives
 from geometry_msgs.msg import PoseStamped
 
 class DrawObjects:
-
     def __init__(self):
-        self.draw_object_list_pub = rospy.Publisher("DrawObjectList/image_rect", image_gui.msg.DrawObjectList)
-        self.draw_object_list = image_gui.msg.DrawObjectList()
+        self.draw_objects_pub = rospy.Publisher("DrawObjects/image_rect", image_gui.msg.DrawObjects)
+        self.draw_objects = image_gui.msg.DrawObjects()
 
         self.colors = colors.Colors()
 
@@ -25,10 +24,10 @@ class DrawObjects:
 
         self.plate_origin_marker = DrawPrimatives.Axes(CvPrimatives.Point(300,300).point)
 
-        self.draw_object_list.draw_object_list = [self.plate_origin_marker.draw_object,
-                                                  self.robot_marker.draw_object]
-        self.draw_object_list.show_all = False
-        self.draw_object_list.hide_all = False
+        self.draw_objects.draw_object_list = [self.plate_origin_marker.draw_object,
+                                              self.robot_marker.draw_object]
+        self.draw_objects.show_all = False
+        self.draw_objects.hide_all = False
 
         self.robot_marker_x = 0
         self.robot_marker_y = 0
@@ -39,7 +38,7 @@ class DrawObjects:
         self.robot_marker_x += 1
         self.robot_marker_y += 2
         self.robot_marker.change_center(CvPrimatives.Point(self.robot_marker_x,self.robot_marker_y).point)
-        self.draw_object_list_pub.publish(self.draw_object_list)
+        self.draw_objects_pub.publish(self.draw_objects)
 
 if __name__ == '__main__':
     rospy.init_node('DrawObjects')
