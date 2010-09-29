@@ -44,7 +44,7 @@ class RobotMotionProfile():
         self.sm_robot_motion_profile = smach.StateMachine(['succeeded','aborted','preempted'])
 
         # Open the container
-        with self.sm_experiment:
+        with self.sm_robot_motion_profile:
             stage_goal = stage_action_server.msg.UpdateStagePositionGoal()
             stage_goal.x_position = [25]
             stage_goal.y_position = [25]
