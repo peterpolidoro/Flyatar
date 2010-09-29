@@ -70,8 +70,8 @@ class ImageDisplay:
                       circle.lineType,
                       circle.shift)
 
-    def draw_object_list_callback(self,data):
-        self.draw_object_list = data
+    def draw_objects_callback(self,data):
+        self.draw_objects = data
 
 if __name__ == '__main__':
     rospy.init_node('ImageDisplayDraw')
