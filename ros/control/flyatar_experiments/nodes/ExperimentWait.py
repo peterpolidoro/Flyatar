@@ -26,10 +26,10 @@ class Experiment():
 
         # Open the container
         with self.sm_experiment:
-            plate_origin_goal = stage_action_server.msg.UpdateStagePositionGoal()
-            plate_origin_goal.x_position = [0]
-            plate_origin_goal.y_position = [0]
-            plate_origin_goal.velocity_magnitude = [50]
+            self.start_position = stage_action_server.msg.UpdateStagePositionGoal()
+            self.start_position.x_position = [0]
+            self.start_position.y_position = [0]
+            self.start_position.velocity_magnitude = [50]
 
             self.trial = Trial.Trial()
             self.sm_trial = self.trial.sm_trial
@@ -38,7 +38,7 @@ class Experiment():
             smach.StateMachine.add('GOTO_START',
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
-                                                               goal=plate_origin_goal),
+                                                               goal=self.start_position),
                                    transitions={'succeeded':'WAIT_FOR_FLY',
                                                 'aborted':'GOTO_START',
                                                 'preempted':'GOTO_START'})

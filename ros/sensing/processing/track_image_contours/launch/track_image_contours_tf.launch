@@ -4,7 +4,7 @@
 
   <!-- various image parameters -->
   <param name="diff_threshold" type="double" value="65"/>
-  <param name="contour_count_max" type="double" value="2"/>
+  <param name="contour_count_max" type="double" value="11"/>
   <param name="image_processor_display_images" type="boolean" value="false"/>
 
   <!-- Coordinate Systems parameters -->

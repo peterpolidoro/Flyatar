@@ -12,6 +12,7 @@ from sensor_msgs.msg import Image
 from track_image_contours.msg import ContourInfo
 from cv_bridge import CvBridge, CvBridgeError
 import math
+import time
 
 class ImageProcessor:
 
@@ -78,6 +79,7 @@ class ImageProcessor:
         self.ROIPlateImage_PlateImage_origin = self.tf_listener.transformPoint("ROIPlateImage",self.PlateImage_origin)
         self.ROIPlateImage_point = PointStamped()
         self.ROIPlateImage_point.header.frame_id = "ROIPlateImage"
+        time.sleep(0.1)
         CS_initialized = True
       except (tf.LookupException, tf.ConnectivityException):
         pass
