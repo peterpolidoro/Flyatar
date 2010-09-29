@@ -8,23 +8,26 @@ import smach_ros
 import stage_action_server.msg
 import time
 
+
+self.sm_experiment = smach.StateMachine(['succeeded','aborted','preempted'])
+
 # define state Wait
 class Wait(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state WAIT')
+        rospy.logwarn('Executing state WAIT')
         time.sleep(5)
         return 'succeeded'
 
-class Experiment():
+class Trial():
     def __init__(self):
         # Create a SMACH state machine
-        self.sm_experiment = smach.StateMachine(['succeeded','aborted','preempted'])
+        self.sm_trial = smach.StateMachine(['succeeded','aborted','preempted'])
 
         # Open the container
-        with self.sm_experiment:
+        with self.sm_trial:
             stage_goal = stage_action_server.msg.UpdateStagePositionGoal()
             stage_goal.x_position = [0]
             stage_goal.y_position = [0]
@@ -40,9 +43,9 @@ class Experiment():
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
                                                                goal=stage_goal),
-                                   transitions={'succeeded':'WAIT'})
+                                   transitions={'succeeded':'WAIT_FOR_FLY'})
 
-            smach.StateMachine.add('WAIT', Wait(),
+            smach.StateMachine.add('WAIT_FOR_FLY', WaitForFly(),
                                    transitions={'succeeded':'GOTO_NEWPOSITION'})
 
             smach.StateMachine.add('GOTO_NEWPOSITION',
@@ -53,10 +56,10 @@ class Experiment():
 
     def execute(self):
         # Execute SMACH plan
-        outcome = self.sm_experiment.execute()
+        outcome = self.sm_trial.execute()
 
 
 if __name__ == '__main__':
-    rospy.init_node('ExperimentTest')
-    e = Experiment()
-    e.execute()
+    rospy.init_node('TrialStraight')
+    t = Trial()
+    t.execute()
