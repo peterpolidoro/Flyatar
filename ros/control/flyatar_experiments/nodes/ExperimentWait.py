@@ -39,14 +39,20 @@ class Experiment():
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
                                                                goal=plate_origin_goal),
-                                   transitions={'succeeded':'WAIT_FOR_FLY'})
+                                   transitions={'succeeded':'WAIT_FOR_FLY',
+                                                'aborted':'GOTO_START',
+                                                'preempted':'GOTO_START'})
 
             smach.StateMachine.add('WAIT_FOR_FLY', WaitForFly(),
-                                   transitions={'succeeded':'RUN_TRIAL'})
+                                   transitions={'succeeded':'RUN_TRIAL',
+                                                'aborted':'GOTO_START',
+                                                'preempted':'GOTO_START'})
 
             smach.StateMachine.add('RUN_TRIAL',
                                    self.sm_trial,
-                                   transitions={'succeeded':'GOTO_START'})
+                                   transitions={'succeeded':'GOTO_START',
+                                                'aborted':'GOTO_START',
+                                                'preempted':'GOTO_START'})
 
         # Create and start the introspection server
         self.sis = smach_ros.IntrospectionServer('sis_server_experiment', self.sm_experiment, '/SM_EXPERIMENT')
