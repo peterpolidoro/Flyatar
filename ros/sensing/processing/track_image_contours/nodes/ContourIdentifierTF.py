@@ -117,13 +117,13 @@ class ContourIdentifier:
           self.fly_image_pose_array.poses = []
           fly_count = 0
           for fly_index in fly_index_list:
-            self.fly_image_pose.pose.position.x = x_list[fly_index]
-            self.fly_image_pose.pose.position.y = y_list[fly_index]
+            self.fly_image_pose.position.x = x_list[fly_index]
+            self.fly_image_pose.position.y = y_list[fly_index]
             q = tf.transformations.quaternion_about_axis(theta_list[fly_index], (0, 0, 1))
-            self.fly_image_pose.pose.orientation.x = q[0]
-            self.fly_image_pose.pose.orientation.y = q[1]
-            self.fly_image_pose.pose.orientation.z = q[2]
-            self.fly_image_pose.pose.orientation.w = q[3]
+            self.fly_image_pose.orientation.x = q[0]
+            self.fly_image_pose.orientation.y = q[1]
+            self.fly_image_pose.orientation.z = q[2]
+            self.fly_image_pose.orientation.w = q[3]
             self.fly_image_pose_array.poses[fly_count] = self.fly_image_pose
             fly_count += 1
 
