@@ -4,7 +4,7 @@ roslib.load_manifest('plate_tf')
 import rospy
 
 import tf, numpy, math
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped,Pose,PoseArray
 from plate_tf.srv import *
 import filters
 import stop_walk as sw
@@ -18,7 +18,9 @@ class PoseTFConversion:
         self.tf_listener = tf.TransformListener()
         self.tf_broadcaster = tf.TransformBroadcaster()
         self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
-        self.fly_image_pose_sub = rospy.Subscriber('ImagePose/Fly',PoseStamped,self.handle_fly_image_pose)
+        self.fly_image_pose_sub = rospy.Subscriber('ImagePose/Fly',PoseArray,self.handle_fly_image_pose)
+
+        self.fly_image_pose = PoseStamped()
 
         self.fly_stop_pub = rospy.Publisher('StopState/Fly',StopState)
         self.fly_in_bounds_pub = rospy.Publisher('InBoundsState/Fly',InBoundsState)
@@ -317,7 +319,12 @@ class PoseTFConversion:
 
     def handle_fly_image_pose(self,msg):
         if self.initialized:
-            self.image_pose_handler("Fly",msg)
+            fly_count = len(msg.poses)
+            rospy.logwarn("fly count = %s" % (str(fly_count)))
+            if 0 < fly_count:
+                self.fly_image_pose.header = msg.header
+                self.fly_image_pose.pose = msg.poses[0]
+                self.image_pose_handler("Fly",self.fly_image_pose)
 
 if __name__ == '__main__':
     rospy.init_node('robot_fly_plate_tf_broadcaster')
