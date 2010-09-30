@@ -8,6 +8,7 @@ from track_image_contours.msg import ContourInfo
 from geometry_msgs.msg import PoseStamped,PointStamped,PoseArray,Pose
 import plate_tf.srv
 import tf,math
+import copy
 
 class ContourIdentifier:
 
@@ -123,7 +124,7 @@ class ContourIdentifier:
             self.fly_image_pose.orientation.y = q[1]
             self.fly_image_pose.orientation.z = q[2]
             self.fly_image_pose.orientation.w = q[3]
-            self.fly_image_pose_array.poses.append(self.fly_image_pose)
+            self.fly_image_pose_array.poses.append(copy.deepcopy(self.fly_image_pose))
 
           self.fly_image_pose_pub.publish(self.fly_image_pose_array)
 
