@@ -25,7 +25,7 @@ class ContourIdentifier:
     # Pose
     self.robot_image_pose = PoseStamped()
     self.fly_image_pose = Pose()
-    self.fly_image_pose_arry = PoseArray()
+    self.fly_image_pose_array = PoseArray()
 
     # Points
     self.magnet_origin = PointStamped()
