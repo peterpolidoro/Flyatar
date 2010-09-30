@@ -97,7 +97,7 @@ class ContourIdentifier:
 
       # Check to make sure there are potential robots and that dist_list has been filled previously
       if (0 < len(robot_index_list)) and (len(robot_index_list) <= len(dist_list)):
-        robot_dist_list = [dist_list[robot] for robot in robot_list]
+        robot_dist_list = [dist_list[robot_index] for robot_index in robot_index_list]
         # rospy.logwarn("robot_dist_list = %s" % str(robot_dist_list))
         robot_index = dist_list.index(min(robot_dist_list))
         # rospy.logwarn("robot = %s" % str(robot))
