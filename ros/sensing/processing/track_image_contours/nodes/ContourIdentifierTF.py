@@ -115,7 +115,6 @@ class ContourIdentifier:
           fly_index_list = list(set(range(contour_count)).difference([robot_index]))
           self.fly_image_pose_array.header = header
           self.fly_image_pose_array.poses = []
-          fly_count = 0
           for fly_index in fly_index_list:
             self.fly_image_pose.position.x = x_list[fly_index]
             self.fly_image_pose.position.y = y_list[fly_index]
@@ -124,8 +123,7 @@ class ContourIdentifier:
             self.fly_image_pose.orientation.y = q[1]
             self.fly_image_pose.orientation.z = q[2]
             self.fly_image_pose.orientation.w = q[3]
-            self.fly_image_pose_array.poses[fly_count] = self.fly_image_pose
-            fly_count += 1
+            self.fly_image_pose_array.poses.append(self.fly_image_pose)
 
           self.fly_image_pose_pub.publish(self.fly_image_pose_array)
 
