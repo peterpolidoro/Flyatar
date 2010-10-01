@@ -288,6 +288,8 @@ class ImageProcessor:
     if not self.images_initialized:
       if self.CS_initialized:
         self.initialize_images(cv_image)
+      else:
+        return
 
     self.contour_info.header.stamp = rospy.Time.now()
     self.contour_info.header.frame_id = self.output_coordinates
