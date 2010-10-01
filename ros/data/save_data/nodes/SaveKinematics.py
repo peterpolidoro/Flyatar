@@ -29,7 +29,7 @@ class SaveKinematics:
         self.save_kinematics = False
         self.save_count = 0
 
-        self.header = 'Wait Straight Experiment\ndistance_units: mm\nangle_units: rad\n\n'
+        self.header = 'Wait Straight Experiment\ntime_units: s\ndistance_units: mm\nangle_units: rad\n\n'
         self.column_titles = 'time robot_position_x robot_position_y robot_position_theta robot_velocity_x robot_velocity_y robot_velocity_theta robot_stopped fly_position_x fly_position_y fly_position_theta fly_velocity_x fly_velocity_y fly_velocity_theta fly_stopped\n'
         self.format_align = ">"
         self.format_sign = " "
