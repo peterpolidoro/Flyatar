@@ -8,6 +8,10 @@ import smach_ros
 import stage_action_server.msg
 import time
 import RobotMotionProfiles
+from save_data.msg import SaveDataControls
+
+save_data_controls_pub = rospy.Publisher("SaveDataControls",SaveDataControls)
+save_data_controls = SaveDataControls()
 
 # define state RecordData
 class RecordData(smach.State):
@@ -16,7 +20,8 @@ class RecordData(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Executing state RECORD_DATA')
-        time.sleep(10)
+        save_data_controls.save_kinematics = True
+        save_data_controls_pub.publish(save_data_controls)
         return 'succeeded'
 
 # define state EraseData
@@ -46,7 +51,8 @@ class LogTrial(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Executing state LOG_TRIAL')
-        time.sleep(3)
+        save_data_controls.save_kinematics = False
+        save_data_controls_pub.publish(save_data_controls)
         return 'succeeded'
 
 class Trial():
