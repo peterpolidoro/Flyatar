@@ -30,13 +30,13 @@ class SaveKinematics:
         self.save_count = 0
 
         self.header = 'Wait Straight Experiment\ndistance_units: mm\nangle_units: rad\n\n'
-        self.column_titles = 'time robot_position_x robot_position_y robot_position_theta robot_velocity_x robot_velocity_y robot_velocity_theta fly_position_x fly_position_y fly_position_theta fly_velocity_x fly_velocity_y fly_velocity_theta\n'
+        self.column_titles = 'time robot_position_x robot_position_y robot_position_theta robot_velocity_x robot_velocity_y robot_velocity_theta robot_stopped fly_position_x fly_position_y fly_position_theta fly_velocity_x fly_velocity_y fly_velocity_theta fly_stopped\n'
         self.format_align = ">"
         self.format_sign = " "
         self.format_width = "7"
         self.format_precision = "2"
         self.format_type = "f"
-        self.data_row_base = '{time:0.2f} {robot_position_x:{align}{sign}{width}.{precision}{type}} {robot_position_y:{align}{sign}{width}.{precision}{type}} {robot_position_theta:{align}{sign}{width}.{precision}{type}} {robot_velocity_x:{align}{sign}{width}.{precision}{type}} {robot_velocity_y:{align}{sign}{width}.{precision}{type}} {robot_velocity_theta:{align}{sign}{width}.{precision}{type}} {fly_position_x:{align}{sign}{width}.{precision}{type}} {fly_position_y:{align}{sign}{width}.{precision}{type}} {fly_position_theta:{align}{sign}{width}.{precision}{type}} {fly_velocity_x:{align}{sign}{width}.{precision}{type}} {fly_velocity_y:{align}{sign}{width}.{precision}{type}} {fly_velocity_theta:{align}{sign}{width}.{precision}{type}}\n'
+        self.data_row_base = '{time:0.2f} {robot_position_x:{align}{sign}{width}.{precision}{type}} {robot_position_y:{align}{sign}{width}.{precision}{type}} {robot_position_theta:{align}{sign}{width}.{precision}{type}} {robot_velocity_x:{align}{sign}{width}.{precision}{type}} {robot_velocity_y:{align}{sign}{width}.{precision}{type}} {robot_velocity_theta:{align}{sign}{width}.{precision}{type}} {robot_stopped:{align}{sign}{width}d} {fly_position_x:{align}{sign}{width}.{precision}{type}} {fly_position_y:{align}{sign}{width}.{precision}{type}} {fly_position_theta:{align}{sign}{width}.{precision}{type}} {fly_velocity_x:{align}{sign}{width}.{precision}{type}} {fly_velocity_y:{align}{sign}{width}.{precision}{type}} {fly_velocity_theta:{align}{sign}{width}.{precision}{type}} {fly_stopped:{align}{sign}{width}.{precision}d}\n'
 
     def save_data_controls_callback(self,data):
         if data.save_kinematics and (not self.save_kinematics):
@@ -65,12 +65,14 @@ class SaveKinematics:
                                                  robot_velocity_x = data.robot_kinematics.velocity.x,
                                                  robot_velocity_y = data.robot_kinematics.velocity.y,
                                                  robot_velocity_theta = data.robot_kinematics.velocity.theta,
+                                                 robot_stopped = int(data.robot_stopped),
                                                  fly_position_x = data.fly_kinematics.position.x,
                                                  fly_position_y = data.fly_kinematics.position.y,
                                                  fly_position_theta = data.fly_kinematics.position.theta,
                                                  fly_velocity_x = data.fly_kinematics.velocity.x,
                                                  fly_velocity_y = data.fly_kinematics.velocity.y,
                                                  fly_velocity_theta = data.fly_kinematics.velocity.theta)
+                                                 fly_stopped = int(data.fly_stopped),
 
             self.fid.write(data_row)
 
