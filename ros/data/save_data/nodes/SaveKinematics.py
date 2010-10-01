@@ -40,7 +40,7 @@ class SaveKinematics:
 
     def save_data_controls_callback(self,data):
         if data.save_kinematics and (not self.save_kinematics):
-            self.file_name = data.filename
+            self.file_name = data.file_name
             self.fid = open(self.file_name, 'w')
             self.fid.write(self.header)
             self.fid.write(self.column_titles)
