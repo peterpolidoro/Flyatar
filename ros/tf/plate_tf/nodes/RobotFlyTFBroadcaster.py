@@ -9,28 +9,23 @@ from plate_tf.srv import *
 import filters
 import stop_walk as sw
 import choose_orientation as co
-from plate_tf.msg import StopState, InBoundsState, FilteredData
-from pythonmodules import CircleFunctions
+# from plate_tf.msg import StopState, InBoundsState, FilteredData
+from track_image_contours.msg import ImagePose
+from plate_tf.msg import Conditions
+import plate_tf.msg
+from pythonmodules import CircleFunctionsfrom pythonmodules import CircleFunctions
 
 class PoseTFConversion:
     def __init__(self):
         self.initialized = False
         self.tf_listener = tf.TransformListener()
         self.tf_broadcaster = tf.TransformBroadcaster()
-        self.robot_image_pose_sub = rospy.Subscriber('ImagePose/Robot',PoseStamped,self.handle_robot_image_pose)
-        self.fly_image_pose_sub = rospy.Subscriber('ImagePose/Fly',PoseArray,self.handle_fly_image_pose)
+        self.robot_image_pose_sub = rospy.Subscriber('ImagePose',ImagePose,self.handle_image_pose)
 
-        self.fly_image_pose = PoseStamped()
+        self.fly_image_pose = Pose()
 
-        self.fly_stop_pub = rospy.Publisher('StopState/Fly',StopState)
-        self.fly_in_bounds_pub = rospy.Publisher('InBoundsState/Fly',InBoundsState)
-        self.robot_stop_pub = rospy.Publisher('StopState/Robot',StopState)
-        self.robot_in_bounds_pub = rospy.Publisher('InBoundsState/Robot',InBoundsState)
-
-        self.fly_stop_state = StopState()
-        self.fly_in_bounds_state = InBoundsState()
-        self.robot_stop_state = StopState()
-        self.robot_in_bounds_state = InBoundsState()
+        self.conditions = Conditions()
+        self.conditions_pub = rospy.Publisher('Conditions', Conditions)
 
         self.kf_fly = filters.KalmanFilter()
         self.kf_robot = filters.KalmanFilter()
@@ -46,29 +41,6 @@ class PoseTFConversion:
         self.co_robot = co.ChooseOrientation()
 
         self.in_bounds_radius = rospy.get_param('in_bounds_radius',100)
-
-        self.robot_x_filtered_data = FilteredData()
-        self.robot_x_filtered_data_pub = rospy.Publisher('FilteredData/RobotX',FilteredData)
-        self.robot_y_filtered_data = FilteredData()
-        self.robot_y_filtered_data_pub = rospy.Publisher('FilteredData/RobotY',FilteredData)
-        self.robot_a_filtered_data = FilteredData()
-        self.robot_vx_filtered_data = FilteredData()
-        self.robot_vx_filtered_data_pub = rospy.Publisher('FilteredData/RobotVX',FilteredData)
-        self.robot_vy_filtered_data = FilteredData()
-        self.robot_vy_filtered_data_pub = rospy.Publisher('FilteredData/RobotVY',FilteredData)
-        self.robot_a_filtered_data = FilteredData()
-        self.robot_a_filtered_data_pub = rospy.Publisher('FilteredData/RobotAngle',FilteredData)
-
-        self.fly_x_filtered_data = FilteredData()
-        self.fly_x_filtered_data_pub = rospy.Publisher('FilteredData/FlyX',FilteredData)
-        self.fly_y_filtered_data = FilteredData()
-        self.fly_y_filtered_data_pub = rospy.Publisher('FilteredData/FlyY',FilteredData)
-        self.fly_vx_filtered_data = FilteredData()
-        self.fly_vx_filtered_data_pub = rospy.Publisher('FilteredData/FlyVX',FilteredData)
-        self.fly_vy_filtered_data = FilteredData()
-        self.fly_vy_filtered_data_pub = rospy.Publisher('FilteredData/FlyVY',FilteredData)
-        self.fly_a_filtered_data = FilteredData()
-        self.fly_a_filtered_data_pub = rospy.Publisher('FilteredData/FlyAngle',FilteredData)
 
         self.angle_threshold = 0.2
         self.position_threshold = 2
@@ -141,98 +113,66 @@ class PoseTFConversion:
             kf = self.kf_fly
             sw = self.sw_fly
             co = self.co_fly
-            stop_pub = self.fly_stop_pub
-            in_bounds_pub = self.fly_in_bounds_pub
-            stop_state = self.fly_stop_state
-            in_bounds_state = self.fly_in_bounds_state
-            x_filtered_data = self.fly_x_filtered_data
-            x_filtered_data_pub = self.fly_x_filtered_data_pub
-            y_filtered_data = self.fly_y_filtered_data
-            y_filtered_data_pub = self.fly_y_filtered_data_pub
-            vx_filtered_data = self.fly_vx_filtered_data
-            vx_filtered_data_pub = self.fly_vx_filtered_data_pub
-            vy_filtered_data = self.fly_vy_filtered_data
-            vy_filtered_data_pub = self.fly_vy_filtered_data_pub
-            a_filtered_data = self.fly_a_filtered_data
-            a_filtered_data_pub = self.fly_a_filtered_data_pub
             lpf_angle = self.lpf_fly_angle
             a_prev = self.fly_angle_previous
+            kinematics_state = self.conditions.fly_kinematics
+            stop_state = self.conditions.fly_stopped
+            in_bounds_state = self.conditions.fly_in_bounds
+
         else:
             image_frame_name = "RobotImage"
             frame_name = "Robot"
             kf = self.kf_robot
             sw = self.sw_robot
             co = self.co_robot
-            stop_pub = self.robot_stop_pub
-            in_bounds_pub = self.robot_in_bounds_pub
-            stop_state = self.robot_stop_state
-            in_bounds_state = self.robot_in_bounds_state
-            x_filtered_data = self.robot_x_filtered_data
-            x_filtered_data_pub = self.robot_x_filtered_data_pub
-            y_filtered_data = self.robot_y_filtered_data
-            y_filtered_data_pub = self.robot_y_filtered_data_pub
-            vx_filtered_data = self.robot_vx_filtered_data
-            vx_filtered_data_pub = self.robot_vx_filtered_data_pub
-            vy_filtered_data = self.robot_vy_filtered_data
-            vy_filtered_data_pub = self.robot_vy_filtered_data_pub
-            a_filtered_data = self.robot_a_filtered_data
-            a_filtered_data_pub = self.robot_a_filtered_data_pub
             lpf_angle = self.lpf_robot_angle
             a_prev = self.robot_angle_previous
+            kinematics_state = self.conditions.robot_kinematics
+            stop_state = self.conditions.robot_stopped
+            in_bounds_state = self.conditions.robot_in_bounds
 
         try:
-            Xsrc = [msg.pose.position.x]
-            Ysrc = [msg.pose.position.y]
+            Xsrc = [msg.position.x]
+            Ysrc = [msg.position.y]
             if (Xsrc is not None) and (Ysrc is not None) and \
                    (0 < len(Xsrc)) and (0 < len(Ysrc)):
-                self.tf_broadcaster.sendTransform((msg.pose.position.x, msg.pose.position.y, 0),
-                                                  (msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w),
-                                                  rospy.Time.now(),
+                self.tf_broadcaster.sendTransform((msg.position.x, msg.position.y, 0),
+                                                  (msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w),
+                                                  self.conditions.header.stamp,
+                                                  # rospy.Time.now(),
                                                   image_frame_name,
                                                   "Camera")
                 response = self.camera_to_plate(Xsrc,Ysrc)
                 x_plate = response.Xdst[0]
                 y_plate = response.Ydst[0]
 
-                quat_plate = self.quaternion_camera_to_plate((msg.pose.orientation.x,msg.pose.orientation.y,msg.pose.orientation.z,msg.pose.orientation.w))
+                quat_plate = self.quaternion_camera_to_plate((msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w))
 
                 if quat_plate is not None:
-                    t = msg.header.stamp.to_sec()
+                    t = self.conditions.header.stamp.to_sec()
                     (x,y,vx,vy) = kf.update((x_plate,y_plate),t)
 
                     if (vx is not None) and (vy is not None):
                         vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
                         stopped = sw.classify(vel_mag)
-                        vx_filtered_data.Filtered = vx
-                        vy_filtered_data.Filtered = vy
+                        kinematics_state.velocity.x = vx
+                        kinematics_state.velocity.y = vy
                     else:
                         vel_mag = vel_ang = stopped = None
 
-                    if stopped:
-                        stop_state.Stopped = 1
-                    else:
-                        stop_state.Stopped = 0
-
-                    stop_pub.publish(stop_state)
-
-                    x_filtered_data.Unfiltered = x_plate
-                    y_filtered_data.Unfiltered = y_plate
-                    x_filtered_data.UsingFiltered = 0
-                    y_filtered_data.UsingFiltered = 0
-                    vx_filtered_data.Unfiltered = 0
-                    vy_filtered_data.Unfiltered = 0
-                    vx_filtered_data.UsingFiltered = 1
-                    vy_filtered_data.UsingFiltered = 1
+                    if (stopped is not None):
+                        stop_state.stopped = stopped
 
                     if (x is not None) and (y is not None) and \
                            (abs(x_plate - x) < self.position_threshold) and \
                            (abs(y_plate - y) < self.position_threshold):
-                        x_filtered_data.Filtered = x
-                        y_filtered_data.Filtered = y
-                        x_filtered_data.UsingFiltered = 1
-                        y_filtered_data.UsingFiltered = 1
+                        kinematics_state.position.x = x
+                        kinematics_state.position.y = y
                         x_plate = x
                         y_plate = y
+                    else:
+                        kinematics_state.position.x = x_plate
+                        kinematics_state.position.y = y_plate
 
                     if vel_ang is not None:
                         quat_chosen = co.choose_orientation(quat_plate,vel_ang,stopped,a_prev[0])
@@ -247,42 +187,18 @@ class PoseTFConversion:
                     else:
                         a_plate = CircleFunctions.mod_angle(tf.transformations.euler_from_quaternion(quat_plate)[2])
 
-                    # if "Fly" in object_name:
-                    #     rospy.logwarn("a_prev = %s" % (str(a_prev[0])))
-                    #     rospy.logwarn("a_plate = %s" % (str(a_plate)))
                     a_plate = CircleFunctions.unwrap_angle(a_plate,a_prev[0])
-                    # if "Fly" in object_name:
-                    #     rospy.logwarn("a_plate_unwrapped = %s" % (str(a_plate)))
-
-
-                    if a_plate is not None:
-                        a_filtered_data.Unfiltered = a_plate
-                    else:
-                        a_filtered_data.Unfiltered = 0
 
                     a = lpf_angle.update(a_plate,t)
 
-                    # if "Fly" in object_name:
-                    #     rospy.logwarn("a = %s" % (str(a)))
-
-                    a_filtered_data.UsingFiltered = 0
-
                     if a is not None:
-                        a_filtered_data.Filtered = a
+                        kinematics_state.position.theta = a
                         a_mod = CircleFunctions.mod_angle(a)
                         quat_plate = tf.transformations.quaternion_about_axis(a_mod, (0,0,1))
-                        a_filtered_data.UsingFiltered = 1
-                        # if abs(CircleFunctions.circle_dist(a_plate,a)) < self.angle_threshold:
-                            # quat_plate = tf.transformations.quaternion_about_axis(a, (0,0,1))
-                            # a_filtered_data.UsingFiltered = 1
+                    elif a_plate is not None:
+                        kinematics_state.position.theta = a_plate
                     else:
-                        a_filtered_data.Filtered = 0
-
-                    x_filtered_data_pub.publish(x_filtered_data)
-                    y_filtered_data_pub.publish(y_filtered_data)
-                    vx_filtered_data_pub.publish(vx_filtered_data)
-                    vy_filtered_data_pub.publish(vy_filtered_data)
-                    a_filtered_data_pub.publish(a_filtered_data)
+                        kinematics_state.position.theta = 0
 
                     if vel_ang is not None:
                         quat_chosen = co.choose_orientation(quat_plate,vel_ang,stopped,a_prev[0])
@@ -296,38 +212,36 @@ class PoseTFConversion:
 
                     if quat_chosen is not None:
                         self.tf_broadcaster.sendTransform((x_plate, y_plate, 0),
-                                              quat_chosen,
-                                              rospy.Time.now(),
-                                              frame_name,
-                                              "Plate")
+                                                          quat_chosen,
+                                                          self.conditions.header.stamp,
+                                                          # rospy.Time.now(),
+                                                          frame_name,
+                                                          "Plate")
 
                     dist = math.sqrt(x_plate**2 + y_plate**2)
-                    if dist < self.in_bounds_radius:
-                        in_bounds_state.InBounds = 1
-                    else:
-                        in_bounds_state.InBounds = 0
-                    in_bounds_pub.publish(in_bounds_state)
+                    in_bounds_state.in_bounds = dist < self.in_bounds_radius
 
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
         # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
             pass
 
 
-    def handle_robot_image_pose(self,msg):
+    def handle_image_pose(self,msg):
         if self.initialized:
-            self.image_pose_handler("Robot",msg)
-
-    def handle_fly_image_pose(self,msg):
-        if self.initialized:
-            fly_count = len(msg.poses)
+            self.conditions.header = msg.header
+            self.image_pose_handler("Robot",msg.robot_image_pose)
+            fly_count = len(msg.fly_image_poses)
             # rospy.logwarn("fly count = %s" % (str(fly_count)))
-            if 0 < fly_count:
-                self.fly_image_pose.header = msg.header
-                self.fly_image_pose.pose = msg.poses[0]
-                self.image_pose_handler("Fly",self.fly_image_pose)
+            # Fix at some point to properly account for multiple flies
+            if fly_count == 1:
+                self.fly_image_pose = msg.fly_image_poses[0]
+            elif 1 < fly_count:
+                self.fly_image_pose = msg.fly_image_poses[0]
+            self.image_pose_handler("Fly",self.fly_image_pose)
+            self.conditions_pub.publish(self.conditions)
 
 if __name__ == '__main__':
-    rospy.init_node('robot_fly_plate_tf_broadcaster')
+    rospy.init_node('RobotFlyTFBroadcaster')
     ptc = PoseTFConversion()
     while not rospy.is_shutdown():
         rospy.spin()

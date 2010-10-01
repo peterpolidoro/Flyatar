@@ -1,6 +1,6 @@
 <launch>
   <include file="$(find track_image_contours)/launch/track_image_contours_tf.launch" />
-  <node name="robot_fly_plate_tf_broadcaster" pkg="plate_tf" type="robot_fly_plate_tf_broadcaster.py"/>
+  <node name="RobotFlyTFBroadcaster" pkg="plate_tf" type="RobotFlyTFBroadcaster.py"/>
   <node pkg="image_gui" type="DrawObjects.py" name="DrawObjects" />
   <param name="Draw_Update_dt" type="double" value="0.010"/>
   <node pkg="image_gui" type="DisplayDraw.py" name="ImageDisplayDraw" />

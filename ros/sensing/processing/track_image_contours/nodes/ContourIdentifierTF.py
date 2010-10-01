@@ -4,8 +4,8 @@ import roslib
 roslib.load_manifest('track_image_contours')
 import sys
 import rospy
-from track_image_contours.msg import ContourInfo
-from geometry_msgs.msg import PoseStamped,PointStamped,PoseArray,Pose
+from track_image_contours.msg import ContourInfo,ImagePose
+from geometry_msgs.msg import PointStamped,PoseArray,Pose
 import plate_tf.srv
 import tf,math
 import copy
@@ -20,11 +20,11 @@ class ContourIdentifier:
     self.tf_listener = tf.TransformListener()
 
     # Broadcaster/Publishers
-    self.robot_image_pose_pub = rospy.Publisher("ImagePose/Robot",PoseStamped)
-    self.fly_image_pose_pub = rospy.Publisher("ImagePose/Fly",PoseArray)
+    self.image_pose_pub = rospy.Publisher("ImagePose/Robot",PoseStamped)
 
     # Pose
-    self.robot_image_pose = PoseStamped()
+    self.image_pose = ImagePose()
+    self.robot_image_pose = Pose()
     self.fly_image_pose = Pose()
     self.fly_image_pose_array = PoseArray()
 
@@ -43,10 +43,6 @@ class ContourIdentifier:
     self.robot_max_ecc = rospy.get_param("robot_max_ecc",3)
     self.robot_min_area = rospy.get_param("robot_min_area",1000)
     self.robot_max_area = rospy.get_param("robot_max_area",10000)
-    # self.robot_min_ecc = 0.5
-    # self.robot_max_ecc = 3
-    # self.robot_min_area = 1000
-    # self.robot_max_area = 10000
 
     rospy.wait_for_service('plate_to_camera')
     try:
@@ -103,18 +99,17 @@ class ContourIdentifier:
         robot_index = dist_list.index(min(robot_dist_list))
         # rospy.logwarn("robot = %s" % str(robot))
 
-        self.robot_image_pose.header = header
-        self.robot_image_pose.pose.position.x = x_list[robot_index]
-        self.robot_image_pose.pose.position.y = y_list[robot_index]
+        self.image_pose.header = header
+        self.robot_image_pose.position.x = x_list[robot_index]
+        self.robot_image_pose.position.y = y_list[robot_index]
         q = tf.transformations.quaternion_about_axis(theta_list[robot_index], (0, 0, 1))
-        self.robot_image_pose.pose.orientation.x = q[0]
-        self.robot_image_pose.pose.orientation.y = q[1]
-        self.robot_image_pose.pose.orientation.z = q[2]
-        self.robot_image_pose.pose.orientation.w = q[3]
-        self.robot_image_pose_pub.publish(self.robot_image_pose)
+        self.robot_image_pose.orientation.x = q[0]
+        self.robot_image_pose.orientation.y = q[1]
+        self.robot_image_pose.orientation.z = q[2]
+        self.robot_image_pose.orientation.w = q[3]
+        self.image_pose.robot_image_pose = self.robot_image_pose
         if 1 < contour_count:
           fly_index_list = list(set(range(contour_count)).difference([robot_index]))
-          self.fly_image_pose_array.header = header
           self.fly_image_pose_array.poses = []
           for fly_index in fly_index_list:
             self.fly_image_pose.position.x = x_list[fly_index]
@@ -125,8 +120,11 @@ class ContourIdentifier:
             self.fly_image_pose.orientation.z = q[2]
             self.fly_image_pose.orientation.w = q[3]
             self.fly_image_pose_array.poses.append(copy.deepcopy(self.fly_image_pose))
+        else:
+          self.fly_image_pose_array = PoseArray()
 
-          self.fly_image_pose_pub.publish(self.fly_image_pose_array)
+        self.image_pose.fly_image_poses = self.fly_image_pose_array.poses
+        self.image_pose_pub.publish(self.image_pose)
 
 def main(args):
   rospy.init_node('ContourIdentifierTF', anonymous=True)
