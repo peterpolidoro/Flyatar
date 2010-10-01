@@ -9,6 +9,7 @@ import stage_action_server.msg
 import time
 import RobotMotionProfiles
 from save_data.msg import SaveDataControls
+import random
 
 save_data_controls_pub = rospy.Publisher("SaveDataControls",SaveDataControls)
 save_data_controls = SaveDataControls()
@@ -20,6 +21,8 @@ class RecordData(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Executing state RECORD_DATA')
+        save_data_controls.file_name = time.strftime("%Y_%m_%d_%H_%M_%S.txt")
+        save_data_controls.rm_file = False
         save_data_controls.save_kinematics = True
         save_data_controls_pub.publish(save_data_controls)
         return 'succeeded'
@@ -30,8 +33,10 @@ class EraseData(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state ERASE_DATA')
-        time.sleep(3)
+        rospy.logwarn('Executing state ERASE_DATA')
+        save_data_controls.rm_file = True
+        save_data_controls.save_kinematics = False
+        save_data_controls_pub.publish(save_data_controls)
         return 'succeeded'
 
 # define state MonitorConditions
@@ -41,8 +46,10 @@ class MonitorConditions(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Executing state MONITOR_CONDITIONS')
-        time.sleep(3)
-        return 'succeeded'
+        if random.random() < 0.5:
+            return 'succeeded'
+        else:
+            return 'aborted'
 
 # define state ControlRobot
 class LogTrial(smach.State):
@@ -50,7 +57,8 @@ class LogTrial(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state LOG_TRIAL')
+        rospy.logwarn('Executing state LOG_TRIAL')
+        save_data_controls.rm_file = False
         save_data_controls.save_kinematics = False
         save_data_controls_pub.publish(save_data_controls)
         return 'succeeded'
