@@ -9,9 +9,8 @@ from plate_tf.srv import *
 import filters
 import stop_walk as sw
 import choose_orientation as co
-# from plate_tf.msg import StopState, InBoundsState, FilteredData
 from plate_tf.msg import ImagePose
-from plate_tf.msg import Conditions
+from plate_tf.msg import RobotFlyKinematics
 import plate_tf.msg
 from pythonmodules import CircleFunctions
 
@@ -24,8 +23,8 @@ class PoseTFConversion:
 
         self.fly_image_pose = Pose()
 
-        self.conditions = Conditions()
-        self.conditions_pub = rospy.Publisher('Conditions', Conditions)
+        self.robot_fly_kinematics = RobotFlyKinematics()
+        self.robot_fly_kinematics_pub = rospy.Publisher('RobotFlyKinematics', RobotFlyKinematics)
 
         self.kf_fly = filters.KalmanFilter()
         self.kf_robot = filters.KalmanFilter()
@@ -39,8 +38,6 @@ class PoseTFConversion:
 
         self.co_fly = co.ChooseOrientation()
         self.co_robot = co.ChooseOrientation()
-
-        self.in_bounds_radius = rospy.get_param('in_bounds_radius',100)
 
         self.angle_threshold = 0.2
         self.position_threshold = 2
@@ -115,9 +112,8 @@ class PoseTFConversion:
             co = self.co_fly
             lpf_angle = self.lpf_fly_angle
             a_prev = self.fly_angle_previous
-            kinematics_state = self.conditions.fly_kinematics
-            stop_state = self.conditions.fly_stopped
-            in_bounds_state = self.conditions.fly_in_bounds
+            kinematics_state = self.robot_fly_kinematics.fly_kinematics
+            stop_state = self.robot_fly_kinematics.fly_stopped
 
         else:
             image_frame_name = "RobotImage"
@@ -127,9 +123,8 @@ class PoseTFConversion:
             co = self.co_robot
             lpf_angle = self.lpf_robot_angle
             a_prev = self.robot_angle_previous
-            kinematics_state = self.conditions.robot_kinematics
-            stop_state = self.conditions.robot_stopped
-            in_bounds_state = self.conditions.robot_in_bounds
+            kinematics_state = self.robot_fly_kinematics.robot_kinematics
+            stop_state = self.robot_fly_kinematics.robot_stopped
 
         try:
             Xsrc = [msg.position.x]
@@ -138,7 +133,7 @@ class PoseTFConversion:
                    (0 < len(Xsrc)) and (0 < len(Ysrc)):
                 self.tf_broadcaster.sendTransform((msg.position.x, msg.position.y, 0),
                                                   (msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w),
-                                                  self.conditions.header.stamp,
+                                                  self.robot_fly_kinematics.header.stamp,
                                                   # rospy.Time.now(),
                                                   image_frame_name,
                                                   "Camera")
@@ -149,7 +144,7 @@ class PoseTFConversion:
                 quat_plate = self.quaternion_camera_to_plate((msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w))
 
                 if quat_plate is not None:
-                    t = self.conditions.header.stamp.to_sec()
+                    t = self.robot_fly_kinematics.header.stamp.to_sec()
                     (x,y,vx,vy) = kf.update((x_plate,y_plate),t)
 
                     if (vx is not None) and (vy is not None):
@@ -213,22 +208,19 @@ class PoseTFConversion:
                     if quat_chosen is not None:
                         self.tf_broadcaster.sendTransform((x_plate, y_plate, 0),
                                                           quat_chosen,
-                                                          self.conditions.header.stamp,
+                                                          self.robot_fly_kinematics.header.stamp,
                                                           # rospy.Time.now(),
                                                           frame_name,
                                                           "Plate")
 
-                    dist = math.sqrt(x_plate**2 + y_plate**2)
-                    in_bounds_state.in_bounds = dist < self.in_bounds_radius
-
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
-        # except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException, AttributeError):
             pass
 
 
     def handle_image_pose(self,msg):
         if self.initialized:
-            self.conditions.header = msg.header
+            self.robot_fly_kinematics.header = msg.header
+            self.robot_fly_kinematics.header.frame_id = "Plate"
             self.image_pose_handler("Robot",msg.robot_image_pose)
             fly_count = len(msg.fly_image_poses)
             # rospy.logwarn("fly count = %s" % (str(fly_count)))
@@ -238,7 +230,7 @@ class PoseTFConversion:
             elif 1 < fly_count:
                 self.fly_image_pose = msg.fly_image_poses[0]
             self.image_pose_handler("Fly",self.fly_image_pose)
-            self.conditions_pub.publish(self.conditions)
+            self.robot_fly_kinematics_pub.publish(self.robot_fly_kinematics)
 
 if __name__ == '__main__':
     rospy.init_node('RobotFlyTFBroadcaster')
