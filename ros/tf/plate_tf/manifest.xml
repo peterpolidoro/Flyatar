@@ -12,8 +12,8 @@
   <depend package="tf"/>
   <depend package="pythonmodules"/>
   <depend package="geometry_msgs"/>
+  <depend package="opencv2"/>
   <!-- <depend package="camera1394v2"/> -->
-  <!-- <depend package="opencv2"/> -->
 </package>
 
 
