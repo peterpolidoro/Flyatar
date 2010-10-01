@@ -65,14 +65,14 @@ class SaveKinematics:
                                                  robot_velocity_x = data.robot_kinematics.velocity.x,
                                                  robot_velocity_y = data.robot_kinematics.velocity.y,
                                                  robot_velocity_theta = data.robot_kinematics.velocity.theta,
-                                                 robot_stopped = int(data.robot_stopped),
+                                                 robot_stopped = int(data.robot_stopped.stopped),
                                                  fly_position_x = data.fly_kinematics.position.x,
                                                  fly_position_y = data.fly_kinematics.position.y,
                                                  fly_position_theta = data.fly_kinematics.position.theta,
                                                  fly_velocity_x = data.fly_kinematics.velocity.x,
                                                  fly_velocity_y = data.fly_kinematics.velocity.y,
                                                  fly_velocity_theta = data.fly_kinematics.velocity.theta,
-                                                 fly_stopped = int(data.fly_stopped))
+                                                 fly_stopped = int(data.fly_stopped.stopped))
 
             self.fid.write(data_row)
 
