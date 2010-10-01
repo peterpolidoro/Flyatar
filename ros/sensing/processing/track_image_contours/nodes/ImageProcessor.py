@@ -61,10 +61,10 @@ class ImageProcessor:
     self.bridge = CvBridge()
 
     # Coordinate Systems
-    CS_initialized = False
+    self.CS_initialized = False
     max_tries = 100
     tries = 0
-    while (not CS_initialized) and (tries < max_tries):
+    while (not self.CS_initialized) and (tries < max_tries):
       try:
         self.output_coordinates = rospy.get_param("ImageProcessor_OutputCoordinates","Camera")
         self.ROIPlateImage_origin = PointStamped()
@@ -80,7 +80,7 @@ class ImageProcessor:
         self.ROIPlateImage_point = PointStamped()
         self.ROIPlateImage_point.header.frame_id = "ROIPlateImage"
         time.sleep(0.1)
-        CS_initialized = True
+        self.CS_initialized = True
       except (tf.LookupException, tf.ConnectivityException):
         pass
       tries += 1
@@ -286,7 +286,8 @@ class ImageProcessor:
       print e
 
     if not self.images_initialized:
-      self.initialize_images(cv_image)
+      if self.CS_initialized:
+        self.initialize_images(cv_image)
 
     self.contour_info.header.stamp = rospy.Time.now()
     self.contour_info.header.frame_id = self.output_coordinates
