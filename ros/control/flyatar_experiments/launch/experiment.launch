@@ -1,6 +1,6 @@
 <launch>
   <include file="$(find stage_action_server)/launch/stage_action_server.launch" />
-  <node name="RobotFlyTFBroadcaster" pkg="plate_tf" type="RobotFlyTFBroadcaster.py"/>
+  <!-- <node name="RobotFlyTFBroadcaster" pkg="plate_tf" type="RobotFlyTFBroadcaster.py"/> -->
   <include file="$(find image_gui)/launch/DisplayDraw.launch" />
   <!-- <node pkg="save_data" type="SaveBags.py" name="SaveBags" /> -->
 </launch>
