@@ -21,7 +21,7 @@ class ContourIdentifier:
     self.tf_listener = tf.TransformListener()
 
     # Broadcaster/Publishers
-    self.image_pose_pub = rospy.Publisher("ImagePose/Robot",ImagePose)
+    self.image_pose_pub = rospy.Publisher("ImagePose",ImagePose)
 
     # Pose
     self.image_pose = ImagePose()
