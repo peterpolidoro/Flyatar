@@ -5,6 +5,7 @@ roslib.load_manifest('track_image_contours')
 import sys
 import rospy
 from track_image_contours.msg import ContourInfo,ImagePose
+from plate_tf.msg import ImagePose
 from geometry_msgs.msg import PointStamped,PoseArray,Pose
 import plate_tf.srv
 import tf,math

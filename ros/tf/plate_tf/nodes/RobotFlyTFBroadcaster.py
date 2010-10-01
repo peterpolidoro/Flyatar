@@ -10,7 +10,7 @@ import filters
 import stop_walk as sw
 import choose_orientation as co
 # from plate_tf.msg import StopState, InBoundsState, FilteredData
-from track_image_contours.msg import ImagePose
+from plate_tf.msg import ImagePose
 from plate_tf.msg import Conditions
 import plate_tf.msg
 from pythonmodules import CircleFunctionsfrom pythonmodules import CircleFunctions
