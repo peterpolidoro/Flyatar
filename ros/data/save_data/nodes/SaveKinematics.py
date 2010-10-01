@@ -59,7 +59,7 @@ class SaveKinematics:
                                                  width = self.format_width,
                                                  precision = self.format_precision,
                                                  type = self.format_type,
-                                                 time = data.header.stamp.toSec(),
+                                                 time = data.header.stamp.to_seconds(),
                                                  robot_position_x = data.robot_kinematics.position.x,
                                                  robot_position_y = data.robot_kinematics.position.y,
                                                  robot_position_theta = data.robot_kinematics.position.theta,
