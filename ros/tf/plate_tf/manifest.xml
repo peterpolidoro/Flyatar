@@ -11,9 +11,9 @@
   <depend package="rospy"/>
   <depend package="tf"/>
   <depend package="track_image_contours"/>
-  <depend package="camera1394v2"/>
+  <!-- <depend package="camera1394v2"/> -->
   <depend package="pythonmodules"/>
-  <depend package="opencv2"/>
+  <!-- <depend package="opencv2"/> -->
 </package>
 
 
