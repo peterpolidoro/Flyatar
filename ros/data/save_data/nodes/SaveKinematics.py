@@ -19,7 +19,7 @@ class SaveKinematics:
     def __init__(self):
         self.working_dir_base = os.path.expanduser("~/FlyatarData")
         chdir(self.working_dir_base)
-        self.files_dir = time.strftime("%Y-%m-%d")
+        self.files_dir = time.strftime("%Y_%m_%d")
         self.working_dir = self.working_dir_base + "/" + self.files_dir
         chdir(self.working_dir)
 
@@ -27,9 +27,9 @@ class SaveKinematics:
         self.save_data_controls_sub = rospy.Subscriber("SaveDataControls", SaveDataControls, self.save_data_controls_callback)
 
         self.save_kinematics = False
-        self.trial_count = 0
+        self.save_count = 0
 
-        self.header = 'Wait Straight Experiment\n distance_units: mm\n angle_units: rad\n'
+        self.header = 'Wait Straight Experiment\ndistance_units: mm\nangle_units: rad\n'
         self.column_titles = 'time robot_position_x robot_position_y robot_position_theta robot_velocity_x robot_velocity_y robot_velocity_theta fly_position_x fly_position_y fly_position_theta fly_velocity_x fly_velocity_y fly_velocity_theta\n'
         self.format_align = ">"
         self.format_sign = " "
@@ -40,14 +40,15 @@ class SaveKinematics:
 
     def save_data_controls_callback(self,data):
         if data.save_kinematics and (not self.save_kinematics):
-            self.file_name = "trial{num:04d}\n".format(num=self.trial_count)
+            # self.file_name = "trial{num:04d}\n".format(num=self.save_count)
+            self.file_name = time.strftime("%Y_%m_%d_%H_%M_%S")
             self.fid = open(self.file_name, 'w')
             self.fid.write(self.header)
             self.fid.write(self.column_titles)
             self.save_kinematics = data.save_kinematics
         elif (not data.save_kinematics) and self.save_kinematics:
             self.save_kinematics = data.save_kinematics
-            self.trial_count += 1
+            self.save_count += 1
             self.fid.close()
 
     def kinematics_callback(self,data):
