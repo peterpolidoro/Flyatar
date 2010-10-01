@@ -14,6 +14,7 @@
   <depend package="stage_action_server"/>
   <depend package="image_gui"/>
   <depend package="plate_tf"/>
+  <depend package="save_data"/>
 
 </package>
 
