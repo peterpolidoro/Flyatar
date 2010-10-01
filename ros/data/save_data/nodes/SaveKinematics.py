@@ -41,7 +41,7 @@ class SaveKinematics:
     def save_data_controls_callback(self,data):
         if data.save_kinematics and (not self.save_kinematics):
             # self.file_name = "trial{num:04d}\n".format(num=self.save_count)
-            self.file_name = time.strftime("%Y_%m_%d_%H_%M_%S")
+            self.file_name = time.strftime("%Y_%m_%d_%H_%M_%S.txt")
             self.fid = open(self.file_name, 'w')
             self.fid.write(self.header)
             self.fid.write(self.column_titles)
