@@ -13,7 +13,7 @@ import choose_orientation as co
 from plate_tf.msg import ImagePose
 from plate_tf.msg import Conditions
 import plate_tf.msg
-from pythonmodules import CircleFunctionsfrom pythonmodules import CircleFunctions
+from pythonmodules import CircleFunctions
 
 class PoseTFConversion:
     def __init__(self):
