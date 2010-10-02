@@ -23,6 +23,8 @@ class RecordData(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Executing state RECORD_DATA')
+        global save_data_controls
+        global trial_number
         save_data_controls.file_name_base = time.strftime("%Y_%m_%d_%H_%M_%S")
         save_data_controls.trial_number = int(trial_number)
         save_data_controls.rm_file = False
@@ -37,6 +39,8 @@ class EraseData(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state ERASE_DATA')
+        global save_data_controls
+        global trial_number
         save_data_controls.rm_file = True
         save_data_controls.save_kinematics = False
         save_data_controls_pub.publish(save_data_controls)
@@ -60,7 +64,9 @@ class LogTrial(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute(self, userdata):
-        rospy.logwarn('Executing state LOG_TRIAL')
+        rospy.loginfo('Executing state LOG_TRIAL')
+        global save_data_controls
+        global trial_number
         save_data_controls.rm_file = False
         save_data_controls.save_kinematics = False
         save_data_controls_pub.publish(save_data_controls)
