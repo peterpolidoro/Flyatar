@@ -40,9 +40,9 @@ class SaveKinematics:
 
     def save_data_controls_callback(self,data):
         if data.save_kinematics and (not self.save_kinematics):
-            self.file_name = data.file_name
+            self.file_name = data.file_name_base + '.txt'
             self.fid = open(self.file_name, 'w')
-            self.fid.write(self.file_name + '\n')
+            self.fid.write(data.file_name_base + '\n')
             self.fid.write(str(self.protocol) + '\n')
             self.fid.write(str(data.trial_number) + '\n')
             self.fid.write('\n')
