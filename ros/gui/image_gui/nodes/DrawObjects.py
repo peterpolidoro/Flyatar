@@ -21,6 +21,8 @@ class DrawObjects:
         self.dt = rospy.get_param("Draw_Update_dt","0.010")
         self.rate = rospy.Rate(1/self.dt)
 
+        self.in_bounds_radius = rospy.get_param('in_bounds_radius',1)
+
         self.tf_listener = tf.TransformListener()
         self.plate_image_origin = PointStamped()
         self.plate_image_origin.header.frame_id = "PlateImage"
@@ -36,7 +38,6 @@ class DrawObjects:
         self.colors = Colors.Colors()
 
         self.origin = CvPrimatives.Point(0,0)
-        self.robot_marker = DrawPrimatives.CenteredCircle(self.origin.point,25,self.colors.blue,2)
 
         self.tf_listener.waitForTransform(self.display_frame, "PlateImage", rospy.Time(0), rospy.Duration(4.0))
         self.plate_image_origin_display_frame = self.tf_listener.transformPoint(self.display_frame,
@@ -45,8 +46,13 @@ class DrawObjects:
         self.plate_origin_marker = DrawPrimatives.Axes(CvPrimatives.Point(self.plate_image_origin_display_frame.point.x,
                                                                           self.plate_image_origin_display_frame.point.y).point)
 
+        self.robot_marker = DrawPrimatives.CenteredCircle(self.origin.point,25,self.colors.blue,2)
+
+        self.in_bounds_marker = DrawPrimatives.CenteredCircle(self.origin.point,self.in_bounds_radius,self.colors.yellow,1)
+
         self.draw_objects.draw_object_list = [self.plate_origin_marker.draw_object,
-                                              self.robot_marker.draw_object]
+                                              self.robot_marker.draw_object,
+                                              self.in_bounds_marker]
         self.draw_objects.show_all = False
         self.draw_objects.hide_all = False
         self.initialized = True

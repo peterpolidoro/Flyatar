@@ -8,7 +8,7 @@ import math
 
 class MonitorBounds:
     def __init__(self):
-        self.in_bounds_radius = rospy.get_param('in_bounds_radius',100)
+        self.in_bounds_radius = rospy.get_param('in_bounds_radius')
         self.robot_fly_kinematics_sub = rospy.Subscriber("RobotFlyKinematics",RobotFlyKinematics,self.kinematics_callback)
         self.in_bounds_pub = rospy.Publisher("InBounds",InBounds)
 

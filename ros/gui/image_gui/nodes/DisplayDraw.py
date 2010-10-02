@@ -20,6 +20,8 @@ class ImageDisplay:
         self.font = cv.InitFont(cv.CV_FONT_HERSHEY_TRIPLEX,0.5,0.5)
         self.images_initialized = False
 
+        self.circle_radius_min = 2
+
         self.draw_objects_sub = rospy.Subscriber("DrawObjects/image_rect", image_gui.msg.DrawObjects, self.draw_objects_callback)
         self.draw_objects = image_gui.msg.DrawObjects()
 
@@ -62,13 +64,14 @@ class ImageDisplay:
 
     def draw_circles_on_image(self,circle_list,object_center):
         for circle in circle_list:
-            cv.Circle(self.im_display,
-                      ((object_center.x + circle.center.x),(object_center.y + circle.center.y)),
-                      circle.radius,
-                      cv.CV_RGB(circle.color.red,circle.color.green,circle.color.blue),
-                      circle.thickness,
-                      circle.lineType,
-                      circle.shift)
+            if self.circle_radius_min <= circle.radius:
+                cv.Circle(self.im_display,
+                          ((object_center.x + circle.center.x),(object_center.y + circle.center.y)),
+                          circle.radius,
+                          cv.CV_RGB(circle.color.red,circle.color.green,circle.color.blue),
+                          circle.thickness,
+                          circle.lineType,
+                          circle.shift)
 
     def draw_objects_callback(self,data):
         self.draw_objects = data
