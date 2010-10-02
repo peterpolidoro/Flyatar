@@ -44,7 +44,7 @@ class SaveKinematics:
             self.fid = open(self.file_name, 'w')
             self.fid.write(self.file_name + '\n')
             self.fid.write(str(self.protocol) + '\n')
-            self.fid.write(str(data.trial_number) + '\n'
+            self.fid.write(str(data.trial_number) + '\n')
             self.fid.write('\n')
             self.fid.write(self.column_titles)
             self.save_kinematics = data.save_kinematics
