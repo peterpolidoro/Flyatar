@@ -1,3 +1,3 @@
-float64 bounds_radius
+float32 bounds_radius
 bool robot_in_bounds
 bool fly_in_bounds
