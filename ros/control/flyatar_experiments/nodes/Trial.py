@@ -14,6 +14,8 @@ import random
 save_data_controls_pub = rospy.Publisher("SaveDataControls",SaveDataControls)
 save_data_controls = SaveDataControls()
 
+trial_number = 1
+
 # define state RecordData
 class RecordData(smach.State):
     def __init__(self):
@@ -22,6 +24,7 @@ class RecordData(smach.State):
     def execute(self, userdata):
         rospy.loginfo('Executing state RECORD_DATA')
         save_data_controls.file_name_base = time.strftime("%Y_%m_%d_%H_%M_%S")
+        save_data_controls.trial_number = int(trial_number)
         save_data_controls.rm_file = False
         save_data_controls.save_kinematics = True
         save_data_controls_pub.publish(save_data_controls)
@@ -61,6 +64,7 @@ class LogTrial(smach.State):
         save_data_controls.rm_file = False
         save_data_controls.save_kinematics = False
         save_data_controls_pub.publish(save_data_controls)
+        trial_number += 1
         return 'succeeded'
 
 class Trial():
