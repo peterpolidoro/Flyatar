@@ -52,7 +52,7 @@ class DrawObjects:
 
         self.draw_objects.draw_object_list = [self.plate_origin_marker.draw_object,
                                               self.robot_marker.draw_object,
-                                              self.in_bounds_marker]
+                                              self.in_bounds_marker.draw_object]
         self.draw_objects.show_all = False
         self.draw_objects.hide_all = False
         self.initialized = True
