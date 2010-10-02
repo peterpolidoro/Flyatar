@@ -43,12 +43,14 @@ class DrawObjects:
         self.plate_image_origin_display_frame = self.tf_listener.transformPoint(self.display_frame,
                                                                                 self.plate_image_origin)
 
-        self.plate_origin_marker = DrawPrimatives.Axes(CvPrimatives.Point(self.plate_image_origin_display_frame.point.x,
-                                                                          self.plate_image_origin_display_frame.point.y).point)
+        self.plate_origin_primatives_point = CvPrimatives.Point(self.plate_image_origin_display_frame.point.x,
+                                                                self.plate_image_origin_display_frame.point.y).point)
+
+        self.plate_origin_marker = DrawPrimatives.Axes(self.plate_origin_primatives_point)
 
         self.robot_marker = DrawPrimatives.CenteredCircle(self.origin.point,25,self.colors.blue,2)
 
-        self.in_bounds_marker = DrawPrimatives.CenteredCircle(self.origin.point,self.in_bounds_radius,self.colors.yellow,2)
+        self.in_bounds_marker = DrawPrimatives.CenteredCircle(self.plate_origin_primatives_point,self.in_bounds_radius,self.colors.yellow,1)
 
         self.draw_objects.draw_object_list = [self.plate_origin_marker.draw_object,
                                               self.robot_marker.draw_object,
