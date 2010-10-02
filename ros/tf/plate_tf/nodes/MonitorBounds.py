@@ -29,5 +29,6 @@ class MonitorBounds:
 
 if __name__ == '__main__':
     rospy.init_node('MonitorBounds')
+    mb = MonitorBounds()
     while not rospy.is_shutdown():
         rospy.spin()
