@@ -48,7 +48,7 @@ class DrawObjects:
 
         self.robot_marker = DrawPrimatives.CenteredCircle(self.origin.point,25,self.colors.blue,2)
 
-        self.in_bounds_marker = DrawPrimatives.CenteredCircle(self.origin.point,self.in_bounds_radius,self.colors.yellow,1)
+        self.in_bounds_marker = DrawPrimatives.CenteredCircle(self.origin.point,self.in_bounds_radius,self.colors.yellow,2)
 
         self.draw_objects.draw_object_list = [self.plate_origin_marker.draw_object,
                                               self.robot_marker.draw_object,
