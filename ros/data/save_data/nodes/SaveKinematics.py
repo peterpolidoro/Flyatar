@@ -29,7 +29,7 @@ class SaveKinematics:
         self.save_kinematics = False
         self.save_count = 0
 
-        self.header = 'Wait Straight Experiment\ntime_units: s\ndistance_units: mm\nangle_units: rad\nboolean_values: 1 = True, 0 = False\n\n'
+        self.protocol = 'walking_protocol_type_1'
         self.column_titles = 'time robot_position_x robot_position_y robot_position_theta robot_velocity_x robot_velocity_y robot_velocity_theta robot_stopped fly_position_x fly_position_y fly_position_theta fly_velocity_x fly_velocity_y fly_velocity_theta fly_stopped\n'
         self.format_align = ">"
         self.format_sign = " "
@@ -42,7 +42,10 @@ class SaveKinematics:
         if data.save_kinematics and (not self.save_kinematics):
             self.file_name = data.file_name
             self.fid = open(self.file_name, 'w')
-            self.fid.write(self.header)
+            self.fid.write(self.file_name + '\n')
+            self.fid.write(str(self.protocol) + '\n')
+            self.fid.write(str(data.trial_number) + '\n'
+            self.fid.write('\n')
             self.fid.write(self.column_titles)
             self.save_kinematics = data.save_kinematics
         elif (not data.save_kinematics) and self.save_kinematics:
