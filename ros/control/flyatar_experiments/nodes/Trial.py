@@ -21,7 +21,7 @@ class RecordData(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Executing state RECORD_DATA')
-        save_data_controls.file_name = time.strftime("%Y_%m_%d_%H_%M_%S.txt")
+        save_data_controls.file_name_base = time.strftime("%Y_%m_%d_%H_%M_%S")
         save_data_controls.rm_file = False
         save_data_controls.save_kinematics = True
         save_data_controls_pub.publish(save_data_controls)
