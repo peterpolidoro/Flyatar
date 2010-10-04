@@ -9,7 +9,7 @@ import stage_action_server.msg
 import time
 import RobotMotionProfiles
 from save_data.msg import SaveDataControls
-import MonitorConditions
+import MonitorSystemState
 import random
 
 class SaveDataControlsPublisher:
@@ -55,7 +55,7 @@ class EraseData(smach.State):
 class MonitorConditions(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
-        self.in_bounds_subscriber = MonitorConditions.InBoundsSubscriber()
+        self.in_bounds_subscriber = MonitorSystemState.InBoundsSubscriber()
 
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')

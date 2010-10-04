@@ -8,10 +8,10 @@ import smach_ros
 import stage_action_server.msg
 import time
 import Trial
-import MonitorConditions
+import MonitorSystemState
 
 # Global Variables
-IN_BOUNDS_SUBSCRIBER = MonitorConditions.InBoundsSubscriber()
+IN_BOUNDS_SUBSCRIBER = MonitorSystemState.InBoundsSubscriber()
 
 # define state WaitForFlyToBeInBounds
 class WaitForFlyToBeInBounds(smach.State):
