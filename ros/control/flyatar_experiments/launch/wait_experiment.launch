@@ -1,5 +1,5 @@
 <launch>
-  <param name="in_bounds_radius" type="double" value="50"/>
+  <param name="in_bounds_radius" type="double" value="30"/>
   <include file="$(find flyatar_experiments)/launch/experiment.launch" />
   <node pkg="flyatar_experiments" type="ExperimentWait.py" name="ExperimentWait" />
 </launch>
