@@ -45,8 +45,8 @@ class DrawObjects:
         y0 = self.plate_origin_camera.point.y = response.Ydst[0]
         x1 = self.plate_point_camera.point.x = response.Xdst[1]
         y1 = self.plate_point_camera.point.y = response.Ydst[1]
-        x2 = response.Xdst[1]
-        y2 = response.Ydst[1]
+        x2 = response.Xdst[2]
+        y2 = response.Ydst[2]
         self.in_bounds_radius_camera = math.sqrt((x1-x0)**2 + (y1-y0)**2)
         self.axis_length_camera = math.sqrt((x2-x0)**2 + (y2-y0)**2)
 
