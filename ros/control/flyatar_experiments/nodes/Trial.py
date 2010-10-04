@@ -23,7 +23,7 @@ class RecordData(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state RECORD_DATA')
+        rospy.logwarn('Executing state RECORD_DATA')
         global save_data_controls
         global trial_number
         save_data_controls.file_name_base = time.strftime("%Y_%m_%d_%H_%M_%S")
@@ -60,7 +60,7 @@ class MonitorConditions(smach.State):
         self.fly_in_bounds = data.fly_in_bounds
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state MONITOR_CONDITIONS')
+        rospy.logwarn('Executing state MONITOR_CONDITIONS')
         while self.robot_in_bounds and self.fly_in_bounds:
             time.sleep(0.1)
 
@@ -75,7 +75,7 @@ class LogTrial(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state LOG_TRIAL')
+        rospy.logwarn('Executing state LOG_TRIAL')
         global save_data_controls
         global trial_number
         save_data_controls.rm_file = False

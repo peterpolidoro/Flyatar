@@ -14,7 +14,7 @@ class WaitForTriggerCondition(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state WAIT_FOR_TRIGGER_CONDITION')
+        rospy.logwarn('Executing state WAIT_FOR_TRIGGER_CONDITION')
         time.sleep(5)
         return 'succeeded'
 
@@ -24,7 +24,7 @@ class CalculateMove(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state CALCULATE_MOVE')
+        rospy.logwarn('Executing state CALCULATE_MOVE')
         time.sleep(5)
         return 'succeeded'
 
@@ -34,7 +34,7 @@ class MoveRobot(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state MOVE_ROBOT')
+        rospy.logwarn('Executing state MOVE_ROBOT')
         time.sleep(5)
         return 'succeeded'
 

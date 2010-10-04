@@ -21,7 +21,7 @@ class WaitForFly(smach.State):
         self.fly_in_bounds = data.fly_in_bounds
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state WAIT_FOR_FLY')
+        rospy.logwarn('Executing state WAIT_FOR_FLY')
         while not self.fly_in_bounds:
             time.sleep(0.1)
 
