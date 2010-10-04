@@ -34,10 +34,10 @@ class DrawObjects:
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
-        self.plate_camera_origin = PointStamped()
-        self.plate_camera_origin.header.frame_id = "Camera"
-        self.plate_camera_point = PointStamped()
-        self.plate_camera_point.header.frame_id = "Camera"
+        self.plate_origin_camera = PointStamped()
+        self.plate_origin_camera.header.frame_id = "Camera"
+        self.plate_point_camera = PointStamped()
+        self.plate_point_camera.header.frame_id = "Camera"
         Xsrc = [0,self.in_bounds_radius_plate,self.axis_length_plate]
         Ysrc = [0,0,0]
         response = self.plate_to_camera(Xsrc,Ysrc)
