@@ -8,9 +8,9 @@ from plate_tf.msg import InBounds
 class InBoundsSubscriber:
     def __init__(self):
         self.in_bounds_sub = rospy.Subscriber('InBounds',InBounds,self.in_bounds_callback)
-        self.bounds_radius = 0
-        self.robot_in_bounds = False
-        self.fly_in_bounds = False
+        self.bounds_radius = None
+        self.robot_in_bounds = None
+        self.fly_in_bounds = None
 
     def in_bounds_callback(self,data):
         self.bounds_radius = data.bounds_radius

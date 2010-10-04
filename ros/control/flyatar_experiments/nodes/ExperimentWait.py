@@ -20,6 +20,9 @@ class WaitForFlyToBeInBounds(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_FLY_TO_BE_IN_BOUNDS')
+        while IN_BOUNDS_SUBSCRIBER.fly_in_bounds is None:
+            time.sleep(0.1)
+
         while not IN_BOUNDS_SUBSCRIBER.fly_in_bounds:
             time.sleep(0.1)
 
@@ -32,6 +35,9 @@ class WaitForFlyToBeOutOfBounds(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS')
+        while IN_BOUNDS_SUBSCRIBER.fly_in_bounds is None:
+            time.sleep(0.1)
+
         while IN_BOUNDS_SUBSCRIBER.fly_in_bounds:
             time.sleep(0.1)
 
