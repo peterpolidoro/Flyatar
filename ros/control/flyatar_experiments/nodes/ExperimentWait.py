@@ -10,20 +10,65 @@ import time
 import Trial
 from plate_tf.msg import InBounds
 
-# define state WaitForFly
-class WaitForFly(smach.State):
+class InBoundsSubscriber:
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
         self.in_bounds_sub = rospy.Subscriber('InBounds',InBounds,self.in_bounds_callback)
+        self.bounds_radius = 0
+        self.robot_in_bounds = False
         self.fly_in_bounds = False
 
     def in_bounds_callback(self,data):
+        self.bounds_radius = data.bounds_radius
+        self.robot_in_bounds = data.robot_in_bounds
         self.fly_in_bounds = data.fly_in_bounds
 
+in_bounds_sub = InBoundsSubscriber()
+
+# define state WaitForFlyToBeInBounds
+class WaitForFlyToBeInBounds(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+
     def execute(self, userdata):
-        rospy.logwarn('Executing state WAIT_FOR_FLY')
-        while not self.fly_in_bounds:
+        rospy.logwarn('Executing state WAIT_FOR_FLY_TO_BE_IN_BOUNDS')
+        while not in_bounds_sub.fly_in_bounds:
             time.sleep(0.1)
+
+        return 'succeeded'
+
+# define state WaitForFlyToBeOutOfBounds
+class WaitForFlyToBeOutOfBounds(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+
+    def execute(self, userdata):
+        rospy.logwarn('Executing state WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS')
+        while in_bounds_sub.fly_in_bounds:
+            time.sleep(0.1)
+
+        return 'succeeded'
+
+# define state CheckCalibration
+class CheckCalibration(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['calibration_ok','needs_recalibration'])
+
+    def execute(self, userdata):
+        rospy.logwarn('Executing state CHECK_CALIBRATION')
+        # Wait for system to settle
+        time.sleep(4)
+
+        return 'calibration_ok'
+
+# define state Recalibrate
+class Recalibrate(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+
+    def execute(self, userdata):
+        rospy.logwarn('Executing state RECALIBRATE')
+        # Wait for system to settle
+        time.sleep(3)
 
         return 'succeeded'
 
@@ -47,17 +92,31 @@ class Experiment():
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
                                                                goal=self.start_position),
-                                   transitions={'succeeded':'WAIT_FOR_FLY',
+                                   transitions={'succeeded':'CHECK_CALIBRATION',
                                                 'aborted':'GOTO_START',
                                                 'preempted':'GOTO_START'})
 
-            smach.StateMachine.add('WAIT_FOR_FLY', WaitForFly(),
+            smach.StateMachine.add('CHECK_CALIBRATION', CheckCalibration(),
+                                   transitions={'calibration_ok':'WAIT_FOR_FLY_TO_BE_IN_BOUNDS',
+                                                'needs_recalibration':'RECALIBRATE'})
+
+            smach.StateMachine.add('RECALIBRATE', Recalibrate(),
+                                   transitions={'succeeded':'GOTO_START',
+                                                'aborted':'aborted',
+                                                'preempted':'GOTO_START'})
+
+            smach.StateMachine.add('WAIT_FOR_FLY_TO_BE_IN_BOUNDS', WaitForFlyToBeInBounds(),
                                    transitions={'succeeded':'RUN_TRIAL',
                                                 'aborted':'GOTO_START',
                                                 'preempted':'GOTO_START'})
 
             smach.StateMachine.add('RUN_TRIAL',
                                    self.sm_trial,
+                                   transitions={'succeeded':'WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS',
+                                                'aborted':'WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS',
+                                                'preempted':'WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS'})
+
+            smach.StateMachine.add('WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS', WaitForFlyToBeOutOfBounds(),
                                    transitions={'succeeded':'GOTO_START',
                                                 'aborted':'GOTO_START',
                                                 'preempted':'GOTO_START'})
