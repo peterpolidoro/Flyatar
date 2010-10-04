@@ -10,6 +10,7 @@ import CvPrimatives
 import DrawPrimatives
 import tf
 from geometry_msgs.msg import PointStamped
+import plate_tf.srv
 import math
 
 class DrawObjects:
@@ -29,7 +30,7 @@ class DrawObjects:
 
         rospy.wait_for_service('plate_to_camera')
         try:
-            self.plate_to_camera = rospy.ServiceProxy('plate_to_camera', PlateCameraConversion)
+            self.plate_to_camera = rospy.ServiceProxy('plate_to_camera', plate_tf.srv.PlateCameraConversion)
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
