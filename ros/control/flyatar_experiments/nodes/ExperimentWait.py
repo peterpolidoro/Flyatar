@@ -8,15 +8,23 @@ import smach_ros
 import stage_action_server.msg
 import time
 import Trial
+from plate_tf.msg import InBounds
 
 # define state WaitForFly
 class WaitForFly(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        self.in_bounds_sub = rospy.Subscriber('InBounds',InBounds,self.in_bounds_callback)
+        self.fly_in_bounds = False
+
+    def in_bounds_callback(self,data):
+        self.fly_in_bounds = data.fly_in_bounds
 
     def execute(self, userdata):
         rospy.loginfo('Executing state WAIT_FOR_FLY')
-        time.sleep(5)
+        while not self.fly_in_bounds:
+            time.sleep(0.1)
+
         return 'succeeded'
 
 class Experiment():

@@ -10,6 +10,7 @@ import time
 import RobotMotionProfiles
 from save_data.msg import SaveDataControls
 import random
+from plate_tf.msg import InBounds
 
 save_data_controls_pub = rospy.Publisher("SaveDataControls",SaveDataControls)
 save_data_controls = SaveDataControls()
@@ -50,10 +51,20 @@ class EraseData(smach.State):
 class MonitorConditions(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        self.in_bounds_sub = rospy.Subscriber('InBounds',InBounds,self.in_bounds_callback)
+        self.robot_in_bounds = False
+        self.fly_in_bounds = False
+
+    def in_bounds_callback(self,data):
+        self.robot_in_bounds = data.robot_in_bounds
+        self.fly_in_bounds = data.fly_in_bounds
 
     def execute(self, userdata):
         rospy.loginfo('Executing state MONITOR_CONDITIONS')
-        if random.random() < 0.5:
+        while self.robot_in_bounds and self.fly_in_bounds:
+            time.sleep(0.1)
+
+        if self.fly_in_bounds and (not self.robot_in_bounds):
             return 'succeeded'
         else:
             return 'aborted'
