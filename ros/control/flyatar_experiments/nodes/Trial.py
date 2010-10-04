@@ -59,7 +59,7 @@ class MonitorConditions(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
-        while (IN_BOUNDS_SUBSCRIBER.robot_in_bounds is None) and (IN_BOUNDS_SUBSCRIBER.fly_in_bounds is None):
+        while (self.in_bounds_subscriber.robot_in_bounds is None) and (self.in_bounds_subscriber.fly_in_bounds is None):
             time.sleep(0.1)
 
         while self.in_bounds_subscriber.robot_in_bounds and self.in_bounds_subscriber.fly_in_bounds:
