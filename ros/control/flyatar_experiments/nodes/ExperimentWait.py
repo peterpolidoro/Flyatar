@@ -8,21 +8,10 @@ import smach_ros
 import stage_action_server.msg
 import time
 import Trial
-from plate_tf.msg import InBounds
+import MonitorConditions
 
-class InBoundsSubscriber:
-    def __init__(self):
-        self.in_bounds_sub = rospy.Subscriber('InBounds',InBounds,self.in_bounds_callback)
-        self.bounds_radius = 0
-        self.robot_in_bounds = False
-        self.fly_in_bounds = False
-
-    def in_bounds_callback(self,data):
-        self.bounds_radius = data.bounds_radius
-        self.robot_in_bounds = data.robot_in_bounds
-        self.fly_in_bounds = data.fly_in_bounds
-
-in_bounds_sub = InBoundsSubscriber()
+# Global Variables
+IN_BOUNDS_SUBSCRIBER = MonitorConditions.InBoundsSubscriber()
 
 # define state WaitForFlyToBeInBounds
 class WaitForFlyToBeInBounds(smach.State):
@@ -31,7 +20,7 @@ class WaitForFlyToBeInBounds(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_FLY_TO_BE_IN_BOUNDS')
-        while not in_bounds_sub.fly_in_bounds:
+        while not IN_BOUNDS_SUBSCRIBER.fly_in_bounds:
             time.sleep(0.1)
 
         return 'succeeded'
@@ -43,7 +32,7 @@ class WaitForFlyToBeOutOfBounds(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS')
-        while in_bounds_sub.fly_in_bounds:
+        while IN_BOUNDS_SUBSCRIBER.fly_in_bounds:
             time.sleep(0.1)
 
         return 'succeeded'
@@ -92,6 +81,11 @@ class Experiment():
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
                                                                goal=self.start_position),
+                                   transitions={'succeeded':'WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS',
+                                                'aborted':'GOTO_START',
+                                                'preempted':'GOTO_START'})
+
+            smach.StateMachine.add('WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS', WaitForFlyToBeOutOfBounds(),
                                    transitions={'succeeded':'CHECK_CALIBRATION',
                                                 'aborted':'GOTO_START',
                                                 'preempted':'GOTO_START'})
@@ -112,11 +106,6 @@ class Experiment():
 
             smach.StateMachine.add('RUN_TRIAL',
                                    self.sm_trial,
-                                   transitions={'succeeded':'WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS',
-                                                'aborted':'WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS',
-                                                'preempted':'WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS'})
-
-            smach.StateMachine.add('WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS', WaitForFlyToBeOutOfBounds(),
                                    transitions={'succeeded':'GOTO_START',
                                                 'aborted':'GOTO_START',
                                                 'preempted':'GOTO_START'})

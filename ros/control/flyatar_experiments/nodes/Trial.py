@@ -9,13 +9,20 @@ import stage_action_server.msg
 import time
 import RobotMotionProfiles
 from save_data.msg import SaveDataControls
+import MonitorConditions
 import random
-from plate_tf.msg import InBounds
 
-save_data_controls_pub = rospy.Publisher("SaveDataControls",SaveDataControls)
-save_data_controls = SaveDataControls()
+class SaveDataControlsPublisher:
+    def __init__(self):
+        self.save_data_controls_pub = rospy.Publisher("SaveDataControls",SaveDataControls)
+        self.save_data_controls = SaveDataControls()
+        self.trial_count = 1
 
-trial_number = 1
+    def trial_count_increment(self):
+        self.trial_count += 1
+
+# Global Variables
+SAVE_DATA_CONTROLS_PUBLISHER = SaveDataControlsPublisher()
 
 # define state RecordData
 class RecordData(smach.State):
@@ -24,13 +31,12 @@ class RecordData(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state RECORD_DATA')
-        global save_data_controls
-        global trial_number
-        save_data_controls.file_name_base = time.strftime("%Y_%m_%d_%H_%M_%S")
-        save_data_controls.trial_number = int(trial_number)
-        save_data_controls.rm_file = False
-        save_data_controls.save_kinematics = True
-        save_data_controls_pub.publish(save_data_controls)
+        global SAVE_DATA_CONTROLS_PUBLISHER
+        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.file_name_base = time.strftime("%Y_%m_%d_%H_%M_%S")
+        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.trial_number = int(SAVE_DATA_CONTROLS_PUBLISHER.trial_count)
+        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.rm_file = False
+        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.save_kinematics = True
+        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls)
         return 'succeeded'
 
 # define state EraseData
@@ -40,31 +46,23 @@ class EraseData(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state ERASE_DATA')
-        global save_data_controls
-        global trial_number
-        save_data_controls.rm_file = True
-        save_data_controls.save_kinematics = False
-        save_data_controls_pub.publish(save_data_controls)
+        global SAVE_DATA_CONTROLS_PUBLISHER
+        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.save_kinematics = False
+        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls)
         return 'succeeded'
 
 # define state MonitorConditions
 class MonitorConditions(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
-        self.in_bounds_sub = rospy.Subscriber('InBounds',InBounds,self.in_bounds_callback)
-        self.robot_in_bounds = False
-        self.fly_in_bounds = False
-
-    def in_bounds_callback(self,data):
-        self.robot_in_bounds = data.robot_in_bounds
-        self.fly_in_bounds = data.fly_in_bounds
+        self.in_bounds_subscriber = MonitorConditions.InBoundsSubscriber()
 
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
-        while self.robot_in_bounds and self.fly_in_bounds:
+        while self.in_bounds_subscriber.robot_in_bounds and self.in_bounds_subscriber.fly_in_bounds:
             time.sleep(0.1)
 
-        if self.fly_in_bounds and (not self.robot_in_bounds):
+        if self.in_bounds_subscriber.fly_in_bounds and (not self.in_bounds_subscriber.robot_in_bounds):
             return 'succeeded'
         else:
             return 'aborted'
@@ -76,12 +74,11 @@ class LogTrial(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state LOG_TRIAL')
-        global save_data_controls
-        global trial_number
-        save_data_controls.rm_file = False
-        save_data_controls.save_kinematics = False
-        save_data_controls_pub.publish(save_data_controls)
-        trial_number += 1
+        global SAVE_DATA_CONTROLS_PUBLISHER
+        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.rm_file = False
+        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.save_kinematics = False
+        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls)
+        SAVE_DATA_CONTROLS_PUBLISHER.trial_count_increment()
         return 'succeeded'
 
 class Trial():
