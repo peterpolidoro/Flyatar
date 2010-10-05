@@ -153,6 +153,7 @@ class Trial():
         #     return False
 
         # terminate all running states if CONTROL_ROBOT finished
+        rospy.logwarn("outcome_map['CONTROL_ROBOT'] == 'succeeded' = %s" % (str(outcome_map['CONTROL_ROBOT'] == 'succeeded')))
         if outcome_map['CONTROL_ROBOT'] == 'succeeded':
             return True
 
