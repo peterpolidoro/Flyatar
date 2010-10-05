@@ -10,9 +10,6 @@ import time
 import Trial
 import MonitorSystemState
 
-# Global Variables
-IN_BOUNDS_SUBSCRIBER = MonitorSystemState.InBoundsSubscriber()
-
 # define state WaitForFlyToBeInBounds
 class WaitForFlyToBeInBounds(smach.State):
     def __init__(self):
@@ -131,6 +128,10 @@ class Experiment():
 
 if __name__ == '__main__':
     rospy.init_node('ExperimentWait')
+
+    # Global Variables
+    IN_BOUNDS_SUBSCRIBER = MonitorSystemState.InBoundsSubscriber()
+
     e = Experiment()
     e.execute()
     e.sis.stop()

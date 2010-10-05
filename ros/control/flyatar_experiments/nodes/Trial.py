@@ -21,9 +21,6 @@ class SaveDataControlsPublisher:
     def trial_count_increment(self):
         self.trial_count += 1
 
-# Global Variables
-SAVE_DATA_CONTROLS_PUBLISHER = SaveDataControlsPublisher()
-
 # define state RecordData
 class RecordData(smach.State):
     def __init__(self):
@@ -181,6 +178,10 @@ class Trial():
 
 if __name__ == '__main__':
     rospy.init_node('Trial')
+
+    # Global Variables
+    SAVE_DATA_CONTROLS_PUBLISHER = SaveDataControlsPublisher()
+
     t = Trial()
     t.execute()
     t.sis.stop()
