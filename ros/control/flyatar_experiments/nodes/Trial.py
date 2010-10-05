@@ -59,8 +59,8 @@ class MonitorConditions(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
-        # while True:
-        #     time.sleep(0.1)
+        while True:
+            time.sleep(0.1)
 
         while (self.in_bounds_subscriber.robot_in_bounds is None) and (self.in_bounds_subscriber.fly_in_bounds is None):
             time.sleep(0.1)
@@ -97,20 +97,37 @@ class Trial():
             self.robot_motion_profile = RobotMotionProfiles.RobotMotionProfile()
             self.sm_robot_motion_profile = self.robot_motion_profile.sm_robot_motion_profile
 
+            # gets called when ANY child state terminates
+            def child_term_cb(self,outcome_map):
+
+                # terminate all running states if FOO finished with outcome 'outcome3'
+                # if outcome_map['FOO'] == 'outcome3':
+                #     # just keep running
+                #     return False
+
+                # terminate all running states if CONTROL_ROBOT finished
+                if outcome_map['CONTROL_ROBOT']:
+                    return True
+
+                # in all other case, just keep running, don't terminate anything
+                return False
+
             # Create the concurrent sub SMACH state machine
             self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','aborted','preempted'],
                                                                default_outcome='aborted',
-                                                               outcome_map={'succeeded':
-                                                                            { 'RECORD_DATA':'succeeded',
-                                                                              'CONTROL_ROBOT':'succeeded'}})
+                                                               # outcome_map={'succeeded':
+                                                               #              { 'RECORD_DATA':'succeeded',
+                                                               #                'CONTROL_ROBOT':'succeeded'}})
                                                                             # 'aborted':
                                                                             # { 'RECORD_DATA':'aborted',
                                                                             #   'MONITOR_CONDITIONS':'aborted',
                                                                             #   'CONTROL_ROBOT':'aborted'}})
-                                                               # outcome_map={'succeeded':
-                                                               #              { 'RECORD_DATA':'succeeded',
-                                                               #                'MONITOR_CONDITIONS':'succeeded',
-                                                               #                'CONTROL_ROBOT':'succeeded'}})
+                                                               outcome_map={'succeeded':
+                                                                            { 'RECORD_DATA':'succeeded',
+                                                                              'MONITOR_CONDITIONS':'succeeded',
+                                                                              'CONTROL_ROBOT':'succeeded'}},
+                                                               child_termination_cb = self.child_term_cb)
+)
 
             # Open the container
             with self.sm_record_monitor_control:
