@@ -59,6 +59,8 @@ class MonitorConditions(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
+        time.sleep(2)
+        return 'aborted'
         while True:
             if self.preempt_requested():
                 self.service_preempt()
@@ -164,6 +166,10 @@ class Trial():
         # terminate all running states if CONTROL_ROBOT finished
         if outcome_map['CONTROL_ROBOT'] == 'succeeded':
             return True
+
+        # # terminate all running states if MONITOR_CONDITIONS finished
+        # if outcome_map['MONITOR_CONDITIONS'] == 'aborted':
+        #     return True
 
         # in all other case, just keep running, don't terminate anything
         return False
