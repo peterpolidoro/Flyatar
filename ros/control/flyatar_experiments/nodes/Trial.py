@@ -97,21 +97,6 @@ class Trial():
             self.robot_motion_profile = RobotMotionProfiles.RobotMotionProfile()
             self.sm_robot_motion_profile = self.robot_motion_profile.sm_robot_motion_profile
 
-            # gets called when ANY child state terminates
-            def child_term_cb(self,outcome_map):
-
-                # terminate all running states if FOO finished with outcome 'outcome3'
-                # if outcome_map['FOO'] == 'outcome3':
-                #     # just keep running
-                #     return False
-
-                # terminate all running states if CONTROL_ROBOT finished
-                if outcome_map['CONTROL_ROBOT']:
-                    return True
-
-                # in all other case, just keep running, don't terminate anything
-                return False
-
             # Create the concurrent sub SMACH state machine
             self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','aborted','preempted'],
                                                                default_outcome='aborted',
@@ -126,7 +111,7 @@ class Trial():
                                                                             { 'RECORD_DATA':'succeeded',
                                                                               'MONITOR_CONDITIONS':'succeeded',
                                                                               'CONTROL_ROBOT':'succeeded'}},
-                                                               child_termination_cb = self.child_term_cb)
+                                                               child_termination_cb = self.child_termination_callback)
 
             # Open the container
             with self.sm_record_monitor_control:
@@ -156,6 +141,21 @@ class Trial():
                                                  self.sm_trial,
                                                  '/SM_EXPERIMENT/SM_TRIAL')
         self.sis.start()
+
+    # gets called when ANY child state terminates
+    def child_termination_callback(self,outcome_map):
+
+        # terminate all running states if FOO finished with outcome 'outcome3'
+        # if outcome_map['FOO'] == 'outcome3':
+        #     # just keep running
+        #     return False
+
+        # terminate all running states if CONTROL_ROBOT finished
+        if outcome_map['CONTROL_ROBOT']:
+            return True
+
+        # in all other case, just keep running, don't terminate anything
+        return False
 
     def execute(self):
         # Execute SMACH plan
