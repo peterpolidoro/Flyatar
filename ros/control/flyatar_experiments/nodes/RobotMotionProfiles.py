@@ -9,6 +9,9 @@ import stage_action_server.msg
 import time
 import MonitorSystemState
 
+# Global Variables
+FLY_STATE = MonitorSystemState.FlyState()
+
 # define state WaitForTriggerCondition
 class WaitForTriggerCondition(smach.State):
     def __init__(self):
@@ -80,10 +83,6 @@ class RobotMotionProfile():
 
 if __name__ == '__main__':
     rospy.init_node('RobotMotionProfiles')
-
-    # Global Variables
-    FLY_STATE = MonitorSystemState.FlyState()
-
     rmp = RobotMotionProfile()
     rmp.execute()
     rmp.sis.stop()
