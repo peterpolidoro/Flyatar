@@ -29,6 +29,9 @@ class SaveKinematics:
         self.save_kinematics = False
         self.save_count = 0
 
+        self.robot_width = rospy.get_param("robot_width",3.175) # mm
+        self.robot_height = rospy.get_param("robot_height",3.175) # mm
+
         self.protocol = 'walking_protocol_type_1'
         self.column_titles = 'time robot_position_x robot_position_y robot_position_theta robot_velocity_x robot_velocity_y robot_velocity_theta robot_stopped fly_position_x fly_position_y fly_position_theta fly_velocity_x fly_velocity_y fly_velocity_theta fly_stopped\n'
         self.format_align = ">"
@@ -43,6 +46,8 @@ class SaveKinematics:
             self.file_name = data.file_name_base + '.txt'
             self.fid = open(self.file_name, 'w')
             self.fid.write(data.file_name_base + '\n')
+            self.fid.write(str(self.robot_width) + '\n')
+            self.fid.write(str(self.robot_height) + '\n')
             self.fid.write(str(self.protocol) + '\n')
             self.fid.write(str(data.trial_number) + '\n')
             self.fid.write('\n')
