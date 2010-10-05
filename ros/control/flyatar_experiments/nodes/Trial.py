@@ -107,9 +107,13 @@ class Trial():
                                                                             # { 'RECORD_DATA':'aborted',
                                                                             #   'MONITOR_CONDITIONS':'aborted',
                                                                             #   'CONTROL_ROBOT':'aborted'}})
+                                                               # outcome_map={'succeeded':
+                                                               #              { 'RECORD_DATA':'succeeded',
+                                                               #                'MONITOR_CONDITIONS':'succeeded',
+                                                               #                'CONTROL_ROBOT':'succeeded'}})
                                                                outcome_map={'succeeded':
                                                                             { 'RECORD_DATA':'succeeded',
-                                                                              'MONITOR_CONDITIONS':'succeeded',
+                                                                              'MONITOR_CONDITIONS':'preempted',
                                                                               'CONTROL_ROBOT':'succeeded'}},
                                                                child_termination_cb = self.child_termination_callback)
 
@@ -153,7 +157,6 @@ class Trial():
         #     return False
 
         # terminate all running states if CONTROL_ROBOT finished
-        rospy.logwarn("outcome_map['CONTROL_ROBOT'] == 'succeeded' = %s" % (str(outcome_map['CONTROL_ROBOT'] == 'succeeded')))
         if outcome_map['CONTROL_ROBOT'] == 'succeeded':
             return True
 
