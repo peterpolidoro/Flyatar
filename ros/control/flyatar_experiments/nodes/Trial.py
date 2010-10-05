@@ -127,7 +127,6 @@ class Trial():
                                                                               'MONITOR_CONDITIONS':'succeeded',
                                                                               'CONTROL_ROBOT':'succeeded'}},
                                                                child_termination_cb = self.child_term_cb)
-)
 
             # Open the container
             with self.sm_record_monitor_control:
