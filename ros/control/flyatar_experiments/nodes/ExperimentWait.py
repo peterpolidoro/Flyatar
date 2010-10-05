@@ -22,9 +22,13 @@ class WaitForFlyToBeInBounds(smach.State):
         rospy.logwarn('Executing state WAIT_FOR_FLY_TO_BE_IN_BOUNDS')
         time.sleep(2)
         # while IN_BOUNDS_SUBSCRIBER.fly_in_bounds is None:
+        #     if self.preempt_requested():
+        #         return 'preempted'
         #     time.sleep(0.1)
 
         # while not IN_BOUNDS_SUBSCRIBER.fly_in_bounds:
+        #     if self.preempt_requested():
+        #         return 'preempted'
         #     time.sleep(0.1)
 
         return 'succeeded'
@@ -38,9 +42,13 @@ class WaitForFlyToBeOutOfBounds(smach.State):
         rospy.logwarn('Executing state WAIT_FOR_FLY_TO_BE_OUT_OF_BOUNDS')
         time.sleep(2)
         # while IN_BOUNDS_SUBSCRIBER.fly_in_bounds is None:
+            # if self.preempt_requested():
+            #     return 'preempted'
         #     time.sleep(0.1)
 
         # while IN_BOUNDS_SUBSCRIBER.fly_in_bounds:
+            # if self.preempt_requested():
+            #     return 'preempted'
         #     time.sleep(0.1)
 
         return 'succeeded'
@@ -52,6 +60,9 @@ class CheckCalibration(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state CHECK_CALIBRATION')
+        if self.preempt_requested():
+            return 'preempted'
+
         # Wait for system to settle
         time.sleep(4)
 
@@ -65,6 +76,8 @@ class Recalibrate(smach.State):
     def execute(self, userdata):
         rospy.logwarn('Executing state RECALIBRATE')
         # Wait for system to settle
+        if self.preempt_requested():
+            return 'preempted'
         time.sleep(3)
 
         return 'succeeded'

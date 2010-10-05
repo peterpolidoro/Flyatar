@@ -20,6 +20,8 @@ class WaitForTriggerCondition(smach.State):
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_TRIGGER_CONDITION')
         while True:
+            if self.preempt_requested():
+                return 'preempted'
             if FLY_STATE.initialized:
                 rospy.logwarn("robot_in_front_of_fly = %s" % (str(FLY_STATE.robot_in_front_of_fly)))
             time.sleep(0.2)

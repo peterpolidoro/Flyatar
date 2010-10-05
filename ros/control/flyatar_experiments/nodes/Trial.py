@@ -63,7 +63,6 @@ class MonitorConditions(smach.State):
         return 'aborted'
         while True:
             if self.preempt_requested():
-                self.service_preempt()
                 return 'preempted'
             if (not self.in_bounds_subscriber.fly_in_bounds):
                 return 'aborted'
@@ -167,9 +166,9 @@ class Trial():
         if outcome_map['CONTROL_ROBOT'] == 'succeeded':
             return True
 
-        # # terminate all running states if MONITOR_CONDITIONS finished
-        # if outcome_map['MONITOR_CONDITIONS'] == 'aborted':
-        #     return True
+        # terminate all running states if MONITOR_CONDITIONS finished
+        if outcome_map['MONITOR_CONDITIONS'] == 'aborted':
+            return True
 
         # in all other case, just keep running, don't terminate anything
         return False
