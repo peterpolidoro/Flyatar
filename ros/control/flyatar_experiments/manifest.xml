@@ -15,6 +15,7 @@
   <depend package="image_gui"/>
   <depend package="plate_tf"/>
   <depend package="save_data"/>
+  <depend package="geometry_msgs"/>
 
 </package>
 

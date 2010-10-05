@@ -7,6 +7,10 @@ import smach
 import smach_ros
 import stage_action_server.msg
 import time
+import MonitorSystemState
+
+# Global Variables
+FLY_STATE = MonitorSystemState.FlyState()
 
 # define state WaitForTriggerCondition
 class WaitForTriggerCondition(smach.State):
@@ -15,7 +19,10 @@ class WaitForTriggerCondition(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_TRIGGER_CONDITION')
-        time.sleep(5)
+        while True:
+            if FLY_STATE.initialized:
+                rospy.logwarn("robot_in_front_of_fly = %s" % (str(FLY_STATE.robot_in_front_of_fly)))
+            time.sleep(0.2)
         return 'succeeded'
 
 # define state CalculateMove
