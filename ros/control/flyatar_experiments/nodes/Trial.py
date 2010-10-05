@@ -60,6 +60,9 @@ class MonitorConditions(smach.State):
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
         while True:
+            if self.preempt_requested():
+                self.service_preempt()
+                return 'preempted'
             time.sleep(0.1)
 
         while (self.in_bounds_subscriber.robot_in_bounds is None) and (self.in_bounds_subscriber.fly_in_bounds is None):
