@@ -145,6 +145,8 @@ class Trial():
     # gets called when ANY child state terminates
     def child_termination_callback(self,outcome_map):
 
+        rospy.logwarn("outcome_map = %s" % (str(outcome_map)))
+
         # terminate all running states if FOO finished with outcome 'outcome3'
         # if outcome_map['FOO'] == 'outcome3':
         #     # just keep running
