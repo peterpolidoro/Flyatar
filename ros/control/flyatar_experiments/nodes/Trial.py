@@ -59,9 +59,9 @@ class MonitorConditions(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
-        while True:
-            time.sleep(0.1)
-        
+        # while True:
+        #     time.sleep(0.1)
+
         while (self.in_bounds_subscriber.robot_in_bounds is None) and (self.in_bounds_subscriber.fly_in_bounds is None):
             time.sleep(0.1)
 
@@ -103,6 +103,10 @@ class Trial():
                                                                outcome_map={'succeeded':
                                                                             { 'RECORD_DATA':'succeeded',
                                                                               'CONTROL_ROBOT':'succeeded'}})
+                                                                            # 'aborted':
+                                                                            # { 'RECORD_DATA':'aborted',
+                                                                            #   'MONITOR_CONDITIONS':'aborted',
+                                                                            #   'CONTROL_ROBOT':'aborted'}})
                                                                # outcome_map={'succeeded':
                                                                #              { 'RECORD_DATA':'succeeded',
                                                                #                'MONITOR_CONDITIONS':'succeeded',
