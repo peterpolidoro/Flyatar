@@ -85,6 +85,11 @@ class Experiment():
             self.sm_trial = self.trial.sm_trial
 
             # Add states to the container
+            smach.StateMachine.add('RECALIBRATE', Recalibrate(),
+                                   transitions={'succeeded':'GOTO_START',
+                                                'aborted':'aborted',
+                                                'preempted':'GOTO_START'})
+
             smach.StateMachine.add('GOTO_START',
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
@@ -101,11 +106,6 @@ class Experiment():
             smach.StateMachine.add('CHECK_CALIBRATION', CheckCalibration(),
                                    transitions={'calibration_ok':'WAIT_FOR_FLY_TO_BE_IN_BOUNDS',
                                                 'needs_recalibration':'RECALIBRATE'})
-
-            smach.StateMachine.add('RECALIBRATE', Recalibrate(),
-                                   transitions={'succeeded':'GOTO_START',
-                                                'aborted':'aborted',
-                                                'preempted':'GOTO_START'})
 
             smach.StateMachine.add('WAIT_FOR_FLY_TO_BE_IN_BOUNDS', WaitForFlyToBeInBounds(),
                                    transitions={'succeeded':'RUN_TRIAL',
