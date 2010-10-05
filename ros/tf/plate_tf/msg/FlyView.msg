@@ -1,0 +1,5 @@
+float32 robot_position_x
+float32 robot_position_y
+float32 robot_angle
+float32 robot_distance
+bool robot_in_front_of_fly
