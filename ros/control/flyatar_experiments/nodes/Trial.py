@@ -153,7 +153,7 @@ class Trial():
         #     return False
 
         # terminate all running states if CONTROL_ROBOT finished
-        if outcome_map['CONTROL_ROBOT']:
+        if outcome_map['CONTROL_ROBOT'] == 'succeeded':
             return True
 
         # in all other case, just keep running, don't terminate anything
