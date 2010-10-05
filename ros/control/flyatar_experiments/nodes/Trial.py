@@ -63,18 +63,20 @@ class MonitorConditions(smach.State):
             if self.preempt_requested():
                 self.service_preempt()
                 return 'preempted'
+            if (not self.in_bounds_subscriber.fly_in_bounds):
+                return 'aborted'
             time.sleep(0.1)
 
-        while (self.in_bounds_subscriber.robot_in_bounds is None) and (self.in_bounds_subscriber.fly_in_bounds is None):
-            time.sleep(0.1)
+        # while (self.in_bounds_subscriber.robot_in_bounds is None) and (self.in_bounds_subscriber.fly_in_bounds is None):
+        #     time.sleep(0.1)
 
-        while self.in_bounds_subscriber.robot_in_bounds and self.in_bounds_subscriber.fly_in_bounds:
-            time.sleep(0.1)
+        # while self.in_bounds_subscriber.robot_in_bounds and self.in_bounds_subscriber.fly_in_bounds:
+        #     time.sleep(0.1)
 
-        if self.in_bounds_subscriber.fly_in_bounds and (not self.in_bounds_subscriber.robot_in_bounds):
-            return 'succeeded'
-        else:
-            return 'aborted'
+        # if self.in_bounds_subscriber.fly_in_bounds and (not self.in_bounds_subscriber.robot_in_bounds):
+        #     return 'succeeded'
+        # else:
+        #     return 'aborted'
 
 # define state ControlRobot
 class LogTrial(smach.State):
@@ -152,7 +154,7 @@ class Trial():
     # gets called when ANY child state terminates
     def child_termination_callback(self,outcome_map):
 
-        rospy.logwarn("outcome_map = %s" % (str(outcome_map)))
+        # rospy.logwarn("outcome_map = %s" % (str(outcome_map)))
 
         # terminate all running states if FOO finished with outcome 'outcome3'
         # if outcome_map['FOO'] == 'outcome3':
