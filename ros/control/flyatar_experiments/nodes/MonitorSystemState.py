@@ -22,3 +22,4 @@ class FlyViewSubscriber:
         self.fly_view_sub = rospy.Subscriber("FlyView",FlyView,self.fly_view_callback)
 
     def fly_view_callback(self,data):
+        pass

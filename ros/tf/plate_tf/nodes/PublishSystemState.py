@@ -13,6 +13,8 @@ class PublishSystemState:
     def __init__(self):
         self.in_bounds_radius = rospy.get_param('in_bounds_radius')
         self.robot_fly_kinematics_sub = rospy.Subscriber("RobotFlyKinematics",RobotFlyKinematics,self.kinematics_callback)
+        self.tf_listener = tf.TransformListener()
+
         self.in_bounds_pub = rospy.Publisher("InBounds",InBounds)
         self.fly_view_pub = rospy.Publisher("FlyView",FlyView)
 
