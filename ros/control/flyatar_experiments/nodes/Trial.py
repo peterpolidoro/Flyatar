@@ -102,8 +102,11 @@ class Trial():
                                                                default_outcome='aborted',
                                                                outcome_map={'succeeded':
                                                                             { 'RECORD_DATA':'succeeded',
-                                                                              'MONITOR_CONDITIONS':'succeeded',
                                                                               'CONTROL_ROBOT':'succeeded'}})
+                                                               # outcome_map={'succeeded':
+                                                               #              { 'RECORD_DATA':'succeeded',
+                                                               #                'MONITOR_CONDITIONS':'succeeded',
+                                                               #                'CONTROL_ROBOT':'succeeded'}})
 
             # Open the container
             with self.sm_record_monitor_control:
