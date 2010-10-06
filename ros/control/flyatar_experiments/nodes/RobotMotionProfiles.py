@@ -22,24 +22,29 @@ class WaitForTriggerCondition(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_TRIGGER_CONDITION')
-        time.sleep(2)
 
-        # while not FLY_VIEW_SUB.initialized:
-        #     if self.preempt_requested():
-        #         return 'preempted'
-        #     time.sleep(0.1)
+        while not FLY_VIEW_SUB.initialized:
+            if self.preempt_requested():
+                return 'preempted'
+            time.sleep(0.1)
 
-        # rospy.logwarn("Waiting for robot to be in front of fly")
-        # while not FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
-        #     if self.preempt_requested():
-        #         return 'preempted'
-        #     time.sleep(0.1)
+        rospy.logwarn("Waiting for robot to be in front of fly")
+        while not FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
+            if self.preempt_requested():
+                return 'preempted'
+            time.sleep(0.1)
 
-        # rospy.logwarn("Waiting for robot to be behind fly")
-        # while FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
-        #     if self.preempt_requested():
-        #         return 'preempted'
-        #     time.sleep(0.1)
+        rospy.logwarn("Waiting for fly to be walking")
+        while KINEMATICS_SUB.kinematics.fly_stopped:
+            if self.preempt_requested():
+                return 'preempted'
+            time.sleep(0.1)
+
+        rospy.logwarn("Waiting for robot to be behind fly")
+        while FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
+            if self.preempt_requested():
+                return 'preempted'
+            time.sleep(0.1)
 
         return 'succeeded'
 
