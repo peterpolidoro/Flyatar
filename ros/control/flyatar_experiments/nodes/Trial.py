@@ -177,7 +177,7 @@ class Trial():
                                    transitions={'succeeded':'LOG_TRIAL',
                                                 'aborted':'ERASE_DATA',
                                                 'preempted':'ERASE_DATA'},
-                                   remapping={'angular_velocity_rmc':'angular_velocity_sm_trial')
+                                   remapping={'angular_velocity_rmc':'angular_velocity_sm_trial'})
 
             smach.StateMachine.add('ERASE_DATA', EraseData(),
                                    transitions={'succeeded':'succeeded',
