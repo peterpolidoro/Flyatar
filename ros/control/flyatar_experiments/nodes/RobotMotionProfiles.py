@@ -10,7 +10,7 @@ import time
 import MonitorSystemState
 
 # Global Variables
-FLY_VIEW_SUBSCRIBER = MonitorSystemState.FlyViewSubscriber()
+FLY_VIEW_SUB = MonitorSystemState.FlyViewSubscriber()
 
 # define state WaitForTriggerCondition
 class WaitForTriggerCondition(smach.State):
@@ -20,14 +20,24 @@ class WaitForTriggerCondition(smach.State):
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_TRIGGER_CONDITION')
         # time.sleep(2)
-        while True:
+
+        while not FLY_VIEW_SUB.initialized:
             if self.preempt_requested():
                 return 'preempted'
-            if FLY_VIEW_SUBSCRIBER.initialized:
-                rospy.logwarn("robot_angle = %s" % (str(FLY_VIEW_SUBSCRIBER.robot_angle)))
-                rospy.logwarn("robot_distance = %s" % (str(FLY_VIEW_SUBSCRIBER.robot_distance)))
-                rospy.logwarn("robot_in_front_of_fly = %s" % (str(FLY_VIEW_SUBSCRIBER.robot_in_front_of_fly)))
-            time.sleep(0.2)
+            time.sleep(0.1)
+
+        # Wait for robot to be in front of fly
+        while not FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
+            if self.preempt_requested():
+                return 'preempted'
+            time.sleep(0.1)
+
+        # Wait for robot to be behind fly
+        while FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
+            if self.preempt_requested():
+                return 'preempted'
+            time.sleep(0.1)
+
         return 'succeeded'
 
 # define state CalculateMove

@@ -3,31 +3,37 @@ from __future__ import division
 import roslib
 roslib.load_manifest('flyatar_experiments')
 import rospy
-from plate_tf.msg import InBounds,FlyView
+from plate_tf.msg import RobotFlyKinematics,InBounds,FlyView
 
 class InBoundsSubscriber:
     def __init__(self):
         self.in_bounds_sub = rospy.Subscriber('InBounds',InBounds,self.in_bounds_callback)
+        self.in_bounds = InBounds()
         self.initialized = False
 
     def in_bounds_callback(self,data):
-        self.bounds_radius = data.bounds_radius
-        self.robot_in_bounds = data.robot_in_bounds
-        self.fly_in_bounds = data.fly_in_bounds
+        self.in_bounds = data
         if not self.initialized:
             self.initialized = True
 
 class FlyViewSubscriber:
     def __init__(self):
         self.fly_view_sub = rospy.Subscriber("FlyView",FlyView,self.fly_view_callback)
+        self.fly_view = FlyView()
         self.initialized = False
 
     def fly_view_callback(self,data):
-        self.robot_position_x = data.robot_position_x
-        self.robot_position_y = data.robot_position_y
-        self.robot_angle = data.robot_angle
-        self.robot_distance = data.robot_distance
-        self.robot_in_front_of_fly = data.robot_in_front_of_fly
+        self.fly_view = data
+        if not self.initialized:
+            self.initialized = True
 
+class RobotFlyKinematicsSubscriber:
+    def __init__(self):
+        self.robot_fly_kinematics_sub = rospy.Subscriber("RobotFlyKinematics",RobotFlyKinematics,self.kinematics_callback)
+        self.robot_fly_kinematics = RobotFlyKinematics()
+        self.initialized = False
+
+    def kinematics_callback(self,data):
+        self.robot_fly_kinematics = data
         if not self.initialized:
             self.initialized = True

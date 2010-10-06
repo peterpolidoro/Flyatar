@@ -22,7 +22,7 @@ class SaveDataControlsPublisher:
         self.trial_count += 1
 
 # Global Variables
-SAVE_DATA_CONTROLS_PUBLISHER = SaveDataControlsPublisher()
+SAVE_DATA_CONTROLS_PUB = SaveDataControlsPublisher()
 
 # define state RecordData
 class RecordData(smach.State):
@@ -31,12 +31,12 @@ class RecordData(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state RECORD_DATA')
-        global SAVE_DATA_CONTROLS_PUBLISHER
-        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.file_name_base = time.strftime("%Y_%m_%d_%H_%M_%S")
-        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.trial_number = int(SAVE_DATA_CONTROLS_PUBLISHER.trial_count)
-        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.rm_file = False
-        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.save_kinematics = True
-        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls)
+        global SAVE_DATA_CONTROLS_PUB
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.file_name_base = time.strftime("%Y_%m_%d_%H_%M_%S")
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.trial_number = int(SAVE_DATA_CONTROLS_PUB.trial_count)
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.rm_file = False
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = True
+        SAVE_DATA_CONTROLS_PUB.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUB.save_data_controls)
         return 'succeeded'
 
 # define state EraseData
@@ -46,37 +46,30 @@ class EraseData(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state ERASE_DATA')
-        global SAVE_DATA_CONTROLS_PUBLISHER
-        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.save_kinematics = False
-        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls)
+        global SAVE_DATA_CONTROLS_PUB
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = False
+        SAVE_DATA_CONTROLS_PUB.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUB.save_data_controls)
         return 'succeeded'
 
 # define state MonitorConditions
 class MonitorConditions(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
-        self.in_bounds_subscriber = MonitorSystemState.InBoundsSubscriber()
+        self.in_bounds_sub = MonitorSystemState.InBoundsSubscriber()
 
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
+        while not self.in_bounds_sub.initialized:
+            if self.preempt_requested():
+                return 'preempted'
+            time.sleep(0.1)
+
         while True:
             if self.preempt_requested():
                 return 'preempted'
-            if not self.in_bounds_subscriber.fly_in_bounds:
+            if not self.in_bounds_sub.in_bounds.fly_in_bounds:
                 return 'aborted'
             time.sleep(0.1)
-
-        # while not self.in_bounds_subscriber.initialized:
-            # if self.preempt_requested():
-            #     return 'preempted'
-        #     time.sleep(0.1)
-
-        # while self.in_bounds_subscriber.fly_in_bounds:
-            # if self.preempt_requested():
-            #     return 'preempted'
-        #     time.sleep(0.1)
-
-        # return 'succeeded'
 
 # define state ControlRobot
 class LogTrial(smach.State):
@@ -85,11 +78,11 @@ class LogTrial(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state LOG_TRIAL')
-        global SAVE_DATA_CONTROLS_PUBLISHER
-        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.rm_file = False
-        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls.save_kinematics = False
-        SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUBLISHER.save_data_controls)
-        SAVE_DATA_CONTROLS_PUBLISHER.trial_count_increment()
+        global SAVE_DATA_CONTROLS_PUB
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.rm_file = False
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = False
+        SAVE_DATA_CONTROLS_PUB.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUB.save_data_controls)
+        SAVE_DATA_CONTROLS_PUB.trial_count_increment()
         return 'succeeded'
 
 class Trial():
