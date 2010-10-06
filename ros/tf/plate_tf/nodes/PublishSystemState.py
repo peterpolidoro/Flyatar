@@ -45,7 +45,7 @@ class PublishSystemState:
             self.fly_view.robot_position_y = ry = self.robot_origin_fly_frame.point.y
             self.fly_view.robot_angle = CircleFunctions.mod_angle(math.atan2(ry,rx))
             self.fly_view.robot_distance = math.sqrt(rx**2 + ry**2)
-            self.fly_view.robot_in_front_of_fly = 0 < self.robot_origin_fly_frame.point.y
+            self.fly_view.robot_in_front_of_fly = 0 < self.robot_origin_fly_frame.point.x
             self.fly_view_pub.publish(self.fly_view)
         except (tf.LookupException, tf.ConnectivityException):
             pass
