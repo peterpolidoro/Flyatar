@@ -139,7 +139,7 @@ class Trial():
             # Create the concurrent sub SMACH state machine
             self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','aborted','preempted'],
                                                                default_outcome='aborted',
-                                                               input_keys=['angular_velocity_rmc']
+                                                               input_keys=['angular_velocity_rmc'],
                                                                # outcome_map={'succeeded':
                                                                #              { 'RECORD_DATA':'succeeded',
                                                                #                'CONTROL_ROBOT':'succeeded'}})
