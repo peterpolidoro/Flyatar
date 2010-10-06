@@ -39,7 +39,7 @@ class SaveKinematics:
         self.format_width = "7"
         self.format_precision = "2"
         self.format_type = "f"
-        self.header_row_base = '{date_time:s} {protocol:s} {trial_number:>4d} {angular_velocity_goal:> 7.2f} {robot_width:>6.3f} {robot_height:>6.3f}\n\n'
+        self.header_row_base = '{date_time:s} {protocol:s} {trial_number:>4d} {angular_velocity_goal:> 7.4f} {robot_width:>6.3f} {robot_height:>6.3f}\n\n'
         self.data_row_base = '{time:0.2f} {robot_position_x:{align}{sign}{width}.{precision}{type}} {robot_position_y:{align}{sign}{width}.{precision}{type}} {robot_position_theta:{align}{sign}{width}.{precision}{type}} {robot_velocity_x:{align}{sign}{width}.{precision}{type}} {robot_velocity_y:{align}{sign}{width}.{precision}{type}} {robot_velocity_theta:{align}{sign}{width}.{precision}{type}} {robot_stopped:{align}{sign}{width}d} {fly_position_x:{align}{sign}{width}.{precision}{type}} {fly_position_y:{align}{sign}{width}.{precision}{type}} {fly_position_theta:{align}{sign}{width}.{precision}{type}} {fly_velocity_x:{align}{sign}{width}.{precision}{type}} {fly_velocity_y:{align}{sign}{width}.{precision}{type}} {fly_velocity_theta:{align}{sign}{width}.{precision}{type}} {fly_stopped:{align}{sign}{width}d}\n'
 
     def save_data_controls_callback(self,data):
