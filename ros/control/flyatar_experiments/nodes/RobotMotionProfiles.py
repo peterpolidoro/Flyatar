@@ -54,6 +54,7 @@ class CalculateMove(smach.State):
     def __init__(self):
         smach.State.__init__(self,
                              outcomes = ['succeeded','aborted','preempted'],
+                             input_keys = ['angular_velocity_input'],
                              output_keys = ['x_position_list','y_position_list','velocity_magnitude_list'])
         self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
         self.move_distance = self.in_bounds_radius + 5
@@ -61,6 +62,9 @@ class CalculateMove(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state CALCULATE_MOVE')
+
+        rospy.logwarn("CALCULATE_MOVE angular_velocity = %s" % (str(userdata.angular_velocity_input)))
+
         fly_vx = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.x
         fly_vy = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.y
         fly_vmag = numpy.linalg.norm([fly_vx,fly_vy])
@@ -83,13 +87,14 @@ class RobotMotionProfile():
     def __init__(self):
         # Create a SMACH state machine
         self.sm_robot_motion_profile = smach.StateMachine(['succeeded','aborted','preempted'])
+        self.sm_robot_motor_profile.angular_velocity_rmp
 
         # Open the container
         with self.sm_robot_motion_profile:
-            stage_goal = stage_action_server.msg.UpdateStagePositionGoal()
-            stage_goal.x_position = [25]
-            stage_goal.y_position = [25]
-            stage_goal.velocity_magnitude = [50]
+            # stage_goal = stage_action_server.msg.UpdateStagePositionGoal()
+            # stage_goal.x_position = [25]
+            # stage_goal.y_position = [25]
+            # stage_goal.velocity_magnitude = [50]
 
             # Add states to the container
             smach.StateMachine.add('WAIT_FOR_TRIGGER_CONDITION', WaitForTriggerCondition(),
@@ -100,7 +105,8 @@ class RobotMotionProfile():
             smach.StateMachine.add('CALCULATE_MOVE', CalculateMove(),
                                    transitions={'succeeded':'MOVE_ROBOT',
                                                 'preempted':'preempted',
-                                                'aborted':'aborted'})
+                                                'aborted':'aborted'},
+                                   remapping={'angular_velocity_input':'angular_velocity_rmp'})
 
             smach.StateMachine.add('MOVE_ROBOT',
                                    smach_ros.SimpleActionState('StageActionServer',

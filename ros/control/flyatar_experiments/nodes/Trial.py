@@ -12,6 +12,7 @@ from save_data.msg import SaveDataControls
 import MonitorSystemState
 import random
 import numpy
+import copy
 
 class SaveDataControlsPublisher:
     def __init__(self):
@@ -28,38 +29,47 @@ SAVE_DATA_CONTROLS_PUB = SaveDataControlsPublisher()
 # define state ChooseAngularVelocity
 class ChooseAngularVelocity(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'],
+                             output_keys=['angular_velocity_output'])
+
         self.experiment_angular_velocity_max = rospy.get_param("experiment_angular_velocity_max") # rad/s
         self.experiment_angular_velocity_bin_count = rospy.get_param("experiment_angular_velocity_bin_count")
         self.angular_velocity_set_complete = set(numpy.linspace(-self.experiment_angular_velocity_max,
                                                                 self.experiment_angular_velocity_max,
                                                                 self.experiment_angular_velocity_bin_count,
                                                                 True))
-        self.angular_velocity_set = self.angular_velocity_set_complete
+        self.angular_velocity_set = copy.copy(self.angular_velocity_set_complete)
 
     def execute(self, userdata):
         rospy.logwarn('Executing state CHOOSE_ANGULAR_VELOCITY')
         try:
             angular_velocity = self.angular_velocity_set.pop()
-            rospy.logwarn("angular velocity = %s" % (str(angular_velocity)))
         except (KeyError):
-            self.angular_velocity_set = self.angular_velocity_set_complete
+            self.angular_velocity_set = copy.copy(self.angular_velocity_set_complete)
+            angular_velocity = self.angular_velocity_set.pop()
+
+        userdata.angular_velocity_output = angular_velocity
 
         return 'succeeded'
 
 # define state RecordData
 class RecordData(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        smach.State.__init__(self,
+                             outcomes=['succeeded','aborted','preempted'],
+                             input_keys=['angular_velocity_input'])
         self.protocol = "walking_protocol_type_1"
 
     def execute(self, userdata):
         rospy.logwarn('Executing state RECORD_DATA')
+
+        rospy.logwarn("RECORD_DATA angular_velocity = %s" % (str(userdata.angular_velocity_input)))
+
         global SAVE_DATA_CONTROLS_PUB
         SAVE_DATA_CONTROLS_PUB.save_data_controls.file_name_base = time.strftime("%Y_%m_%d_%H_%M_%S")
         SAVE_DATA_CONTROLS_PUB.save_data_controls.protocol = self.protocol
         SAVE_DATA_CONTROLS_PUB.save_data_controls.trial_number = int(SAVE_DATA_CONTROLS_PUB.trial_count)
-        SAVE_DATA_CONTROLS_PUB.save_data_controls.angular_velocity_goal = 3.14
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.angular_velocity_goal = userdata.angular_velocity_input
         SAVE_DATA_CONTROLS_PUB.save_data_controls.rm_file = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = True
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_video = True
@@ -89,19 +99,17 @@ class MonitorConditions(smach.State):
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
 
-        while True:
-            time.sleep(0.1)
         # while not self.in_bounds_sub.initialized:
         #     if self.preempt_requested():
         #         return 'preempted'
         #     time.sleep(0.1)
 
-        # while True:
-        #     if self.preempt_requested():
-        #         return 'preempted'
-        #     if not self.in_bounds_sub.in_bounds.fly_in_bounds:
-        #         return 'aborted'
-        #     time.sleep(0.1)
+        while True:
+            if self.preempt_requested():
+                return 'preempted'
+            # if not self.in_bounds_sub.in_bounds.fly_in_bounds:
+            #     return 'aborted'
+            time.sleep(0.1)
 
 # define state ControlRobot
 class LogTrial(smach.State):
@@ -131,6 +139,7 @@ class Trial():
             # Create the concurrent sub SMACH state machine
             self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','aborted','preempted'],
                                                                default_outcome='aborted',
+                                                               input_keys=['angular_velocity_rmc']
                                                                # outcome_map={'succeeded':
                                                                #              { 'RECORD_DATA':'succeeded',
                                                                #                'CONTROL_ROBOT':'succeeded'}})
@@ -151,20 +160,24 @@ class Trial():
             # Open the container
             with self.sm_record_monitor_control:
                 # Add states to the container
-                smach.Concurrence.add('RECORD_DATA', RecordData())
+                smach.Concurrence.add('RECORD_DATA', RecordData(),
+                                      remapping={'angular_velocity_input':'angular_velocity_rmc'})
                 smach.Concurrence.add('MONITOR_CONDITIONS', MonitorConditions())
-                smach.Concurrence.add('CONTROL_ROBOT', self.sm_robot_motion_profile)
+                smach.Concurrence.add('CONTROL_ROBOT', self.sm_robot_motion_profile,
+                                      remapping={'angular_velocity_rmp':'angular_velocity_rmc'})
 
             # Add states to the container
             smach.StateMachine.add('CHOOSE_ANGULAR_VELOCITY', ChooseAngularVelocity(),
                                    transitions={'succeeded':'RECORD_MONITOR_CONTROL',
                                                 'aborted':'aborted',
-                                                'preempted':'preempted'})
+                                                'preempted':'preempted'},
+                                   remapping={'angular_velocity_output':'angular_velocity_sm_trial'})
 
             smach.StateMachine.add('RECORD_MONITOR_CONTROL', self.sm_record_monitor_control,
                                    transitions={'succeeded':'LOG_TRIAL',
                                                 'aborted':'ERASE_DATA',
-                                                'preempted':'ERASE_DATA'})
+                                                'preempted':'ERASE_DATA'},
+                                   remapping={'angular_velocity_rmc':'angular_velocity_sm_trial')
 
             smach.StateMachine.add('ERASE_DATA', EraseData(),
                                    transitions={'succeeded':'succeeded',
