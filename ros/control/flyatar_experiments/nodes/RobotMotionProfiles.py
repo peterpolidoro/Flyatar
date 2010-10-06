@@ -48,8 +48,8 @@ class CalculateMove(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state CALCULATE_MOVE')
-        vx = KINEMATICS.SUB.kinematics.fly_kinematics.velocity.x
-        vy = KINEMATICS.SUB.kinematics.fly_kinematics.velocity.y
+        vx = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.x
+        vy = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.y
         rospy.logwarn("vx = %s" % (str(vx)))
         rospy.logwarn("vy = %s" % (str(vy)))
         time.sleep(5)
