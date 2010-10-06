@@ -206,7 +206,6 @@ class PoseTFConversion:
                         quat_chosen = quat_plate
 
                     if quat_chosen is not None:
-                        rospy.logwarn("quat_chosen = %s" % (str(quat_chosen)))
                         self.tf_broadcaster.sendTransform((x_plate, y_plate, 0),
                                                           quat_chosen,
                                                           self.robot_fly_kinematics.header.stamp,
@@ -228,9 +227,10 @@ class PoseTFConversion:
             # Fix at some point to properly account for multiple flies
             if fly_count == 1:
                 self.fly_image_pose = msg.fly_image_poses[0]
+                self.image_pose_handler("Fly",self.fly_image_pose)
             elif 1 < fly_count:
                 self.fly_image_pose = msg.fly_image_poses[0]
-            self.image_pose_handler("Fly",self.fly_image_pose)
+                self.image_pose_handler("Fly",self.fly_image_pose)
             self.robot_fly_kinematics_pub.publish(self.robot_fly_kinematics)
 
 if __name__ == '__main__':
