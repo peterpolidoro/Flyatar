@@ -28,14 +28,18 @@ SAVE_DATA_CONTROLS_PUB = SaveDataControlsPublisher()
 class RecordData(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        self.protocol = "walking_protocol_type_1"
 
     def execute(self, userdata):
         rospy.logwarn('Executing state RECORD_DATA')
         global SAVE_DATA_CONTROLS_PUB
         SAVE_DATA_CONTROLS_PUB.save_data_controls.file_name_base = time.strftime("%Y_%m_%d_%H_%M_%S")
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.protocol = self.protocol
         SAVE_DATA_CONTROLS_PUB.save_data_controls.trial_number = int(SAVE_DATA_CONTROLS_PUB.trial_count)
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.angular_velocity_goal = 3.14
         SAVE_DATA_CONTROLS_PUB.save_data_controls.rm_file = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = True
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.save_video = True
         SAVE_DATA_CONTROLS_PUB.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUB.save_data_controls)
         return 'succeeded'
 
@@ -49,6 +53,7 @@ class EraseData(smach.State):
         global SAVE_DATA_CONTROLS_PUB
         SAVE_DATA_CONTROLS_PUB.save_data_controls.rm_file = True
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = False
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.save_video = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUB.save_data_controls)
         return 'succeeded'
 
@@ -60,17 +65,19 @@ class MonitorConditions(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
-        while not self.in_bounds_sub.initialized:
-            if self.preempt_requested():
-                return 'preempted'
-            time.sleep(0.1)
 
-        while True:
-            if self.preempt_requested():
-                return 'preempted'
-            if not self.in_bounds_sub.in_bounds.fly_in_bounds:
-                return 'aborted'
-            time.sleep(0.1)
+        time.sleep(2)
+        # while not self.in_bounds_sub.initialized:
+        #     if self.preempt_requested():
+        #         return 'preempted'
+        #     time.sleep(0.1)
+
+        # while True:
+        #     if self.preempt_requested():
+        #         return 'preempted'
+        #     if not self.in_bounds_sub.in_bounds.fly_in_bounds:
+        #         return 'aborted'
+        #     time.sleep(0.1)
 
 # define state ControlRobot
 class LogTrial(smach.State):
@@ -82,6 +89,7 @@ class LogTrial(smach.State):
         global SAVE_DATA_CONTROLS_PUB
         SAVE_DATA_CONTROLS_PUB.save_data_controls.rm_file = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = False
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.save_video = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUB.save_data_controls)
         SAVE_DATA_CONTROLS_PUB.trial_count_increment()
         return 'succeeded'

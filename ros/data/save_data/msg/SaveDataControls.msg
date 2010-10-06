@@ -1,4 +1,7 @@
 string file_name_base
+string protocol
 int32 trial_number
+float32 angular_velocity_goal
 bool rm_file
 bool save_kinematics
+bool save_video
