@@ -8,6 +8,8 @@ import smach_ros
 import stage_action_server.msg
 import time
 import MonitorSystemState
+import random
+import numpy
 
 # Global Variables
 FLY_VIEW_SUB = MonitorSystemState.FlyViewSubscriber()
@@ -45,13 +47,22 @@ class WaitForTriggerCondition(smach.State):
 class CalculateMove(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        self.experiment_velocity_max = rospy.get_param("experiment_velocity_max") # mm/s
 
     def execute(self, userdata):
         rospy.logwarn('Executing state CALCULATE_MOVE')
-        vx = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.x
-        vy = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.y
-        rospy.logwarn("vx = %s" % (str(vx)))
-        rospy.logwarn("vy = %s" % (str(vy)))
+        fly_vx = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.x
+        fly_vy = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.y
+        fly_vmag = numpy.linalg.norm([vx,vy])
+        vx_norm /= fly_vx/fly_vmag
+        vy_norm /= fly_vy/fly_vmag
+        rospy.logwarn("fly_vx = %s" % (str(fly_vx)))
+        rospy.logwarn("fly_vy = %s" % (str(fly_vy)))
+        move_direction = random.choice([-1,1])
+        move_vx = move_direction*vx_norm*self.experiment_velocity_max
+        move_vy = move_direction*vy_norm*self.experiment_velocity_max
+        rospy.logwarn("move_vx = %s" % (str(move_vx)))
+        rospy.logwarn("move_vy = %s" % (str(move_vy)))
         time.sleep(5)
         return 'succeeded'
 
