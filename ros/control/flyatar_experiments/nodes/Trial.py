@@ -66,16 +66,17 @@ class MonitorConditions(smach.State):
                 return 'aborted'
             time.sleep(0.1)
 
-        # while (self.in_bounds_subscriber.robot_in_bounds is None) and (self.in_bounds_subscriber.fly_in_bounds is None):
+        # while not self.in_bounds_subscriber.initialized:
+            # if self.preempt_requested():
+            #     return 'preempted'
         #     time.sleep(0.1)
 
-        # while self.in_bounds_subscriber.robot_in_bounds and self.in_bounds_subscriber.fly_in_bounds:
+        # while self.in_bounds_subscriber.fly_in_bounds:
+            # if self.preempt_requested():
+            #     return 'preempted'
         #     time.sleep(0.1)
 
-        # if self.in_bounds_subscriber.fly_in_bounds and (not self.in_bounds_subscriber.robot_in_bounds):
-        #     return 'succeeded'
-        # else:
-        #     return 'aborted'
+        # return 'succeeded'
 
 # define state ControlRobot
 class LogTrial(smach.State):

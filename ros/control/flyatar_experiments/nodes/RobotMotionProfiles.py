@@ -10,7 +10,7 @@ import time
 import MonitorSystemState
 
 # Global Variables
-FLY_STATE = MonitorSystemState.FlyState()
+FLY_VIEW_SUBSCRIBER = MonitorSystemState.FlyViewSubscriber()
 
 # define state WaitForTriggerCondition
 class WaitForTriggerCondition(smach.State):
@@ -19,13 +19,15 @@ class WaitForTriggerCondition(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_TRIGGER_CONDITION')
-        time.sleep(2)
-        # while True:
-        #     if self.preempt_requested():
-        #         return 'preempted'
-        #     if FLY_STATE.initialized:
-        #         rospy.logwarn("robot_in_front_of_fly = %s" % (str(FLY_STATE.robot_in_front_of_fly)))
-        #     time.sleep(0.2)
+        # time.sleep(2)
+        while True:
+            if self.preempt_requested():
+                return 'preempted'
+            if FLY_VIEW_SUBSCRIBER.initialized:
+                rospy.logwarn("robot_angle = %s" % (str(FLY_VIEW_SUBSCRIBER.robot_angle)))
+                rospy.logwarn("robot_distance = %s" % (str(FLY_VIEW_SUBSCRIBER.robot_distance)))
+                rospy.logwarn("robot_in_front_of_fly = %s" % (str(FLY_VIEW_SUBSCRIBER.robot_in_front_of_fly)))
+            time.sleep(0.2)
         return 'succeeded'
 
 # define state CalculateMove
@@ -62,16 +64,23 @@ class RobotMotionProfile():
 
             # Add states to the container
             smach.StateMachine.add('WAIT_FOR_TRIGGER_CONDITION', WaitForTriggerCondition(),
-                                   transitions={'succeeded':'CALCULATE_MOVE'})
+                                   transitions={'succeeded':'CALCULATE_MOVE',
+                                                'preempted':'preempted',
+                                                'aborted':'aborted'})
 
             smach.StateMachine.add('CALCULATE_MOVE', CalculateMove(),
-                                   transitions={'succeeded':'MOVE_ROBOT'})
+                                   transitions={'succeeded':'MOVE_ROBOT',
+                                                'preempted':'preempted',
+                                                'aborted':'aborted'})
 
             smach.StateMachine.add('MOVE_ROBOT',
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
                                                                goal=stage_goal),
-                                   transitions={'succeeded':'succeeded'})
+                                   transitions={'succeeded':'succeeded',
+                                                'preempted':'preempted',
+                                                'aborted':'aborted'})
+
 
         # Create and start the introspection server
         self.sis = smach_ros.IntrospectionServer('sis_server_robot_motion_profile',
