@@ -206,6 +206,7 @@ class PoseTFConversion:
                         quat_chosen = quat_plate
 
                     if quat_chosen is not None:
+                        rospy.logwarn("quat_chosen = %s" % (str(quat_chosen)))
                         self.tf_broadcaster.sendTransform((x_plate, y_plate, 0),
                                                           quat_chosen,
                                                           self.robot_fly_kinematics.header.stamp,
