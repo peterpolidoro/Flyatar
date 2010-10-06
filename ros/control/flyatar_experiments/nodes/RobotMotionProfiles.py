@@ -87,7 +87,7 @@ class RobotMotionProfile():
     def __init__(self):
         # Create a SMACH state machine
         self.sm_robot_motion_profile = smach.StateMachine(['succeeded','aborted','preempted'])
-        self.sm_robot_motion_profile.userdata.angular_velocity_rmp = 0
+        # self.sm_robot_motion_profile.userdata.angular_velocity_rmp = 0
 
         # Open the container
         with self.sm_robot_motion_profile:
