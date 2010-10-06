@@ -11,6 +11,7 @@ import MonitorSystemState
 
 # Global Variables
 FLY_VIEW_SUB = MonitorSystemState.FlyViewSubscriber()
+KINEMATICS_SUB = MonitorSystemState.KinematicsSubscriber()
 
 # define state WaitForTriggerCondition
 class WaitForTriggerCondition(smach.State):
@@ -19,24 +20,24 @@ class WaitForTriggerCondition(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_TRIGGER_CONDITION')
-        # time.sleep(2)
+        time.sleep(2)
 
-        while not FLY_VIEW_SUB.initialized:
-            if self.preempt_requested():
-                return 'preempted'
-            time.sleep(0.1)
+        # while not FLY_VIEW_SUB.initialized:
+        #     if self.preempt_requested():
+        #         return 'preempted'
+        #     time.sleep(0.1)
 
-        rospy.logwarn("Waiting for robot to be in front of fly")
-        while not FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
-            if self.preempt_requested():
-                return 'preempted'
-            time.sleep(0.1)
+        # rospy.logwarn("Waiting for robot to be in front of fly")
+        # while not FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
+        #     if self.preempt_requested():
+        #         return 'preempted'
+        #     time.sleep(0.1)
 
-        rospy.logwarn("Waiting for robot to be behind fly")
-        while FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
-            if self.preempt_requested():
-                return 'preempted'
-            time.sleep(0.1)
+        # rospy.logwarn("Waiting for robot to be behind fly")
+        # while FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
+        #     if self.preempt_requested():
+        #         return 'preempted'
+        #     time.sleep(0.1)
 
         return 'succeeded'
 
@@ -47,16 +48,10 @@ class CalculateMove(smach.State):
 
     def execute(self, userdata):
         rospy.logwarn('Executing state CALCULATE_MOVE')
-        time.sleep(5)
-        return 'succeeded'
-
-# define state MoveRobot
-class MoveRobot(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
-
-    def execute(self, userdata):
-        rospy.logwarn('Executing state MOVE_ROBOT')
+        vx = KINEMATICS.SUB.kinematics.fly_kinematics.velocity.x
+        vy = KINEMATICS.SUB.kinematics.fly_kinematics.velocity.y
+        rospy.logwarn("vx = %s" % (str(vx)))
+        rospy.logwarn("vy = %s" % (str(vy)))
         time.sleep(5)
         return 'succeeded'
 

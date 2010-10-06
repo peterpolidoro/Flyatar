@@ -27,13 +27,13 @@ class FlyViewSubscriber:
         if not self.initialized:
             self.initialized = True
 
-class RobotFlyKinematicsSubscriber:
+class KinematicsSubscriber:
     def __init__(self):
         self.robot_fly_kinematics_sub = rospy.Subscriber("RobotFlyKinematics",RobotFlyKinematics,self.kinematics_callback)
-        self.robot_fly_kinematics = RobotFlyKinematics()
+        self.kinematics = RobotFlyKinematics()
         self.initialized = False
 
     def kinematics_callback(self,data):
-        self.robot_fly_kinematics = data
+        self.kinematics = data
         if not self.initialized:
             self.initialized = True
