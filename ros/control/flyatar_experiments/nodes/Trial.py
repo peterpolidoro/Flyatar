@@ -47,6 +47,7 @@ class EraseData(smach.State):
     def execute(self, userdata):
         rospy.logwarn('Executing state ERASE_DATA')
         global SAVE_DATA_CONTROLS_PUB
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.rm_file = True
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUB.save_data_controls)
         return 'succeeded'
