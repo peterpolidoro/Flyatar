@@ -34,17 +34,18 @@ class WaitForTriggerCondition(smach.State):
         #         return 'preempted'
         #     time.sleep(0.1)
 
+        time.sleep(1)
         # rospy.logwarn("Waiting for fly to be walking")
         # while KINEMATICS_SUB.kinematics.fly_stopped:
         #     if self.preempt_requested():
         #         return 'preempted'
         #     time.sleep(0.1)
 
-        rospy.logwarn("Waiting for robot to be behind fly")
-        while FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
-            if self.preempt_requested():
-                return 'preempted'
-            time.sleep(0.1)
+        # rospy.logwarn("Waiting for robot to be behind fly")
+        # while FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
+        #     if self.preempt_requested():
+        #         return 'preempted'
+        #     time.sleep(0.1)
 
         return 'succeeded'
 
@@ -56,7 +57,7 @@ class CalculateMove(smach.State):
                              output_keys = ['x_position_list','y_position_list','velocity_magnitude_list'])
         self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
         self.move_distance = self.in_bounds_radius + 5
-        self.experiment_velocity_max = rospy.get_param("experiment_velocity_max") # mm/s
+        self.experiment_linear_velocity_max = rospy.get_param("experiment_linear_velocity_max") # mm/s
 
     def execute(self, userdata):
         rospy.logwarn('Executing state CALCULATE_MOVE')
@@ -72,10 +73,10 @@ class CalculateMove(smach.State):
         move_y_position = move_direction*vy_norm*self.move_distance
         rospy.logwarn("move_x_position = %s" % (str(move_x_position)))
         rospy.logwarn("move_y_position = %s" % (str(move_y_position)))
-        rospy.logwarn("velocity_magnitude = %s" % (str(self.experiment_velocity_max)))
+        rospy.logwarn("velocity_magnitude = %s" % (str(self.experiment_linear_velocity_max)))
         userdata.x_position_list = [move_x_position]
         userdata.y_position_list = [move_y_position]
-        userdata.velocity_magnitude_list = [self.experiment_velocity_max]
+        userdata.velocity_magnitude_list = [self.experiment_linear_velocity_max]
         return 'succeeded'
 
 class RobotMotionProfile():

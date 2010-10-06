@@ -2,7 +2,9 @@
   <param name="in_bounds_radius" type="double" value="30"/>
   <param name="robot_width" type="double" value="3.175"/>
   <param name="robot_height" type="double" value="3.175"/>
-  <param name="experiment_velocity_max" type="double" value="50"/>
+  <param name="experiment_linear_velocity_max" type="double" value="100"/>
+  <param name="experiment_angular_velocity_max" type="double" value="50"/>
+  <param name="experiment_angular_velocity_bin_count" type="double" value="21"/>
   <include file="$(find flyatar_experiments)/launch/experiment.launch" />
   <node pkg="flyatar_experiments" type="ExperimentWait.py" name="ExperimentWait" />
 </launch>

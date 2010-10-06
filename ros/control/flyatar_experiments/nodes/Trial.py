@@ -11,6 +11,7 @@ import RobotMotionProfiles
 from save_data.msg import SaveDataControls
 import MonitorSystemState
 import random
+import numpy
 
 class SaveDataControlsPublisher:
     def __init__(self):
@@ -23,6 +24,28 @@ class SaveDataControlsPublisher:
 
 # Global Variables
 SAVE_DATA_CONTROLS_PUB = SaveDataControlsPublisher()
+
+# define state ChooseAngularVelocity
+class ChooseAngularVelocity(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        self.experiment_angular_velocity_max = rospy.get_param("experiment_angular_velocity_max") # rad/s
+        self.experiment_angular_velocity_bin_count = rospy.get_param("experiment_angular_velocity_bin_count")
+        self.angular_velocity_set_complete = set(numpy.linspace(-self.experiment_angular_velocity_max,
+                                                                self.experiment_angular_velocity_max,
+                                                                self.experiment_angular_velocity_bin_count,
+                                                                True))
+        self.angular_velocity_set = self.angular_velocity_set_complete
+
+    def execute(self, userdata):
+        rospy.logwarn('Executing state CHOOSE_ANGULAR_VELOCITY')
+        try:
+            angular_velocity = self.angular_velocity_set.pop()
+            rospy.logwarn("angular velocity = %s" % (str(angular_velocity)))
+        except (KeyError):
+            self.angular_velocity_set = self.angular_velocity_set_complete
+
+        return 'succeeded'
 
 # define state RecordData
 class RecordData(smach.State):
@@ -66,7 +89,8 @@ class MonitorConditions(smach.State):
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
 
-        time.sleep(2)
+        while True:
+            time.sleep(0.1)
         # while not self.in_bounds_sub.initialized:
         #     if self.preempt_requested():
         #         return 'preempted'
@@ -132,6 +156,11 @@ class Trial():
                 smach.Concurrence.add('CONTROL_ROBOT', self.sm_robot_motion_profile)
 
             # Add states to the container
+            smach.StateMachine.add('CHOOSE_ANGULAR_VELOCITY', ChooseAngularVelocity(),
+                                   transitions={'succeeded':'RECORD_MONITOR_CONTROL',
+                                                'aborted':'aborted',
+                                                'preempted':'preempted'})
+
             smach.StateMachine.add('RECORD_MONITOR_CONTROL', self.sm_record_monitor_control,
                                    transitions={'succeeded':'LOG_TRIAL',
                                                 'aborted':'ERASE_DATA',

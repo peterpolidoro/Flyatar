@@ -33,6 +33,9 @@ class PoseTFConversion:
         self.fly_angle_previous = [None]
         self.robot_angle_previous = [None]
 
+        self.fly_t_previous = None
+        self.robot_t_previous = None
+
         self.sw_fly = sw.StopWalk()
         self.sw_robot = sw.StopWalk()
 
@@ -114,6 +117,7 @@ class PoseTFConversion:
             a_prev = self.fly_angle_previous
             kinematics_state = self.robot_fly_kinematics.fly_kinematics
             stop_state = self.robot_fly_kinematics.fly_stopped
+            t_prev = self.fly_t_previous
 
         else:
             image_frame_name = "RobotImage"
@@ -125,6 +129,7 @@ class PoseTFConversion:
             a_prev = self.robot_angle_previous
             kinematics_state = self.robot_fly_kinematics.robot_kinematics
             stop_state = self.robot_fly_kinematics.robot_stopped
+            t_prev = self.robot_t_previous
 
         try:
             Xsrc = [msg.position.x]
@@ -192,8 +197,13 @@ class PoseTFConversion:
                         quat_plate = tf.transformations.quaternion_about_axis(a_mod, (0,0,1))
                     elif a_plate is not None:
                         kinematics_state.position.theta = a_plate
+                        if t_prev is not None:
+                            kinematics_state.velocity.theta = (a_plate - a_prev[0])/(t - t_prev)
+                        else:
+                            kinematics_state.velocity.theta = 0
                     else:
                         kinematics_state.position.theta = 0
+                        kinematics_state.velocity.theta = 0
 
                     if vel_ang is not None:
                         quat_chosen = co.choose_orientation(quat_plate,vel_ang,stopped,a_prev[0])
