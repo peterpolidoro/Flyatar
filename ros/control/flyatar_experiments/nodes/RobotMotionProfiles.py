@@ -46,7 +46,11 @@ class WaitForTriggerCondition(smach.State):
 # define state CalculateMove
 class CalculateMove(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        smach.State.__init__(self,
+                             outcomes = ['succeeded','aborted','preempted'],
+                             output_keys = ['x_position_list','y_position_list','velocity_magnitude_list'])
+        self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
+        self.move_distance = self.in_bounds_radius + 5
         self.experiment_velocity_max = rospy.get_param("experiment_velocity_max") # mm/s
 
     def execute(self, userdata):
@@ -59,11 +63,14 @@ class CalculateMove(smach.State):
         rospy.logwarn("fly_vx = %s" % (str(fly_vx)))
         rospy.logwarn("fly_vy = %s" % (str(fly_vy)))
         move_direction = random.choice([-1,1])
-        move_vx = move_direction*vx_norm*self.experiment_velocity_max
-        move_vy = move_direction*vy_norm*self.experiment_velocity_max
-        rospy.logwarn("move_vx = %s" % (str(move_vx)))
-        rospy.logwarn("move_vy = %s" % (str(move_vy)))
-        time.sleep(5)
+        move_x_position = move_direction*vx_norm*self.move_distance
+        move_y_position = move_direction*vy_norm*self.move_distance
+        rospy.logwarn("move_x_position = %s" % (str(move_x_position)))
+        rospy.logwarn("move_y_position = %s" % (str(move_y_position)))
+        rospy.logwarn("velocity_magnitude = %s" % (str(self.experiment_velocity_max)))
+        userdata.x_position_list = [move_x_position]
+        userdata.y_position_list = [move_y_position]
+        userdata.velocity_magnitude_list = [self.experiment_velocity_max]
         return 'succeeded'
 
 class RobotMotionProfile():
@@ -92,10 +99,17 @@ class RobotMotionProfile():
             smach.StateMachine.add('MOVE_ROBOT',
                                    smach_ros.SimpleActionState('StageActionServer',
                                                                stage_action_server.msg.UpdateStagePositionAction,
-                                                               goal=stage_goal),
+                                                               goal_slots=['x_position',
+                                                                           'y_position',
+                                                                           'velocity_magnitude']),
+                                                               # goal=stage_goal),
                                    transitions={'succeeded':'succeeded',
                                                 'preempted':'preempted',
-                                                'aborted':'aborted'})
+                                                'aborted':'aborted'},
+                                   remapping={'x_position':'x_position_list',
+                                              'y_position':'y_position_list',
+                                              'velocity_magnitude':'velocity_magnitude_list'})
+
 
 
         # Create and start the introspection server
