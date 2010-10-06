@@ -53,9 +53,9 @@ class CalculateMove(smach.State):
         rospy.logwarn('Executing state CALCULATE_MOVE')
         fly_vx = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.x
         fly_vy = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.y
-        fly_vmag = numpy.linalg.norm([vx,vy])
-        vx_norm /= fly_vx/fly_vmag
-        vy_norm /= fly_vy/fly_vmag
+        fly_vmag = numpy.linalg.norm([fly_vx,fly_vy])
+        vx_norm = fly_vx/fly_vmag
+        vy_norm = fly_vy/fly_vmag
         rospy.logwarn("fly_vx = %s" % (str(fly_vx)))
         rospy.logwarn("fly_vy = %s" % (str(fly_vy)))
         move_direction = random.choice([-1,1])
