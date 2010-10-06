@@ -23,8 +23,8 @@ class FlyViewSubscriber:
         self.initialized = False
 
     def fly_view_callback(self,data):
-        self.robot_position_x = data.robot_position.x
-        self.robot_position_y = data.robot_position.y
+        self.robot_position_x = data.robot_position_x
+        self.robot_position_y = data.robot_position_y
         self.robot_angle = data.robot_angle
         self.robot_distance = data.robot_distance
         self.robot_in_front_of_fly = data.robot_in_front_of_fly
