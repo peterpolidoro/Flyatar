@@ -93,7 +93,7 @@ class EraseData(smach.State):
 # define state MonitorConditions
 class MonitorConditions(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        smach.State.__init__(self, outcomes=['succeeded','fly_left_bounds','preempted'])
         self.in_bounds_sub = MonitorSystemState.InBoundsSubscriber()
 
     def execute(self, userdata):
@@ -108,7 +108,7 @@ class MonitorConditions(smach.State):
             if self.preempt_requested():
                 return 'preempted'
             if not self.in_bounds_sub.in_bounds.fly_in_bounds:
-                return 'aborted'
+                return 'fly_left_bounds'
             time.sleep(0.1)
 
 # define state ControlRobot
@@ -137,7 +137,7 @@ class Trial():
             self.sm_robot_motion_profile = self.robot_motion_profile.sm_robot_motion_profile
 
             # Create the concurrent sub SMACH state machine
-            self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','skipped_move','aborted','preempted'],
+            self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','fly_left_bounds','aborted','preempted'],
                                                                default_outcome='aborted',
                                                                input_keys=['angular_velocity_rmc'],
                                                                # outcome_map={'succeeded':
@@ -152,12 +152,16 @@ class Trial():
                                                                #                'MONITOR_CONDITIONS':'succeeded',
                                                                #                'CONTROL_ROBOT':'succeeded'}})
                                                                outcome_map={'succeeded':
-                                                                            { 'RECORD_DATA':'succeeded',
-                                                                              'MONITOR_CONDITIONS':'preempted',
-                                                                              'CONTROL_ROBOT':'succeeded'},
-                                                                            'skipped_move':
-                                                                            {'MONITOR_CONDITIONS':'aborted',
-                                                                             'CONTROL_ROBOT':'skipped_move'}},
+                                                                            {'RECORD_DATA':'succeeded',
+                                                                             'MONITOR_CONDITIONS':'preempted',
+                                                                             'CONTROL_ROBOT':'succeeded'},
+                                                                            # 'skipped_move':
+                                                                            # {'RECORD_DATA':'succeeded',
+                                                                            #  'MONITOR_CONDITIONS':'aborted',
+                                                                            #  'CONTROL_ROBOT':'skipped_move'}},
+                                                                            'fly_left_bounds':
+                                                                            {'RECORD_DATA':'succeeded',
+                                                                             'MONITOR_CONDITIONS':'fly_left_bounds'},
                                                                child_termination_cb = self.child_termination_callback)
 
             # Open the container
@@ -178,7 +182,7 @@ class Trial():
 
             smach.StateMachine.add('RECORD_MONITOR_CONTROL', self.sm_record_monitor_control,
                                    transitions={'succeeded':'LOG_TRIAL',
-                                                'skipped_move':'LOG_TRIAL',
+                                                'fly_left_bounds':'LOG_TRIAL',
                                                 'aborted':'ERASE_DATA',
                                                 'preempted':'ERASE_DATA'},
                                    remapping={'angular_velocity_rmc':'angular_velocity_sm_trial'})
