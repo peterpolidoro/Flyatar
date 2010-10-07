@@ -67,7 +67,7 @@ class CalculateMove(smach.State):
 
         rospy.logwarn("CALCULATE_MOVE angular_velocity = %s" % (str(userdata.angular_velocity_input)))
 
-        if self.angular_velocity_min < abs(userdata.angular_velocity_input):
+        if abs(userdata.angular_velocity_input) < self.angular_velocity_min:
             return 'skip_move'
 
         fly_vx = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.x
