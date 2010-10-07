@@ -99,21 +99,17 @@ class MonitorConditions(smach.State):
     def execute(self, userdata):
         rospy.logwarn('Executing state MONITOR_CONDITIONS')
 
-        # while not self.in_bounds_sub.initialized:
-        #     if self.preempt_requested():
-        #         return 'preempted'
-        #     time.sleep(0.1)
-        
-        count = 1
+        while not self.in_bounds_sub.initialized:
+            if self.preempt_requested():
+                return 'preempted'
+            time.sleep(0.1)
+
         while True:
             if self.preempt_requested():
                 return 'preempted'
-            # if not self.in_bounds_sub.in_bounds.fly_in_bounds:
-            #     return 'aborted'
-            time.sleep(0.1)
-            count += 1
-            if 100 < count:
+            if not self.in_bounds_sub.in_bounds.fly_in_bounds:
                 return 'aborted'
+            time.sleep(0.1)
 
 # define state ControlRobot
 class LogTrial(smach.State):
