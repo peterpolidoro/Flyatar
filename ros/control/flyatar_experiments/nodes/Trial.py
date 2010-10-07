@@ -161,7 +161,7 @@ class Trial():
                                                                             #  'CONTROL_ROBOT':'skipped_move'}},
                                                                             'fly_left_bounds':
                                                                             {'RECORD_DATA':'succeeded',
-                                                                             'MONITOR_CONDITIONS':'fly_left_bounds'},
+                                                                             'MONITOR_CONDITIONS':'fly_left_bounds'}},
                                                                child_termination_cb = self.child_termination_callback)
 
             # Open the container
