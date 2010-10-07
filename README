@@ -39,14 +39,14 @@ git pull origin master
 rosinstall -u ~/ros/Flyatar
 
 Adding Flyatar Dynamic IP Address to http://mosca.caltech.edu/ips.txt for Remote Login:
-cp ~/git/Flyatar/ros/update_ip.py ~/bin/
+cp ~/git/Flyatar/update_ip.py ~/bin/
 crontab -e
 <Add the following line, replace YOURUSERNAME>
 3,33 * * * * /home/YOURUSERNAME/bin/update_ip.py
 <example username: flyatar_user>
 
 ssh into the Registered Flyatar Dynamic IP Address:
-cp ~/git/Flyatar/ros/get_ip.py ~/bin/
+cp ~/git/Flyatar/get_ip.py ~/bin/
 ssh username@`get_ip.py hostname` to login (Note that this command doesn't use the normal apostrophe, but the one on the upper-left of the keyboard). 
 <example username: flyatar_user>
 <example hostname: flyatar>
