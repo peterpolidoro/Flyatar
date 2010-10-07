@@ -103,13 +103,17 @@ class MonitorConditions(smach.State):
         #     if self.preempt_requested():
         #         return 'preempted'
         #     time.sleep(0.1)
-
+        
+        count = 1
         while True:
             if self.preempt_requested():
                 return 'preempted'
             # if not self.in_bounds_sub.in_bounds.fly_in_bounds:
             #     return 'aborted'
             time.sleep(0.1)
+            count += 1
+            if 10000 < count:
+                return 'aborted'
 
 # define state ControlRobot
 class LogTrial(smach.State):
@@ -137,7 +141,7 @@ class Trial():
             self.sm_robot_motion_profile = self.robot_motion_profile.sm_robot_motion_profile
 
             # Create the concurrent sub SMACH state machine
-            self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','aborted','preempted'],
+            self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','skipped_move','aborted','preempted'],
                                                                default_outcome='aborted',
                                                                input_keys=['angular_velocity_rmc'],
                                                                # outcome_map={'succeeded':
@@ -154,7 +158,10 @@ class Trial():
                                                                outcome_map={'succeeded':
                                                                             { 'RECORD_DATA':'succeeded',
                                                                               'MONITOR_CONDITIONS':'preempted',
-                                                                              'CONTROL_ROBOT':'succeeded'}},
+                                                                              'CONTROL_ROBOT':'succeeded'},
+                                                                            'skipped_move':
+                                                                            {'MONITOR_CONDITIONS':'aborted',
+                                                                             'CONTROL_ROBOT':'skipped_move'}},
                                                                child_termination_cb = self.child_termination_callback)
 
             # Open the container
@@ -175,6 +182,7 @@ class Trial():
 
             smach.StateMachine.add('RECORD_MONITOR_CONTROL', self.sm_record_monitor_control,
                                    transitions={'succeeded':'LOG_TRIAL',
+                                                'skipped_move':'LOG_TRIAL',
                                                 'aborted':'ERASE_DATA',
                                                 'preempted':'ERASE_DATA'},
                                    remapping={'angular_velocity_rmc':'angular_velocity_sm_trial'})

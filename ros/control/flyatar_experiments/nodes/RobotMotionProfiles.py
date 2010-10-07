@@ -54,7 +54,7 @@ class WaitForTriggerCondition(smach.State):
 class CalculateMove(smach.State):
     def __init__(self):
         smach.State.__init__(self,
-                             outcomes = ['succeeded','skip_move','aborted','preempted'],
+                             outcomes = ['succeeded','skipped_move','aborted','preempted'],
                              input_keys = ['angular_velocity_input'],
                              output_keys = ['x_position_list','y_position_list','velocity_magnitude_list'])
         self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
@@ -68,7 +68,7 @@ class CalculateMove(smach.State):
         rospy.logwarn("CALCULATE_MOVE angular_velocity = %s" % (str(userdata.angular_velocity_input)))
 
         if abs(userdata.angular_velocity_input) < self.angular_velocity_min:
-            return 'skip_move'
+            return 'skipped_move'
 
         fly_vx = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.x
         fly_vy = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.y
@@ -97,7 +97,7 @@ class CalculateMove(smach.State):
 class RobotMotionProfile():
     def __init__(self):
         # Create a SMACH state machine
-        self.sm_robot_motion_profile = smach.StateMachine(outcomes = ['succeeded','aborted','preempted'],
+        self.sm_robot_motion_profile = smach.StateMachine(outcomes = ['succeeded','skipped_move','aborted','preempted'],
                                                           input_keys = ['angular_velocity_rmp'])
         # self.sm_robot_motion_profile.userdata.angular_velocity_rmp = 0
 
@@ -116,7 +116,7 @@ class RobotMotionProfile():
 
             smach.StateMachine.add('CALCULATE_MOVE', CalculateMove(),
                                    transitions={'succeeded':'MOVE_ROBOT',
-                                                'skip_move':'succeeded',
+                                                'skipped_move':'skipped_move',
                                                 'preempted':'preempted',
                                                 'aborted':'aborted'},
                                    remapping={'angular_velocity_input':'angular_velocity_rmp'})
