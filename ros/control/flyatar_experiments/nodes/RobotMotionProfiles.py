@@ -43,6 +43,7 @@ class WaitForTriggerCondition(smach.State):
 
         rospy.logwarn("Waiting for robot to be behind fly")
         while FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
+            rospy.logwarn("robot_in_front_of_fly = %s" % (str(FLY_VIEW_SUB.fly_view.robot_in_front_of_fly)))
             if self.preempt_requested():
                 return 'preempted'
             time.sleep(0.1)
