@@ -72,15 +72,21 @@ class CalculateMove(smach.State):
         vy_norm = fly_vy/fly_vmag
         rospy.logwarn("fly_vx = %s" % (str(fly_vx)))
         rospy.logwarn("fly_vy = %s" % (str(fly_vy)))
-        move_direction = random.choice([-1,1])
+        move_direction = math.copysign(1,userdata.angular_velocity_input)
+        # move_direction = random.choice([-1,1])
         move_x_position = move_direction*vx_norm*self.move_distance
         move_y_position = move_direction*vy_norm*self.move_distance
         rospy.logwarn("move_x_position = %s" % (str(move_x_position)))
         rospy.logwarn("move_y_position = %s" % (str(move_y_position)))
-        rospy.logwarn("velocity_magnitude = %s" % (str(self.experiment_linear_velocity_max)))
         userdata.x_position_list = [move_x_position]
         userdata.y_position_list = [move_y_position]
-        userdata.velocity_magnitude_list = [self.experiment_linear_velocity_max]
+        robot_distance = FLY_VIEW_SUB.robot_distance
+        rospy.logwarn("robot_distance = %s" % (str(robot_distance)))
+        linear_velocity = abs(userdata.angular_velocity_max)*abs(robot_distance)
+        if self.experiment_linear_velocity_max < linear_velocity:
+            linear_velocity = self.experiment_linear_velocity_max
+        userdata.velocity_magnitude_list = [linear_velocity]
+        rospy.logwarn("velocity_magnitude = %s" % (str(linear_velocity)))
         return 'succeeded'
 
 class RobotMotionProfile():
