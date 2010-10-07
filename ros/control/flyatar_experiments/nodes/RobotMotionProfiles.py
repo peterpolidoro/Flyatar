@@ -54,17 +54,21 @@ class WaitForTriggerCondition(smach.State):
 class CalculateMove(smach.State):
     def __init__(self):
         smach.State.__init__(self,
-                             outcomes = ['succeeded','aborted','preempted'],
+                             outcomes = ['succeeded','skip_move','aborted','preempted'],
                              input_keys = ['angular_velocity_input'],
                              output_keys = ['x_position_list','y_position_list','velocity_magnitude_list'])
         self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
         self.move_distance = self.in_bounds_radius + 5
         self.experiment_linear_velocity_max = rospy.get_param("experiment_linear_velocity_max") # mm/s
+        self.angular_velocity_min = 0.01 # rad/s
 
     def execute(self, userdata):
         rospy.logwarn('Executing state CALCULATE_MOVE')
 
         rospy.logwarn("CALCULATE_MOVE angular_velocity = %s" % (str(userdata.angular_velocity_input)))
+
+        if self.angular_velocity_min < abs(userdata.angular_velocity_input):
+            return 'skip_move'
 
         fly_vx = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.x
         fly_vy = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.y
@@ -112,6 +116,7 @@ class RobotMotionProfile():
 
             smach.StateMachine.add('CALCULATE_MOVE', CalculateMove(),
                                    transitions={'succeeded':'MOVE_ROBOT',
+                                                'skip_move':'succeeded',
                                                 'preempted':'preempted',
                                                 'aborted':'aborted'},
                                    remapping={'angular_velocity_input':'angular_velocity_rmp'})
