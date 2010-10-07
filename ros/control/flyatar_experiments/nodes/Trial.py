@@ -112,7 +112,7 @@ class MonitorConditions(smach.State):
             #     return 'aborted'
             time.sleep(0.1)
             count += 1
-            if 10000 < count:
+            if 100 < count:
                 return 'aborted'
 
 # define state ControlRobot
