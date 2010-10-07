@@ -83,7 +83,7 @@ class CalculateMove(smach.State):
         userdata.y_position_list = [move_y_position]
         robot_distance = FLY_VIEW_SUB.fly_view.robot_distance
         rospy.logwarn("robot_distance = %s" % (str(robot_distance)))
-        linear_velocity = abs(userdata.angular_velocity_max)*abs(robot_distance)
+        linear_velocity = abs(userdata.angular_velocity_input)*abs(robot_distance)
         if self.experiment_linear_velocity_max < linear_velocity:
             linear_velocity = self.experiment_linear_velocity_max
         userdata.velocity_magnitude_list = [linear_velocity]
