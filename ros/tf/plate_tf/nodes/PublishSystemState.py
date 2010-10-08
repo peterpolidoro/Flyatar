@@ -18,6 +18,9 @@ class PublishSystemState:
         self.in_bounds_pub = rospy.Publisher("InBounds",InBounds)
         self.fly_view_pub = rospy.Publisher("FlyView",FlyView)
 
+        self.start_position_x = rospy.get_param("start_position_x")
+        self.start_position_y = rospy.get_param("start_position_y")
+
         self.in_bounds = InBounds()
         self.fly_view = FlyView()
 
@@ -32,8 +35,8 @@ class PublishSystemState:
         robot_y = data.robot_kinematics.position.y
         fly_x = data.fly_kinematics.position.x
         fly_y = data.fly_kinematics.position.y
-        robot_dist = math.sqrt(robot_x**2 + robot_y**2)
-        fly_dist = math.sqrt(fly_x**2 + fly_y**2)
+        robot_dist = math.sqrt((robot_x - self.start_position_x)**2 + (robot_y - self.start_position_y)**2)
+        fly_dist = math.sqrt((fly_x - self.start_position_x)**2 + (fly_y - self.start_position_y)**2)
         self.in_bounds.bounds_radius = self.in_bounds_radius
         self.in_bounds.robot_in_bounds = robot_dist < self.in_bounds_radius
         self.in_bounds.fly_in_bounds = fly_dist < self.in_bounds_radius

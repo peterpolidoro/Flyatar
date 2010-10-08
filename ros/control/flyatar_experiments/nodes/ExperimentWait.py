@@ -86,12 +86,14 @@ class Experiment():
     def __init__(self):
         # Create a SMACH state machine
         self.sm_experiment = smach.StateMachine(['succeeded','aborted','preempted'])
+        self.start_position_x = rospy.get_param("start_position_x")
+        self.start_position_y = rospy.get_param("start_position_y")
 
         # Open the container
         with self.sm_experiment:
             self.start_position = stage_action_server.msg.UpdateStagePositionGoal()
-            self.start_position.x_position = [0]
-            self.start_position.y_position = [0]
+            self.start_position.x_position = [self.start_position_x]
+            self.start_position.y_position = [self.start_position_y]
             self.start_position.velocity_magnitude = [50]
 
             self.trial = Trial.Trial()

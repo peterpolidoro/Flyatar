@@ -58,6 +58,8 @@ class CalculateMove(smach.State):
                              input_keys = ['angular_velocity_input'],
                              output_keys = ['x_position_list','y_position_list','velocity_magnitude_list'])
         self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
+        self.start_position_x = rospy.get_param("start_position_x")
+        self.start_position_y = rospy.get_param("start_position_y")
         self.move_distance = self.in_bounds_radius + 5
         self.experiment_linear_velocity_max = rospy.get_param("experiment_linear_velocity_max") # mm/s
         self.angular_velocity_min = 0.01 # rad/s
@@ -79,8 +81,8 @@ class CalculateMove(smach.State):
         rospy.logwarn("fly_vy = %s" % (str(fly_vy)))
         move_direction = math.copysign(1,userdata.angular_velocity_input)
         # move_direction = random.choice([-1,1])
-        move_x_position = move_direction*vx_norm*self.move_distance
-        move_y_position = move_direction*vy_norm*self.move_distance
+        move_x_position = move_direction*vx_norm*self.move_distance + self.start_position_x
+        move_y_position = move_direction*vy_norm*self.move_distance + self.start_position_y
         rospy.logwarn("move_x_position = %s" % (str(move_x_position)))
         rospy.logwarn("move_y_position = %s" % (str(move_y_position)))
         userdata.x_position_list = [move_x_position]
