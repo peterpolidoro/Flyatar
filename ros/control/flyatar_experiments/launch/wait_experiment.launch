@@ -7,7 +7,7 @@
   <param name="experiment_angular_velocity_max_positive" type="double" value="1.3963"/>
   <param name="experiment_angular_velocity_bin_count" type="double" value="11"/>
   <param name="start_position_x" type="double" value="0"/>
-  <param name="start_position_y" type="double" value="-20"/>
+  <param name="start_position_y" type="double" value="0"/>
   <include file="$(find flyatar_experiments)/launch/experiment.launch" />
   <node pkg="flyatar_experiments" type="ExperimentWait.py" name="ExperimentWait" />
 </launch>
