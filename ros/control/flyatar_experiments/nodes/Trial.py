@@ -32,10 +32,11 @@ class ChooseAngularVelocity(smach.State):
         smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'],
                              output_keys=['angular_velocity_output'])
 
-        self.experiment_angular_velocity_max = rospy.get_param("experiment_angular_velocity_max") # rad/s
+        self.experiment_angular_velocity_max_negative = rospy.get_param("experiment_angular_velocity_max_negative") # rad/s
+        self.experiment_angular_velocity_max_positive = rospy.get_param("experiment_angular_velocity_max_positive") # rad/s
         self.experiment_angular_velocity_bin_count = rospy.get_param("experiment_angular_velocity_bin_count")
-        self.angular_velocity_set_complete = set(numpy.linspace(-self.experiment_angular_velocity_max,
-                                                                self.experiment_angular_velocity_max,
+        self.angular_velocity_set_complete = set(numpy.linspace(self.experiment_angular_velocity_max_negative,
+                                                                self.experiment_angular_velocity_max_positive,
                                                                 self.experiment_angular_velocity_bin_count,
                                                                 True))
         self.angular_velocity_set = copy.copy(self.angular_velocity_set_complete)
