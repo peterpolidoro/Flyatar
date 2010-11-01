@@ -1,5 +1,5 @@
 <launch>
-  <param name="in_bounds_radius" type="double" value="30"/>
+  <param name="in_bounds_radius" type="double" value="60"/>
   <param name="robot_width" type="double" value="3.175"/>
   <param name="robot_height" type="double" value="3.175"/>
   <param name="experiment_linear_velocity_max" type="double" value="100"/>
