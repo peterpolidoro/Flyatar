@@ -60,7 +60,7 @@ class CalculateMove(smach.State):
         self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
         self.start_position_x = rospy.get_param("start_position_x")
         self.start_position_y = rospy.get_param("start_position_y")
-        self.move_distance = self.in_bounds_radius + 5
+        self.move_distance = rospy.get_param("move_distance")
         self.experiment_linear_velocity_max = rospy.get_param("experiment_linear_velocity_max") # mm/s
         self.angular_velocity_min = 0.01 # rad/s
 
