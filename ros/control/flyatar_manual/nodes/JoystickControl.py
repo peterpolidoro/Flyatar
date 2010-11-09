@@ -6,6 +6,7 @@ import sys
 import rospy
 from stage_message_interface.msg import StageCommands
 from joystick_commands.msg import JoystickCommands
+import math
 
 class JoystickControl:
 
@@ -39,7 +40,8 @@ class JoystickControl:
                     self.stage_commands.y_position = []
                     self.stage_commands.x_velocity = [data.y_velocity]
                     self.stage_commands.y_velocity = [-data.x_velocity]
-                    self.stage_commands.velocity_magnitude = [self.robot_velocity_max]
+                    self.vel_mag = self.robot_velocity_max*math.sqrt(data.x_velocity**2 + data.y_velocity**2)/math.sqrt(2)
+                    self.stage_commands.velocity_magnitude = [self.vel_mag]
             elif (self.velocity_threshold < abs(data.x_velocity)) or (self.velocity_threshold < abs(data.y_velocity)):
                 self.moving_to_start = False
 
