@@ -242,7 +242,8 @@ class PoseTFConversion:
         t_prev = self.robot_t_previous
 
         try:
-            (trans,quat_plate) = self.tf_listener.lookupTransform('/Plate', '/Magnet', rospy.Time(0))
+            # (trans,quat_plate) = self.tf_listener.lookupTransform('/Plate', '/Magnet', rospy.Time(0))
+            (trans,quat_plate) = self.tf_listener.lookupTransform('/Magnet', '/Plate', rospy.Time(0))
             rospy.logwarn("trans = %s" % (str(trans)))
             rospy.logwarn("quat_plate = %s" % (str(quat_plate)))
             x_plate = trans[0]
