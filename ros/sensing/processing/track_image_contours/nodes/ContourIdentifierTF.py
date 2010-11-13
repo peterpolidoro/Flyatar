@@ -83,6 +83,8 @@ class ContourIdentifier:
       except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
         pass
 
+      self.image_pose.header = header
+
       robot_index_list = []
       self.robot_found = False
       if self.robot_visible:
@@ -104,7 +106,6 @@ class ContourIdentifier:
           robot_index = dist_list.index(min(robot_dist_list))
           # rospy.logwarn("robot = %s" % str(robot))
 
-          self.image_pose.header = header
           self.robot_image_pose.position.x = x_list[robot_index]
           self.robot_image_pose.position.y = y_list[robot_index]
           q = tf.transformations.quaternion_about_axis(theta_list[robot_index], (0, 0, 1))

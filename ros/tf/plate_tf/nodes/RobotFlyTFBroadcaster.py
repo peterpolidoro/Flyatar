@@ -230,7 +230,6 @@ class PoseTFConversion:
             pass
 
     def handle_invisible_robot(self):
-        image_frame_name = "RobotImage"
         frame_name = "Robot"
         kf = self.kf_robot
         sw = self.sw_robot
@@ -248,21 +247,6 @@ class PoseTFConversion:
             rospy.logwarn("quat_plate = %s" % (str(quat_plate)))
             x_plate = trans[0]
             y_plate = trans[1]
-            # Xsrc = [msg.position.x]
-            # Ysrc = [msg.position.y]
-            # if (Xsrc is not None) and (Ysrc is not None) and \
-            #        (0 < len(Xsrc)) and (0 < len(Ysrc)):
-            #     self.tf_broadcaster.sendTransform((msg.position.x, msg.position.y, 0),
-            #                                       (msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w),
-            #                                       self.robot_fly_kinematics.header.stamp,
-            #                                       # rospy.Time.now(),
-            #                                       image_frame_name,
-            #                                       "Camera")
-            #     response = self.camera_to_plate(Xsrc,Ysrc)
-            #     x_plate = response.Xdst[0]
-            #     y_plate = response.Ydst[0]
-
-            #     quat_plate = self.quaternion_camera_to_plate((msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w))
 
             if quat_plate is not None:
                 t = self.robot_fly_kinematics.header.stamp.to_sec()
