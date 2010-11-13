@@ -245,6 +245,8 @@ class PoseTFConversion:
             (trans,quat_plate) = self.tf_listener.lookupTransform('/Plate', '/Magnet', rospy.Time(0))
             rospy.logwarn("trans = %s" % (str(trans)))
             rospy.logwarn("quat_plate = %s" % (str(quat_plate)))
+            x_plate = trans[0]
+            y_plate = trans[1]
             # Xsrc = [msg.position.x]
             # Ysrc = [msg.position.y]
             # if (Xsrc is not None) and (Ysrc is not None) and \
