@@ -158,7 +158,8 @@ class PoseTFConversion:
                 y_plate = trans[1]
 
             if quat_plate is not None:
-                rospy.logwarn("trans = %s" % (str(trans)))
+                rospy.logwarn("x_plate = %s" % (str(x_plate)))
+                rospy.logwarn("y_plate = %s" % (str(y_plate)))
                 rospy.logwarn("quat_plate = %s" % (str(quat_plate)))
                 t = self.robot_fly_kinematics.header.stamp.to_sec()
                 (x,y,vx,vy) = kf.update((x_plate,y_plate),t)
