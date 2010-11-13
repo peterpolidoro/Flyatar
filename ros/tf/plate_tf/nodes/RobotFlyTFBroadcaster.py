@@ -26,6 +26,9 @@ class PoseTFConversion:
         self.robot_fly_kinematics = RobotFlyKinematics()
         self.robot_fly_kinematics_pub = rospy.Publisher('RobotFlyKinematics', RobotFlyKinematics)
 
+        # Robot Info
+        self.robot_visible = bool(rospy.get_param("robot_visible","true"))
+
         self.kf_fly = filters.KalmanFilter()
         self.kf_robot = filters.KalmanFilter()
         self.lpf_fly_angle = filters.LowPassFilter()
@@ -226,12 +229,124 @@ class PoseTFConversion:
         except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
             pass
 
+    def handle_invisible_robot(self):
+        image_frame_name = "RobotImage"
+        frame_name = "Robot"
+        kf = self.kf_robot
+        sw = self.sw_robot
+        co = self.co_robot
+        lpf_angle = self.lpf_robot_angle
+        a_prev = self.robot_angle_previous
+        kinematics_state = self.robot_fly_kinematics.robot_kinematics
+        stop_state = self.robot_fly_kinematics.robot_stopped
+        t_prev = self.robot_t_previous
+
+        try:
+            (trans,quat_plate) = self.tf_listener.lookupTransform('/Plate', '/Magnet', rospy.Time(0))
+            rospy.logwarn("trans = %s" % (str(trans)))
+            rospy.logwarn("quat_plate = %s" % (str(quat_plate)))
+            # Xsrc = [msg.position.x]
+            # Ysrc = [msg.position.y]
+            # if (Xsrc is not None) and (Ysrc is not None) and \
+            #        (0 < len(Xsrc)) and (0 < len(Ysrc)):
+            #     self.tf_broadcaster.sendTransform((msg.position.x, msg.position.y, 0),
+            #                                       (msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w),
+            #                                       self.robot_fly_kinematics.header.stamp,
+            #                                       # rospy.Time.now(),
+            #                                       image_frame_name,
+            #                                       "Camera")
+            #     response = self.camera_to_plate(Xsrc,Ysrc)
+            #     x_plate = response.Xdst[0]
+            #     y_plate = response.Ydst[0]
+
+            #     quat_plate = self.quaternion_camera_to_plate((msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w))
+
+            if quat_plate is not None:
+                t = self.robot_fly_kinematics.header.stamp.to_sec()
+                (x,y,vx,vy) = kf.update((x_plate,y_plate),t)
+
+                if (vx is not None) and (vy is not None):
+                    vel_mag,vel_ang = self.mag_angle_from_x_y(vx,vy)
+                    stopped = sw.classify(vel_mag)
+                    kinematics_state.velocity.x = vx
+                    kinematics_state.velocity.y = vy
+                else:
+                    vel_mag = vel_ang = stopped = None
+
+                if (stopped is not None):
+                    stop_state.stopped = stopped
+
+                if (x is not None) and (y is not None) and \
+                       (abs(x_plate - x) < self.position_threshold) and \
+                       (abs(y_plate - y) < self.position_threshold):
+                    kinematics_state.position.x = x
+                    kinematics_state.position.y = y
+                    x_plate = x
+                    y_plate = y
+                else:
+                    kinematics_state.position.x = x_plate
+                    kinematics_state.position.y = y_plate
+
+                if vel_ang is not None:
+                    quat_chosen = co.choose_orientation(quat_plate,vel_ang,stopped,a_prev[0])
+                else:
+                    quat_chosen = None
+
+                if "Robot" in object_name:
+                    quat_chosen = quat_plate
+
+                if quat_chosen is not None:
+                    a_plate = CircleFunctions.mod_angle(tf.transformations.euler_from_quaternion(quat_chosen)[2])
+                else:
+                    a_plate = CircleFunctions.mod_angle(tf.transformations.euler_from_quaternion(quat_plate)[2])
+
+                a_plate = CircleFunctions.unwrap_angle(a_plate,a_prev[0])
+
+                a = lpf_angle.update(a_plate,t)
+
+                if a is not None:
+                    kinematics_state.position.theta = a
+                    a_mod = CircleFunctions.mod_angle(a)
+                    quat_plate = tf.transformations.quaternion_about_axis(a_mod, (0,0,1))
+                elif a_plate is not None:
+                    kinematics_state.position.theta = a_plate
+                    if t_prev is not None:
+                        kinematics_state.velocity.theta = (a_plate - a_prev[0])/(t - t_prev)
+                    else:
+                        kinematics_state.velocity.theta = 0
+                else:
+                    kinematics_state.position.theta = 0
+                    kinematics_state.velocity.theta = 0
+
+                if vel_ang is not None:
+                    quat_chosen = co.choose_orientation(quat_plate,vel_ang,stopped,a_prev[0])
+                else:
+                    quat_chosen = None
+
+                a_prev[0] = a
+
+                if "Robot" in object_name:
+                    quat_chosen = quat_plate
+
+                if quat_chosen is not None:
+                    self.tf_broadcaster.sendTransform((x_plate, y_plate, 0),
+                                                      quat_chosen,
+                                                      self.robot_fly_kinematics.header.stamp,
+                                                      # rospy.Time.now(),
+                                                      frame_name,
+                                                      "Plate")
+
+        except (tf.LookupException, tf.ConnectivityException, rospy.ServiceException):
+            pass
 
     def handle_image_pose(self,msg):
         if self.initialized:
             self.robot_fly_kinematics.header = msg.header
             self.robot_fly_kinematics.header.frame_id = "Plate"
-            self.image_pose_handler("Robot",msg.robot_image_pose)
+            if self.robot_visible:
+                self.image_pose_handler("Robot",msg.robot_image_pose)
+            else:
+                self.handle_invisible_robot()
             fly_count = len(msg.fly_image_poses)
             # rospy.logwarn("fly count = %s" % (str(fly_count)))
             # Fix at some point to properly account for multiple flies

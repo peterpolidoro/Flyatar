@@ -44,6 +44,7 @@ class ContourIdentifier:
     self.robot_max_ecc = rospy.get_param("robot_max_ecc",3)
     self.robot_min_area = rospy.get_param("robot_min_area",1000)
     self.robot_max_area = rospy.get_param("robot_max_area",10000)
+    self.robot_visible = bool(rospy.get_param("robot_visible","true"))
 
     rospy.wait_for_service('plate_to_camera')
     try:
@@ -82,50 +83,59 @@ class ContourIdentifier:
         pass
 
       robot_index_list = []
-      for contour_index in range(contour_count):
-        x = x_list[contour_index]
-        y = y_list[contour_index]
-        theta = theta_list[contour_index]
-        area = area_list[contour_index]
-        ecc = ecc_list[contour_index]
-
+      if self.robot_visible:
         # Identify potential robots
-        if ((self.robot_min_area < area) and (area < self.robot_max_area)) and ((self.robot_min_ecc < ecc) and (ecc < self.robot_max_ecc)):
-          robot_index_list.append(contour_index)
+        for contour_index in range(contour_count):
+          x = x_list[contour_index]
+          y = y_list[contour_index]
+          theta = theta_list[contour_index]
+          area = area_list[contour_index]
+          ecc = ecc_list[contour_index]
 
-      # Check to make sure there are potential robots and that dist_list has been filled previously
-      if (0 < len(robot_index_list)) and (len(robot_index_list) <= len(dist_list)):
-        robot_dist_list = [dist_list[robot_index] for robot_index in robot_index_list]
-        # rospy.logwarn("robot_dist_list = %s" % str(robot_dist_list))
-        robot_index = dist_list.index(min(robot_dist_list))
-        # rospy.logwarn("robot = %s" % str(robot))
+          if ((self.robot_min_area < area) and (area < self.robot_max_area)) and ((self.robot_min_ecc < ecc) and (ecc < self.robot_max_ecc)):
+            robot_index_list.append(contour_index)
 
-        self.image_pose.header = header
-        self.robot_image_pose.position.x = x_list[robot_index]
-        self.robot_image_pose.position.y = y_list[robot_index]
-        q = tf.transformations.quaternion_about_axis(theta_list[robot_index], (0, 0, 1))
-        self.robot_image_pose.orientation.x = q[0]
-        self.robot_image_pose.orientation.y = q[1]
-        self.robot_image_pose.orientation.z = q[2]
-        self.robot_image_pose.orientation.w = q[3]
-        self.image_pose.robot_image_pose = self.robot_image_pose
-        if 1 < contour_count:
-          fly_index_list = list(set(range(contour_count)).difference([robot_index]))
-          self.fly_image_pose_array.poses = []
-          for fly_index in fly_index_list:
-            self.fly_image_pose.position.x = x_list[fly_index]
-            self.fly_image_pose.position.y = y_list[fly_index]
-            q = tf.transformations.quaternion_about_axis(theta_list[fly_index], (0, 0, 1))
-            self.fly_image_pose.orientation.x = q[0]
-            self.fly_image_pose.orientation.y = q[1]
-            self.fly_image_pose.orientation.z = q[2]
-            self.fly_image_pose.orientation.w = q[3]
-            self.fly_image_pose_array.poses.append(copy.deepcopy(self.fly_image_pose))
-        else:
-          self.fly_image_pose_array = PoseArray()
+        # Check to make sure there are potential robots and that dist_list has been filled previously
+        if (0 < len(robot_index_list)) and (len(robot_index_list) <= len(dist_list)):
+          robot_dist_list = [dist_list[robot_index] for robot_index in robot_index_list]
+          # rospy.logwarn("robot_dist_list = %s" % str(robot_dist_list))
+          robot_index = dist_list.index(min(robot_dist_list))
+          # rospy.logwarn("robot = %s" % str(robot))
 
-        self.image_pose.fly_image_poses = self.fly_image_pose_array.poses
-        self.image_pose_pub.publish(self.image_pose)
+          self.image_pose.header = header
+          self.robot_image_pose.position.x = x_list[robot_index]
+          self.robot_image_pose.position.y = y_list[robot_index]
+          q = tf.transformations.quaternion_about_axis(theta_list[robot_index], (0, 0, 1))
+          self.robot_image_pose.orientation.x = q[0]
+          self.robot_image_pose.orientation.y = q[1]
+          self.robot_image_pose.orientation.z = q[2]
+          self.robot_image_pose.orientation.w = q[3]
+          self.image_pose.robot_image_pose = self.robot_image_pose
+          self.robot_found = True
+
+      if self.robot_found and (1 < contour_count):
+        fly_index_list = list(set(range(contour_count)).difference([robot_index]))
+      elif (not self.robot_found) and (1 <= contour_count):
+        fly_index_list = range(contour_count)
+      else:
+        fly_index_list = []
+
+      if 0 < len(fly_index_list):
+        self.fly_image_pose_array.poses = []
+        for fly_index in fly_index_list:
+          self.fly_image_pose.position.x = x_list[fly_index]
+          self.fly_image_pose.position.y = y_list[fly_index]
+          q = tf.transformations.quaternion_about_axis(theta_list[fly_index], (0, 0, 1))
+          self.fly_image_pose.orientation.x = q[0]
+          self.fly_image_pose.orientation.y = q[1]
+          self.fly_image_pose.orientation.z = q[2]
+          self.fly_image_pose.orientation.w = q[3]
+          self.fly_image_pose_array.poses.append(copy.deepcopy(self.fly_image_pose))
+      else:
+        self.fly_image_pose_array = PoseArray()
+
+      self.image_pose.fly_image_poses = self.fly_image_pose_array.poses
+      self.image_pose_pub.publish(self.image_pose)
 
 def main(args):
   rospy.init_node('ContourIdentifierTF', anonymous=True)

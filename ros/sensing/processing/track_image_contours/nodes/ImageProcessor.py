@@ -44,6 +44,11 @@ class ImageProcessor:
     self.min_ecc = 1.75
     self.image_sum_min = 100
 
+    # Robot Info
+    self.robot_visible = bool(rospy.get_param("robot_visible","true"))
+    if (not self.robot_visible) and (1 < self.contour_count_max):
+      self.contour_count_max -= 1
+
     # Image Windows
     self.display_images = bool(rospy.get_param("image_processor_display_images","true"))
     # self.display_images = True
