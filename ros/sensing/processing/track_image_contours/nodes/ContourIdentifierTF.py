@@ -45,6 +45,7 @@ class ContourIdentifier:
     self.robot_min_area = rospy.get_param("robot_min_area",1000)
     self.robot_max_area = rospy.get_param("robot_max_area",10000)
     self.robot_visible = bool(rospy.get_param("robot_visible","true"))
+    self.robot_found = False
 
     rospy.wait_for_service('plate_to_camera')
     try:
@@ -83,6 +84,7 @@ class ContourIdentifier:
         pass
 
       robot_index_list = []
+      self.robot_found = False
       if self.robot_visible:
         # Identify potential robots
         for contour_index in range(contour_count):
