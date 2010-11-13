@@ -152,8 +152,7 @@ class PoseTFConversion:
 
                     quat_plate = self.quaternion_camera_to_plate((msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w))
             elif ("Robot" in object_name) and (not self.robot_visible):
-                # (trans,quat_plate) = self.tf_listener.lookupTransform('/Plate', '/Magnet', rospy.Time(0))
-                (trans,quat_plate) = self.tf_listener.lookupTransform('/Magnet', '/Plate', rospy.Time(0))
+                (trans,quat_plate) = self.tf_listener.lookupTransform('/Plate', '/Magnet', rospy.Time(0))
                 x_plate = trans[0]
                 y_plate = trans[1]
 
