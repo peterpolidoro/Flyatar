@@ -154,12 +154,12 @@ class PoseTFConversion:
             elif ("Robot" in object_name) and (not self.robot_visible):
                 # (trans,quat_plate) = self.tf_listener.lookupTransform('/Plate', '/Magnet', rospy.Time(0))
                 (trans,quat_plate) = self.tf_listener.lookupTransform('/Magnet', '/Plate', rospy.Time(0))
-                rospy.logwarn("trans = %s" % (str(trans)))
-                rospy.logwarn("quat_plate = %s" % (str(quat_plate)))
                 x_plate = trans[0]
                 y_plate = trans[1]
 
             if quat_plate is not None:
+                rospy.logwarn("trans = %s" % (str(trans)))
+                rospy.logwarn("quat_plate = %s" % (str(quat_plate)))
                 t = self.robot_fly_kinematics.header.stamp.to_sec()
                 (x,y,vx,vy) = kf.update((x_plate,y_plate),t)
 
