@@ -35,19 +35,23 @@ class ChooseAngularVelocity(smach.State):
         self.experiment_angular_velocity_max_negative = rospy.get_param("experiment_angular_velocity_max_negative") # rad/s
         self.experiment_angular_velocity_max_positive = rospy.get_param("experiment_angular_velocity_max_positive") # rad/s
         self.experiment_angular_velocity_bin_count = rospy.get_param("experiment_angular_velocity_bin_count")
-        self.angular_velocity_set_complete = set(numpy.linspace(self.experiment_angular_velocity_max_negative,
-                                                                self.experiment_angular_velocity_max_positive,
-                                                                self.experiment_angular_velocity_bin_count,
-                                                                True))
-        self.angular_velocity_set = copy.copy(self.angular_velocity_set_complete)
+        self.angular_velocity_list_complete = list(numpy.linspace(self.experiment_angular_velocity_max_negative,
+                                                                  self.experiment_angular_velocity_max_positive,
+                                                                  self.experiment_angular_velocity_bin_count,
+                                                                  True))
+        extra_zero_count = 3
+        extra_zero_list = list(numpy.zeros(extra_zero_count))
+        self.angular_velocity_list_complete.extend(extra_zero_list)
+        random.shuffle(self.angular_velocity_list_complete)
+        self.angular_velocity_list = copy.copy(self.angular_velocity_list_complete)
 
     def execute(self, userdata):
         rospy.logwarn('Executing state CHOOSE_ANGULAR_VELOCITY')
         try:
-            angular_velocity = self.angular_velocity_set.pop()
-        except (KeyError):
-            self.angular_velocity_set = copy.copy(self.angular_velocity_set_complete)
-            angular_velocity = self.angular_velocity_set.pop()
+            angular_velocity = self.angular_velocity_list.pop()
+        except (IndexError):
+            self.angular_velocity_list = copy.copy(self.angular_velocity_list_complete)
+            angular_velocity = self.angular_velocity_list.pop()
 
         userdata.angular_velocity_output = angular_velocity
 
