@@ -31,15 +31,16 @@ class SaveKinematics:
 
         self.robot_width = rospy.get_param("robot_width",3.175) # mm
         self.robot_height = rospy.get_param("robot_height",3.175) # mm
+        self.robot_visible = bool(rospy.get_param("robot_visible","true"))
 
-        self.header_column_titles = 'date_time protocol trial_number angular_velocity_goal robot_width robot_height\n'
+        self.header_column_titles = 'date_time protocol trial_number angular_velocity_goal robot_width robot_height robot_visible\n'
         self.data_column_titles = 'time robot_position_x robot_position_y robot_position_theta robot_velocity_x robot_velocity_y robot_velocity_theta robot_stopped fly_position_x fly_position_y fly_position_theta fly_velocity_x fly_velocity_y fly_velocity_theta fly_stopped\n'
         self.format_align = ">"
         self.format_sign = " "
         self.format_width = "7"
         self.format_precision = "2"
         self.format_type = "f"
-        self.header_row_base = '{date_time:s} {protocol:s} {trial_number:>4d} {angular_velocity_goal:> 7.4f} {robot_width:>6.3f} {robot_height:>6.3f}\n\n'
+        self.header_row_base = '{date_time:s} {protocol:s} {trial_number:>4d} {angular_velocity_goal:> 7.4f} {robot_width:>6.3f} {robot_height:>6.3f} {robot_visible:s}\n\n'
         self.data_row_base = '{time:0.2f} {robot_position_x:{align}{sign}{width}.{precision}{type}} {robot_position_y:{align}{sign}{width}.{precision}{type}} {robot_position_theta:{align}{sign}{width}.{precision}{type}} {robot_velocity_x:{align}{sign}{width}.{precision}{type}} {robot_velocity_y:{align}{sign}{width}.{precision}{type}} {robot_velocity_theta:{align}{sign}{width}.{precision}{type}} {robot_stopped:{align}{sign}{width}d} {fly_position_x:{align}{sign}{width}.{precision}{type}} {fly_position_y:{align}{sign}{width}.{precision}{type}} {fly_position_theta:{align}{sign}{width}.{precision}{type}} {fly_velocity_x:{align}{sign}{width}.{precision}{type}} {fly_velocity_y:{align}{sign}{width}.{precision}{type}} {fly_velocity_theta:{align}{sign}{width}.{precision}{type}} {fly_stopped:{align}{sign}{width}d}\n'
 
     def save_data_controls_callback(self,data):
@@ -52,7 +53,8 @@ class SaveKinematics:
                                                      trial_number = data.trial_number,
                                                      angular_velocity_goal = data.angular_velocity_goal,
                                                      robot_width = self.robot_width,
-                                                     robot_height = self.robot_height)
+                                                     robot_height = self.robot_height,
+                                                     robot_visible = self.robot_visible)
             self.fid.write(header_row)
             self.fid.write(self.data_column_titles)
             self.save_kinematics = data.save_kinematics
