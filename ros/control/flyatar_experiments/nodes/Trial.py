@@ -184,8 +184,10 @@ class Trial():
             smach.StateMachine.add('RECORD_MONITOR_CONTROL', self.sm_record_monitor_control,
                                    transitions={'succeeded':'LOG_TRIAL',
                                                 'fly_left_bounds':'LOG_TRIAL',
-                                                'aborted':'ERASE_DATA',
-                                                'preempted':'ERASE_DATA'},
+                                                # 'aborted':'ERASE_DATA',
+                                                # 'preempted':'ERASE_DATA'},
+                                                'aborted':'LOG_TRIAL',
+                                                'preempted':'LOG_TRIAL'},
                                    remapping={'angular_velocity_rmc':'angular_velocity_sm_trial'})
 
             smach.StateMachine.add('ERASE_DATA', EraseData(),
