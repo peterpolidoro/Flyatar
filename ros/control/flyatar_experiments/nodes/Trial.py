@@ -235,6 +235,7 @@ class Trial():
         #     return True
 
         # in all other case, just keep running, don't terminate anything
+        rospy.logwarn("Keep running...")
         return False
 
     def execute(self):
