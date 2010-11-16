@@ -29,7 +29,7 @@ SAVE_DATA_CONTROLS_PUB = SaveDataControlsPublisher()
 # define state ChooseAngularVelocity
 class ChooseAngularVelocity(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'],
+        smach.State.__init__(self, outcomes=['succeeded'],
                              output_keys=['angular_velocity_output'])
 
         self.experiment_angular_velocity_max_negative = rospy.get_param("experiment_angular_velocity_max_negative") # rad/s
@@ -61,7 +61,7 @@ class ChooseAngularVelocity(smach.State):
 class RecordData(smach.State):
     def __init__(self):
         smach.State.__init__(self,
-                             outcomes=['succeeded','aborted','preempted'],
+                             outcomes=['succeeded'],
                              input_keys=['angular_velocity_input'])
         self.protocol = "walking_protocol_type_1"
 
@@ -84,7 +84,7 @@ class RecordData(smach.State):
 # define state EraseData
 class EraseData(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        smach.State.__init__(self, outcomes=['succeeded'])
 
     def execute(self, userdata):
         rospy.logwarn('Executing state ERASE_DATA')
@@ -119,7 +119,7 @@ class MonitorConditions(smach.State):
 # define state ControlRobot
 class LogTrial(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        smach.State.__init__(self, outcomes=['succeeded'])
 
     def execute(self, userdata):
         rospy.logwarn('Executing state LOG_TRIAL')
@@ -181,9 +181,7 @@ class Trial():
 
             # Add states to the container
             smach.StateMachine.add('CHOOSE_ANGULAR_VELOCITY', ChooseAngularVelocity(),
-                                   transitions={'succeeded':'RECORD_MONITOR_CONTROL',
-                                                'aborted':'aborted',
-                                                'preempted':'preempted'},
+                                   transitions={'succeeded':'RECORD_MONITOR_CONTROL'},
                                    remapping={'angular_velocity_output':'angular_velocity_sm_trial'})
 
             smach.StateMachine.add('RECORD_MONITOR_CONTROL', self.sm_record_monitor_control,
@@ -197,14 +195,10 @@ class Trial():
                                    remapping={'angular_velocity_rmc':'angular_velocity_sm_trial'})
 
             smach.StateMachine.add('ERASE_DATA', EraseData(),
-                                   transitions={'succeeded':'succeeded',
-                                                'aborted':'aborted',
-                                                'preempted':'preempted'})
+                                   transitions={'succeeded':'succeeded'})
 
             smach.StateMachine.add('LOG_TRIAL', LogTrial(),
-                                   transitions={'succeeded':'succeeded',
-                                                'aborted':'aborted',
-                                                'preempted':'preempted'})
+                                   transitions={'succeeded':'succeeded'})
 
         # Create and start the introspection server
         self.sis = smach_ros.IntrospectionServer('sis_server_trial',
