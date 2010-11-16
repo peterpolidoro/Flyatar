@@ -107,13 +107,13 @@ class MonitorConditions(smach.State):
 
         while not self.in_bounds_sub.initialized:
             if self.preempt_requested():
-                rospy.logwarn("MonitorConditions preempted")
+                rospy.logwarn("MonitorConditions preempted, not initialized")
                 return 'preempted'
             time.sleep(0.1)
 
         while True:
             if self.preempt_requested():
-                rospy.logwarn("MonitorConditions preempted")
+                rospy.logwarn("MonitorConditions preempted, initialized")
                 return 'preempted'
             if not self.in_bounds_sub.in_bounds.fly_in_bounds:
                 rospy.logwarn("MonitorConditions fly_left_bounds")
