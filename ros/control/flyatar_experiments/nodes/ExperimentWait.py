@@ -64,7 +64,7 @@ class CheckCalibration(smach.State):
             return 'preempted'
 
         # Wait for system to settle
-        time.sleep(4)
+        time.sleep(1)
 
         return 'calibration_ok'
 
@@ -78,7 +78,7 @@ class Recalibrate(smach.State):
         # Wait for system to settle
         if self.preempt_requested():
             return 'preempted'
-        time.sleep(3)
+        time.sleep(1)
 
         return 'succeeded'
 
