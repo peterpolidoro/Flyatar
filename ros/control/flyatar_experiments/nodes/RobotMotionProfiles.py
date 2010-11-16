@@ -50,15 +50,15 @@ class WaitForTriggerCondition(smach.State):
 
         return 'succeeded'
 
-# define state WaitForSkippedMoveEndCondition
+# define state WaitForZeroVelocityMoveEndCondition
 # This State should not be necessary, but something strange is preempting MonitorConditions...
-class WaitForSkippedMoveEndCondition(smach.State):
+class WaitForZeroVelocityMoveEndCondition(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','preempted'])
         self.in_bounds_sub = MonitorSystemState.InBoundsSubscriber()
 
     def execute(self, userdata):
-        rospy.logwarn('Executing state WAIT_FOR_SKIPPED_MOVE_END_CONDITION')
+        rospy.logwarn('Executing state WAIT_FOR_ZERO_VELOCITY_MOVE_END_CONDITION')
 
         while not self.in_bounds_sub.initialized:
             if self.preempt_requested():
@@ -67,10 +67,10 @@ class WaitForSkippedMoveEndCondition(smach.State):
 
         while True:
             if self.preempt_requested():
-                rospy.logwarn("WaitForSkippedMoveEndCondition preempted")
+                rospy.logwarn("WaitForZeroVelocityMoveEndCondition preempted")
                 return 'preempted'
             if not self.in_bounds_sub.in_bounds.fly_in_bounds:
-                rospy.logwarn("WaitForSkippedMoveEndCondition fly_left_bounds")
+                rospy.logwarn("WaitForZeroVelocityMoveEndCondition fly_left_bounds")
                 return 'succeeded'
             time.sleep(0.1)
 
@@ -78,7 +78,7 @@ class WaitForSkippedMoveEndCondition(smach.State):
 class CalculateMove(smach.State):
     def __init__(self):
         smach.State.__init__(self,
-                             outcomes = ['succeeded','skipped_move'],
+                             outcomes = ['succeeded','zero_velocity_move'],
                              input_keys = ['angular_velocity_input'],
                              output_keys = ['x_position_list','y_position_list','velocity_magnitude_list'])
         self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
@@ -94,7 +94,7 @@ class CalculateMove(smach.State):
         rospy.logwarn("CALCULATE_MOVE angular_velocity = %s" % (str(userdata.angular_velocity_input)))
 
         if abs(userdata.angular_velocity_input) < self.angular_velocity_min:
-            return 'skipped_move'
+            return 'zero_velocity_move'
 
         fly_vx = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.x
         fly_vy = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.y
@@ -141,7 +141,7 @@ class RobotMotionProfile():
 
             smach.StateMachine.add('CALCULATE_MOVE', CalculateMove(),
                                    transitions={'succeeded':'MOVE_ROBOT',
-                                                'skipped_move':'WAIT_FOR_SKIPPED_MOVE_END_CONDITION'},
+                                                'zero_velocity_move':'WAIT_FOR_ZERO_VELOCITY_MOVE_END_CONDITION'},
                                    remapping={'angular_velocity_input':'angular_velocity_rmp'})
 
             smach.StateMachine.add('MOVE_ROBOT',
@@ -158,7 +158,7 @@ class RobotMotionProfile():
                                               'y_position':'y_position_list',
                                               'velocity_magnitude':'velocity_magnitude_list'})
 
-            smach.StateMachine.add('WAIT_FOR_SKIPPED_MOVE_END_CONDITION', WaitForSkippedMoveEndCondition(),
+            smach.StateMachine.add('WAIT_FOR_ZERO_VELOCITY_MOVE_END_CONDITION', WaitForZeroVelocityMoveEndCondition(),
                                    transitions={'succeeded':'succeeded',
                                                 'preempted':'preempted'})
 
