@@ -221,12 +221,16 @@ class Trial():
             rospy.logwarn("Terminate all running states since CONTROL_ROBOT succeeded")
             return True
 
+        # do not terminate all running states if CONTROL_ROBOT outputs skipped_move
+        if outcome_map['CONTROL_ROBOT'] == 'skipped_move':
+            rospy.logwarn("Do not terminate all running states since CONTROL_ROBOT output skipped_move")
+            return False
+
         # terminate all running states if MONITOR_CONDITIONS finished
         # if outcome_map['MONITOR_CONDITIONS'] == 'aborted':
         #     return True
 
         # in all other case, just keep running, don't terminate anything
-        rospy.logwarn("Keep running")
         return False
 
     def execute(self):
