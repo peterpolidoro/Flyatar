@@ -98,7 +98,7 @@ class EraseData(smach.State):
 # define state MonitorConditions
 class MonitorConditions(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','fly_left_bounds','preempted'])
+        smach.State.__init__(self, outcomes=['fly_left_bounds','preempted'])
         self.in_bounds_sub = MonitorSystemState.InBoundsSubscriber()
 
     def execute(self, userdata):
@@ -227,8 +227,8 @@ class Trial():
             return True
 
         # terminate all running states if MONITOR_CONDITIONS finished
-        if outcome_map['MONITOR_CONDITIONS'] == 'aborted':
-            return True
+        # if outcome_map['MONITOR_CONDITIONS'] == 'aborted':
+        #     return True
 
         # in all other case, just keep running, don't terminate anything
         return False
