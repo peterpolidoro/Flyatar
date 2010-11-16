@@ -56,6 +56,7 @@ class WaitForZeroVelocityMoveEndCondition(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','preempted'])
         self.in_bounds_sub = MonitorSystemState.InBoundsSubscriber()
+        self.timeout = 10
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_ZERO_VELOCITY_MOVE_END_CONDITION')
@@ -65,6 +66,7 @@ class WaitForZeroVelocityMoveEndCondition(smach.State):
                 return 'preempted'
             time.sleep(0.1)
 
+        self.time_start = rospy.Time.now().to_sec()
         while True:
             if self.preempt_requested():
                 rospy.logwarn("WaitForZeroVelocityMoveEndCondition preempted")
@@ -73,6 +75,10 @@ class WaitForZeroVelocityMoveEndCondition(smach.State):
                 rospy.logwarn("WaitForZeroVelocityMoveEndCondition fly_left_bounds")
                 return 'succeeded'
             time.sleep(0.1)
+            self.time_now = rospy.Time.now().to_sec()
+            if self.timeout < abs(self.time_now - self.time_start):
+                rospy.logwarn('Timeout...')
+                return 'succeeded'
 
 # define state CalculateMove
 class CalculateMove(smach.State):
