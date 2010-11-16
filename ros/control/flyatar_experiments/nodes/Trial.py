@@ -224,6 +224,7 @@ class Trial():
 
         # terminate all running states if CONTROL_ROBOT finished
         if outcome_map['CONTROL_ROBOT'] == 'succeeded':
+            rospy.logwarn("Terminate all running states since CONTROL_ROBOT succeeded")
             return True
 
         # terminate all running states if MONITOR_CONDITIONS finished
@@ -231,6 +232,7 @@ class Trial():
         #     return True
 
         # in all other case, just keep running, don't terminate anything
+        rospy.logwarn("Keep running")
         return False
 
     def execute(self):
