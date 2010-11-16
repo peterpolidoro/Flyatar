@@ -77,7 +77,7 @@ class WaitForZeroVelocityMoveEndCondition(smach.State):
             time.sleep(0.1)
             self.time_now = rospy.Time.now().to_sec()
             if self.timeout < abs(self.time_now - self.time_start):
-                rospy.logwarn('Timeout...')
+                rospy.logwarn("WaitForZeroVelocityMoveEndCondition timeout")
                 return 'succeeded'
 
 # define state CalculateMove
