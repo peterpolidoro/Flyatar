@@ -162,7 +162,7 @@ class Trial():
                                                                outcome_map={'succeeded':
                                                                             {'RECORD_DATA':'succeeded',
                                                                              'MONITOR_CONDITIONS':'preempted',
-                                                                             'CONTROL_ROBOT':'succeeded'},
+                                                                             'CONTROL_ROBOT':'succeeded'}},
                                                                             # 'skipped_move':
                                                                             # {'RECORD_DATA':'succeeded',
                                                                             #  'MONITOR_CONDITIONS':'fly_left_bounds',
