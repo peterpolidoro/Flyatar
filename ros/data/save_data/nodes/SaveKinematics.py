@@ -54,7 +54,7 @@ class SaveKinematics:
                                                      angular_velocity_goal = data.angular_velocity_goal,
                                                      robot_width = self.robot_width,
                                                      robot_height = self.robot_height,
-                                                     robot_visible = self.robot_visible)
+                                                     robot_visible = str(self.robot_visible))
             self.fid.write(header_row)
             self.fid.write(self.data_column_titles)
             self.save_kinematics = data.save_kinematics
