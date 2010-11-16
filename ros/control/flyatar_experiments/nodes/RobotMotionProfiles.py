@@ -19,7 +19,7 @@ KINEMATICS_SUB = MonitorSystemState.KinematicsSubscriber()
 # define state WaitForTriggerCondition
 class WaitForTriggerCondition(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','aborted','preempted'])
+        smach.State.__init__(self, outcomes=['succeeded','preempted'])
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_TRIGGER_CONDITION')
@@ -54,7 +54,7 @@ class WaitForTriggerCondition(smach.State):
 class CalculateMove(smach.State):
     def __init__(self):
         smach.State.__init__(self,
-                             outcomes = ['succeeded','skipped_move','aborted','preempted'],
+                             outcomes = ['succeeded','skipped_move'],
                              input_keys = ['angular_velocity_input'],
                              output_keys = ['x_position_list','y_position_list','velocity_magnitude_list'])
         self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
@@ -113,14 +113,11 @@ class RobotMotionProfile():
             # Add states to the container
             smach.StateMachine.add('WAIT_FOR_TRIGGER_CONDITION', WaitForTriggerCondition(),
                                    transitions={'succeeded':'CALCULATE_MOVE',
-                                                'preempted':'preempted',
-                                                'aborted':'aborted'})
+                                                'preempted':'preempted'})
 
             smach.StateMachine.add('CALCULATE_MOVE', CalculateMove(),
                                    transitions={'succeeded':'MOVE_ROBOT',
-                                                'skipped_move':'skipped_move',
-                                                'preempted':'preempted',
-                                                'aborted':'aborted'},
+                                                'skipped_move':'skipped_move'},
                                    remapping={'angular_velocity_input':'angular_velocity_rmp'})
 
             smach.StateMachine.add('MOVE_ROBOT',
