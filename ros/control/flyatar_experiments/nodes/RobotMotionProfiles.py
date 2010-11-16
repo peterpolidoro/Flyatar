@@ -50,6 +50,30 @@ class WaitForTriggerCondition(smach.State):
 
         return 'succeeded'
 
+# define state WaitForSkippedMoveEndCondition
+# This State should not be necessary, but something strange is preempting MonitorConditions...
+class WaitForSkippedMoveEndCondition(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','preempted'])
+        self.in_bounds_sub = MonitorSystemState.InBoundsSubscriber()
+
+    def execute(self, userdata):
+        rospy.logwarn('Executing state WAIT_FOR_SKIPPED_MOVE_END_CONDITION')
+
+        while not self.in_bounds_sub.initialized:
+            if self.preempt_requested():
+                return 'preempted'
+            time.sleep(0.1)
+
+        while True:
+            if self.preempt_requested():
+                rospy.logwarn("WaitForSkippedMoveEndCondition preempted")
+                return 'preempted'
+            if not self.in_bounds_sub.in_bounds.fly_in_bounds:
+                rospy.logwarn("WaitForSkippedMoveEndCondition fly_left_bounds")
+                return 'succeeded'
+            time.sleep(0.1)
+
 # define state CalculateMove
 class CalculateMove(smach.State):
     def __init__(self):
@@ -99,7 +123,7 @@ class CalculateMove(smach.State):
 class RobotMotionProfile():
     def __init__(self):
         # Create a SMACH state machine
-        self.sm_robot_motion_profile = smach.StateMachine(outcomes = ['succeeded','skipped_move','aborted','preempted'],
+        self.sm_robot_motion_profile = smach.StateMachine(outcomes = ['succeeded','aborted','preempted'],
                                                           input_keys = ['angular_velocity_rmp'])
         # self.sm_robot_motion_profile.userdata.angular_velocity_rmp = 0
 
@@ -117,7 +141,7 @@ class RobotMotionProfile():
 
             smach.StateMachine.add('CALCULATE_MOVE', CalculateMove(),
                                    transitions={'succeeded':'MOVE_ROBOT',
-                                                'skipped_move':'skipped_move'},
+                                                'skipped_move':'WAIT_FOR_SKIPPED_MOVE_END_CONDITION'},
                                    remapping={'angular_velocity_input':'angular_velocity_rmp'})
 
             smach.StateMachine.add('MOVE_ROBOT',
@@ -133,6 +157,10 @@ class RobotMotionProfile():
                                    remapping={'x_position':'x_position_list',
                                               'y_position':'y_position_list',
                                               'velocity_magnitude':'velocity_magnitude_list'})
+
+            smach.StateMachine.add('WAIT_FOR_SKIPPED_MOVE_END_CONDITION', WaitForSkippedMoveEndCondition(),
+                                   transitions={'succeeded':'succeeded',
+                                                'preempted':'preempted'})
 
 
 

@@ -107,13 +107,12 @@ class MonitorConditions(smach.State):
 
         while not self.in_bounds_sub.initialized:
             if self.preempt_requested():
-                rospy.logwarn("MonitorConditions preempted, not initialized")
                 return 'preempted'
             time.sleep(0.1)
 
         while True:
             if self.preempt_requested():
-                rospy.logwarn("MonitorConditions preempted, initialized")
+                rospy.logwarn("MonitorConditions preempted")
                 return 'preempted'
             if not self.in_bounds_sub.in_bounds.fly_in_bounds:
                 rospy.logwarn("MonitorConditions fly_left_bounds")
@@ -146,7 +145,7 @@ class Trial():
             self.sm_robot_motion_profile = self.robot_motion_profile.sm_robot_motion_profile
 
             # Create the concurrent sub SMACH state machine
-            self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','skipped_move','aborted','preempted'],
+            self.sm_record_monitor_control = smach.Concurrence(outcomes=['succeeded','aborted','preempted'],
                                                                default_outcome='aborted',
                                                                input_keys=['angular_velocity_rmc'],
                                                                # outcome_map={'succeeded':
@@ -164,10 +163,10 @@ class Trial():
                                                                             {'RECORD_DATA':'succeeded',
                                                                              'MONITOR_CONDITIONS':'preempted',
                                                                              'CONTROL_ROBOT':'succeeded'},
-                                                                            'skipped_move':
-                                                                            {'RECORD_DATA':'succeeded',
-                                                                             'MONITOR_CONDITIONS':'fly_left_bounds',
-                                                                             'CONTROL_ROBOT':'skipped_move'}},
+                                                                            # 'skipped_move':
+                                                                            # {'RECORD_DATA':'succeeded',
+                                                                            #  'MONITOR_CONDITIONS':'fly_left_bounds',
+                                                                            #  'CONTROL_ROBOT':'skipped_move'}},
                                                                             # 'fly_left_bounds':
                                                                             # {'RECORD_DATA':'succeeded',
                                                                             #  'MONITOR_CONDITIONS':'fly_left_bounds',
@@ -191,7 +190,7 @@ class Trial():
             smach.StateMachine.add('RECORD_MONITOR_CONTROL', self.sm_record_monitor_control,
                                    transitions={'succeeded':'LOG_TRIAL',
                                                 # 'fly_left_bounds':'LOG_TRIAL',
-                                                'skipped_move':'LOG_TRIAL',
+                                                # 'skipped_move':'LOG_TRIAL',
                                                 'aborted':'ERASE_DATA',
                                                 'preempted':'ERASE_DATA'},
                                                 # 'aborted':'LOG_TRIAL',
@@ -222,20 +221,13 @@ class Trial():
 
         # terminate all running states if CONTROL_ROBOT finished
         if outcome_map['CONTROL_ROBOT'] == 'succeeded':
-            rospy.logwarn("Terminate all running states since CONTROL_ROBOT succeeded")
             return True
-
-        # do not terminate all running states if CONTROL_ROBOT outputs skipped_move
-        if outcome_map['CONTROL_ROBOT'] == 'skipped_move':
-            rospy.logwarn("Do not terminate all running states since CONTROL_ROBOT output skipped_move")
-            return False
 
         # terminate all running states if MONITOR_CONDITIONS finished
         # if outcome_map['MONITOR_CONDITIONS'] == 'aborted':
         #     return True
 
         # in all other case, just keep running, don't terminate anything
-        rospy.logwarn("Keep running...")
         return False
 
     def execute(self):
