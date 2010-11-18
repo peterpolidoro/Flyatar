@@ -11,6 +11,7 @@ import math
 
 class PublishSystemState:
     def __init__(self):
+        self.initialized = False
         self.in_bounds_radius = rospy.get_param('in_bounds_radius')
         self.robot_fly_kinematics_sub = rospy.Subscriber("RobotFlyKinematics",RobotFlyKinematics,self.kinematics_callback)
         self.tf_listener = tf.TransformListener()
@@ -30,28 +31,31 @@ class PublishSystemState:
         self.robot_origin.point.y = 0
         self.robot_origin.point.z = 0
 
-    def kinematics_callback(self,data):
-        robot_x = data.robot_kinematics.position.x
-        robot_y = data.robot_kinematics.position.y
-        fly_x = data.fly_kinematics.position.x
-        fly_y = data.fly_kinematics.position.y
-        robot_dist = math.sqrt((robot_x - self.start_position_x)**2 + (robot_y - self.start_position_y)**2)
-        fly_dist = math.sqrt((fly_x - self.start_position_x)**2 + (fly_y - self.start_position_y)**2)
-        self.in_bounds.bounds_radius = self.in_bounds_radius
-        self.in_bounds.robot_in_bounds = robot_dist < self.in_bounds_radius
-        self.in_bounds.fly_in_bounds = fly_dist < self.in_bounds_radius
-        self.in_bounds_pub.publish(self.in_bounds)
+        self.initialized = True
 
-        try:
-            self.robot_origin_fly_frame = self.tf_listener.transformPoint("Fly",self.robot_origin)
-            self.fly_view.robot_position_x = rx = self.robot_origin_fly_frame.point.x
-            self.fly_view.robot_position_y = ry = self.robot_origin_fly_frame.point.y
-            self.fly_view.robot_angle = CircleFunctions.mod_angle(math.atan2(ry,rx))
-            self.fly_view.robot_distance = math.sqrt(rx**2 + ry**2)
-            self.fly_view.robot_in_front_of_fly = 0 < self.robot_origin_fly_frame.point.x
-            self.fly_view_pub.publish(self.fly_view)
-        except (tf.LookupException, tf.ConnectivityException):
-            pass
+    def kinematics_callback(self,data):
+        if self.initialized:
+            robot_x = data.robot_kinematics.position.x
+            robot_y = data.robot_kinematics.position.y
+            fly_x = data.fly_kinematics.position.x
+            fly_y = data.fly_kinematics.position.y
+            robot_dist = math.sqrt((robot_x - self.start_position_x)**2 + (robot_y - self.start_position_y)**2)
+            fly_dist = math.sqrt((fly_x - self.start_position_x)**2 + (fly_y - self.start_position_y)**2)
+            self.in_bounds.bounds_radius = self.in_bounds_radius
+            self.in_bounds.robot_in_bounds = robot_dist < self.in_bounds_radius
+            self.in_bounds.fly_in_bounds = fly_dist < self.in_bounds_radius
+            self.in_bounds_pub.publish(self.in_bounds)
+
+            try:
+                self.robot_origin_fly_frame = self.tf_listener.transformPoint("Fly",self.robot_origin)
+                self.fly_view.robot_position_x = rx = self.robot_origin_fly_frame.point.x
+                self.fly_view.robot_position_y = ry = self.robot_origin_fly_frame.point.y
+                self.fly_view.robot_angle = CircleFunctions.mod_angle(math.atan2(ry,rx))
+                self.fly_view.robot_distance = math.sqrt(rx**2 + ry**2)
+                self.fly_view.robot_in_front_of_fly = 0 < self.robot_origin_fly_frame.point.x
+                self.fly_view_pub.publish(self.fly_view)
+            except (tf.LookupException, tf.ConnectivityException):
+                pass
 
 if __name__ == '__main__':
     rospy.init_node('PublishSystemState')
