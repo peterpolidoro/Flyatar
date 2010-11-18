@@ -91,7 +91,8 @@ class CalculateMove(smach.State):
         self.start_position_x = rospy.get_param("start_position_x")
         self.start_position_y = rospy.get_param("start_position_y")
         self.move_distance = rospy.get_param("move_distance")
-        self.experiment_linear_velocity_max = rospy.get_param("experiment_linear_velocity_max") # mm/s
+        self.experiment_linear_velocity_min = rospy.get_param("experiment_linear_velocity_min",'5') # mm/s
+        self.experiment_linear_velocity_max = rospy.get_param("experiment_linear_velocity_max",'100') # mm/s
         self.angular_velocity_min = 0.01 # rad/s
 
     def execute(self, userdata):
@@ -120,6 +121,8 @@ class CalculateMove(smach.State):
         robot_distance = FLY_VIEW_SUB.fly_view.robot_distance
         rospy.logwarn("robot_distance = %s" % (str(robot_distance)))
         linear_velocity = abs(userdata.angular_velocity_input)*abs(robot_distance)
+        if linear_velocity < self.experiment_linear_velocity_min:
+            linear_velocity = self.experiment_linear_velocity_min
         if self.experiment_linear_velocity_max < linear_velocity:
             linear_velocity = self.experiment_linear_velocity_max
         userdata.velocity_magnitude_list = [linear_velocity]

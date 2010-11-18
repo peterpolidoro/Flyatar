@@ -4,6 +4,7 @@
   <param name="robot_width" type="double" value="3.175"/>
   <param name="robot_height" type="double" value="3.175"/>
   <param name="robot_visible" type="boolean" value="false"/>
+  <param name="experiment_linear_velocity_min" type="double" value="5"/>
   <param name="experiment_linear_velocity_max" type="double" value="100"/>
   <param name="experiment_angular_velocity_max_negative" type="double" value="-2.0944"/>
   <param name="experiment_angular_velocity_max_positive" type="double" value="1.3963"/>
