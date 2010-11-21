@@ -47,11 +47,11 @@ class ChooseAngularVelocity(smach.State):
             self.angular_velocity_list_complete.extend(extra_zero_list)
         if 1 < self.experiment_angular_velocity_vector_negative_repetition:
             extra_negative_list = [l for l in self.angular_velocity_list_complete if l < 0]
-            extra_negative_list *= self.experiment_angular_velocity_vector_negative_repetition - 1
+            extra_negative_list *= int(self.experiment_angular_velocity_vector_negative_repetition - 1)
             self.angular_velocity_list_complete.extend(extra_negative_list)
         if 1 < self.experiment_angular_velocity_vector_positive_repetition:
             extra_positive_list = [l for l in self.angular_velocity_list_complete if 0 < l]
-            extra_positive_list *= self.experiment_angular_velocity_vector_positive_repetition - 1
+            extra_positive_list *= int(self.experiment_angular_velocity_vector_positive_repetition - 1)
             self.angular_velocity_list_complete.extend(extra_positive_list)
         random.shuffle(self.angular_velocity_list_complete)
         self.angular_velocity_list = copy.copy(self.angular_velocity_list_complete)
