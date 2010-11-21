@@ -104,6 +104,7 @@ class CalculateMove(smach.State):
         self.move_distance = rospy.get_param("move_distance")
         self.experiment_linear_velocity_min = rospy.get_param("experiment_linear_velocity_min",'5') # mm/s
         self.experiment_linear_velocity_max = rospy.get_param("experiment_linear_velocity_max",'100') # mm/s
+        self.trigger_angle = abs(rospy.get_param("trigger_angle","1.5708"))
         self.angular_velocity_min = 0.01 # rad/s
 
     def execute(self, userdata):
