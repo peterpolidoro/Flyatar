@@ -24,8 +24,8 @@ class WaitForTriggerCondition(smach.State):
 
     # Recalculate to make sure angle range is from -pi to pi
     def find_robot_angle(self):
-        x = FLY_VIEW_SUB.robot_position_x
-        y = FLY_VIEW_SUB.robot_position_y
+        x = FLY_VIEW_SUB.fly_view.robot_position_x
+        y = FLY_VIEW_SUB.fly_view.robot_position_y
         angle = math.atan2(y,x)
         return angle
 
