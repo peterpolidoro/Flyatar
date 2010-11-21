@@ -35,13 +35,24 @@ class ChooseAngularVelocity(smach.State):
         self.experiment_angular_velocity_max_negative = rospy.get_param("experiment_angular_velocity_max_negative") # rad/s
         self.experiment_angular_velocity_max_positive = rospy.get_param("experiment_angular_velocity_max_positive") # rad/s
         self.experiment_angular_velocity_bin_count = rospy.get_param("experiment_angular_velocity_bin_count")
+        self.experiment_angular_velocity_vector_negative_repetition = rospy.get_param("experiment_angular_velocity_vector_negative_repetition","1")
+        self.experiment_angular_velocity_vector_positive_repetition = rospy.get_param("experiment_angular_velocity_vector_positive_repetition","1")
+        self.experiment_angular_velocity_vector_zero_repetition = rospy.get_param("experiment_angular_velocity_vector_zero_repetition","1")
         self.angular_velocity_list_complete = list(numpy.linspace(self.experiment_angular_velocity_max_negative,
                                                                   self.experiment_angular_velocity_max_positive,
                                                                   self.experiment_angular_velocity_bin_count,
                                                                   True))
-        extra_zero_count = 3
-        extra_zero_list = list(numpy.zeros(extra_zero_count))
-        self.angular_velocity_list_complete.extend(extra_zero_list)
+        if 1 < self.experiment_angular_velocity_vector_zero_repetition:
+            extra_zero_list = list(numpy.zeros(self.experiment_angular_velocity_vector_zero_repetition - 1))
+            self.angular_velocity_list_complete.extend(extra_zero_list)
+        if 1 < self.experiment_angular_velocity_vector_negative_repetition:
+            extra_negative_list = [l for l in self.angular_velocity_list_complete if l < 0]
+            extra_negative_list *= self.experiment_angular_velocity_vector_negative_repetition - 1
+            self.angular_velocity_list_complete.extend(extra_negative_list)
+        if 1 < self.experiment_angular_velocity_vector_positive_repetition:
+            extra_positive_list = [l for l in self.angular_velocity_list_complete if 0 < l]
+            extra_positive_list *= self.experiment_angular_velocity_vector_positive_repetition - 1
+            self.angular_velocity_list_complete.extend(extra_positive_list)
         random.shuffle(self.angular_velocity_list_complete)
         self.angular_velocity_list = copy.copy(self.angular_velocity_list_complete)
 

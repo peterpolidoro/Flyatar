@@ -20,6 +20,14 @@ KINEMATICS_SUB = MonitorSystemState.KinematicsSubscriber()
 class WaitForTriggerCondition(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','preempted'])
+        self.trigger_angle = abs(rospy.get_param("trigger_angle","1.5708"))
+
+    # Recalculate to make sure angle range is from -pi to pi
+    def find_robot_angle(self):
+        x = FLY_VIEW_SUB.robot_position_x
+        y = FLY_VIEW_SUB.robot_position_y
+        angle = math.atan2(y,x)
+        return angle
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_TRIGGER_CONDITION')
@@ -29,11 +37,13 @@ class WaitForTriggerCondition(smach.State):
                 return 'preempted'
             time.sleep(0.1)
 
-        # rospy.logwarn("Waiting for robot to be in front of fly")
-        # while not FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
-        #     if self.preempt_requested():
-        #         return 'preempted'
-        #     time.sleep(0.1)
+        rospy.logwarn("Waiting for robot to be in front of fly")
+        self.robot_angle = self.find_robot_angle()
+        while (self.trigger_angle < abs(self.robot_angle)):
+            if self.preempt_requested():
+                return 'preempted'
+            time.sleep(0.1)
+            self.robot_angle = self.find_robot_angle()
 
         # rospy.logwarn("Waiting for fly to be walking")
         # while KINEMATICS_SUB.kinematics.fly_stopped:
@@ -41,12 +51,13 @@ class WaitForTriggerCondition(smach.State):
         #         return 'preempted'
         #     time.sleep(0.1)
 
-        rospy.logwarn("Waiting for robot to be behind fly")
-        while FLY_VIEW_SUB.fly_view.robot_in_front_of_fly:
-            # rospy.logwarn("robot_in_front_of_fly = %s" % (str(FLY_VIEW_SUB.fly_view.robot_in_front_of_fly)))
+        rospy.logwarn("Waiting for trigger")
+        self.robot_angle = self.find_robot_angle()
+        while (abs(self.robot_angle) < self.trigger_angle):
             if self.preempt_requested():
                 return 'preempted'
             time.sleep(0.1)
+            self.robot_angle = self.find_robot_angle()
 
         return 'succeeded'
 
