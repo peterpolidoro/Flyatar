@@ -19,8 +19,11 @@ KINEMATICS_SUB = MonitorSystemState.KinematicsSubscriber()
 # define state WaitForTriggerCondition
 class WaitForTriggerCondition(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded','preempted'])
+        smach.State.__init__(self, outcomes=['succeeded','preempted','aborted'])
         self.trigger_angle = abs(rospy.get_param("trigger_angle","1.5708"))
+        self.sleep_time = 0.1
+        self.timeout = 30
+        self.watchdog = 0
 
     # Recalculate to make sure angle range is from -pi to pi
     def find_robot_angle(self):
@@ -32,17 +35,25 @@ class WaitForTriggerCondition(smach.State):
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_TRIGGER_CONDITION')
 
+        self.watchdog = 0
         while not FLY_VIEW_SUB.initialized:
             if self.preempt_requested():
                 return 'preempted'
-            time.sleep(0.1)
+            if self.timeout < self.watchdog:
+                return 'aborted'
+            time.sleep(self.sleep_time)
+            self.watchdog += self.sleep_time
 
         rospy.logwarn("Waiting for robot to be in front of fly")
+        self.watchdog = 0
         self.robot_angle = self.find_robot_angle()
         while (self.trigger_angle < abs(self.robot_angle)):
             if self.preempt_requested():
                 return 'preempted'
-            time.sleep(0.1)
+            if self.timeout < self.watchdog:
+                return 'aborted'
+            time.sleep(self.sleep_time)
+            self.watchdog += self.sleep_time
             self.robot_angle = self.find_robot_angle()
 
         # rospy.logwarn("Waiting for fly to be walking")
@@ -52,11 +63,15 @@ class WaitForTriggerCondition(smach.State):
         #     time.sleep(0.1)
 
         rospy.logwarn("Waiting for trigger")
+        self.watchdog = 0
         self.robot_angle = self.find_robot_angle()
         while (abs(self.robot_angle) < self.trigger_angle):
             if self.preempt_requested():
                 return 'preempted'
-            time.sleep(0.1)
+            if self.timeout < self.watchdog:
+                return 'aborted'
+            time.sleep(self.sleep_time)
+            self.watchdog += self.sleep_time
             self.robot_angle = self.find_robot_angle()
 
         return 'succeeded'
@@ -67,15 +82,21 @@ class WaitForZeroVelocityMoveEndCondition(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded','preempted'])
         self.in_bounds_sub = MonitorSystemState.InBoundsSubscriber()
-        self.timeout = 10
+        self.sleep_time = 0.1
+        self.timeout = 30
+        self.watchdog = 0
 
     def execute(self, userdata):
         rospy.logwarn('Executing state WAIT_FOR_ZERO_VELOCITY_MOVE_END_CONDITION')
 
+        self.watchdog = 0
         while not self.in_bounds_sub.initialized:
             if self.preempt_requested():
                 return 'preempted'
-            time.sleep(0.1)
+            if self.timeout < self.watchdog:
+                return 'aborted'
+            time.sleep(self.sleep_time)
+            self.watchdog += self.sleep_time
 
         self.time_start = rospy.Time.now().to_sec()
         while True:
@@ -85,7 +106,7 @@ class WaitForZeroVelocityMoveEndCondition(smach.State):
             if not self.in_bounds_sub.in_bounds.fly_in_bounds:
                 rospy.logwarn("WaitForZeroVelocityMoveEndCondition fly_left_bounds")
                 return 'succeeded'
-            time.sleep(0.1)
+            time.sleep(self.sleep_time)
             self.time_now = rospy.Time.now().to_sec()
             if self.timeout < abs(self.time_now - self.time_start):
                 rospy.logwarn("WaitForZeroVelocityMoveEndCondition timeout")
@@ -197,7 +218,8 @@ class RobotMotionProfile():
             # Add states to the container
             smach.StateMachine.add('WAIT_FOR_TRIGGER_CONDITION', WaitForTriggerCondition(),
                                    transitions={'succeeded':'CALCULATE_MOVE',
-                                                'preempted':'preempted'})
+                                                'preempted':'preempted',
+                                                'aborted':'aborted'})
 
             smach.StateMachine.add('CALCULATE_MOVE', CalculateMove(),
                                    transitions={'succeeded':'MOVE_ROBOT',
