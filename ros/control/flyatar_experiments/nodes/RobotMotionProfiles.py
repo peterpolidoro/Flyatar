@@ -95,7 +95,7 @@ class WaitForZeroVelocityMoveEndCondition(smach.State):
 class CalculateMove(smach.State):
     def __init__(self):
         smach.State.__init__(self,
-                             outcomes = ['succeeded','zero_velocity_move'],
+                             outcomes = ['succeeded','zero_velocity_move','aborted'],
                              input_keys = ['angular_velocity_input'],
                              output_keys = ['x_position_list','y_position_list','velocity_magnitude_list'])
         self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
@@ -115,17 +115,56 @@ class CalculateMove(smach.State):
         if abs(userdata.angular_velocity_input) < self.angular_velocity_min:
             return 'zero_velocity_move'
 
+        fly_px = KINEMATICS_SUB.kinematics.fly_kinematics.position.x
+        fly_py = KINEMATICS_SUB.kinematics.fly_kinematics.position.y
+        robot_px = KINEMATICS_SUB.kinematics.robot_kinematics.position.x
+        robot_py = KINEMATICS_SUB.kinematics.robot_kinematics.position.y
+        fly_to_robot_px = robot_px - fly_px
+        fly_to_robot_py = robot_py - fly_py
+
+        robot_vx_a = -fly_to_robot_py
+        robot_vy_a = fly_to_robot_px
+        robot_vx_b = fly_to_robot_py
+        robot_vy_b = -fly_to_robot_px
+
         fly_vx = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.x
         fly_vy = KINEMATICS_SUB.kinematics.fly_kinematics.velocity.y
-        fly_vmag = numpy.linalg.norm([fly_vx,fly_vy])
-        vx_norm = fly_vx/fly_vmag
-        vy_norm = fly_vy/fly_vmag
+
+        dot_a = numpy.dot([fly_vx,fly_vy],[robot_vx_a,robot_vy_a])
+        dot_b = numpy.dot([fly_vx,fly_vy],[robot_vx_b,robot_vy_b])
+
+        angular_velocity = userdata.angular_velocity_input
+
+        if 0 < (dot_a*angular_velocity):
+            robot_vx = robot_vx_a
+            robot_vy = robot_vy_a
+        elif 0 < (dot_b*angular_velocity):
+            robot_vx = robot_vx_b
+            robot_vy = robot_vy_b
+        else:
+            rospy.logwarn("Could not choose robot velocity direction!")
+            return 'aborted'
+
+        rospy.logwarn("fly_px = %s" % (str(fly_px)))
+        rospy.logwarn("fly_py = %s" % (str(fly_py)))
+        rospy.logwarn("robot_px = %s" % (str(robot_px)))
+        rospy.logwarn("robot_py = %s" % (str(robot_py)))
+        rospy.logwarn("fly_to_robot_px = %s" % (str(fly_to_robot_px)))
+        rospy.logwarn("fly_to_robot_py = %s" % (str(fly_to_robot_py)))
         rospy.logwarn("fly_vx = %s" % (str(fly_vx)))
         rospy.logwarn("fly_vy = %s" % (str(fly_vy)))
-        move_direction = math.copysign(1,userdata.angular_velocity_input)
+        rospy.logwarn("robot_vx = %s" % (str(robot_vx)))
+        rospy.logwarn("robot_vy = %s" % (str(robot_vy)))
+
+        robot_vmag = numpy.linalg.norm([robot_vx,robot_vy])
+        vx_norm = robot_vx/robot_vmag
+        vy_norm = robot_vy/robot_vmag
+        # move_direction = math.copysign(1,angular_velocity)
         # move_direction = random.choice([-1,1])
-        move_x_position = move_direction*vx_norm*self.move_distance + self.start_position_x
-        move_y_position = move_direction*vy_norm*self.move_distance + self.start_position_y
+        # move_x_position = move_direction*vx_norm*self.move_distance + robot_px
+        # move_y_position = move_direction*vy_norm*self.move_distance + robot_py
+        move_x_position = vx_norm*self.move_distance + robot_px
+        move_y_position = vy_norm*self.move_distance + robot_py
         rospy.logwarn("move_x_position = %s" % (str(move_x_position)))
         rospy.logwarn("move_y_position = %s" % (str(move_y_position)))
         userdata.x_position_list = [move_x_position]
@@ -162,7 +201,8 @@ class RobotMotionProfile():
 
             smach.StateMachine.add('CALCULATE_MOVE', CalculateMove(),
                                    transitions={'succeeded':'MOVE_ROBOT',
-                                                'zero_velocity_move':'WAIT_FOR_ZERO_VELOCITY_MOVE_END_CONDITION'},
+                                                'zero_velocity_move':'WAIT_FOR_ZERO_VELOCITY_MOVE_END_CONDITION',
+                                                'aborted':'aborted'},
                                    remapping={'angular_velocity_input':'angular_velocity_rmp'})
 
             smach.StateMachine.add('MOVE_ROBOT',

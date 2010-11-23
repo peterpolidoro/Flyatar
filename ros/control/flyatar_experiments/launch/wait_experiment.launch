@@ -1,8 +1,8 @@
 <launch>
   <param name="in_bounds_radius" type="double" value="60"/>
   <param name="move_distance" type="double" value="65"/>
-  <param name="robot_width" type="double" value="3.175"/>
-  <param name="robot_height" type="double" value="3.175"/>
+  <param name="robot_width" type="double" value="1.588"/>
+  <param name="robot_height" type="double" value="1.588"/>
   <param name="robot_visible" type="boolean" value="true"/>
   <param name="robot_paint" type="str" value="sharpie"/>
   <param name="robot_pheromone" type="str" value="none"/>
