@@ -1,0 +1,1 @@
+bool robot_move_commanded

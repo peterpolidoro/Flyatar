@@ -5,7 +5,7 @@ roslib.load_manifest('save_data')
 import sys
 import rospy
 import time,os,subprocess
-from save_data.msg import SaveDataControls
+from save_data.msg import SaveDataControls, ExperimentConditions
 from plate_tf.msg import RobotFlyKinematics
 
 def chdir(dir):
@@ -25,9 +25,12 @@ class SaveKinematics:
 
         self.kinematics_sub = rospy.Subscriber("RobotFlyKinematics", RobotFlyKinematics, self.kinematics_callback)
         self.save_data_controls_sub = rospy.Subscriber("SaveDataControls", SaveDataControls, self.save_data_controls_callback)
+        self.experiment_conditions_sub = rospy.Subscriber("ExperimentConditions", ExperimentConditions, self.experiment_conditions_callback)
 
         self.save_kinematics = False
         self.save_count = 0
+
+        self.robot_move_commanded = False
 
         self.robot_width = rospy.get_param("robot_width","3.175") # mm
         self.robot_height = rospy.get_param("robot_height","3.175") # mm
@@ -37,17 +40,22 @@ class SaveKinematics:
         self.trigger_angle = rospy.get_param("trigger_angle","1.5708") # rad
 
         self.header_column_titles = 'date_time protocol trial_number angular_velocity_goal robot_width robot_height robot_visible robot_paint robot_pheromone trigger_angle\n'
-        self.data_column_titles = 'time robot_position_x robot_position_y robot_position_theta robot_velocity_x robot_velocity_y robot_velocity_theta robot_stopped fly_position_x fly_position_y fly_position_theta fly_velocity_x fly_velocity_y fly_velocity_theta fly_stopped\n'
+        self.data_column_titles = 'time robot_position_x robot_position_y robot_position_theta robot_velocity_x robot_velocity_y robot_velocity_theta robot_stopped fly_position_x fly_position_y fly_position_theta fly_velocity_x fly_velocity_y fly_velocity_theta fly_stopped robot_move_commanded\n'
         self.format_align = ">"
         self.format_sign = " "
         self.format_width = "7"
         self.format_precision = "2"
         self.format_type = "f"
         self.header_row_base = '{date_time:s} {protocol:s} {trial_number:>4d} {angular_velocity_goal:> 7.4f} {robot_width:>6.3f} {robot_height:>6.3f} {robot_visible:s} {robot_paint:s} {robot_pheromone:s} {trigger_angle:> 7.4f}\n\n'
-        self.data_row_base = '{time:0.2f} {robot_position_x:{align}{sign}{width}.{precision}{type}} {robot_position_y:{align}{sign}{width}.{precision}{type}} {robot_position_theta:{align}{sign}{width}.{precision}{type}} {robot_velocity_x:{align}{sign}{width}.{precision}{type}} {robot_velocity_y:{align}{sign}{width}.{precision}{type}} {robot_velocity_theta:{align}{sign}{width}.{precision}{type}} {robot_stopped:{align}{sign}{width}d} {fly_position_x:{align}{sign}{width}.{precision}{type}} {fly_position_y:{align}{sign}{width}.{precision}{type}} {fly_position_theta:{align}{sign}{width}.{precision}{type}} {fly_velocity_x:{align}{sign}{width}.{precision}{type}} {fly_velocity_y:{align}{sign}{width}.{precision}{type}} {fly_velocity_theta:{align}{sign}{width}.{precision}{type}} {fly_stopped:{align}{sign}{width}d}\n'
+        self.data_row_base = '{time:0.2f} {robot_position_x:{align}{sign}{width}.{precision}{type}} {robot_position_y:{align}{sign}{width}.{precision}{type}} {robot_position_theta:{align}{sign}{width}.{precision}{type}} {robot_velocity_x:{align}{sign}{width}.{precision}{type}} {robot_velocity_y:{align}{sign}{width}.{precision}{type}} {robot_velocity_theta:{align}{sign}{width}.{precision}{type}} {robot_stopped:{align}{sign}{width}d} {fly_position_x:{align}{sign}{width}.{precision}{type}} {fly_position_y:{align}{sign}{width}.{precision}{type}} {fly_position_theta:{align}{sign}{width}.{precision}{type}} {fly_velocity_x:{align}{sign}{width}.{precision}{type}} {fly_velocity_y:{align}{sign}{width}.{precision}{type}} {fly_velocity_theta:{align}{sign}{width}.{precision}{type}} {fly_stopped:{align}{sign}{width}d} {robot_move_commanded:{align}{sign}{width}d}\n'
+
+    def experiment_conditions_callback(self,data):
+        if data.robot_move_commanded:
+            self.robot_move_commanded = True
 
     def save_data_controls_callback(self,data):
         if data.save_kinematics and (not self.save_kinematics):
+            self.robot_move_commanded = False
             self.file_name = data.file_name_base + '.txt'
             self.fid = open(self.file_name, 'w')
             self.fid.write(self.header_column_titles)
@@ -97,7 +105,8 @@ class SaveKinematics:
                                                  fly_velocity_x = data.fly_kinematics.velocity.x,
                                                  fly_velocity_y = data.fly_kinematics.velocity.y,
                                                  fly_velocity_theta = data.fly_kinematics.velocity.theta,
-                                                 fly_stopped = int(data.fly_stopped.stopped))
+                                                 fly_stopped = int(data.fly_stopped.stopped),
+                                                 robot_move_commanded = int(self.robot_move_commanded))
 
             self.fid.write(data_row)
 

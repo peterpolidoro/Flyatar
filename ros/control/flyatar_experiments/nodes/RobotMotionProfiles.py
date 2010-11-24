@@ -11,6 +11,7 @@ import MonitorSystemState
 import random
 import numpy
 import math
+from save_data.msg import ExperimentConditions
 
 # Global Variables
 FLY_VIEW_SUB = MonitorSystemState.FlyViewSubscriber()
@@ -119,6 +120,10 @@ class CalculateMove(smach.State):
                              outcomes = ['succeeded','zero_velocity_move','aborted'],
                              input_keys = ['angular_velocity_input'],
                              output_keys = ['x_position_list','y_position_list','velocity_magnitude_list'])
+
+        self.experiment_conditions_pub = rospy.Publisher("ExperimentConditions",ExperimentConditions)
+        self.experiment_conditions = ExperimentConditions()
+
         self.in_bounds_radius = rospy.get_param("in_bounds_radius") # mm
         self.start_position_x = rospy.get_param("start_position_x")
         self.start_position_y = rospy.get_param("start_position_y")
@@ -134,6 +139,8 @@ class CalculateMove(smach.State):
         rospy.logwarn("CALCULATE_MOVE angular_velocity = %s" % (str(userdata.angular_velocity_input)))
 
         if abs(userdata.angular_velocity_input) < self.angular_velocity_min:
+            self.experiment_conditions.robot_move_commanded = True
+            self.experiment_conditions_pub.publish(self.experiment_conditions)
             return 'zero_velocity_move'
 
         fly_px = KINEMATICS_SUB.kinematics.fly_kinematics.position.x
@@ -199,6 +206,10 @@ class CalculateMove(smach.State):
             linear_velocity = self.experiment_linear_velocity_max
         userdata.velocity_magnitude_list = [linear_velocity]
         rospy.logwarn("velocity_magnitude = %s" % (str(linear_velocity)))
+
+        self.experiment_conditions.robot_move_commanded = True
+        self.experiment_conditions_pub.publish(self.experiment_conditions)
+
         return 'succeeded'
 
 class RobotMotionProfile():
