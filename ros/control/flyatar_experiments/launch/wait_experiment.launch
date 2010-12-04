@@ -1,8 +1,8 @@
 <launch>
   <param name="in_bounds_radius" type="double" value="60"/>
   <param name="move_distance" type="double" value="65"/>
-  <param name="robot_width" type="double" value="1.588"/>
-  <param name="robot_height" type="double" value="1.588"/>
+  <param name="robot_width" type="double" value="3.175"/>
+  <param name="robot_height" type="double" value="3.175"/>
   <param name="robot_visible" type="boolean" value="true"/>
   <param name="robot_paint" type="str" value="Sharpie"/>
   <param name="robot_pheromone" type="str" value="None"/>
@@ -13,8 +13,8 @@
   <param name="experiment_angular_velocity_bin_count" type="double" value="11"/>
   <param name="experiment_angular_velocity_vector_negative_repetition" type="double" value="1"/>
   <param name="experiment_angular_velocity_vector_positive_repetition" type="double" value="2"/>
-  <param name="experiment_angular_velocity_vector_zero_repetition" type="double" value="3"/>
-  <param name="trigger_angle" type="double" value="0.7854"/>
+  <param name="experiment_angular_velocity_vector_zero_repetition" type="double" value="2"/>
+  <param name="trigger_angle" type="double" value="1.5708"/>
   <param name="start_position_x" type="double" value="0"/>
   <param name="start_position_y" type="double" value="0"/>
   <include file="$(find flyatar_experiments)/launch/experiment.launch" />
