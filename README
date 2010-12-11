@@ -156,6 +156,10 @@ make
 # Press 'Program' button on Teensy GUI 
 # Press 'Reboot' button on Teensy GUI 
 
+# Setup URL for remote login:
+# Static preferred, but DynamicDNS can be used for dynamic IP addresses
+# https://help.ubuntu.com/community/DynamicDNS
+
 # Controlling Just the Stage:
 roslaunch stage_message_interface stage_message_interface.launch
 # Open new terminal>
