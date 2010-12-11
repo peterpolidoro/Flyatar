@@ -49,6 +49,18 @@ rosinstall -u ~/ros/Flyatar
 # Updating Flyatar Code to get local git repository changes:
 rosinstall -u ~/ros/Flyatar
 
+# Example Local Repository Code Modification:
+# Change in-bounds radius from 60mm to 90mm for wait experiment
+cd ~/git/Flyatar/ros/control/flyatar_experiments/launch
+# Open wait_experiment.launch in your favorite editor
+# Change this line: <param name="in_bounds_radius" type="double" value="60"/>
+# To this: <param name="in_bounds_radius" type="double" value="90"/>
+# Change this line: <param name="move_distance" type="double" value="65"/>
+# To this: <param name="move_distance" type="double" value="95"/>
+# Save wait_experiment.launch
+git commit -a -m "Modified in-bounds radius from 60mm to 90mm"
+rosinstall -u ~/ros/Flyatar
+
 # Calibration:
 sudo mkdir /cameras
 sudo chgrp disk cameras/
