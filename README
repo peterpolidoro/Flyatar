@@ -1,15 +1,15 @@
 # Install Ubuntu:
 # http://www.ubuntu.com/desktop/get-ubuntu/download
 # ubuntu-10.04.1-desktop-amd64
-# run update manager then restart
+# Create user flyatar-admin
 
 # Install Ubuntu packages
 sudo apt-get install build-essential python-yaml cmake subversion wget git-core git-gui git-doc
 
-# Make new user flyatar_user
-sudo adduser flyatar_user
+# Make new user flyatar-user
+sudo adduser flyatar-user
 
-# Login as flyatar_user and setup local bin directory
+# Login as flyatar-user and setup local bin directory
 mkdir ~/bin
 export PATH=~/bin:$PATH
 
@@ -62,6 +62,7 @@ git commit -a -m "Modified in-bounds radius from 60mm to 90mm"
 rosinstall -u ~/ros/Flyatar
 
 # Calibration:
+# Todo: Simplify calibration, change calibration data location, save all data automatically
 sudo mkdir /cameras
 sudo chgrp disk cameras/
 sudo chmod g+rwx cameras/
@@ -127,18 +128,13 @@ roslaunch flyatar_calibration StagePlate.launch
 roslaunch flyatar_avatar avatar.launch
 
 # Compiling Stage USB Device Firmware:
+# Todo: Upgrade to new libusb-1.0, PyUSB, and newest LUFA release, implement acceleration variable, fix homing bug
 mkdir ~/LUFA
 cd ~/LUFA
 wget http://lufa-lib.googlecode.com/files/LUFA-090605.zip
 unzip LUFA-090605.zip
 mv LUFA\ 090605/ LUFA090605
 echo "export LUFA090605=~/LUFA/LUFA090605" >> ~/.bashrc
-
-// wget http://lufa-lib.googlecode.com/files/LUFA-100807.zip
-// unzip LUFA-100807.zip
-// mv LUFA\ 100807/ LUFA100807
-// echo "export LUFA100807=~/LUFA/LUFA100807" >> ~/.bashrc
-
 . ~/.bashrc
 sudo apt-get install gcc-avr avr-libc
 mkdir ~/TEENSY
