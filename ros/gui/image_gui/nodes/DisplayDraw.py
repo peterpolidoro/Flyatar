@@ -25,8 +25,16 @@ class ImageDisplay:
         self.draw_objects_sub = rospy.Subscriber("DrawObjects/image_rect", image_gui.msg.DrawObjects, self.draw_objects_callback)
         self.draw_objects = image_gui.msg.DrawObjects()
 
+        self.image_pub = rospy.Publisher("/camera/image_display",sensor_msgs.msg.Image)
+        self.resize_published_image = True
+        self.resize_size = (640,480)
+
     def initialize_images(self,cv_image):
         self.im_display = cv.CreateImage(cv.GetSize(cv_image),cv.IPL_DEPTH_8U,3)
+        if self.resize_published_image:
+            self.im_display_pub = cv.CreateImage(self.resize_size,cv.IPL_DEPTH_8U,3)
+        else:
+            self.im_display_pub = cv.CreateImage(cv.GetSize(cv_image),cv.IPL_DEPTH_8U,3)
         self.images_initialized = True
 
     def image_callback(self,data):
@@ -43,6 +51,12 @@ class ImageDisplay:
         self.draw_objects_on_image(self.draw_objects)
 
         cv.ShowImage("Display", self.im_display)
+        cv.Resize(self.im_display,self.im_display_pub)
+        # Publish processed image
+        try:
+            self.image_pub.publish(self.bridge.cv_to_imgmsg(self.im_display_pub,"passthrough"))
+        except CvBridgeError, e:
+            print e
         cv.WaitKey(3)
 
 
