@@ -84,14 +84,16 @@ class DrawObjects:
 
         self.robot_marker = DrawPrimatives.CenteredCircle(self.origin.point,self.axis_length_camera,self.colors.blue,2)
 
-        self.in_bounds_marker = DrawPrimatives.CenteredCircle(self.plate_origin_primatives.point,self.in_bounds_radius_camera,self.colors.yellow,1)
+        self.in_bounds_marker = DrawPrimatives.CenteredCircle(self.plate_origin_primatives.point,self.in_bounds_radius_camera,self.colors.yellow,2)
 
         self.mask_marker = DrawPrimatives.CenteredCircle(self.plate_origin_primatives.point,self.mask_radius_camera,self.colors.yellow,1)
 
-        self.draw_objects.draw_object_list = [self.plate_origin_marker.draw_object,
-                                              self.robot_marker.draw_object,
-                                              self.in_bounds_marker.draw_object,
-                                              self.mask_marker.draw_object]
+        # self.draw_objects.draw_object_list = [self.plate_origin_marker.draw_object,
+        #                                       self.robot_marker.draw_object,
+        #                                       self.in_bounds_marker.draw_object,
+        #                                       self.mask_marker.draw_object]
+        self.draw_objects.draw_object_list = [self.in_bounds_marker.draw_object]
+
         self.draw_objects.show_all = False
         self.draw_objects.hide_all = False
         self.initialized = True
