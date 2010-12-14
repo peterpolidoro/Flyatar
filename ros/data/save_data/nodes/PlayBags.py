@@ -54,7 +54,7 @@ class PlayBags:
         # p_ls_bag = subprocess.Popen('ls *.bag',shell=True,stdout=subprocess.PIPE,stderr=self.NULL)
         # out = p_ls_bag.stdout.readlines()
         # bag_list = [s.rstrip() for s in out]
-        self.fid = open(self.bag_file_play_list_name,'r')
+        fid = open(self.bag_file_play_list_name,'r')
         bag_list = [line.strip() for line in fid.readlines()]
         if 0 < len(bag_list):
             bag_file0 = bag_list[0]
