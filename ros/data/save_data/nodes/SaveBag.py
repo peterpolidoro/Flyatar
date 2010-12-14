@@ -23,7 +23,7 @@ class SaveBag:
 
         # Create new directory each day
         self.files_dir = time.strftime("%Y_%m_%d")
-        self.working_dir = self.working_dir + "/" + self.files_dir + "_Bags"
+        self.working_dir = self.working_dir_base + "/" + self.files_dir + "_Bags"
         chdir(self.working_dir)
 
         self.save_data_controls_sub = rospy.Subscriber("SaveDataControls", SaveDataControls, self.save_data_controls_callback)
