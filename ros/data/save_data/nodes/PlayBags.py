@@ -67,7 +67,7 @@ class PlayBags:
                     bag_list = []
             else:
                 bag_list = []
-        rospy.logwarn("bag_list = %s" % (str(bag_list)))
+        # rospy.logwarn("bag_list = %s" % (str(bag_list)))
         return bag_list
 
     def play_bag_file(self,bag_file):
