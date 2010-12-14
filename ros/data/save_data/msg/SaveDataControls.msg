@@ -5,3 +5,4 @@ float32 angular_velocity_goal
 bool rm_file
 bool save_kinematics
 bool save_video
+bool save_bag

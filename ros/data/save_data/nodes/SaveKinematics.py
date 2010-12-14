@@ -19,6 +19,8 @@ class SaveKinematics:
     def __init__(self):
         self.working_dir_base = os.path.expanduser("~/FlyatarData")
         chdir(self.working_dir_base)
+
+        # Create new directory each day
         self.files_dir = time.strftime("%Y_%m_%d")
         self.working_dir = self.working_dir_base + "/" + self.files_dir
         chdir(self.working_dir)
