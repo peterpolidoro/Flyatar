@@ -6,6 +6,7 @@ import sys
 import rospy
 import time,os,subprocess
 from save_data.msg import BagInfo, VideoInfo
+import re
 
 def chdir(dir):
     try:
@@ -54,7 +55,18 @@ class PlayBags:
         # out = p_ls_bag.stdout.readlines()
         # bag_list = [s.rstrip() for s in out]
         self.fid = open(self.bag_file_play_list_name,'r')
-        bag_list = [line for line in file.readlines() if line.strip()]
+        bag_list = [line.strip() for line in fid.readlines()]
+        if 0 < len(bag_list):
+            bag_file0 = bag_list[0]
+            match = re.search('^\d+_\d+_\d+',bag_file0)
+            if match is not None:
+                bag_dir = match.group(0) + '_Bags'
+                try:
+                    os.chdir(bag_dir)
+                except (OSError):
+                    bag_list = []
+            else:
+                bag_list = []
         rospy.logwarn("bag_list = %s" % (str(bag_list)))
         return bag_list
 
