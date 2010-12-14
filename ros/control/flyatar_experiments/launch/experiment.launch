@@ -3,6 +3,6 @@
   <node pkg="plate_tf" type="PublishSystemState.py" name="PublishSystemState" />
   <!-- <node name="RobotFlyTFBroadcaster" pkg="plate_tf" type="RobotFlyTFBroadcaster.py"/> -->
   <include file="$(find image_gui)/launch/DisplayDraw.launch" />
-  <!-- <node pkg="save_data" type="SaveBags.py" name="SaveBags" /> -->
+  <node pkg="save_data" type="SaveBag.py" name="SaveBag" />
   <node pkg="save_data" type="SaveKinematics.py" name="SaveKinematics" />
 </launch>

@@ -89,6 +89,7 @@ class RecordData(smach.State):
         SAVE_DATA_CONTROLS_PUB.save_data_controls.rm_file = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = True
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_video = True
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.save_bag = True
         SAVE_DATA_CONTROLS_PUB.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUB.save_data_controls)
         rospy.logwarn("RecordData succeeded")
         return 'succeeded'
@@ -104,6 +105,7 @@ class EraseData(smach.State):
         SAVE_DATA_CONTROLS_PUB.save_data_controls.rm_file = True
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_video = False
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.save_bag = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUB.save_data_controls)
         return 'succeeded'
 
@@ -141,6 +143,7 @@ class LogTrial(smach.State):
         SAVE_DATA_CONTROLS_PUB.save_data_controls.rm_file = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_kinematics = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls.save_video = False
+        SAVE_DATA_CONTROLS_PUB.save_data_controls.save_bag = False
         SAVE_DATA_CONTROLS_PUB.save_data_controls_pub.publish(SAVE_DATA_CONTROLS_PUB.save_data_controls)
         SAVE_DATA_CONTROLS_PUB.trial_count_increment()
         return 'succeeded'
