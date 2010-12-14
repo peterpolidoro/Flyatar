@@ -140,13 +140,12 @@ class PoseTFConversion:
                 Ysrc = [msg.position.y]
                 if (Xsrc is not None) and (Ysrc is not None) and \
                        (0 < len(Xsrc)) and (0 < len(Ysrc)):
-                    rospy.logwarn("msg.orientation.x = %s" % (str(msg.orientation.x)))
-                    rospy.logwarn("msg.orientation.y = %s" % (str(msg.orientation.y)))
-                    rospy.logwarn("msg.orientation.z = %s" % (str(msg.orientation.z)))
-                    rospy.logwarn("msg.orientation.w = %s" % (str(msg.orientation.w)))
+                    if abs(msg.orientation.w) < 0.01:
+                        w = 1
+                    else:
+                        w = msg.orientation.w
                     self.tf_broadcaster.sendTransform((msg.position.x, msg.position.y, 0),
-                                                      # (msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w),
-                                                      (msg.orientation.x,msg.orientation.y,msg.orientation.z,1),
+                                                      (msg.orientation.x,msg.orientation.y,msg.orientation.z,w),
                                                       self.robot_fly_kinematics.header.stamp,
                                                       # rospy.Time.now(),
                                                       image_frame_name,
