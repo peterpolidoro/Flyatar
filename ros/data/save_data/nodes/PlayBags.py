@@ -17,10 +17,8 @@ def chdir(dir):
 class PlayBags:
     def __init__(self):
         self.initialized = False
-        self.working_dir = os.path.expanduser("~/Bags")
-        chdir(self.working_dir)
-        self.working_dir = self.working_dir + "/Play"
-        chdir(self.working_dir)
+        self.working_dir_base = os.path.expanduser("~/FlyatarData")
+        chdir(self.working_dir_base)
 
         self.bag_info_pub = rospy.Publisher("bag_info",BagInfo)
         self.bag_info = BagInfo()
@@ -39,6 +37,7 @@ class PlayBags:
 
         self.rate = rospy.Rate(10)
 
+        self.bag_file_play_list_name = "bag_file_play_list"
         self.bag_list = self.find_bag_list()
         rospy.logwarn("bag_list = %s" % (str(self.bag_list)))
         self.bag_count = len(self.bag_list)
@@ -51,9 +50,12 @@ class PlayBags:
             self.video_info = data
 
     def find_bag_list(self):
-        p_ls_bag = subprocess.Popen('ls *.bag',shell=True,stdout=subprocess.PIPE,stderr=self.NULL)
-        out = p_ls_bag.stdout.readlines()
-        bag_list = [s.rstrip() for s in out]
+        # p_ls_bag = subprocess.Popen('ls *.bag',shell=True,stdout=subprocess.PIPE,stderr=self.NULL)
+        # out = p_ls_bag.stdout.readlines()
+        # bag_list = [s.rstrip() for s in out]
+        self.fid = open(self.bag_file_play_list_name,'r')
+        bag_list = [line for line in file.readlines() if line.strip()]
+        rospy.logwarn("bag_list = %s" % (str(bag_list)))
         return bag_list
 
     def play_bag_file(self,bag_file):
