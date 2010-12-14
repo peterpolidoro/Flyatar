@@ -145,7 +145,8 @@ class PoseTFConversion:
                     rospy.logwarn("msg.orientation.z = %s" % (str(msg.orientation.z)))
                     rospy.logwarn("msg.orientation.w = %s" % (str(msg.orientation.w)))
                     self.tf_broadcaster.sendTransform((msg.position.x, msg.position.y, 0),
-                                                      (msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w),
+                                                      # (msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w),
+                                                      (msg.orientation.x,msg.orientation.y,msg.orientation.z,1),
                                                       self.robot_fly_kinematics.header.stamp,
                                                       # rospy.Time.now(),
                                                       image_frame_name,
