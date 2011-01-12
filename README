@@ -6,6 +6,13 @@
 # Install Ubuntu packages
 sudo apt-get install build-essential python-yaml cmake subversion wget git-core git-gui git-doc
 
+# ROS Installation:
+sudo sh -c 'echo "deb http://code.ros.org/packages/ros/ubuntu lucid main" > /etc/apt/sources.list.d/ros-latest.list'
+wget http://code.ros.org/packages/ros.key -O - | sudo apt-key add -
+sudo apt-get update
+echo "hddtemp hddtemp/daemon boolean false" | sudo debconf-set-selections
+sudo apt-get install ros-cturtle-pr2all
+
 # Make new user flyatar-user
 sudo adduser flyatar-user
 
@@ -16,11 +23,7 @@ export PATH=~/bin:$PATH
 # Create Local Flyatar Git Repository:
 git clone git://github.com/peterpolidoro/Flyatar.git ~/git/Flyatar
 cp ~/git/Flyatar/ros/rosinstall ~/bin/
-
-# ROS Installation:
-rosinstall ~/ros http://ros.org/rosinstalls/cturtle_pr2all.rosinstall
-source ~/ros/setup.sh
-
+source /opt/ros/cturtle/setup.sh
 rosinstall -o ~/ros/Flyatar ~/git/Flyatar/ros/flyatar.local.rosinstall
 echo "source ~/ros/Flyatar/setup.sh" >> ~/.bashrc
 . ~/.bashrc
@@ -37,9 +40,6 @@ rosmake flyatar_experiments
 
 # Running Wait Experiment:
 roslaunch flyatar_experiments wait_experiment.launch
-
-# Updating Ros Code:
-rosinstall -u ~/ros
 
 # Updating Flyatar Code to get the latest git repository on github:
 cd ~/git/Flyatar
