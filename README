@@ -61,6 +61,20 @@ cd ~/git/Flyatar/ros/control/flyatar_experiments/launch
 git commit -a -m "Modified in-bounds radius from 60mm to 90mm"
 rosinstall -u ~/ros/Flyatar
 
+# Converting bag files to directories of images and videos:
+# Create ~/FlyatarData/bag_file_play_list
+# Each line of the file bag_file_play list should contain the name of a single bag file
+# The bag files should be in the directory ~/FlyatarData/*_Bags/
+# Example bag_file_play_list:
+# 2010_12_14_14_46_07.bag
+# 2010_12_14_14_46_17.bag
+# 2010_12_14_14_46_23.bag
+# 
+# These bag files should be located in ~/FlyatarData/2010_12_14_Bags/
+# Then run roslaunch file to save images and videos to ~/Videos/
+rosmake save_data
+roslaunch save_data play_bags_save_video_nocat.launch
+
 # Calibration:
 # Todo: Simplify calibration, change calibration data location, save all data automatically
 sudo mkdir /cameras
@@ -92,6 +106,7 @@ cp /cameras/basler_a622f_calibration.yaml /cameras/basler_a622f_rect_calibration
 rosmake image_proc
 roslaunch camera1394v2 flyatar_camera_cal_c.launch
 # open new terminal
+# unmount camera from rig if necessary to give calibration pattern plenty of room to move
 rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/camera/image_rect camera:=/camera
 # wave 30 mm checkerboard in front of camera until calibrate button activates
 # click calibrate button
@@ -100,6 +115,7 @@ rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.030 image:=/
 # transfer camera calibration info from /cameras/basler_a622f_calibration.yaml 
 #  and /cameras/basler_a622f_rect_calibration.yaml into 
 #  $(find flyatar_calibration)/calibration_data/camera_calibration_data.launch by hand
+# mount camera on flyatar rig, position so that the arena is mostly centered in image
 roslaunch flyatar_calibration CameraPlate.launch
 # use left joystick to move green circle until centered on plate
 # use right joystick to change green circle radius until on edges of plate
