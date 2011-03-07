@@ -131,6 +131,7 @@ roslaunch track_image_contours track_image_contours_view_images.launch
 # place magnet on plate, check to see if contour is found properly
 # ctrl-c to shutdown track_image_contours_view_images.launch
 # reset power on Atmel motorcontroller, wait for motors to home
+rosmake flyatar_manual
 roslaunch flyatar_manual joystick_control.launch
 # test to make sure joystick moves stage
 # ctrl-c to shutdown joystick_control.launch
